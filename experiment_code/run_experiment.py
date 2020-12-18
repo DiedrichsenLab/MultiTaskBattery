@@ -14,6 +14,7 @@ from experiment_code.constants import Defaults, Directories
 from experiment_code.screen import Screen
 from experiment_code.task_blocks import TASK_MAP
 from experiment_code.ttl import ttl
+import experiment_code.constants as const
 # -----------------------------------------------------------------------------
 
 # create an instance of Defaults and Directories classes 
