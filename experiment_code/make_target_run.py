@@ -10,11 +10,10 @@ import cv2
 import glob
 import shutil
 
-from experiment_code.constants import Directories
+import experiment_code.constants as consts
 from experiment_code.targetfile_utils import Utils
 
 # create instances of directories
-Dirs = Directories()
 
 class VisualSearch(Utils):
     """
@@ -114,7 +113,7 @@ class VisualSearch(Utils):
 
         # save out visual display
         visual_display_name = self._get_visual_display_name()
-        df_display.to_csv(os.path.join(self.TARGET_DIR, visual_display_name))
+        df_display.to_csv(os.path.join(self.target_dir, visual_display_name))
 
     def _get_visual_display_name(self):
         tf_name = f"{self.block_name}_{self.block_dur_secs}sec"
@@ -184,7 +183,7 @@ class VisualSearch(Utils):
             # balance the dataframe
             df_target = self._balance_design(dataframe = df_target)
 
-            self.TARGET_DIR = os.path.join(Dirs.TARGET_DIR, self.block_name)
+            self.target_dir = os.path.join(consts.target_dir, self.block_name)
 
             # save visual display dataframe
             self._save_visual_display(dataframe = df_target)
@@ -271,7 +270,7 @@ class NBack(Utils):
     
     def _balance_design(self, dataframe):
         # load in stimuli
-        stim_files = [f for f in os.listdir(str(Dirs.STIM_DIR / self.block_name)) if f.endswith('g')]
+        stim_files = [f for f in os.listdir(str(consts.stim_dir / self.block_name)) if f.endswith('g')]
 
         # first two images are always random (and false)
         # all other images are either match or not a match
@@ -311,7 +310,7 @@ class NBack(Utils):
             # balance the dataframe
             df_target = self._balance_design(dataframe = df_target)
 
-            self.TARGET_DIR = os.path.join(Dirs.TARGET_DIR, self.block_name)
+            self.target_dir = os.path.join(consts.target_dir, self.block_name)
             self._save_target_files(df_target)
 
 class SocialPrediction(Utils):
@@ -429,7 +428,7 @@ class SocialPrediction(Utils):
         self._get_block_info(**kwargs)
 
         # return logging file
-        fpath = os.path.join(Dirs.STIM_DIR, self.block_name, self.logging_file)
+        fpath = os.path.join(consts.stim_dir, self.block_name, self.logging_file)
         
         # read in stimulus dataframe
         df = pd.read_csv(fpath)
@@ -455,7 +454,7 @@ class SocialPrediction(Utils):
                 df_filtered = df_filtered.merge(df_target, how='left', indicator=True)
                 df_filtered = df_filtered[df_filtered['_merge'] == 'left_only'].drop('_merge', axis=1)
             
-            self.TARGET_DIR = os.path.join(Dirs.TARGET_DIR, self.block_name)
+            self.target_dir = os.path.join(consts.target_dir, self.block_name)
             self._save_target_files(df_target)
 
 class SemanticPrediction(Utils):
@@ -571,7 +570,7 @@ class SemanticPrediction(Utils):
         self._get_block_info(**kwargs)
 
         # return logging file
-        fpath = os.path.join(Dirs.STIM_DIR, self.block_name, self.logging_file)
+        fpath = os.path.join(consts.stim_dir, self.block_name, self.logging_file)
         
         # read in stimulus dataframe
         df = pd.read_csv(fpath)
@@ -601,7 +600,7 @@ class SemanticPrediction(Utils):
             df_target = self._add_random_word(dataframe=df_target, columns=['condition_name']) # 'CoRT_descript'
             
             # save out target files
-            self.TARGET_DIR = os.path.join(Dirs.TARGET_DIR, self.block_name)
+            self.target_dir = os.path.join(consts.target_dir, self.block_name)
             self._save_target_files(df_target)
 
 class ActionObservation(Utils):
@@ -779,7 +778,7 @@ class ActionObservation(Utils):
         self._get_block_info(**kwargs)
 
         # return logging file
-        fpath = os.path.join(Dirs.STIM_DIR, self.block_name, self.logging_file)
+        fpath = os.path.join(consts.stim_dir, self.block_name, self.logging_file)
         
         # read in stimulus dataframe
         df = pd.read_csv(fpath)
@@ -805,7 +804,7 @@ class ActionObservation(Utils):
                 df_filtered = df_filtered.merge(df_target, how='left', indicator=True)
                 df_filtered = df_filtered[df_filtered['_merge'] == 'left_only'].drop('_merge', axis=1)
             
-            self.TARGET_DIR = os.path.join(Dirs.TARGET_DIR, self.block_name)
+            self.target_dir = os.path.join(consts.target_dir, self.block_name)
             self._save_target_files(df_target)
 
 class TheoryOfMind(Utils):
@@ -903,7 +902,7 @@ class TheoryOfMind(Utils):
         self._get_block_info(**kwargs)
 
         # return logging file
-        fpath = os.path.join(Dirs.STIM_DIR, self.block_name, self.logging_file)
+        fpath = os.path.join(consts.stim_dir, self.block_name, self.logging_file)
         
         # read in stimulus dataframe
         df = pd.read_csv(fpath)
@@ -930,7 +929,7 @@ class TheoryOfMind(Utils):
                 df_filtered = df_filtered[df_filtered['_merge'] == 'left_only'].drop('_merge', axis=1)
             
             # save out target files
-            self.TARGET_DIR = os.path.join(Dirs.TARGET_DIR, self.block_name)
+            self.target_dir = os.path.join(consts.target_dir, self.block_name)
             self._save_target_files(df_target)
 
 class Rest(Utils):
@@ -986,10 +985,10 @@ class Rest(Utils):
         # create dataframe
         dataframe = self._create_new_columns()
 
-        TARGET_DIR = os.path.join(Dirs.TARGET_DIR, self.block_name)
-        if not os.path.exists(TARGET_DIR):
-            os.makedirs(TARGET_DIR)
-        dataframe.to_csv(os.path.join(TARGET_DIR, self.target_name), index = False, header = True)
+        target_dir = os.path.join(consts.target_dir, self.block_name)
+        if not os.path.exists(target_dir):
+            os.makedirs(target_dir)
+        dataframe.to_csv(os.path.join(target_dir, self.target_name), index = False, header = True)
 
         return self.target_name
 
@@ -1047,10 +1046,10 @@ class MakeFiles:
         df_run = pd.DataFrame.from_dict(self.all_data)
 
         # save out to file
-        df_run.to_csv(os.path.join(Dirs.RUN_DIR, run_name), index=False, header=True)
+        df_run.to_csv(os.path.join(consts.run_dir, run_name), index=False, header=True)
     
     def _add_rest(self):
-        run_files = sorted(glob.glob(os.path.join(Dirs.RUN_DIR, f'*{self.run_name_prefix}*')))
+        run_files = sorted(glob.glob(os.path.join(consts.run_dir, f'*{self.run_name_prefix}*')))
 
         # make target file
         BlockClass = TASK_MAP['rest']
@@ -1140,7 +1139,7 @@ class MakeFiles:
         for self.block_name in self.block_names:
 
             # delete any target files that exist in the folder
-            files = glob.glob(os.path.join(Dirs.TARGET_DIR, self.block_name, '*'))
+            files = glob.glob(os.path.join(consts.target_dir, self.block_name, '*'))
             for f in files:
                 os.remove(f)
 
@@ -1153,7 +1152,7 @@ class MakeFiles:
     
     def make_runfiles(self):
         # delete any run files that exist in the folder
-        files = glob.glob(os.path.join(Dirs.RUN_DIR, '*'))
+        files = glob.glob(os.path.join(consts.run_dir, '*'))
         for f in files:
             os.remove(f)
 
@@ -1166,8 +1165,8 @@ class MakeFiles:
             for self.block_num, self.block_name in enumerate(self.block_names):
 
                 # get target files for `block_name`
-                self.TARGET_DIR = os.path.join(Dirs.TARGET_DIR, self.block_name)
-                self.fpaths = sorted(glob.glob(os.path.join(self.TARGET_DIR, f'*{self.block_name}*')))
+                self.target_dir = os.path.join(consts.target_dir, self.block_name)
+                self.fpaths = sorted(glob.glob(os.path.join(self.target_dir, f'*{self.block_name}*')))
 
                 # get feedback type
                 self.feedback_type = self.feedback_types[self.block_num]

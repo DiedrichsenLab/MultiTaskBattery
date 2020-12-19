@@ -6,13 +6,9 @@ import pandas as pd
 import os
 import glob
 
-from experiment_code.constants import Defaults, Directories
+import experiment_code.constants as consts
 
 ResponseEvent = namedtuple('ResponseEvent', field_names=["correct_key", "key_presses", "response_made", "correct_response", "rt"])
-
-# create instances of directories and defaults
-Defs = Defaults()
-Dirs = Directories()
 
 class Task:
     """
@@ -42,21 +38,21 @@ class Task:
     def instruction_text(self):
         # return None
         hand = self.target_file['hand'][0]
-        return f"{self.task_name} task\n\nUse your {hand} hand\n\nIf true, press {Defs.KEY_HAND_DICT[hand][True][0]} with {Defs.KEY_HAND_DICT[hand][True][1]}\nIf false, press {Defs.KEY_HAND_DICT[hand][False][0]} with {Defs.KEY_HAND_DICT[hand][False][1]}"
+        return f"{self.task_name} task\n\nUse your {hand} hand\n\nIf true, press {consts.key_hand_dict[hand][True][0]} with {consts.key_hand_dict[hand][True][1]}\nIf false, press {consts.key_hand_dict[hand][False][0]} with {consts.key_hand_dict[hand][False][1]}"
     
     def save_to_df(self, all_trial_response):
         # df for current data
         new_resp_df = pd.concat([self.target_file, pd.DataFrame.from_records(all_trial_response)], axis=1)
         # collect existing data
         try:
-            target_file_results = pd.read_csv(Dirs.RAW_DIR / self.study_name/ 'raw' / self.subj_id / f"{self.study_name}_{self.subj_id}_{self.task_name}.csv")
+            target_file_results = pd.read_csv(consts.raw_dir / self.study_name/ 'raw' / self.subj_id / f"{self.study_name}_{self.subj_id}_{self.task_name}.csv")
             target_resp_df = pd.concat([target_file_results, new_resp_df], axis=0, sort=False)
             # if there is no existing data, just save current data
         except:
             target_resp_df = new_resp_df
             pass
         # save all data 
-        target_resp_df.to_csv(Dirs.RAW_DIR / self.study_name/ 'raw' / self.subj_id / f"{self.study_name}_{self.subj_id}_{self.task_name}.csv", index=None, header=True)
+        target_resp_df.to_csv(consts.raw_dir / self.study_name/ 'raw' / self.subj_id / f"{self.study_name}_{self.subj_id}_{self.task_name}.csv", index=None, header=True)
 
     def run(self, df):
         return df
@@ -69,7 +65,7 @@ class Task:
 
     def get_correct_key(self, trial_index):
         row = self.target_file.iloc[trial_index]
-        return Defs.KEY_HAND_DICT[row['hand']][row['trial_type']][0]
+        return consts.key_hand_[row['hand']][row['trial_type']][0]
 
     def get_feedback_OLD(self, all_trial_response):
         # curr_df = pd.DataFrame.from_records(all_trial_response)
@@ -95,7 +91,7 @@ class Task:
             feedback_reinforce = "Slow down next time to reach the target accuracy"
 
         # get previous run results and get difference between current and previous
-        fpath = Dirs.RAW_DIR / self.study_name/ 'raw' / self.subj_id / f"{self.study_name}_{self.subj_id}_{self.task_name}.csv"
+        fpath = consts.raw_dir / self.study_name/ 'raw' / self.subj_id / f"{self.study_name}_{self.subj_id}_{self.task_name}.csv"
         if os.path.isfile(fpath):
             tf_results = pd.read_csv(fpath)
             if self.task_name=='visual_search':
@@ -140,9 +136,9 @@ class Task:
 
     def display_trial_feedback(self, correct_response):
         if correct_response:
-            feedback = os.path.join(Dirs.STIM_DIR, self.study_name ,'correct.png')
+            feedback = os.path.join(consts.stim_dir, self.study_name ,'correct.png')
         elif not correct_response:
-            feedback = os.path.join(Dirs.STIM_DIR, self.study_name, 'incorrect.png')
+            feedback = os.path.join(consts.stim_dir, self.study_name, 'incorrect.png')
 
         # display feedback on screen
         feedback = visual.ImageStim(self.window, feedback, pos=(0, 0)) # pos=pos
@@ -158,7 +154,7 @@ class Task:
         pressed_keys = []
         
         while (self.clock.getTime() - start_time <= wait_time): # and not resp_made:
-            pressed_keys.extend(event.getKeys(Defs.RESPONSE_KEYS, timeStamped=self.clock))
+            pressed_keys.extend(event.getKeys(consts.response_keys, timeStamped=self.clock))
             if pressed_keys and not self.response_made:
                 self.response_made = True
                 self.rt = self.clock.getTime() - start_time_rt
@@ -209,9 +205,9 @@ class VisualSearch(Task):
 
     def _get_stims(self):
         # load target and distractor stimuli
-        self.stims = [Dirs.STIM_DIR / self.study_name / self.task_name/ f"{d}.png" for d in self.orientations]
+        self.stims = [consts.stim_dir/ self.study_name / self.task_name/ f"{d}.png" for d in self.orientations]
         
-        path_to_display = glob.glob(os.path.join(Dirs.TARGET_DIR, self.study_name, self.task_name, f'*display_pos_*_{self.target_num}*'))
+        path_to_display = glob.glob(os.path.join(consts.target_dir, self.study_name, self.task_name, f'*display_pos_*_{self.target_num}*'))
         self.tf_display = pd.read_csv(path_to_display[0])
 
     def _show_stim(self):
@@ -282,7 +278,7 @@ class NBack(Task):
 
     def _get_stims(self):
         # show image
-        stim_path = Dirs.STIM_DIR / self.study_name / self.task_name / self.target_file['stim'][self.trial]
+        stim_path = consts.stim_dir / self.study_name / self.task_name / self.target_file['stim'][self.trial]
         self.stim = visual.ImageStim(self.window, str(stim_path))
     
     def _show_stim(self):
@@ -346,7 +342,7 @@ class SocialPrediction(Task):
 
     def _get_stims(self):
         video_file = self.target_file['stim'][self.trial]
-        self.path_to_video = os.path.join(Dirs.STIM_DIR, self.study_name, self.task_name, "modified_clips", video_file)
+        self.path_to_video = os.path.join(consts.stim_dir, self.study_name, self.task_name, "modified_clips", video_file)
 
     def _get_trial_response(self):
         self.correct_key = 0
@@ -356,7 +352,7 @@ class SocialPrediction(Task):
         self.rt = 0
         pressed_keys = []
         
-        pressed_keys.extend(event.getKeys(Defs.RESPONSE_KEYS, timeStamped=self.clock))
+        pressed_keys.extend(event.getKeys(consts.response_keys, timeStamped=self.clock))
         if pressed_keys and not self.response_made:
             self.response_made = True
             self.rt = self.clock.getTime() - self.t2
@@ -565,7 +561,7 @@ class ActionObservation(Task):
 
     def _get_stims(self):
         video_file = self.target_file['stim'][self.trial]
-        self.path_to_video = os.path.join(Dirs.STIM_DIR, self.study_name, self.task_name, "modified_clips", video_file)
+        self.path_to_video = os.path.join(consts.stim_dir, self.study_name, self.task_name, "modified_clips", video_file)
 
     def _get_trial_response(self):
         self.correct_key = 0
@@ -575,7 +571,7 @@ class ActionObservation(Task):
         self.rt = 0
         pressed_keys = []
         
-        pressed_keys.extend(event.getKeys(Defs.RESPONSE_KEYS, timeStamped=self.clock))
+        pressed_keys.extend(event.getKeys(consts.response_keys, timeStamped=self.clock))
         if pressed_keys and not self.response_made:
             self.response_made = True
             self.rt = self.clock.getTime() - self.t2

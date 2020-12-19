@@ -10,15 +10,11 @@ import glob
 
 from psychopy import visual, core, event, gui # data, logging
 
-from experiment_code.constants import Defaults, Directories
+import experiment_code.constants as consts
 from experiment_code.screen import Screen
 from experiment_code.task_blocks import TASK_MAP
 from experiment_code.ttl import ttl
 # -----------------------------------------------------------------------------
-
-# create an instance of Defaults and Directories classes 
-Defs = Defaults()
-Dirs = Directories()
 
 def display_input_box():
     """
@@ -66,7 +62,7 @@ def get_runfile_info(run_name, study_name):
     """
     run_info = {} # a dictionary with all the info for the run 
     # load run file
-    run_info['run_file'] = pd.read_csv(Dirs.RUN_DIR / study_name / f"{run_name}.csv")
+    run_info['run_file'] = pd.read_csv(consts.run_dir / study_name / f"{run_name}.csv")
 
     # get run num
     run_info['run_num'] = int(re.findall(r'\d+', run_name)[0])
@@ -88,7 +84,7 @@ def check_runfile_results(experiment_info):
     subj_id    = experiment_info['subj_id']
     run_name   = experiment_info['run_name']
 
-    fpath = Dirs.RAW_DIR / study_name / 'raw' / subj_id / f"{study_name}_{subj_id}.csv"
+    fpath = consts.raw_dir / study_name / 'raw' / subj_id / f"{study_name}_{subj_id}.csv"
     if os.path.isfile(fpath):
         # load in run_file results if they exist 
         run_file_results = pd.read_csv(fpath)
@@ -167,7 +163,7 @@ def get_targetfile_info(study_name, run_file, b):
         target_binfo['target_num'] = (f"{int(target_binfo['target_num']):02d}")
 
     # load target file
-    target_binfo['target_file'] = pd.read_csv(Dirs.TARGET_DIR / study_name / target_binfo['task_name'] / run_file['target_file'][b])
+    target_binfo['target_file'] = pd.read_csv(consts.target_dir / study_name / target_binfo['task_name'] / run_file['target_file'][b])
 
     # get end of run
     target_binfo['run_endTime'] = run_file['end_time'][b]
@@ -416,8 +412,8 @@ def run():
     run_info = get_runfile_info(exp_info['run_name'], exp_info['study_name'])
 
     # 3. make subject folder in data/raw/<subj_id>
-    SUBJ_DIR = Dirs.RAW_DIR / exp_info['study_name'] / 'raw' / exp_info['subj_id']
-    Dirs._dircheck(SUBJ_DIR)
+    subj_dir = consts.raw_dir/ exp_info['study_name'] / 'raw' / exp_info['subj_id']
+    consts.dircheck(subj_dir)
 
     # 4. check for existing run file results in a subject folder
     run_iter, run_file_results = check_runfile_results(exp_info)
