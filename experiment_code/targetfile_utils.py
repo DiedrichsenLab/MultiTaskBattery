@@ -10,7 +10,7 @@ import moviepy.editor as mp
 import cv2
 import glob
 
-from experiment_code.constants import Defaults
+import experiment_code.constants as consts
 
 class Utils():
 
@@ -34,10 +34,10 @@ class Utils():
         # figure out naming convention for target files
         target_num = []
 
-        if not os.path.exists(self.TARGET_DIR):
-            os.makedirs(self.TARGET_DIR)
+        if not os.path.exists(self.target_dir):
+            os.makedirs(self.target_dir)
             
-        for f in os.listdir(self.TARGET_DIR):
+        for f in os.listdir(self.target_dir):
             if re.search(targetfile_name, f):
                 regex = r"_(\d+).csv"
                 target_num.append(int(re.findall(regex, f)[0]))
@@ -70,6 +70,6 @@ class Utils():
         tf_name = self._get_target_file_name(tf_name)
 
         # save out dataframe to a csv file in the target directory (TARGET_DIR)
-        df_target.to_csv(os.path.join(self.TARGET_DIR, tf_name), index=True, header=True)
+        df_target.to_csv(os.path.join(self.target_dir, tf_name), index=True, header=True)
 
         print(f'saving out {tf_name}')
