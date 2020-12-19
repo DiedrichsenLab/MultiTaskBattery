@@ -1,0 +1,6 @@
+[console_scripts]
+makefiles-behavioral = experiment_code.scripts.makefiles_behavioral:make_files
+makefiles-fmri = experiment_code.scripts.makefiles_fmri:make_files
+run-behavioral = experiment_code.scripts.run_behavioral:run
+run-fmri = experiment_code.scripts.run_fmri:run
+

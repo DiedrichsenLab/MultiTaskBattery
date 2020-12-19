@@ -14,6 +14,7 @@ import experiment_code.constants as consts
 from experiment_code.screen import Screen
 from experiment_code.task_blocks import TASK_MAP
 from experiment_code.ttl import ttl
+import experiment_code.constants as const
 # -----------------------------------------------------------------------------
 
 def display_input_box():
