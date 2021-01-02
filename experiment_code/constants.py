@@ -7,12 +7,12 @@ response_keys = ['d', 'f', 'j', 'k']
 # assign keys to hands
 key_hand_dict = {
     'right': {    # right hand
-        True:  [self.response_keys[2], 'Index'], # index finger
-        False: [self.response_keys[3], 'Middle'],  # middle finger
+        True:  [response_keys[2], 'Index'], # index finger
+        False: [response_keys[3], 'Middle'],  # middle finger
         },
     'left': {   # left hand
-        False:[self.response_keys[0], 'Middle'], # index finger
-        True: [self.response_keys[1], 'Index'],  # middle finger
+        False:[response_keys[0], 'Middle'], # index finger
+        True: [response_keys[1], 'Index'],  # middle finger
         },
     } 
 
