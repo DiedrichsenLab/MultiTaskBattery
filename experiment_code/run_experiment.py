@@ -246,6 +246,26 @@ def wait_endtask(timer_info, run_endTime, study_name):
         elif study_name == 'behavioral':
             pass
 
+def save_resp_df(new_resp_df, study_name, subj_id, task_name):
+    """
+    gets the response dataframe and save it
+    Args: 
+        new_resp_df -   response dataframe
+        study_name  -   study name: fmri or behavioral
+        subj_id     -   id assigned to the subject
+        task_name   -   name of the task for the current task block
+    """
+    # collect existing data
+    try:
+        target_file_results = pd.read_csv(consts.raw_dir /study_name/ 'raw' / subj_id / f"{study_name}_{subj_id}_{task_name}.csv")
+        target_resp_df = pd.concat([target_file_results, new_resp_df], axis=0, sort=False)
+        # if there is no existing data, just save current data
+    except:
+        target_resp_df = new_resp_df
+        pass
+    # save all data 
+    target_resp_df.to_csv(consts.raw_dir / study_name/ 'raw' / subj_id / f"{study_name}_{subj_id}_{task_name}.csv", index=None, header=True)
+
 def get_runfile_results(run_file, all_run_response, run_file_results):
     """
     gets the behavioral results of the current run and returns a dataframe to be saved
@@ -463,8 +483,11 @@ def run():
         # 8.6 wait for a time period equal to instruction duration
         wait_instruct(timer_info, target_binfo['run_startTime'], target_binfo['instruct_dur'], exp_info['study_name'])
 
-        # 8.7 run task and collect feedback
-        Task_Block.run()
+        # 8.7.1 run task and collect feedback
+        new_resp_df = Task_Block.run()
+
+        # 8.7.2 get the response dataframe and save it
+        save_resp_df(new_resp_df, exp_info['study_name'], exp_info['subj_id'], target_binfo['task_name'])
 
         # 8.8 log results
         # collect real_end_time for each block
