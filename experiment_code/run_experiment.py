@@ -58,7 +58,7 @@ def get_runfile_info(run_name, study_name):
         run_info(dict)   -   a dictionary with the info for the run. contains keys:
         run_file(pandas dataframe) : the opened run file in the form of a pandas dataframe
         run_num(int)               : an integer representing the run number (get from the run filename)
-        block_nums(numpy array)    : a numpy array with the number of target files in each run file
+        task_nums(numpy array)    : a numpy array with the number of target files in each run file
 
     """
     run_info = {} # a dictionary with all the info for the run 
@@ -69,7 +69,7 @@ def get_runfile_info(run_name, study_name):
     run_info['run_num'] = int(re.findall(r'\d+', run_name)[0])
 
     # get number of target files in each runfile
-    run_info['block_nums'] = np.arange(len(run_info['run_file']))
+    run_info['task_nums'] = np.arange(len(run_info['run_file']))
 
     return run_info
 
@@ -140,13 +140,13 @@ def start_timer():
 
 def get_targetfile_info(study_name, run_file, b):
     """
-    gets the target file information of the block b
+    gets the target file information of the task b
     Args:
         study_name(str)             -   name assigned to the study
         run_file(pandas dataframe)  -   run csv file opened as a daraframe
-        b(int)                      -   block number
+        b(int)                      -   task number
     Returns:
-        target_blockInfo(dict)  -   a dictionary containing target file info for the current block with keys:
+        target_taskInfo(dict)  -   a dictionary containing target file info for the current task with keys:
         task_name     : task name
         task_num      : task number
         target_file   : target csv file opened as a pandas dataframe
@@ -156,7 +156,7 @@ def get_targetfile_info(study_name, run_file, b):
     """
     target_binfo = {}
     # what's the task in this target file?
-    target_binfo['task_name'] = run_file['block_name'][b]
+    target_binfo['task_name'] = run_file['task_name'][b]
 
     # what number is this target file?
     target_binfo['target_num'] = run_file['target_num'][b]
@@ -177,7 +177,7 @@ def get_targetfile_info(study_name, run_file, b):
 
     return target_binfo
 
-def get_block(experiment_info, target_binfo, run_info, 
+def get_task(experiment_info, target_binfo, run_info, 
                    screen, run_iter):
     """
     creates a class for the task 
@@ -188,15 +188,20 @@ def get_block(experiment_info, target_binfo, run_info,
         run_info                  -   run information (see get_runfile_info)
         run_iter                  -   if the run has been done more than one time, this represent the number of repetition of a run
     Returns:
-        BlockTask   -   a task class with all the att. and methods associated to the current task in the block
+        BlockTask   -   a task class with all the att. and methods associated to the current task in the task
     """
     BlockTask = TASK_MAP[target_binfo['task_name']]
+    # BlockTask  = BlockTask(screen = screen, 
+    #                         target_file = target_binfo['target_file'], 
+    #                         run_end  = target_binfo['run_endTime'], task_name = target_binfo['task_name'], 
+    #                         study_name = experiment_info['study_name'], 
+    #                         run_name = experiment_info['run_name'], target_num = target_binfo['target_num'],
+    #                         run_iter = run_iter, run_num = run_info['run_num'])
+
     BlockTask  = BlockTask(screen = screen, 
                             target_file = target_binfo['target_file'], 
-                            run_end  = target_binfo['run_endTime'], task_name = target_binfo['task_name'], 
-                            study_name = experiment_info['study_name'], 
-                            run_name = experiment_info['run_name'], target_num = target_binfo['target_num'],
-                            run_iter = run_iter, run_num = run_info['run_num'])
+                            run_end  = target_binfo['run_endTime'], task_name = target_binfo['task_name'],  
+                            study_name = experiment_info['study_name'], target_num = target_binfo['target_num'])
 
     return BlockTask
 
@@ -333,16 +338,16 @@ def _get_acc(dataframe):
 
     return feedback
 
-def _get_feedback_text(block_name, feedback):
+def _get_feedback_text(task_name, feedback):
     """
     creates a feedback text
     Args:
-        block_name  -   name of the block task
+        task_name  -   name of the task
         feedback    -   feedback calculated based on either RT or ACC
     Returns:
         a string with the feedback
     """
-    return f'{block_name}\n\nCurrent score: {feedback["curr"]}{feedback["measure"]}\n\nPrevious score: {feedback["prev"]}{feedback["measure"]}'
+    return f'{task_name}\n\nCurrent score: {feedback["curr"]}{feedback["measure"]}\n\nPrevious score: {feedback["prev"]}{feedback["measure"]}'
 
 def _display_feedback_text(feedback_all, screen):
     """
@@ -372,21 +377,21 @@ def show_scoreboard(subj_dir, run_filename, screen):
         subj_dir    -   directory where run results of a subject is stored
         run_file    -   run file used in the current run
     """
-    # load run file and get blocks
+    # load run file and get tasks
     dataframe_run = pd.read_csv(os.path.join(subj_dir, run_filename))
 
-    # get unique blocks
-    blocks = dataframe_run['block_name'].unique().tolist()
+    # get unique tasks
+    tasks = dataframe_run['task_name'].unique().tolist()
 
     # remove rest from list if it's present - we don't have scores to display
-    if 'rest' in blocks:
-        blocks.remove('rest')
+    if 'rest' in tasks:
+        tasks.remove('rest')
         
     feedback_all = []
-    for b_name in blocks:  
+    for b_name in tasks:  
 
         # get feedback type (accuracy or reaction time)
-        feedback_type = dataframe_run[dataframe_run['block_name']==b_name]['feedback_type'].unique()[0]
+        feedback_type = dataframe_run[dataframe_run['task_name']==b_name]['feedback_type'].unique()[0]
         
         # load target file dataframe
         dataframe = pd.read_csv(glob.glob(os.path.join(subj_dir , f'*{b_name}*'))[0])
@@ -453,13 +458,13 @@ def run():
     # 7. initialize a list for responses
     all_run_response = []
 
-    # 8. loop over blocks
-    for b in run_info['block_nums']:
+    # 8. loop over tasks
+    for b in run_info['task_nums']:
 
         # 8.1 get target info
         target_binfo = get_targetfile_info(exp_info['study_name'], run_info['run_file'], b)
 
-        # 8.2 get the real strat time for each block
+        # 8.2 get the real strat time for each task
         real_start_time = timer_info['global_clock'].getTime() - timer_info['t0']
 
         # 8.2.1 collect ttl time and counter
@@ -470,8 +475,8 @@ def run():
             ttl_time  = 0
             ttl_count = 0
 
-        # 8.3 get the task block
-        Task_Block = get_block(exp_info, target_binfo, run_info, 
+        # 8.3 get the task task
+        Task_Block = get_task(exp_info, target_binfo, run_info, 
                                exp_screen, run_iter)
 
         # 8.4 wait for first start task
@@ -493,14 +498,14 @@ def run():
         save_resp_df(new_resp_df, exp_info['study_name'], exp_info['subj_id'], target_binfo['task_name'])
 
         # 8.8 log results
-        # collect real_end_time for each block
+        # collect real_end_time for each task
         all_run_response.append({
             'real_start_time': real_start_time,
             'real_end_time': (timer_info['global_clock'].getTime() - timer_info['t0']),
             'ttl_counter': ttl_count,
             'ttl_time': ttl_time,
             'run_name': exp_info['run_name'],
-            'block_idx': b+1,
+            'task_idx': b+1,
             'run_iter': run_iter,
             'run_num': run_info['run_num'],
         })
@@ -515,7 +520,7 @@ def run():
     run_filename = f"{exp_info['study_name']}_{exp_info['subj_id']}.csv"
     df_run_results.to_csv(subj_dir / run_filename, index=None, header=True)
 
-    # 10. present feedback from all blocks on screen 
+    # 10. present feedback from all tasks on screen 
     show_scoreboard(subj_dir, run_filename, exp_screen)
 
     # 11. end experiment
