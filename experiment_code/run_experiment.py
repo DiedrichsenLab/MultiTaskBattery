@@ -365,15 +365,15 @@ def _display_feedback_text(feedback_all, screen):
 
     return
 
-def show_scoreboard(SUBJ_DIR, run_filename, screen):
+def show_scoreboard(subj_dir, run_filename, screen):
     """
     Presents a score board in the end of the run
     Args:
-        SUBJ_DIR    -   directory where run results of a subject is stored
+        subj_dir    -   directory where run results of a subject is stored
         run_file    -   run file used in the current run
     """
     # load run file and get blocks
-    dataframe_run = pd.read_csv(os.path.join(SUBJ_DIR, run_filename))
+    dataframe_run = pd.read_csv(os.path.join(subj_dir, run_filename))
 
     # get unique blocks
     blocks = dataframe_run['block_name'].unique().tolist()
@@ -389,7 +389,7 @@ def show_scoreboard(SUBJ_DIR, run_filename, screen):
         feedback_type = dataframe_run[dataframe_run['block_name']==b_name]['feedback_type'].unique()[0]
         
         # load target file dataframe
-        dataframe = pd.read_csv(glob.glob(os.path.join(SUBJ_DIR , f'*{b_name}*'))[0])
+        dataframe = pd.read_csv(glob.glob(os.path.join(subj_dir , f'*{b_name}*'))[0])
 
         # determine feedback
         if feedback_type=="rt":
@@ -485,8 +485,11 @@ def run():
 
         # 8.7.1 run task and collect feedback
         new_resp_df = Task_Block.run()
-
-        # 8.7.2 get the response dataframe and save it
+        # 8.7.2 adding run information to response dataframe
+        new_resp_df['run_name'] = exp_info['run_name']
+        new_resp_df['run_iter'] = run_iter
+        new_resp_df['run_num']  = run_info['run_num']
+        # 8.7.3 get the response dataframe and save it
         save_resp_df(new_resp_df, exp_info['study_name'], exp_info['subj_id'], target_binfo['task_name'])
 
         # 8.8 log results
@@ -510,10 +513,10 @@ def run():
 
     # 9.2 save the run results
     run_filename = f"{exp_info['study_name']}_{exp_info['subj_id']}.csv"
-    df_run_results.to_csv(SUBJ_DIR / run_filename, index=None, header=True)
+    df_run_results.to_csv(subj_dir / run_filename, index=None, header=True)
 
     # 10. present feedback from all blocks on screen 
-    show_scoreboard(SUBJ_DIR, run_filename, exp_screen)
+    show_scoreboard(subj_dir, run_filename, exp_screen)
 
     # 11. end experiment
     Task_Block.display_end_run()
