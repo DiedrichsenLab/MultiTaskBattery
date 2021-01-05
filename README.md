@@ -122,12 +122,6 @@ Project Organization
     │   │   └── run_experiment.py
     │   │   ├── ttl.py
     │   │
-    │   │
-    │   ├── scripts         <- Scripts to run the experiments
-    │   │   │                 
-    │   │   ├── run-fmri.py
-    │   │   └── run-behavioral.py
-    │   │
     │   └── visualization  <- Scripts to quickly analyze behavioral data from experiments             
     │      ├── behavioral_visualize.py
     │      └── fmri_visualize.py
