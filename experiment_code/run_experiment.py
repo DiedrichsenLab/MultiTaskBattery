@@ -180,7 +180,7 @@ def get_targetfile_info(study_name, run_file, b):
 def get_block(experiment_info, target_binfo, run_info, 
                    screen, run_iter):
     """
-    creates a clas for the task 
+    creates a class for the task 
     Args:
         experiment_info(dict)     -   experiment information:subj_id, study_name, run_name
         screen                    -   screen object
@@ -194,7 +194,7 @@ def get_block(experiment_info, target_binfo, run_info,
     BlockTask  = BlockTask(screen = screen, 
                             target_file = target_binfo['target_file'], 
                             run_end  = target_binfo['run_endTime'], task_name = target_binfo['task_name'], 
-                            subj_id  = experiment_info['subj_id'], study_name = experiment_info['study_name'], 
+                            study_name = experiment_info['study_name'], 
                             run_name = experiment_info['run_name'], target_num = target_binfo['target_num'],
                             run_iter = run_iter, run_num = run_info['run_num'])
 
