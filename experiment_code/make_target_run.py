@@ -20,15 +20,15 @@ class VisualSearch(Utils):
     """
     This class makes target files for Visual Search using parameters set in __init__
         Args:
-            block_name (str): 'visual_search'
+            task_name (str): 'visual_search'
             orientations (int): orientations of target/distractor stims
             balance_blocks (dict): keys are 'condition_name', 'trial_type'
-            block_dur_secs (int): length of block_name (sec)
+            block_dur_secs (int): length of task_name (sec)
             num_blocks (int): number of blocks to make
-            tile_block (int): determines number of repeats for block_name
+            tile_block (int): determines number of repeats for task_name
             trial_dur (int): length of trial (sec)
             iti_dur (iti): length of iti (sec)
-            instruct_dur (int): length of instruct for block_names (sec)
+            instruct_dur (int): length of instruct for task_names (sec)
             hand (str): response hand
             replace (bool): sample stim with or without replacement
             display_trial_feedback (bool): display trial-by-trial feedback
@@ -36,7 +36,7 @@ class VisualSearch(Utils):
     
     def __init__(self):
         super().__init__()
-        self.block_name = 'visual_search'
+        self.task_name = 'visual_search'
         self.orientations = list([90, 180, 270, 360]) # DO NOT CHANGE ORDER
         self.balance_blocks = {'condition_name': {'easy': '4', 'hard': '8'}, 'trial_type': [True, False]}
         self.block_dur_secs = 15
@@ -117,10 +117,10 @@ class VisualSearch(Utils):
         df_display.to_csv(os.path.join(self.target_dir, visual_display_name))
 
     def _get_visual_display_name(self):
-        tf_name = f"{self.block_name}_{self.block_dur_secs}sec"
+        tf_name = f"{self.task_name}_{self.block_dur_secs}sec"
         tf_name = self._get_target_file_name(tf_name)
 
-        str_part = tf_name.partition(self.block_name)
+        str_part = tf_name.partition(self.task_name)
         visual_display_name = 'display_pos' + str_part[2] 
 
         return visual_display_name
@@ -184,7 +184,7 @@ class VisualSearch(Utils):
             # balance the dataframe
             df_target = self._balance_design(dataframe = df_target)
 
-            self.target_dir = os.path.join(consts.target_dir, self.block_name)
+            self.target_dir = os.path.join(consts.target_dir, self.task_name)
 
             # save visual display dataframe
             self._save_visual_display(dataframe = df_target)
@@ -196,15 +196,15 @@ class NBack(Utils):
     """
     This class makes target files for N Back using parameters set in __init__
         Args:
-            block_name (str): 'n_back'
+            task_name (str): 'n_back'
             n_back (int): default is 2
             balance_blocks (dict): keys are 'condition_name'
-            block_dur_secs (int): length of block_name (sec)
+            block_dur_secs (int): length of task_name (sec)
             num_blocks (int): number of blocks to make
-            tile_block (int): determines number of repeats for block_name
+            tile_block (int): determines number of repeats for task_name
             trial_dur (int): length of trial (sec)
             iti_dur (iti): length of iti (sec)
-            instruct_dur (int): length of instruct for block_names (sec)
+            instruct_dur (int): length of instruct for task_names (sec)
             hand (str): response hand
             replace (bool): sample stim with or without replacement
             display_trial_feedback (bool): display trial-by-trial feedback
@@ -212,7 +212,7 @@ class NBack(Utils):
     
     def __init__(self):
         super().__init__()
-        self.block_name = 'n_back'
+        self.task_name = 'n_back'
         self.n_back = 2
         self.balance_blocks = {'condition_name': {'easy': '2_back-', 'hard': '2_back+'}}
         self.block_dur_secs = 15
@@ -271,7 +271,7 @@ class NBack(Utils):
     
     def _balance_design(self, dataframe):
         # load in stimuli
-        stim_files = [f for f in os.listdir(str(consts.stim_dir / self.block_name)) if f.endswith('g')]
+        stim_files = [f for f in os.listdir(str(consts.stim_dir / self.task_name)) if f.endswith('g')]
 
         # first two images are always random (and false)
         # all other images are either match or not a match
@@ -311,25 +311,25 @@ class NBack(Utils):
             # balance the dataframe
             df_target = self._balance_design(dataframe = df_target)
 
-            self.target_dir = os.path.join(consts.target_dir, self.block_name)
+            self.target_dir = os.path.join(consts.target_dir, self.task_name)
             self._save_target_files(df_target)
 
 class SocialPrediction(Utils):
     """
     This class makes target files for Social Prediction using parameters set in __init__
         Args:
-            block_name (str): 'social_prediction'
+            task_name (str): 'social_prediction'
             dataset_name (str): 'homevideos' is the default
             logging_file (str): csv file containing info about stimuli
             video_name (list of str): name of video(s) to include
             resized (bool): resize frames of video
             balance_blocks (dict): keys are 'actors', 'condition_name', 'label'
-            block_dur_secs (int): length of block_name (sec)
+            block_dur_secs (int): length of task_name (sec)
             num_blocks (int): number of blocks to make
-            tile_block (int): determines number of repeats for block_name
+            tile_block (int): determines number of repeats for task_name
             trial_dur (int): length of trial (sec)
             iti_dur (iti): length of iti (sec)
-            instruct_dur (int): length of instruct for block_names (sec)
+            instruct_dur (int): length of instruct for task_names (sec)
             hand (str): response hand
             replace (bool): sample stim with or without replacement
             display_trial_feedback (bool): display trial-by-trial feedback
@@ -337,7 +337,7 @@ class SocialPrediction(Utils):
     
     def __init__(self):
         super().__init__()
-        self.block_name = 'social_prediction'
+        self.task_name = 'social_prediction'
         self.dataset_name = 'homevideos'
         self.logging_file = 'homevideos_annotations_logging.csv'
         self.video_name = ['dynamic_0ms', 'dynamic_100ms']
@@ -429,7 +429,7 @@ class SocialPrediction(Utils):
         self._get_block_info(**kwargs)
 
         # return logging file
-        fpath = os.path.join(consts.stim_dir, self.block_name, self.logging_file)
+        fpath = os.path.join(consts.stim_dir, self.task_name, self.logging_file)
         
         # read in stimulus dataframe
         df = pd.read_csv(fpath)
@@ -455,25 +455,25 @@ class SocialPrediction(Utils):
                 df_filtered = df_filtered.merge(df_target, how='left', indicator=True)
                 df_filtered = df_filtered[df_filtered['_merge'] == 'left_only'].drop('_merge', axis=1)
             
-            self.target_dir = os.path.join(consts.target_dir, self.block_name)
+            self.target_dir = os.path.join(consts.target_dir, self.task_name)
             self._save_target_files(df_target)
 
 class SemanticPrediction(Utils):
     """
     This class makes target files for Semantic Prediction using parameters set in __init__
         Args:
-            block_name (str): 'semantic_prediction'
+            task_name (str): 'semantic_prediction'
             logging_file (str): csv file containing info about stimuli
             stem_word_dur (int): length of stem word (sec)
             last_word_dur (int): length of last word (sec)
             frac (int): proportion of meaningless trials. default is .3.
             balance_blocks (dict): keys are 'CoRT_descript', 'condition_name'
-            block_dur_secs (int): length of block_name (sec)
+            block_dur_secs (int): length of task_name (sec)
             num_blocks (int): number of blocks to make
-            tile_block (int): determines number of repeats for block_name
+            tile_block (int): determines number of repeats for task_name
             trial_dur (int): length of trial (sec)
             iti_dur (iti): length of iti (sec)
-            instruct_dur (int): length of instruct for block_names (sec)
+            instruct_dur (int): length of instruct for task_names (sec)
             hand (str): response hand
             replace (bool): sample stim with or without replacement
             display_trial_feedback (bool): display trial-by-trial feedback
@@ -481,7 +481,7 @@ class SemanticPrediction(Utils):
     
     def __init__(self):
         super().__init__()
-        self.block_name = 'semantic_prediction'
+        self.task_name = 'semantic_prediction'
         self.logging_file = 'sentence_validation.csv'
         self.stem_word_dur = 0.5
         self.last_word_dur = 1.5
@@ -571,7 +571,7 @@ class SemanticPrediction(Utils):
         self._get_block_info(**kwargs)
 
         # return logging file
-        fpath = os.path.join(consts.stim_dir, self.block_name, self.logging_file)
+        fpath = os.path.join(consts.stim_dir, self.task_name, self.logging_file)
         
         # read in stimulus dataframe
         df = pd.read_csv(fpath)
@@ -601,25 +601,25 @@ class SemanticPrediction(Utils):
             df_target = self._add_random_word(dataframe=df_target, columns=['condition_name']) # 'CoRT_descript'
             
             # save out target files
-            self.target_dir = os.path.join(consts.target_dir, self.block_name)
+            self.target_dir = os.path.join(consts.target_dir, self.task_name)
             self._save_target_files(df_target)
 
 class ActionObservation(Utils):
     """
     This class makes target files for Action Observation using parameters set in __init__
         Args:
-            block_name (str): 'rest'
+            task_name (str): 'rest'
             logging_file (str): csv file containing info about stimuli
             video_name (list of str): name of video(s) to include
             manipulation (str): 'left_right' or 'miss_goal'
             resized (bool): resize frames of video
             balance_blocks (dict): keys are 'player_name', 'condition_name', 'trial_type'
-            block_dur_secs (int): length of block_name (sec)
+            block_dur_secs (int): length of task_name (sec)
             num_blocks (int): number of blocks to make
-            tile_block (int): determines number of repeats for block_name
+            tile_block (int): determines number of repeats for task_name
             trial_dur (int): length of trial (sec)
             iti_dur (iti): length of iti (sec)
-            instruct_dur (int): length of instruct for block_names (sec)
+            instruct_dur (int): length of instruct for task_names (sec)
             hand (str): response hand
             replace (bool): sample stim with or without replacement
             display_trial_feedback (bool): display trial-by-trial feedback
@@ -627,7 +627,7 @@ class ActionObservation(Utils):
     
     def __init__(self):
         super().__init__()
-        self.block_name = "action_observation"
+        self.task_name = "action_observation"
         self.logging_file = 'all_clips_annotation_logging.csv'
         self.video_name = ['dynamic_120ms']
         self.manipulation = 'left_right'
@@ -779,7 +779,7 @@ class ActionObservation(Utils):
         self._get_block_info(**kwargs)
 
         # return logging file
-        fpath = os.path.join(consts.stim_dir, self.block_name, self.logging_file)
+        fpath = os.path.join(consts.stim_dir, self.task_name, self.logging_file)
         
         # read in stimulus dataframe
         df = pd.read_csv(fpath)
@@ -805,25 +805,25 @@ class ActionObservation(Utils):
                 df_filtered = df_filtered.merge(df_target, how='left', indicator=True)
                 df_filtered = df_filtered[df_filtered['_merge'] == 'left_only'].drop('_merge', axis=1)
             
-            self.target_dir = os.path.join(consts.target_dir, self.block_name)
+            self.target_dir = os.path.join(consts.target_dir, self.task_name)
             self._save_target_files(df_target)
 
 class TheoryOfMind(Utils):
     """
     This class makes target files for Theory of Mind using parameters set in __init__
         Args:
-            block_name (str): 'theory_of_mind'
+            task_name (str): 'theory_of_mind'
             logging_file (str): csv file containing info about stimuli
             story_dur (int): length of story (sec)
             question_dur (int): length of question (sec)
             frac (int): proportion of meaningless trials. default is .3.
             balance_blocks (dict): keys are 'condition_name'
-            block_dur_secs (int): length of block_name (sec)
+            block_dur_secs (int): length of task_name (sec)
             num_blocks (int): number of blocks to make
-            tile_block (int): determines number of repeats for block_name
+            tile_block (int): determines number of repeats for task_name
             trial_dur (int): length of trial (sec)
             iti_dur (iti): length of iti (sec)
-            instruct_dur (int): length of instruct for block_names (sec)
+            instruct_dur (int): length of instruct for task_names (sec)
             hand (str): response hand
             replace (bool): sample stim with or without replacement
             display_trial_feedback (bool): display trial-by-trial feedback
@@ -831,7 +831,7 @@ class TheoryOfMind(Utils):
     
     def __init__(self):
         super().__init__()
-        self.block_name = 'theory_of_mind'
+        self.task_name = 'theory_of_mind'
         self.logging_file = 'theory_of_mind.csv'
         self.story_dur = 10
         self.question_dur = 4
@@ -903,7 +903,7 @@ class TheoryOfMind(Utils):
         self._get_block_info(**kwargs)
 
         # return logging file
-        fpath = os.path.join(consts.stim_dir, self.block_name, self.logging_file)
+        fpath = os.path.join(consts.stim_dir, self.task_name, self.logging_file)
         
         # read in stimulus dataframe
         df = pd.read_csv(fpath)
@@ -930,24 +930,24 @@ class TheoryOfMind(Utils):
                 df_filtered = df_filtered[df_filtered['_merge'] == 'left_only'].drop('_merge', axis=1)
             
             # save out target files
-            self.target_dir = os.path.join(consts.target_dir, self.block_name)
+            self.target_dir = os.path.join(consts.target_dir, self.task_name)
             self._save_target_files(df_target)
 
 class Rest(Utils):
     """
     This class makes target files for Rest using parameters set in __init__
         Args:
-            block_name (str): 'rest'
+            task_name (str): 'rest'
             rest_dur_secs (int): length of rest (sec), 0 if no rest
             iti_dur (iti): length of iti (sec)
-            instruct_dur (int): length of instruct for block_names (sec)
+            instruct_dur (int): length of instruct for task_names (sec)
             hand (str): response hand
             num_trials (int): number of trials per block. default is 1
             display_trial_feedback (bool): display trial-by-trial feedback
     """
     def __init__(self):
         super().__init__()
-        self.block_name = 'rest'
+        self.task_name = 'rest'
         self.rest_dur_secs = 10
         self.iti_dur = 0
         self.instruct_dur = 0
@@ -981,12 +981,12 @@ class Rest(Utils):
         
 
         # save target file
-        self.target_name = self.block_name + '_' + str(self.rest_dur_secs) + 'sec.csv'
+        self.target_name = self.task_name + '_' + str(self.rest_dur_secs) + 'sec.csv'
 
         # create dataframe
         dataframe = self._create_new_columns()
 
-        target_dir = os.path.join(consts.target_dir, self.block_name)
+        target_dir = os.path.join(consts.target_dir, self.task_name)
         if not os.path.exists(target_dir):
             os.makedirs(target_dir)
         dataframe.to_csv(os.path.join(target_dir, self.target_name), index = False, header = True)
@@ -997,20 +997,20 @@ class MakeFiles:
     """
     This class makes run and target files using parameters set in __init__
         Args:
-            block_names (list of str): options are 'visual_search', 'n_back', 'social_prediction', 'semantic_prediction', 'action_observation'
+            task_names (list of str): options are 'visual_search', 'n_back', 'social_prediction', 'semantic_prediction', 'action_observation'
             feedback_types (list of str): options are 'rt' and 'acc'
             run_name_prefix (str): prefix of run name
             tile_run (int): determines number of block repeats within a run
-            instruct_dur (int): length of instruct for block_names (sec)
-            block_dur_secs (int): length of block_name (sec)
+            instruct_dur (int): length of instruct for task_names (sec)
+            block_dur_secs (int): length of task_name (sec)
             rest_dur_secs (int): length of rest (sec), 0 if no rest
             num_runs (int): number of runs
             counterbalance_runs (bool): counterbalance block order across runs
     """
     def __init__(self):
-        self.block_names = ['visual_search', 'theory_of_mind', 'n_back', 'social_prediction', 'semantic_prediction', 'action_observation']
+        self.task_names = ['visual_search', 'theory_of_mind', 'n_back', 'social_prediction', 'semantic_prediction', 'action_observation']
         self.feedback_types = ['rt', 'acc', 'rt', 'acc', 'rt', 'acc']
-        #self.block_names = ['visual_search','theory_of_mind']
+        #self.task_names = ['visual_search','theory_of_mind']
         #self.feedback_types = ['rt','acc']
         self.run_name_prefix = 'run'
         self.tile_run = 1
@@ -1034,7 +1034,7 @@ class MakeFiles:
             target_num = re.findall(r'\d+(?=.csv)', target_file)[0]
             num_trials = len(dataframe)
 
-            data = {'block_name': self.block_name, 'block_num': self.block_num+1, # 'block_iter': iter+1
+            data = {'task_name': self.task_name, 'task_num': self.task_num+1, # 'block_iter': iter+1
                     'num_trials': num_trials, 'target_num': target_num, 'num_sec': num_sec,
                     'target_file': target_file_name, 'start_time': start_time, 'end_time': end_time,
                     'instruct_dur': self.instruct_dur, 'feedback_type': self.feedback_type}
@@ -1069,13 +1069,13 @@ class MakeFiles:
     
     def _check_task_run(self):
         # check if task exists in dict
-        exists_in_dict = [True for key in self.target_dict.keys() if self.block_name==key]
+        exists_in_dict = [True for key in self.target_dict.keys() if self.task_name==key]
         if not exists_in_dict: 
-            self.target_dict.update({self.block_name: self.fpaths})
+            self.target_dict.update({self.task_name: self.fpaths})
 
         # create run dataframe
         random.seed(2)
-        target_files_sample = [self.target_dict[self.block_name].pop(random.randrange(len(self.target_dict[self.block_name]))) for _ in np.arange(self.tile_run)]
+        target_files_sample = [self.target_dict[self.task_name].pop(random.randrange(len(self.target_dict[self.task_name]))) for _ in np.arange(self.tile_run)]
 
         return target_files_sample
    
@@ -1111,13 +1111,13 @@ class MakeFiles:
     
     def _add_rest_rows(self, dataframe):
 
-        self.num_rest = (len(self.block_names) * self.tile_run) - 1
+        self.num_rest = (len(self.task_names) * self.tile_run) - 1
 
         trials_before_rest = np.tile(np.round((len(dataframe) + self.num_rest) /(self.num_rest)), self.num_rest)
         rest = np.cumsum(trials_before_rest).astype(int) - 1
 
         # row values
-        row_dict = {'block_name': 'rest', 'block_num': len(self.block_names) + 1,
+        row_dict = {'task_name': 'rest', 'task_num': len(self.task_names) + 1,
                      'num_trials': 1, 'target_num': None, 'num_sec': self.rest_dur_secs,
                     'target_file': self.target_name, 'start_time': None, 'end_time': None,
                     'instruct_dur': 0, 'feedback_type': None}
@@ -1137,15 +1137,15 @@ class MakeFiles:
         return dataframe
     
     def make_targetfiles(self):
-        for self.block_name in self.block_names:
+        for self.task_name in self.task_names:
 
             # delete any target files that exist in the folder
-            files = glob.glob(os.path.join(consts.target_dir, self.block_name, '*'))
+            files = glob.glob(os.path.join(consts.target_dir, self.task_name, '*'))
             for f in files:
                 os.remove(f)
 
             # make target files
-            BlockClass = TASK_MAP[self.block_name]
+            BlockClass = TASK_MAP[self.task_name]
             block = BlockClass()
             block.make_targetfile(block_dur_secs = self.block_dur_secs, 
                                 num_blocks = self.num_runs,
@@ -1163,14 +1163,14 @@ class MakeFiles:
             self.cum_time = 0.0
             self.all_data = []
 
-            for self.block_num, self.block_name in enumerate(self.block_names):
+            for self.task_num, self.task_name in enumerate(self.task_names):
 
-                # get target files for `block_name`
-                self.target_dir = os.path.join(consts.target_dir, self.block_name)
-                self.fpaths = sorted(glob.glob(os.path.join(self.target_dir, f'*{self.block_name}*')))
+                # get target files for `task_name`
+                self.target_dir = os.path.join(consts.target_dir, self.task_name)
+                self.fpaths = sorted(glob.glob(os.path.join(self.target_dir, f'*{self.task_name}*')))
 
                 # get feedback type
-                self.feedback_type = self.feedback_types[self.block_num]
+                self.feedback_type = self.feedback_types[self.task_num]
 
                 # sample tasks
                 target_files_sample = self._check_task_run()
