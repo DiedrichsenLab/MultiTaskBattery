@@ -12,7 +12,7 @@ from psychopy import visual, core, event, gui # data, logging
 
 import experiment_code.constants as consts
 from experiment_code.screen import Screen
-from experiment_code.task_blocks import TASK_MAP
+# from experiment_code.task_blocks import TASK_MAP
 from experiment_code.ttl import ttl
 import experiment_code.constants as const
 class Task:
@@ -79,7 +79,7 @@ class Task:
 
     def get_correct_key(self, trial_index):
         row = self.target_file.iloc[trial_index]
-        return consts.key_hand_[row['hand']][row['trial_type']][0]
+        return consts.key_hand_dict[row['hand']][row['trial_type']][0]
 
     # def get_feedback_OLD(self, all_trial_response):
     #     # curr_df = pd.DataFrame.from_records(all_trial_response)
