@@ -114,15 +114,14 @@ Project Organization
     ├── experiment_code    <- experiment code for use in this project.
     │   ├── __init__.py    <- Makes experiment_code a Python module
     │   │
-    │   ├── behavioral     <- Scripts to run behavioral experiment and make target and run files
+    │   ├──                <- Scripts to run both behavioral and fmri experiments and make target and run files
     │   │   │── constants.py
     │   │   │── task_blocks
     │   │   │── screen.py       
     │   │   ├── make_target_run.py
     │   │   └── run_experiment.py
+    │   │   ├── ttl.py
     │   │
-    │   ├── fmri       <- Scripts to run fmri experiments. Same scripts as behavioral, except for ttl pulse
-    │   │   └── ttl.py
     │   │
     │   ├── scripts         <- Scripts to run the experiments
     │   │   │                 
