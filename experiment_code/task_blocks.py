@@ -1,15 +1,20 @@
-from collections import namedtuple
-
-from psychopy import core, clock, visual, event
-import numpy as np 
-import pandas as pd
+# import libraries
+from pathlib import Path
 import os
+import re
+import pandas as pd
+import numpy as np
+import time
+import math
 import glob
 
+from psychopy import visual, core, event, gui # data, logging
+
 import experiment_code.constants as consts
-
-ResponseEvent = namedtuple('ResponseEvent', field_names=["correct_key", "key_presses", "response_made", "correct_response", "rt"])
-
+from experiment_code.screen import Screen
+from experiment_code.task_blocks import TASK_MAP
+from experiment_code.ttl import ttl
+import experiment_code.constants as const
 class Task:
     """
     Task: takes in inputs from run_experiment.py and methods (e.g. 'instruction_text', 'save_to_df' etc) 
@@ -19,14 +24,14 @@ class Task:
     (VisualSearch, SemanticPrediction, NBack, SocialPrediction, ActionObservation).
     """
 
-    def __init__(self, screen, target_file, run_end, task_name, subj_id, study_name, run_name, target_num, run_iter, run_num):
+    def __init__(self, screen, target_file, run_end, task_name, study_name, run_name, target_num, run_iter, run_num):
         self.screen = screen
         self.window = screen.window
         self.monitor = screen.monitor
         self.target_file = target_file
         self.run_end = run_end
         self.clock = core.Clock()
-        self.subj_id = subj_id
+        # self.subj_id = subj_id
         self.study_name = study_name
         self.task_name = task_name
         self.run_name = run_name
@@ -40,20 +45,29 @@ class Task:
         hand = self.target_file['hand'][0]
         return f"{self.task_name} task\n\nUse your {hand} hand\n\nIf true, press {consts.key_hand_dict[hand][True][0]} with {consts.key_hand_dict[hand][True][1]}\nIf false, press {consts.key_hand_dict[hand][False][0]} with {consts.key_hand_dict[hand][False][1]}"
     
-    def save_to_df(self, all_trial_response):
-        # df for current data
-        new_resp_df = pd.concat([self.target_file, pd.DataFrame.from_records(all_trial_response)], axis=1)
-        # collect existing data
-        try:
-            target_file_results = pd.read_csv(consts.raw_dir / self.study_name/ 'raw' / self.subj_id / f"{self.study_name}_{self.subj_id}_{self.task_name}.csv")
-            target_resp_df = pd.concat([target_file_results, new_resp_df], axis=0, sort=False)
-            # if there is no existing data, just save current data
-        except:
-            target_resp_df = new_resp_df
-            pass
-        # save all data 
-        target_resp_df.to_csv(consts.raw_dir / self.study_name/ 'raw' / self.subj_id / f"{self.study_name}_{self.subj_id}_{self.task_name}.csv", index=None, header=True)
+    def get_resp_df(self, all_trial_response):#def save_to_df(self, all_trial_response):
+        """
+        get the responses made for the task and convert it to a dataframe
+        Args:
+            all_trial_response  -   responses made for all the trials in the task
+        Outputs:
+            resp_df     -   dataframe containing the responses made for the task
+        """
 
+        # df for current data
+        resp_df = pd.concat([self.target_file, pd.DataFrame.from_records(all_trial_response)], axis=1)
+        # # collect existing data
+        # try:
+        #     target_file_results = pd.read_csv(consts.raw_dir / self.study_name/ 'raw' / self.subj_id / f"{self.study_name}_{self.subj_id}_{self.task_name}.csv")
+        #     target_resp_df = pd.concat([target_file_results, new_resp_df], axis=0, sort=False)
+        #     # if there is no existing data, just save current data
+        # except:
+        #     target_resp_df = new_resp_df
+        #     pass
+        # # save all data 
+        # target_resp_df.to_csv(consts.raw_dir / self.study_name/ 'raw' / self.subj_id / f"{self.study_name}_{self.subj_id}_{self.task_name}.csv", index=None, header=True)
+        return resp_df
+    
     def run(self, df):
         return df
 
@@ -67,61 +81,61 @@ class Task:
         row = self.target_file.iloc[trial_index]
         return consts.key_hand_[row['hand']][row['trial_type']][0]
 
-    def get_feedback_OLD(self, all_trial_response):
-        # curr_df = pd.DataFrame.from_records(all_trial_response)
+    # def get_feedback_OLD(self, all_trial_response):
+    #     # curr_df = pd.DataFrame.from_records(all_trial_response)
 
-        curr_df = pd.concat([self.target_file, pd.DataFrame.from_records(all_trial_response)], axis=1)
+    #     curr_df = pd.concat([self.target_file, pd.DataFrame.from_records(all_trial_response)], axis=1)
 
-        # change feedback for visual search (only base it on hard condition_name - 12 item display)
-        if self.task_name=='visual_search':
-            acc_curr = curr_df.query('condition_name==8').groupby(['run_name', 'run_iter'])['corr_resp'].agg('mean')[0]
-            rt_curr = curr_df.query('corr_resp==True and condition_name==8').groupby(['run_name', 'run_iter'])['rt'].agg('mean')[0]
-        else:
-            acc_curr = curr_df.groupby(['run_name', 'run_iter'])['corr_resp'].agg('mean')[0]
-            rt_curr = curr_df.query('corr_resp==True').groupby(['run_name', 'run_iter'])['rt'].agg('mean')[0]
+    #     # change feedback for visual search (only base it on hard condition_name - 12 item display)
+    #     if self.task_name=='visual_search':
+    #         acc_curr = curr_df.query('condition_name==8').groupby(['run_name', 'run_iter'])['corr_resp'].agg('mean')[0]
+    #         rt_curr = curr_df.query('corr_resp==True and condition_name==8').groupby(['run_name', 'run_iter'])['rt'].agg('mean')[0]
+    #     else:
+    #         acc_curr = curr_df.groupby(['run_name', 'run_iter'])['corr_resp'].agg('mean')[0]
+    #         rt_curr = curr_df.query('corr_resp==True').groupby(['run_name', 'run_iter'])['rt'].agg('mean')[0]
 
-        if self.task_name == 'visual_search' or self.task_name == 'social_prediction':
-            acc_thresh = .95
-        else: 
-            acc_thresh = .85
+    #     if self.task_name == 'visual_search' or self.task_name == 'social_prediction':
+    #         acc_thresh = .95
+    #     else: 
+    #         acc_thresh = .85
 
-        if np.round(acc_curr,3) >= acc_thresh:
-            feedback_reinforce = 'Great job!'
-        else:
-            feedback_reinforce = "Slow down next time to reach the target accuracy"
+    #     if np.round(acc_curr,3) >= acc_thresh:
+    #         feedback_reinforce = 'Great job!'
+    #     else:
+    #         feedback_reinforce = "Slow down next time to reach the target accuracy"
 
-        # get previous run results and get difference between current and previous
-        fpath = consts.raw_dir / self.study_name/ 'raw' / self.subj_id / f"{self.study_name}_{self.subj_id}_{self.task_name}.csv"
-        if os.path.isfile(fpath):
-            tf_results = pd.read_csv(fpath)
-            if self.task_name=='visual_search':
-                rt_prev = tf_results.query('corr_resp==True and condition_name==8').groupby(['run_name', 'run_iter'])['rt'].agg('mean')[-1]
-                acc_prev = tf_results.query('condition_name==8').groupby(['run_name', 'run_iter'])['corr_resp'].agg('mean')[-1]
-            else:
-                rt_prev = tf_results.query('corr_resp==True').groupby(['run_name', 'run_iter'])['rt'].agg('mean')[-1]
-                acc_prev = tf_results.groupby(['run_name', 'run_iter'])['corr_resp'].agg('mean')[-1]
-            rt_diff = rt_curr - rt_prev
-            acc_diff = acc_curr - acc_prev
-            # get feedback for rt (ugly but don't know if there's another way)
-            if rt_diff < 0:
-                feedback_rt = "faster"
-            elif rt_diff > 0:
-                feedback_rt = "slower" 
-            else:
-                feedback_rt = "the same"
-            # get feedback for accuraxy
-            if acc_diff < 0:
-                feedback_acc = "worse"
-            elif acc_diff > 0:
-                feedback_acc = "better" 
-            else:
-                feedback_acc = "the same"
-            # diff_score_acc = np.round((np.abs(acc_diff) / (acc_curr + acc_prev / 2)),3) * 100
-            # diff_score_rt = np.round((np.abs(rt_diff) / (rt_curr + rt_prev / 2)),3) * 100
-            feedback_text = f"Target Accuracy: {acc_thresh*100}% You got {np.round(acc_curr*100, 3)}%\n\n{feedback_reinforce}\n\nYou had {feedback_acc} accuracy and {feedback_rt} performance compared to the previous run\n\nGo as fast as you can but be accurate with {acc_thresh*100}% or more correct\n\nNotify the experimenter that you are done"
-        else:
-            feedback_text = f"Target Accuracy: {acc_thresh*100}% You got {np.round(acc_curr*100, 3)}%\n\n{feedback_reinforce}\n\nGo as fast as you can but be accurate with {acc_thresh*100}% or more correct\n\nNotify the experimenter that you are done"
-        return feedback_text
+    #     # get previous run results and get difference between current and previous
+    #     fpath = consts.raw_dir / self.study_name/ 'raw' / self.subj_id / f"{self.study_name}_{self.subj_id}_{self.task_name}.csv"
+    #     if os.path.isfile(fpath):
+    #         tf_results = pd.read_csv(fpath)
+    #         if self.task_name=='visual_search':
+    #             rt_prev = tf_results.query('corr_resp==True and condition_name==8').groupby(['run_name', 'run_iter'])['rt'].agg('mean')[-1]
+    #             acc_prev = tf_results.query('condition_name==8').groupby(['run_name', 'run_iter'])['corr_resp'].agg('mean')[-1]
+    #         else:
+    #             rt_prev = tf_results.query('corr_resp==True').groupby(['run_name', 'run_iter'])['rt'].agg('mean')[-1]
+    #             acc_prev = tf_results.groupby(['run_name', 'run_iter'])['corr_resp'].agg('mean')[-1]
+    #         rt_diff = rt_curr - rt_prev
+    #         acc_diff = acc_curr - acc_prev
+    #         # get feedback for rt (ugly but don't know if there's another way)
+    #         if rt_diff < 0:
+    #             feedback_rt = "faster"
+    #         elif rt_diff > 0:
+    #             feedback_rt = "slower" 
+    #         else:
+    #             feedback_rt = "the same"
+    #         # get feedback for accuraxy
+    #         if acc_diff < 0:
+    #             feedback_acc = "worse"
+    #         elif acc_diff > 0:
+    #             feedback_acc = "better" 
+    #         else:
+    #             feedback_acc = "the same"
+    #         # diff_score_acc = np.round((np.abs(acc_diff) / (acc_curr + acc_prev / 2)),3) * 100
+    #         # diff_score_rt = np.round((np.abs(rt_diff) / (rt_curr + rt_prev / 2)),3) * 100
+    #         feedback_text = f"Target Accuracy: {acc_thresh*100}% You got {np.round(acc_curr*100, 3)}%\n\n{feedback_reinforce}\n\nYou had {feedback_acc} accuracy and {feedback_rt} performance compared to the previous run\n\nGo as fast as you can but be accurate with {acc_thresh*100}% or more correct\n\nNotify the experimenter that you are done"
+    #     else:
+    #         feedback_text = f"Target Accuracy: {acc_thresh*100}% You got {np.round(acc_curr*100, 3)}%\n\n{feedback_reinforce}\n\nGo as fast as you can but be accurate with {acc_thresh*100}% or more correct\n\nNotify the experimenter that you are done"
+    #     return feedback_text
 
     def display_feedback(self, feedback_text):
         feedback = visual.TextStim(self.window, text=feedback_text, color=[-1, -1, -1])
@@ -198,6 +212,7 @@ class Task:
                 self.window.close()
                 core.quit()
 
+
 class VisualSearch(Task): 
     # @property
     # def instruction_text(self):
@@ -269,7 +284,7 @@ class VisualSearch(Task):
             self.screen_quit()
 
         # save responses
-        self.save_to_df(all_trial_response=self.all_trial_response)
+        self.get_resp_df(all_trial_response=self.all_trial_response)
 
 class NBack(Task):
     # @property
@@ -333,7 +348,7 @@ class NBack(Task):
             self.screen_quit()
 
         # save responses
-        self.save_to_df(all_trial_response=self.all_trial_response)
+        self.get_resp_df(all_trial_response=self.all_trial_response)
 
 class SocialPrediction(Task):
     # @property
@@ -462,8 +477,8 @@ class SocialPrediction(Task):
             self.screen_quit()
 
         # save responses
-        self.save_to_df(all_trial_response=self.all_trial_response)
-        
+        self.get_resp_df(all_trial_response=self.all_trial_response)
+
 class SemanticPrediction(Task):
     # @property
     # def instruction_text(self):
@@ -552,7 +567,7 @@ class SemanticPrediction(Task):
             self.screen_quit()
 
         # save responses
-        self.save_to_df(all_trial_response=self.all_trial_response)
+        self.get_resp_df(all_trial_response=self.all_trial_response)
 
 class ActionObservation(Task):
     # @property
@@ -681,7 +696,7 @@ class ActionObservation(Task):
             self.screen_quit()
 
         # save responses
-        self.save_to_df(all_trial_response=self.all_trial_response)
+        self.get_resp_df(all_trial_response=self.all_trial_response)
 
 class TheoryOfMind(Task):
     # @property
@@ -771,7 +786,7 @@ class TheoryOfMind(Task):
             self.screen_quit()
 
         # save responses
-        self.save_to_df(all_trial_response=self.all_trial_response)
+        self.get_resp_df(all_trial_response=self.all_trial_response)
 
 class Rest(Task):
 
@@ -818,7 +833,8 @@ class Rest(Task):
             self.screen_quit()
 
         # save responses
-        self.save_to_df(all_trial_response=self.all_trial_response)
+        self.get_resp_df(all_trial_response=self.all_trial_response)
+
 
 #TASK_MAP = {
 #    "visual_search": VisualSearch,
