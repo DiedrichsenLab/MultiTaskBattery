@@ -283,8 +283,10 @@ class VisualSearch(Task):
 
             self.screen_quit()
 
-        # save responses
-        self.get_resp_df(all_trial_response=self.all_trial_response)
+        # get the response dataframe
+        rDf = self.get_resp_df(all_trial_response=self.all_trial_response)
+
+        return rDf
 
 class NBack(Task):
     # @property
@@ -347,8 +349,10 @@ class NBack(Task):
             # option to quit screen
             self.screen_quit()
 
-        # save responses
-        self.get_resp_df(all_trial_response=self.all_trial_response)
+        # get the response dataframe
+        rDf = self.get_resp_df(all_trial_response=self.all_trial_response)
+
+        return rDf
 
 class SocialPrediction(Task):
     # @property
@@ -476,8 +480,10 @@ class SocialPrediction(Task):
 
             self.screen_quit()
 
-        # save responses
-        self.get_resp_df(all_trial_response=self.all_trial_response)
+        # get the response dataframe
+        rDf = self.get_resp_df(all_trial_response=self.all_trial_response)
+
+        return rDf
 
 class SemanticPrediction(Task):
     # @property
@@ -566,8 +572,10 @@ class SemanticPrediction(Task):
 
             self.screen_quit()
 
-        # save responses
-        self.get_resp_df(all_trial_response=self.all_trial_response)
+        # get the response dataframe
+        rDf = self.get_resp_df(all_trial_response=self.all_trial_response)
+
+        return rDf
 
 class ActionObservation(Task):
     # @property
@@ -695,8 +703,10 @@ class ActionObservation(Task):
 
             self.screen_quit()
 
-        # save responses
-        self.get_resp_df(all_trial_response=self.all_trial_response)
+        # get the response dataframe
+        rDf = self.get_resp_df(all_trial_response=self.all_trial_response)
+
+        return rDf
 
 class TheoryOfMind(Task):
     # @property
@@ -785,8 +795,10 @@ class TheoryOfMind(Task):
 
             self.screen_quit()
 
-        # save responses
-        self.get_resp_df(all_trial_response=self.all_trial_response)
+        # get the response dataframe
+        rDf = self.get_resp_df(all_trial_response=self.all_trial_response)
+
+        return rDf
 
 class Rest(Task):
 
@@ -832,8 +844,10 @@ class Rest(Task):
             # option to quit screen
             self.screen_quit()
 
-        # save responses
-        self.get_resp_df(all_trial_response=self.all_trial_response)
+        # get the response dataframe
+        rDf = self.get_resp_df(all_trial_response=self.all_trial_response)
+
+        return rDf
 
 
 #TASK_MAP = {
