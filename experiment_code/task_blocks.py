@@ -65,7 +65,7 @@ class Task:
 
     def get_correct_key(self, trial_index):
         row = self.target_file.iloc[trial_index]
-        return consts.key_hand_[row['hand']][row['trial_type']][0]
+        return consts.key_hand_dict[row['hand']][row['trial_type']][0]
 
     def get_feedback_OLD(self, all_trial_response):
         # curr_df = pd.DataFrame.from_records(all_trial_response)
