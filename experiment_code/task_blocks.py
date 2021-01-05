@@ -41,7 +41,7 @@ class Task:
         hand = self.target_file['hand'][0]
         return f"{self.task_name} task\n\nUse your {hand} hand\n\nIf true, press {consts.key_hand_dict[hand][True][0]} with {consts.key_hand_dict[hand][True][1]}\nIf false, press {consts.key_hand_dict[hand][False][0]} with {consts.key_hand_dict[hand][False][1]}"
     
-    def get_resp_df(self, all_trial_response):#def save_to_df(self, all_trial_response):
+    def get_resp_df(self, all_trial_response):
         """
         get the responses made for the task and convert it to a dataframe
         Args:
