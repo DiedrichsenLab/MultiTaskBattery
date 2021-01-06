@@ -73,8 +73,10 @@ Next, retrieve stimulus files:
 
 To start a new experiment, execute:
 
-    $ run-fmri or run-behavioral
-    
+Start a python prompt 
+import experiment_code.run_experiment as e
+e.run()
+
 After running the above command, a GUI will open with the following inputs: 
 
 1. subject_id: example: `s01` 
@@ -93,19 +95,10 @@ Project Organization
     ├── LICENSE
     ├── README.md          <- The top-level README for developers using this project.
     ├── data
-    │   ├── external       <- Data from third party sources.
-    │   ├── interim        <- Intermediate data that has been preprocessed.
-    │   ├── processed      <- The final, canonical data used for analysis
-    │   └── raw            <- The original, immutable data dump.
+    │   ├── <experiment_name>  <- Data from third party sources.
     │
     ├── docs               <- A default Sphinx project; see sphinx-doc.org for details
     │
-    │
-    ├── notebooks          <- Jupyter notebooks. Naming convention is a number (for ordering),
-    │                         the creator's initials, and a short `-` delimited description, e.g.
-    │                         `1.0-jqp-initial-data-exploration`.
-    │
-    ├── references         <- Data dictionaries, manuals, and all other explanatory materials.
     │
     ├── Pipfile            <- The Pipfile for reproducing the analysis environment, e.g.
     │                         generated with `pipenv install` or `pipenv --python 3.7.0`
@@ -122,10 +115,6 @@ Project Organization
     │   │   └── run_experiment.py
     │   │   ├── ttl.py
     │   │
-    │   └── visualization  <- Scripts to quickly analyze behavioral data from experiments             
-    │      ├── behavioral_visualize.py
-    │      └── fmri_visualize.py
-    │
     └── tox.ini            <- tox file with settings for running tox; see tox.readthedocs.io
 
 
