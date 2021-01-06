@@ -20,7 +20,9 @@ base_dir   = Path(__file__).absolute().parent.parent
 stim_dir   = base_dir / "stimuli"
 target_dir = base_dir / "target_files"
 run_dir    = base_dir / "run_files"
-raw_dir    = base_dir/ "data"
+
+# This is where the result files are being saved
+raw_dir    = base_dir/ "data"  
 
 def dircheck(path2dir):
     """
