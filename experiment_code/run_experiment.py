@@ -34,6 +34,7 @@ def display_input_box():
     inputDlg.addField('Enter Subject ID:') 
     inputDlg.addField('Enter Study Name:')  # either behavioral or fmri
     inputDlg.addField('Enter Run Name:')
+    inputDlg.addField('Wait for TTL pulse?', initial=False) # a checkbox 
 
     inputDlg.show()
 
@@ -43,6 +44,9 @@ def display_input_box():
         experiment_info['subj_id']    = inputDlg.data[0]
         experiment_info['study_name'] = inputDlg.data[1]
         experiment_info['run_name']   = inputDlg.data[2]
+
+        # ttl flag that will be used to determine whether the program waits for ttl pulse or not
+        experiment_info['ttl_flag'] = inputDlg.data[3]
     else:
         sys.exit()
     
@@ -191,12 +195,6 @@ def get_task(experiment_info, target_binfo, run_info,
         BlockTask   -   a task class with all the att. and methods associated to the current task in the task
     """
     BlockTask = TASK_MAP[target_binfo['task_name']]
-    # BlockTask  = BlockTask(screen = screen, 
-    #                         target_file = target_binfo['target_file'], 
-    #                         run_end  = target_binfo['run_endTime'], task_name = target_binfo['task_name'], 
-    #                         study_name = experiment_info['study_name'], 
-    #                         run_name = experiment_info['run_name'], target_num = target_binfo['target_num'],
-    #                         run_iter = run_iter, run_num = run_info['run_num'])
 
     BlockTask  = BlockTask(screen = screen, 
                             target_file = target_binfo['target_file'], 
@@ -448,10 +446,12 @@ def run():
     exp_screen = Screen()
 
     # 6. timer stuff!
-    if exp_info['study_name'] == 'fmri':
+    ## get the ttl flag
+    ttl_flag = exp_info['ttl_flag']
+    if ttl_flag:
         # wait for ttl to begin the task
         timer_info = wait_ttl()
-    elif exp_info['study_name'] == 'behavioral':
+    else:
         # start timer
         timer_info = start_timer()
 
