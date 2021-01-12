@@ -335,8 +335,7 @@ def show_scoreboard(subj_dir, taskObjs, screen):
 
         # get the task name
         t_name = obj.name
-        print(t_name)
-
+        
         # discard rest. There are no specific feedback for rest and it can be excluded from the final scoreboard
         if t_name != 'rest':
 

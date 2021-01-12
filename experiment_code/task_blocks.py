@@ -144,13 +144,18 @@ class Task:
                 elif pressed_keys[0][0] != self.correct_key:
                     self.correct_response = False
 
-                # # display trial feedback
-                # if self.target_file['display_trial_feedback'][trial_index]:
-                #     self._show_stim()
-                #     self.display_trial_feedback(correct_response = self.correct_response)
+        # determine the key that was pressed
+        # the pressed key will be recorded even if the wrong key was pressed
+        if not pressed_keys:
+            # then no key was pressed
+            resp_key = None
+        else:
+            resp_key = pressed_keys[0][0]
+
 
         response_event = {
             "corr_key": self.correct_key,
+            "pressed_key": resp_key,
             # "key_presses": pressed_keys,
             "resp_made": self.response_made,
             "corr_resp": self.correct_response,
