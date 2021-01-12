@@ -19,7 +19,6 @@ class Task:
     """
     Task: takes in inputs from run_experiment.py and methods (e.g. 'instruction_text', 'save_to_df' etc) 
     are universal across all tasks.
-
     Each of other classes runs a unique task given input from target files and from the Task class
     (VisualSearch, SemanticPrediction, NBack, SocialPrediction, ActionObservation).
     """
@@ -65,42 +64,6 @@ class Task:
     def get_correct_key(self, trial_index):
         row = self.target_file.iloc[trial_index]
         return consts.key_hand_dict[row['hand']][row['trial_type']][0]
-
-    def _get_overall_feedback(self, dataframe, feedback_type):
-        """
-        calculates overall feedback for a task.
-        Args:
-            dataframe (pandas dataframe)    -   response dataframe containing all the responses made for the task
-            feedback_type (str)             -   feedback type 
-        Returns:
-            feedback (dict)     -   feedback dictionary with the calculated measures
-        """
-
-        if feedback_type == 'reaction_time':
-            fb = dataframe.query('corr_resp==True').groupby(['run_name', 'run_iter'])['rt'].agg('mean')
-            
-            times   = 1000  # will be multiplied by an integer to calculate the current feedback.
-            umeasure = 'ms' # unit used for the feedback
-        elif feedback_type == 'accuracy':
-            fb = dataframe.groupby(['run_name', 'run_iter'])['corr_resp'].agg('mean')
-            
-            times   = 100  # will be multiplied by an integer to calculate the current feedback.
-            umeasure = '%' # unit used for the feedback
-        # in case you want to add other types of feedback, add them here!
-        
-
-        fb_curr = None
-        fb_prev = None
-
-        if not fb.empty:
-            fb_curr = int(round(fb[-1] * times))
-            if len(fb)>1:
-                # get rt of prev. run if it exists
-                fb_prev = int(round(fb[-2] * times))
-
-        feedback = {'curr': fb_curr, 'prev': fb_prev, 'measure': umeasure} 
-
-        return feedback
 
     def display_feedback(self, feedback_text):
         feedback = visual.TextStim(self.window, text=feedback_text, color=[-1, -1, -1])
@@ -181,10 +144,6 @@ class VisualSearch(Task):
     # def instruction_text(self):
     #     return ""
 
-    def __init__(self):
-        # the feedeback_type is hard-coded for the task. visual search: reaction time
-        self.feedback_type = 'reaction_time'
-
     def _get_stims(self):
         # load target and distractor stimuli
         self.stims = [consts.stim_dir/ self.study_name / self.task_name/ f"{d}.png" for d in self.orientations]
@@ -255,28 +214,11 @@ class VisualSearch(Task):
 
         return rDf
 
-    def _get_feedback(self, dataframe):
-        """
-        calculates the overal feedback of the task based on the response dataframe.
-
-        Args:
-            dataframe(pandas dataframe)   -   response dataframe
-        Returns:
-            feedback(dict)  -   feedback (RT) dictionary
-        """
-        feedback = self._get_overall_feedback(dataframe, self.feedback_type)
-
-        return feedback 
-
 class NBack(Task):
     # @property
     # def instruction_text(self):
     #     return ""
 
-    def __init__(self):
-        # the feedeback_type is hard-coded for the task. Nback: reaction time
-        self.feedback_type = 'reaction_time'
-    
     def _get_stims(self):
         # show image
         stim_path = consts.stim_dir / self.study_name / self.task_name / self.target_file['stim'][self.trial]
@@ -338,27 +280,10 @@ class NBack(Task):
 
         return rDf
 
-    def _get_feedback(self, dataframe):
-        """
-        calculates the overal feedback of the task based on the response dataframe.
-
-        Args:
-            dataframe(pandas dataframe)   -   response dataframe
-        Returns:
-            feedback(dict)  -   feedback (RT) dictionary
-        """
-        feedback = self._get_overall_feedback(dataframe, self.feedback_type)
-
-        return feedback 
-
 class SocialPrediction(Task):
     # @property
     # def instruction_text(self):
     #     return "Social Prediction Task\n\nYou have the following options\n\nHandShake = 1\nHug = 2\nHighFive = 3\nKiss = 4\n\nGo as fast as you can while being accurate"
-
-    def __init__(self):
-        # the feedeback_type is hard-coded for the task. Social prediction: accuracy
-        self.feedback_type = 'accuracy'
 
     def _get_stims(self):
         video_file = self.target_file['stim'][self.trial]
@@ -486,27 +411,10 @@ class SocialPrediction(Task):
 
         return rDf
 
-    def _get_feedback(self, dataframe):
-        """
-        calculates the overal feedback of the task based on the response dataframe.
-
-        Args:
-            dataframe(pandas dataframe)   -   response dataframe
-        Returns:
-            feedback(dict)  -   feedback (RT) dictionary
-        """
-        feedback = self._get_overall_feedback(dataframe, self.feedback_type)
-
-        return feedback 
-
 class SemanticPrediction(Task):
     # @property
     # def instruction_text(self):
     #     return "Language Prediction Task\n\nYou will read a sentence and decide if the final word of the sentence makes sense\n\nIf the word makes sense, press 3\n\nIf the word does not make sense, press 4\n\nAnswer as quickly and as accurately as possible"
-
-    def __init__(self):
-        # the feedeback_type is hard-coded for the task. semantic prediction: reaction time
-        self.feedback_type = 'reaction_time'
 
     def _get_stims(self):
         # get stim (i.e. word)
@@ -595,27 +503,10 @@ class SemanticPrediction(Task):
 
         return rDf
 
-    def _get_feedback(self, dataframe):
-        """
-        calculates the overal feedback of the task based on the response dataframe.
-
-        Args:
-            dataframe(pandas dataframe)   -   response dataframe
-        Returns:
-            feedback(dict)  -   feedback (RT) dictionary
-        """
-        feedback = self._get_overall_feedback(dataframe, self.feedback_type)
-
-        return feedback 
-
 class ActionObservation(Task):
     # @property
     # def instruction_text(self):
     #     return "Action Observation Task\n\nYou have to decide whether the soccer player scores a goal\n\nYou will get feedback on every trial\n\nPress TRUE for goal\n\nPress FALSE for miss"
-
-    def __init__(self):
-        # the feedeback_type is hard-coded for the task. Action observation: accuracy
-        self.feedback_type = 'accuracy'
 
     def _get_stims(self):
         video_file = self.target_file['stim'][self.trial]
@@ -743,27 +634,10 @@ class ActionObservation(Task):
 
         return rDf
 
-    def _get_feedback(self, dataframe):
-        """
-        calculates the overal feedback of the task based on the response dataframe.
-
-        Args:
-            dataframe(pandas dataframe)   -   response dataframe
-        Returns:
-            feedback(dict)  -   feedback (RT) dictionary
-        """
-        feedback = self._get_overall_feedback(dataframe, self.feedback_type)
-
-        return feedback 
-
 class TheoryOfMind(Task):
     # @property
     # def instruction_text(self):
     #     return "Theory of Mind Task\n\nYou will read a story and decide if the answer to the question is True or False.\n\nIf the answer is True, press 3\n\nIf the answers is False, press 4\n\nAnswer as quickly and as accurately as possible"
-
-    def __init__(self):
-        # the feedeback_type is hard-coded for the task. ToM: accuracy
-        self.feedback_type = 'accuracy'
 
     def _get_stims(self):
         # get stim (i.e. story)
@@ -851,19 +725,6 @@ class TheoryOfMind(Task):
         rDf = self.get_resp_df(all_trial_response=self.all_trial_response)
 
         return rDf
-    
-    def _get_feedback(self, dataframe):
-        """
-        calculates the overal feedback of the task based on the response dataframe.
-
-        Args:
-            dataframe(pandas dataframe)   -   response dataframe
-        Returns:
-            feedback(dict)  -   feedback (RT) dictionary
-        """
-        feedback = self._get_overall_feedback(dataframe, self.feedback_type)
-
-        return feedback 
 
 class Rest(Task):
 
