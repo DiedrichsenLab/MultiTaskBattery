@@ -293,12 +293,12 @@ def _get_feedback_text(task_name, feedback):
     """
     creates a feedback text
     Args:
-        task_name  -   name of the task
+        task_name   -   name of the task
         feedback    -   feedback calculated based on either RT or ACC
     Returns:
         a string with the feedback
     """
-    return f'{task_name}\n\nCurrent score: {feedback["curr"]}{feedback["measure"]}\n\nPrevious score: {feedback["prev"]}{feedback["measure"]}'
+    return f'{task_name}\n\nCurrent score: {feedback["curr"]} {feedback["measure"]}\n\nPrevious score: {feedback["prev"]} {feedback["measure"]}'
 
 def _display_feedback_text(feedback_all, screen):
     """
