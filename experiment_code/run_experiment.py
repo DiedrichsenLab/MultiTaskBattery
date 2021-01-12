@@ -308,10 +308,10 @@ def _display_feedback_text(feedback_all, screen):
         screen          -   screen objects
     """
     positions = [(-9, -6), (0, -6), (9, -6),
-                (-9, 3), (0, 3)]
+                (-9, 3), (0, 3), (9, 3)]
 
     for position, feedback in zip(positions, feedback_all):
-        scoreboard = visual.TextStim(screen.window, text = feedback, color = [-1, -1, -1], pos = position, height = 0.05)
+        scoreboard = visual.TextStim(screen.window, text = feedback, color = [-1, -1, -1], pos = position, height = 0.5)
         scoreboard.draw()
 
     screen.window.flip()
@@ -335,6 +335,7 @@ def show_scoreboard(subj_dir, taskObjs, screen):
 
         # get the task name
         t_name = obj.name
+        print(t_name)
 
         # discard rest. There are no specific feedback for rest and it can be excluded from the final scoreboard
         if t_name != 'rest':
