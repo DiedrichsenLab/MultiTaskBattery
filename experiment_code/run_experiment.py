@@ -366,40 +366,32 @@ def _display_feedback_text(feedback_all, screen):
 
     return
 
-def show_scoreboard(subj_dir, run_filename, screen):
+def show_scoreboard(subj_dir, taskObjs, screen):
     """
     Presents a score board in the end of the run
     Args:
-        subj_dir    -   directory where run results of a subject is stored
-        run_file    -   run file used in the current run
+        subj_dir(str:path)    -   directory where run results of a subject is stored
+        taskObjs(list)        -   a list containing task objects
+        screen                -   screen object for display
     """
-    # load run file and get tasks
-    dataframe_run = pd.read_csv(os.path.join(subj_dir, run_filename))
-
-    # get unique tasks
-    tasks = dataframe_run['task_name'].unique().tolist()
-
-    # remove rest from list if it's present - we don't have scores to display
-    if 'rest' in tasks:
-        tasks.remove('rest')
-        
+    # loop over task objects and get the feedback
     feedback_all = []
-    for b_name in tasks:  
+    for obj in taskObjs:
 
-        # get feedback type (accuracy or reaction time)
-        feedback_type = dataframe_run[dataframe_run['task_name']==b_name]['feedback_type'].unique()[0]
-        
-        # load target file dataframe
-        dataframe = pd.read_csv(glob.glob(os.path.join(subj_dir , f'*{b_name}*'))[0])
+        # get the task name
+        t_name = obj.name
 
-        # determine feedback
-        if feedback_type=="rt":
-            feedback = _get_rt(dataframe)
-        elif feedback_type=="acc":
-            feedback = _get_acc(dataframe = dataframe)
+        # discard rest. There are no specific feedback for rest and it can be excluded from the final scoreboard
+        if t_name != 'rest':
 
-        # get feedback text
-        feedback_all.append(_get_feedback_text(b_name, feedback))
+            # get the response dataframe saved for the task
+            dataframe = pd.read_csv(glob.glob(os.path.join(subj_dir , f'*{t_name}*'))[0])
+
+            # get the feedback dictionary for the task
+            feedback = obj.get_feedback(dataframe, obj.feedback_type)
+
+            # get the corresponding text for the feedback and append it to the overal list 
+            feedback_all.append(_get_feedback_text(t_name, feedback))
 
     # display feedback text
     _display_feedback_text(feedback_all, screen)
@@ -457,6 +449,7 @@ def run():
     all_run_response = []
 
     # 8. loop over tasks
+    taskObj_list  = [] # an empty list. Task classes will be appended to this list
     for b in run_info['task_nums']:
 
         # 8.1 get target info
@@ -466,16 +459,19 @@ def run():
         real_start_time = timer_info['global_clock'].getTime() - timer_info['t0']
 
         # 8.2.1 collect ttl time and counter
-        if exp_info['study_name'] == 'fmri':
+        if ttl_flag:
             ttl_time  = ttl.time - timer_info['t0']
             ttl_count = ttl.count
-        elif exp_info['study_name'] == 'behavioral':
+        else:
             ttl_time  = 0
             ttl_count = 0
 
-        # 8.3 get the task task
+        # 8.3 get the task and append it to a list
         Task_Block = get_task(exp_info, target_binfo, run_info, 
                                exp_screen, run_iter)
+
+        taskObj_list.append(Task_Block)
+
 
         # 8.4 wait for first start task
         wait_starttask(timer_info, target_binfo['run_startTime'], exp_info['study_name'])
@@ -519,7 +515,7 @@ def run():
     df_run_results.to_csv(subj_dir / run_filename, index=None, header=True)
 
     # 10. present feedback from all tasks on screen 
-    show_scoreboard(subj_dir, run_filename, exp_screen)
+    show_scoreboard(subj_dir, taskObj_list, exp_screen)
 
     # 11. end experiment
     Task_Block.display_end_run()
