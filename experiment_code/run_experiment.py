@@ -289,51 +289,6 @@ def get_runfile_results(run_file, all_run_response, run_file_results):
 
     return df_run_results
 
-def _get_rt(dataframe):
-    """
-    Takes in the final result dataframe and calculate Reaction time
-    Args:
-        dataframe(pandas dataframe)   -   final results of the dataframe
-    Returns:
-        feedback(dict)    -     a dictionary with the calculated measures  
-    """
-    rt = dataframe.query('corr_resp==True').groupby(['run_name', 'run_iter'])['rt'].agg('mean')
-
-    rt_curr = None
-    rt_prev = None
-
-    if not rt.empty:
-        rt_curr = int(round(rt[-1] * 1000))
-        if len(rt)>1:
-            # get rt of prev. run if it exists
-            rt_prev = int(round(rt[-2] * 1000))
-
-    feedback = {'curr': rt_curr, 'prev': rt_prev, 'measure': 'ms'} 
-
-    return feedback 
-
-def _get_acc(dataframe):
-    """
-    Takes in the final result dataframe and calculate Reaction time
-    Args:
-        dataframe(pandas dataframe)   -   final results of the dataframe
-    Returns:
-        feedback(dict)    -     a dictionary with the calculated measures  
-    """
-    acc = dataframe.groupby(['run_name', 'run_iter'])['corr_resp'].agg('mean')
-
-    acc_curr = None
-    acc_prev = None
-    if not acc.empty:
-        acc_curr = int(round(acc[-1] * 100))
-        if len(acc)>1:
-            # get rt of prev. run if it exists
-            acc_prev = int(round(acc[-2] * 100))
-
-    feedback = {'curr': acc_curr, 'prev': acc_prev, 'measure': '%'} 
-
-    return feedback
-
 def _get_feedback_text(task_name, feedback):
     """
     creates a feedback text
