@@ -183,7 +183,7 @@ class VisualSearch(Task):
     def __init__(self, screen, target_file, run_end, task_name, study_name, target_num):
         super(VisualSearch, self).__init__(screen, target_file, run_end, task_name, study_name, target_num)
         self.feedback_type = 'rt' # reaction
-        self.name          = 'VisualSearch'
+        self.name          = 'visual_search'
     
     def _get_stims(self):
         # load target and distractor stimuli
@@ -264,7 +264,7 @@ class NBack(Task):
     def __init__(self, screen, target_file, run_end, task_name, study_name, target_num):
         super(NBack, self).__init__(screen, target_file, run_end, task_name, study_name, target_num)
         self.feedback_type = 'rt' # reaction
-        self.name          = 'NBack'
+        self.name          = 'n_back'
 
     def _get_stims(self):
         # show image
@@ -336,7 +336,7 @@ class SocialPrediction(Task):
     def __init__(self, screen, target_file, run_end, task_name, study_name, target_num):
         super(SocialPrediction, self).__init__(screen, target_file, run_end, task_name, study_name, target_num)
         self.feedback_type = 'acc' # reaction
-        self.name          = 'SocialPrediction'
+        self.name          = 'social_prediction'
 
     def _get_stims(self):
         video_file = self.target_file['stim'][self.trial]
@@ -473,7 +473,7 @@ class SemanticPrediction(Task):
     def __init__(self, screen, target_file, run_end, task_name, study_name, target_num):
         super(SemanticPrediction, self).__init__(screen, target_file, run_end, task_name, study_name, target_num)
         self.feedback_type = 'rt' # reaction
-        self.name          = 'SemanticPrediction'
+        self.name          = 'semantic_prediction'
     
     def _get_stims(self):
         # get stim (i.e. word)
@@ -571,7 +571,7 @@ class ActionObservation(Task):
     def __init__(self, screen, target_file, run_end, task_name, study_name, target_num):
         super(ActionObservation, self).__init__(screen, target_file, run_end, task_name, study_name, target_num)
         self.feedback_type = 'acc' # reaction
-        self.name          = 'ActionObservation'
+        self.name          = 'action_observation'
 
     def _get_stims(self):
         video_file = self.target_file['stim'][self.trial]
@@ -708,7 +708,7 @@ class TheoryOfMind(Task):
     def __init__(self, screen, target_file, run_end, task_name, study_name, target_num):
         super(TheoryOfMind, self).__init__(screen, target_file, run_end, task_name, study_name, target_num)
         self.feedback_type = 'acc' # reaction
-        self.name          = 'TheoryOfMind'
+        self.name          = 'theory_of_mind'
     
     def _get_stims(self):
         # get stim (i.e. story)
@@ -805,7 +805,7 @@ class Rest(Task):
     def __init__(self, screen, target_file, run_end, task_name, study_name, target_num):
         super(Rest, self).__init__(screen, target_file, run_end, task_name, study_name, target_num)
         self.feedback_type = 'none' # reaction
-        self.name          = 'Rest'
+        self.name          = 'rest'
 
     def instruction_text(self):
         return None
