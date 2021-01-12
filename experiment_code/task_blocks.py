@@ -65,6 +65,42 @@ class Task:
         row = self.target_file.iloc[trial_index]
         return consts.key_hand_dict[row['hand']][row['trial_type']][0]
 
+    def get_overall_feedback(self, dataframe, feedback_type):
+        """
+        gets overall feedback of the task based on the feedback type
+        Args: 
+            dataframe(pandas df)       -   response dataframe
+            feedback_type (str)        -   feedback type for the task
+        Returns:
+            feedback (dict)     -   a dictionary containing measured feedback 
+        """
+
+        if feedback_type == 'reaction_time':
+            fb = dataframe.query('corr_resp==True').groupby(['run_name', 'run_iter'])['rt'].agg('mean')
+
+            unit_mult = 1000 # multiplied by the calculated measure
+            unit_str  = 'ms' # string representing the unit measure
+        
+        elif feedback_type == 'accuracy':
+            fb = dataframe.groupby(['run_name', 'run_iter'])['corr_resp'].agg('mean')
+
+            unit_mult = 100 # multiplied by the calculated measure
+            unit_str  = '%' # string representing the unit measure
+        # add other possible types of feedback here   
+
+        fb_curr = None
+        fb_prev = None
+
+        if not fb.empty:
+            fb_curr = int(round(fb[-1] * unit_mult))
+            if len(fb)>1:
+                # get rt of prev. run if it exists
+                fb_prev = int(round(fb[-2] * unit_mult))
+
+        feedback = {'curr': fb_curr, 'prev': fb_prev, 'measure': unit_str} 
+
+        return feedback 
+
     def display_feedback(self, feedback_text):
         feedback = visual.TextStim(self.window, text=feedback_text, color=[-1, -1, -1])
         feedback.draw()
@@ -142,7 +178,7 @@ class Task:
 class VisualSearch(Task): 
     # @property
     # def instruction_text(self):
-    #     return ""
+    #     return response dataframe
 
     def _get_stims(self):
         # load target and distractor stimuli
@@ -160,6 +196,10 @@ class VisualSearch(Task):
             stim.draw()
     
     def run(self):
+
+        # set the feedback type that will be used to get the feedback
+        self.feedback_type = 'reaction_time'
+
         # get current time
         t0 = self.clock.getTime()
 
@@ -214,10 +254,23 @@ class VisualSearch(Task):
 
         return rDf
 
+    def get_feedback(self, dataframe):
+        """
+        gets the feedback for the task
+        Args:
+            dataframe (pandas df)   -   final task dataframe
+        Returns:
+            feedback (dict)     -   dictionary with calculated feedback measure
+        """
+
+        feedback = self.get_overall_feedback(dataframe, self.feedback_type)
+
+        return feedback
+
 class NBack(Task):
     # @property
     # def instruction_text(self):
-    #     return ""
+    #     return response dataframe
 
     def _get_stims(self):
         # show image
@@ -228,6 +281,10 @@ class NBack(Task):
         self.stim.draw()
     
     def run(self):
+
+        # set the feedback type that will be used to get the feedback
+        self.feedback_type = 'reaction_time'
+
         # get current time
         t0 = self.clock.getTime()
 
@@ -280,11 +337,24 @@ class NBack(Task):
 
         return rDf
 
+    def get_feedback(self, dataframe):
+        """
+        gets the feedback for the task
+        Args:
+            dataframe (pandas df)   -   final task dataframe
+        Returns:
+            feedback (dict)     -   dictionary with calculated feedback measure
+        """
+
+        feedback = self.get_overall_feedback(dataframe, self.feedback_type)
+
+        return feedback
+
 class SocialPrediction(Task):
     # @property
     # def instruction_text(self):
     #     return "Social Prediction Task\n\nYou have the following options\n\nHandShake = 1\nHug = 2\nHighFive = 3\nKiss = 4\n\nGo as fast as you can while being accurate"
-
+    
     def _get_stims(self):
         video_file = self.target_file['stim'][self.trial]
         self.path_to_video = os.path.join(consts.stim_dir, self.study_name, self.task_name, "modified_clips", video_file)
@@ -364,6 +434,10 @@ class SocialPrediction(Task):
             self.trial_response_all.append(self._get_trial_response())
     
     def run(self):
+
+        # set the feedback type that will be used to get the feedback
+        self.feedback_type = 'accuracy'
+
         # get current time
         self.t0 = self.clock.getTime()
 
@@ -411,11 +485,24 @@ class SocialPrediction(Task):
 
         return rDf
 
+    def get_feedback(self, dataframe):
+        """
+        gets the feedback for the task
+        Args:
+            dataframe (pandas df)   -   final task dataframe
+        Returns:
+            feedback (dict)     -   dictionary with calculated feedback measure
+        """
+
+        feedback = self.get_overall_feedback(dataframe, self.feedback_type)
+
+        return feedback
+
 class SemanticPrediction(Task):
     # @property
     # def instruction_text(self):
     #     return "Language Prediction Task\n\nYou will read a sentence and decide if the final word of the sentence makes sense\n\nIf the word makes sense, press 3\n\nIf the word does not make sense, press 4\n\nAnswer as quickly and as accurately as possible"
-
+    
     def _get_stims(self):
         # get stim (i.e. word)
         self.stem = self.target_file['stim'][self.trial]
@@ -456,6 +543,10 @@ class SemanticPrediction(Task):
         self.window.flip()
     
     def run(self):
+
+        # set the feedback type that will be used to get the feedback
+        self.feedback_type = 'reaction_time'
+
         # get current time
         t0 = self.clock.getTime()
 
@@ -503,11 +594,24 @@ class SemanticPrediction(Task):
 
         return rDf
 
+    def get_feedback(self, dataframe):
+        """
+        gets the feedback for the task
+        Args:
+            dataframe (pandas df)   -   final task dataframe
+        Returns:
+            feedback (dict)     -   dictionary with calculated feedback measure
+        """
+
+        feedback = self.get_overall_feedback(dataframe, self.feedback_type)
+
+        return feedback
+
 class ActionObservation(Task):
     # @property
     # def instruction_text(self):
     #     return "Action Observation Task\n\nYou have to decide whether the soccer player scores a goal\n\nYou will get feedback on every trial\n\nPress TRUE for goal\n\nPress FALSE for miss"
-
+    
     def _get_stims(self):
         video_file = self.target_file['stim'][self.trial]
         self.path_to_video = os.path.join(consts.stim_dir, self.study_name, self.task_name, "modified_clips", video_file)
@@ -587,6 +691,10 @@ class ActionObservation(Task):
             self.trial_response_all.append(self._get_trial_response())
     
     def run(self):
+
+        # set the feedback type that will be used to get the feedback
+        self.feedback_type = 'accuracy'
+
         # get current time
         self.t0 = self.clock.getTime()
 
@@ -634,11 +742,24 @@ class ActionObservation(Task):
 
         return rDf
 
+    def get_feedback(self, dataframe):
+        """
+        gets the feedback for the task
+        Args:
+            dataframe (pandas df)   -   final task dataframe
+        Returns:
+            feedback (dict)     -   dictionary with calculated feedback measure
+        """
+
+        feedback = self.get_overall_feedback(dataframe, self.feedback_type)
+
+        return feedback
+
 class TheoryOfMind(Task):
     # @property
     # def instruction_text(self):
     #     return "Theory of Mind Task\n\nYou will read a story and decide if the answer to the question is True or False.\n\nIf the answer is True, press 3\n\nIf the answers is False, press 4\n\nAnswer as quickly and as accurately as possible"
-
+    
     def _get_stims(self):
         # get stim (i.e. story)
         self.story = self.target_file['story'][self.trial]
@@ -679,6 +800,10 @@ class TheoryOfMind(Task):
         self.window.flip()
     
     def run(self):
+
+        # set the feedback type that will be used to get the feedback
+        self.feedback_type = 'accuracy'
+
         # get current time
         t0 = self.clock.getTime()
 
@@ -725,6 +850,19 @@ class TheoryOfMind(Task):
         rDf = self.get_resp_df(all_trial_response=self.all_trial_response)
 
         return rDf
+
+    def get_feedback(self, dataframe):
+        """
+        gets the feedback for the task
+        Args:
+            dataframe (pandas df)   -   final task dataframe
+        Returns:
+            feedback (dict)     -   dictionary with calculated feedback measure
+        """
+
+        feedback = self.get_overall_feedback(dataframe, self.feedback_type)
+
+        return feedback
 
 class Rest(Task):
 
