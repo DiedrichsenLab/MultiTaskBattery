@@ -34,6 +34,7 @@ def display_input_box():
     inputDlg.addField('Enter Subject ID:') 
     inputDlg.addField('Enter Study Name:')  # either behavioral or fmri
     inputDlg.addField('Enter Run Name:')
+    inputDlg.addField('Wait for TTL pulse?', initial=False) # a checkbox 
 
     inputDlg.show()
 
@@ -43,6 +44,9 @@ def display_input_box():
         experiment_info['subj_id']    = inputDlg.data[0]
         experiment_info['study_name'] = inputDlg.data[1]
         experiment_info['run_name']   = inputDlg.data[2]
+
+        # ttl flag that will be used to determine whether the program waits for ttl pulse or not
+        experiment_info['ttl_flag'] = inputDlg.data[3]
     else:
         sys.exit()
     
@@ -59,7 +63,6 @@ def get_runfile_info(run_name, study_name):
         run_file(pandas dataframe) : the opened run file in the form of a pandas dataframe
         run_num(int)               : an integer representing the run number (get from the run filename)
         task_nums(numpy array)    : a numpy array with the number of target files in each run file
-
     """
     run_info = {} # a dictionary with all the info for the run 
     # load run file
@@ -130,7 +133,6 @@ def start_timer():
         timer_info(dict)    -   a dictionary with all the info for the timer. keys are:
         global_clock : the clock from psychopy?
         t0           : the time???
-
     """
     timer_info = {}
     timer_info['global_clock'] = core.Clock()
@@ -191,12 +193,6 @@ def get_task(experiment_info, target_binfo, run_info,
         BlockTask   -   a task class with all the att. and methods associated to the current task in the task
     """
     BlockTask = TASK_MAP[target_binfo['task_name']]
-    # BlockTask  = BlockTask(screen = screen, 
-    #                         target_file = target_binfo['target_file'], 
-    #                         run_end  = target_binfo['run_endTime'], task_name = target_binfo['task_name'], 
-    #                         study_name = experiment_info['study_name'], 
-    #                         run_name = experiment_info['run_name'], target_num = target_binfo['target_num'],
-    #                         run_iter = run_iter, run_num = run_info['run_num'])
 
     BlockTask  = BlockTask(screen = screen, 
                             target_file = target_binfo['target_file'], 
@@ -292,6 +288,51 @@ def get_runfile_results(run_file, all_run_response, run_file_results):
         pass 
 
     return df_run_results
+
+def _get_rt(dataframe):
+    """
+    Takes in the final result dataframe and calculate Reaction time
+    Args:
+        dataframe(pandas dataframe)   -   final results of the dataframe
+    Returns:
+        feedback(dict)    -     a dictionary with the calculated measures  
+    """
+    rt = dataframe.query('corr_resp==True').groupby(['run_name', 'run_iter'])['rt'].agg('mean')
+
+    rt_curr = None
+    rt_prev = None
+
+    if not rt.empty:
+        rt_curr = int(round(rt[-1] * 1000))
+        if len(rt)>1:
+            # get rt of prev. run if it exists
+            rt_prev = int(round(rt[-2] * 1000))
+
+    feedback = {'curr': rt_curr, 'prev': rt_prev, 'measure': 'ms'} 
+
+    return feedback 
+
+def _get_acc(dataframe):
+    """
+    Takes in the final result dataframe and calculate Reaction time
+    Args:
+        dataframe(pandas dataframe)   -   final results of the dataframe
+    Returns:
+        feedback(dict)    -     a dictionary with the calculated measures  
+    """
+    acc = dataframe.groupby(['run_name', 'run_iter'])['corr_resp'].agg('mean')
+
+    acc_curr = None
+    acc_prev = None
+    if not acc.empty:
+        acc_curr = int(round(acc[-1] * 100))
+        if len(acc)>1:
+            # get rt of prev. run if it exists
+            acc_prev = int(round(acc[-2] * 100))
+
+    feedback = {'curr': acc_curr, 'prev': acc_prev, 'measure': '%'} 
+
+    return feedback
 
 def _get_feedback_text(task_name, feedback):
     """
@@ -403,10 +444,12 @@ def run():
     exp_screen = Screen()
 
     # 6. timer stuff!
-    if exp_info['study_name'] == 'fmri':
+    ## get the ttl flag
+    ttl_flag = exp_info['ttl_flag']
+    if ttl_flag:
         # wait for ttl to begin the task
         timer_info = wait_ttl()
-    elif exp_info['study_name'] == 'behavioral':
+    else:
         # start timer
         timer_info = start_timer()
 
@@ -434,7 +477,6 @@ def run():
         Task_Block = get_task(exp_info, target_binfo, run_info, 
                                exp_screen, run_iter)
 
-
         # 8.4 wait for first start task
         wait_starttask(timer_info, target_binfo['run_startTime'], exp_info['study_name'])
 
@@ -450,15 +492,10 @@ def run():
         new_resp_df['run_name'] = exp_info['run_name']
         new_resp_df['run_iter'] = run_iter
         new_resp_df['run_num']  = run_info['run_num']
-        # 8.7.3 save the response dataframe
+        # 8.7.3 get the response dataframe and save it
         save_resp_df(new_resp_df, exp_info['study_name'], exp_info['subj_id'], target_binfo['task_name'])
 
-        # 8.8 get the overal feedback
-        feedback = Task_Block._get_feedback(new_resp_df)
-
-        print(feedback)
-
-        # 8.9 log results
+        # 8.8 log results
         # collect real_end_time for each task
         all_run_response.append({
             'real_start_time': real_start_time,
@@ -471,7 +508,7 @@ def run():
             'run_num': run_info['run_num'],
         })
 
-        # 8.10 wait for end-of-task
+        # 8.9 wait for end-of-task
         wait_endtask(timer_info, target_binfo['run_endTime'], exp_info['study_name'])
 
     # 9.1 get the run result as a dataframe
