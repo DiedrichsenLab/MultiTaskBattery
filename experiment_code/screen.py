@@ -6,7 +6,7 @@ class Screen:
         self.fullscr  = False
         self.units    = 'deg'
         self.color    = '#808080'
-        self.size     = [800, 800] # [1440, 900]
+        self.size     = [1440, 900] #[800, 800] #[1440, 900]
         self.distance = 57.0
         self.width    = 30.0
         self.allowGUI = True,
