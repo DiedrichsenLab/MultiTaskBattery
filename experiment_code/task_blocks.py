@@ -803,6 +803,91 @@ class TheoryOfMind(Task):
 
         return rDf
 
+class FingerSequence(Task):
+
+    def __init__(self, screen, target_file, run_end, task_name, study_name, target_num):
+        super(FingerSequence, self).__init__(screen, target_file, run_end, task_name, study_name, target_num)
+        self.feedback_type = 'acc' # reaction
+        self.name          = 'finger_sequence'
+
+    def _get_stims(self):
+        """
+        get the string(text) representing the fingers that are to be pressed from the target file
+        in the target file, the field called sequence must contain a string with spaces between the keys
+        """
+        self.sequence_text = self.target_file['sequence'][self.trial]
+        return 
+
+    def _show_stim(self):
+        """
+        displays the sequence text
+        """
+        seq = visual.TextStim(self.window, text=self.sequence_text, color=[-1, -1, -1])
+        # instr.size = 0.8
+        seq.draw()
+        self.window.flip()
+
+        return
+
+    def run(self):
+
+        # get current time
+        t0 = self.clock.getTime()
+
+        # loop over trials
+        self.all_trial_response = [] # collect data
+
+        for self.trial in self.target_file.index: 
+            
+            # show image
+            self._get_stims()
+
+            # get the keys for each press
+            keys = self.sequence_text.split(" ") # this line assumes that in the target file spaces are included between each press
+
+             # before image is shown: fixation cross hangs on screen for iti_dur
+            while self.clock.getTime()-t0 <= self.target_file['start_time'][self.trial]:
+                pass
+
+            # collect real_start_time for each block
+            self.real_start_time = self.clock.getTime() - t0
+
+            # flush any keys in buffer
+            event.clearEvents()
+
+            # display stimulus
+            self._show_stim()
+            self.window.flip()
+
+            # Start timer before display
+            t2 = self.clock.getTime()
+
+            # collect responses
+            wait_time = self.target_file['start_time'][self.trial] + self.target_file['trial_dur'][self.trial]
+            self.trial_response = self.get_trial_response(wait_time = wait_time,
+                                    trial_index = self.trial, 
+                                    start_time = t0, 
+                                    start_time_rt = t2)
+
+            # update trial response
+            self.update_trial_response()
+
+            # display trial feedback
+            if self.target_file['display_trial_feedback'][self.trial] and self.response_made:
+                self.display_trial_feedback(correct_response = self.correct_response)
+            else:
+                self.screen.fixation_cross()
+
+            # option to quit screen
+            self.screen_quit()
+
+        # get the response dataframe
+        rDf = self.get_resp_df(all_trial_response=self.all_trial_response)
+
+        return rDf
+
+
+
 class Rest(Task):
 
     # @property
@@ -876,5 +961,16 @@ TASK_MAP = {
     "social_prediction": SocialPrediction,
     "semantic_prediction": SemanticPrediction,
     "action_observation": ActionObservation,
+    "rest": Rest,
+    }
+
+TASK_MAP = {
+    "visual_search": VisualSearch,
+    "theory_of_mind": TheoryOfMind,
+    "n_back": NBack,
+    "social_prediction": SocialPrediction,
+    "semantic_prediction": SemanticPrediction,
+    "action_observation": ActionObservation,
+    "finger_sequence": FingerSequence,
     "rest": Rest,
     }
