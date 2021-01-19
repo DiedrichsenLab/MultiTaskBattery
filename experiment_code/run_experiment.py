@@ -28,27 +28,34 @@ def display_input_box():
         study_name  :   name the user enters in the gui
         run_name    :   name of the run csv file which contains the task names in the order they are represented
     """
-    #Set up input box
-    inputDlg = gui.Dlg(title = "Run Experiment")
+    # #Set up input box
+    # inputDlg = gui.Dlg(title = "Run Experiment")
     
-    inputDlg.addField('Enter Subject ID:') 
-    inputDlg.addField('Enter Study Name:')  # either behavioral or fmri
-    inputDlg.addField('Enter Run Name:')
-    inputDlg.addField('Wait for TTL pulse?', initial=False) # a checkbox 
+    # inputDlg.addField('Enter Subject ID:') 
+    # inputDlg.addField('Enter Study Name:')  # either behavioral or fmri
+    # inputDlg.addField('Enter Run Name:')
+    # inputDlg.addField('Wait for TTL pulse?', initial=False) # a checkbox 
 
-    inputDlg.show()
+    # inputDlg.show()
 
     # record input variables
     experiment_info = {}
-    if gui.OK:
-        experiment_info['subj_id']    = inputDlg.data[0]
-        experiment_info['study_name'] = inputDlg.data[1]
-        experiment_info['run_name']   = inputDlg.data[2]
+    # if gui.OK:
+    #     experiment_info['subj_id']    = inputDlg.data[0]
+    #     experiment_info['study_name'] = inputDlg.data[1]
+    #     experiment_info['run_name']   = inputDlg.data[2]
 
-        # ttl flag that will be used to determine whether the program waits for ttl pulse or not
-        experiment_info['ttl_flag'] = inputDlg.data[3]
-    else:
-        sys.exit()
+    #     # ttl flag that will be used to determine whether the program waits for ttl pulse or not
+    #     experiment_info['ttl_flag'] = inputDlg.data[3]
+    # else:
+    #     sys.exit()
+
+    experiment_info['subj_id']    = 'test'
+    experiment_info['study_name'] = 'behavioral'
+    experiment_info['run_name']   = 'run_10'
+
+    # ttl flag that will be used to determine whether the program waits for ttl pulse or not
+    experiment_info['ttl_flag'] = False
     
     return experiment_info
 
