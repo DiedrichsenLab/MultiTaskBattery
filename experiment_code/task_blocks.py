@@ -62,8 +62,9 @@ class Task:
         self.window.flip()
 
     def get_correct_key(self, trial_index):
-        row = self.target_file.iloc[trial_index]
-        return consts.key_hand_dict[row['hand']][row['trial_type']][0]
+        row = self.target_file.iloc[trial_index] # the row of target dataframecorresponding to the current trial 
+        return row['hand'], row['trial_type']
+        # return consts.key_hand_dict[row['hand']][row['trial_type']][0]
 
     def get_feedback(self, dataframe, feedback_type):
         """
@@ -125,7 +126,23 @@ class Task:
         self.window.flip()
     
     def get_trial_response(self, wait_time, trial_index, start_time, start_time_rt, **kwargs):
+
+        #----------------------------------------------------------------------------------------
+        # the number of responses made will be different for motor sequence task.
+        # in the motor sequence task multiple presses will be made.
+        # the code should be written to incorporate those changes
+        # For most tasks, one press is enough. Even if more than one press is made, 
+        # the first press will be considered!
+        # For motor sequence task more than one press must be made and each press made 
+        # will be compared with the corresponding key
+        ##  Each task has an attribute called number_key_press
+        ##  At the end of each trial, collect the number of presses made in the trial
+        ##  How many presses should have been made?
+        ##  Compare each press made with the correct corresponding key
+        #----------------------------------------------------------------------------------------
         self.correct_key = 0
+        self.hand, self.trial_type = self.get_correct_key(trial_index)
+
         self.correct_key = self.get_correct_key(trial_index)
         self.response_made = False
         self.correct_response = False
@@ -134,6 +151,7 @@ class Task:
         
         while (self.clock.getTime() - start_time <= wait_time): # and not resp_made:
             pressed_keys.extend(event.getKeys(consts.response_keys, timeStamped=self.clock))
+            # print(pressed_keys.extend(event.getKeys(consts.response_keys, timeStamped=self.clock)))
             if pressed_keys and not self.response_made:
                 self.response_made = True
                 self.rt = self.clock.getTime() - start_time_rt
@@ -189,6 +207,19 @@ class VisualSearch(Task):
         super(VisualSearch, self).__init__(screen, target_file, run_end, task_name, study_name, target_num)
         self.feedback_type = 'rt' # reaction
         self.name          = 'visual_search'
+        self.response_keys = ['d', 'f', 'j', 'k']
+
+        # assign keys to hands
+        self.key_hand_dict = {
+            'right': {    # right hand
+                True:  [self.response_keys[2], 'Index'], # index finger
+                False: [self.response_keys[3], 'Middle'],  # middle finger
+                },
+            'left': {   # left hand
+                False:[self.response_keys[0], 'Middle'], # index finger
+                True: [self.response_keys[1], 'Index'],  # middle finger
+                },
+            } 
     
     def _get_stims(self):
         # load target and distractor stimuli
@@ -270,6 +301,19 @@ class NBack(Task):
         super(NBack, self).__init__(screen, target_file, run_end, task_name, study_name, target_num)
         self.feedback_type = 'rt' # reaction
         self.name          = 'n_back'
+        self.response_keys = ['d', 'f', 'j', 'k']
+
+        # assign keys to hands
+        self.key_hand_dict = {
+            'right': {    # right hand
+                True:  [self.response_keys[2], 'Index'], # index finger
+                False: [self.response_keys[3], 'Middle'],  # middle finger
+                },
+            'left': {   # left hand
+                False:[self.response_keys[0], 'Middle'], # index finger
+                True: [self.response_keys[1], 'Index'],  # middle finger
+                },
+            } 
 
     def _get_stims(self):
         # show image
@@ -342,6 +386,19 @@ class SocialPrediction(Task):
         super(SocialPrediction, self).__init__(screen, target_file, run_end, task_name, study_name, target_num)
         self.feedback_type = 'acc' # reaction
         self.name          = 'social_prediction'
+        self.response_keys = ['d', 'f', 'j', 'k']
+
+        # assign keys to hands
+        self.key_hand_dict = {
+            'right': {    # right hand
+                True:  [self.response_keys[2], 'Index'], # index finger
+                False: [self.response_keys[3], 'Middle'],  # middle finger
+                },
+            'left': {   # left hand
+                False:[self.response_keys[0], 'Middle'], # index finger
+                True: [self.response_keys[1], 'Index'],  # middle finger
+                },
+            } 
 
     def _get_stims(self):
         video_file = self.target_file['stim'][self.trial]
@@ -479,6 +536,19 @@ class SemanticPrediction(Task):
         super(SemanticPrediction, self).__init__(screen, target_file, run_end, task_name, study_name, target_num)
         self.feedback_type = 'rt' # reaction
         self.name          = 'semantic_prediction'
+        self.response_keys = ['d', 'f', 'j', 'k']
+
+        # assign keys to hands
+        self.key_hand_dict = {
+            'right': {    # right hand
+                True:  [self.response_keys[2], 'Index'], # index finger
+                False: [self.response_keys[3], 'Middle'],  # middle finger
+                },
+            'left': {   # left hand
+                False:[self.response_keys[0], 'Middle'], # index finger
+                True: [self.response_keys[1], 'Index'],  # middle finger
+                },
+            } 
     
     def _get_stims(self):
         # get stim (i.e. word)
@@ -577,6 +647,19 @@ class ActionObservation(Task):
         super(ActionObservation, self).__init__(screen, target_file, run_end, task_name, study_name, target_num)
         self.feedback_type = 'acc' # reaction
         self.name          = 'action_observation'
+        self.response_keys = ['d', 'f', 'j', 'k']
+
+        # assign keys to hands
+        self.key_hand_dict = {
+            'right': {    # right hand
+                True:  [self.response_keys[2], 'Index'], # index finger
+                False: [self.response_keys[3], 'Middle'],  # middle finger
+                },
+            'left': {   # left hand
+                False:[self.response_keys[0], 'Middle'], # index finger
+                True: [self.response_keys[1], 'Index'],  # middle finger
+                },
+            } 
 
     def _get_stims(self):
         video_file = self.target_file['stim'][self.trial]
@@ -714,6 +797,19 @@ class TheoryOfMind(Task):
         super(TheoryOfMind, self).__init__(screen, target_file, run_end, task_name, study_name, target_num)
         self.feedback_type = 'acc' # reaction
         self.name          = 'theory_of_mind'
+        self.response_keys = ['d', 'f', 'j', 'k']
+
+        # assign keys to hands
+        self.key_hand_dict = {
+            'right': {    # right hand
+                True:  [self.response_keys[2], 'Index'], # index finger
+                False: [self.response_keys[3], 'Middle'],  # middle finger
+                },
+            'left': {   # left hand
+                False:[self.response_keys[0], 'Middle'], # index finger
+                True: [self.response_keys[1], 'Index'],  # middle finger
+                },
+            } 
     
     def _get_stims(self):
         # get stim (i.e. story)
@@ -809,25 +905,41 @@ class FingerSequence(Task):
         super(FingerSequence, self).__init__(screen, target_file, run_end, task_name, study_name, target_num)
         self.feedback_type = 'acc' # reaction
         self.name          = 'finger_sequence'
-
+        self.response_keys = ['s', 'd', 'f', 'g', 'h', 'j', 'k', 'l']
+        
+        # assign keys to hands
+        self.key_hand_dict = {
+            'right':{
+                True: [self.response_keys[4], 'Index'],  # Index
+                True: [self.response_keys[5], 'Middle'], # Middle
+                True: [self.response_keys[6], 'Ring'],   # Ring
+                True: [self.response_keys[7], 'Pinky'],  # Pinky
+            },
+            'left':{
+                True: [self.response_keys[0], 'Pinky'],  # Pinky
+                True: [self.response_keys[1], 'Ring'],   # Ring
+                True: [self.response_keys[2], 'Middle'], # Middle
+                True: [self.response_keys[3], 'Index'],  # Index
+            }
+        }
+        
     def _get_stims(self):
         """
         get the string(text) representing the fingers that are to be pressed from the target file
         in the target file, the field called sequence must contain a string with spaces between the keys
         """
-        self.sequence_text = self.target_file['sequence'][self.trial]
-        return 
+        self.sequence_text = str(self.target_file['sequence'][self.trial])
 
     def _show_stim(self):
         """
         displays the sequence text
         """
-        seq = visual.TextStim(self.window, text=self.sequence_text, color=[-1, -1, -1])
+        seq = visual.TextStim(self.window, text=self.sequence_text, color=[-1, -1, -1], height = 2)
         # instr.size = 0.8
         seq.draw()
-        self.window.flip()
+        # self.window.flip()
 
-        return
+        # return
 
     def run(self):
 
