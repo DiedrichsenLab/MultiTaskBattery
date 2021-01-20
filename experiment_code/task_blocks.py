@@ -34,6 +34,28 @@ class Task:
         self.task_name = task_name
         self.target_num = target_num
 
+        # assign keys to hands
+        ## from const, the response keys are imported first
+        ## response_keys = ['a', 's', 'd', 'f', 'h', 'j', 'k', 'l']
+        self.response_keys = const.response_keys
+        self.key_hand_dict = {
+            'right': {    # right hand
+                True:  [self.response_keys[4], 'Index'], # index finger
+                False: [self.response_keys[5], 'Middle'],  # middle finger
+                None : [[self.response_keys[4], 'Index'], 
+                        [self.response_keys[5], 'Middle'], 
+                        [self.response_keys[6], 'Ring'], 
+                        [self.response_keys[7], 'Pinky']] # four fingers from right hand
+                },
+            'left': {   # left hand
+                True:  [self.response_keys[2], 'Middle'], # Middle finger
+                False: [self.response_keys[3], 'Index'],  # Index finger
+                None : [[self.response_keys[0], 'Pinky'], 
+                        [self.response_keys[1], 'Ring'], 
+                        [self.response_keys[2], 'Middle'], 
+                        [self.response_keys[3], 'Index']] # four fingers from right hand
+                },
+            }
     @property
     def instruction_text(self):
         # return None
@@ -62,9 +84,26 @@ class Task:
         self.window.flip()
 
     def get_correct_key(self, trial_index):
-        row = self.target_file.iloc[trial_index] # the row of target dataframecorresponding to the current trial 
-        return row['hand'], row['trial_type']
-        # return consts.key_hand_dict[row['hand']][row['trial_type']][0]
+        """
+        uses the trial index to get the trial_type and hand id from the target file and
+        returns a list of keys that are to be pressed in order for the trial to be recorded as 
+        a correct trial. 
+        Args:
+            trial_index (int)     -     trial index (a number)
+        Returns:
+            correct_keys (list)     -   a list containing all the keys that are to be pressed   
+        """
+        row = self.target_file.iloc[trial_index] # the row of target dataframe corresponding to the current trial 
+
+        # get the list of keys that are to be pressed
+        keys_list = self.key_hand_dict[row['hand'][row]['trial_type']]
+
+        return keys_list
+
+    # def get_correct_key(self, trial_index):
+    #     row = self.target_file.iloc[trial_index] # the row of target dataframecorresponding to the current trial 
+    #     return row['hand'], row['trial_type']
+    #     # return consts.key_hand_dict[row['hand']][row['trial_type']][0]
 
     def get_feedback(self, dataframe, feedback_type):
         """
@@ -141,9 +180,8 @@ class Task:
         ##  Compare each press made with the correct corresponding key
         #----------------------------------------------------------------------------------------
         self.correct_key = 0
-        self.hand, self.trial_type = self.get_correct_key(trial_index)
 
-        self.correct_key = self.get_correct_key(trial_index)
+        self.correct_key_list = self.get_correct_key(trial_index)
         self.response_made = False
         self.correct_response = False
         self.rt = 0
@@ -934,12 +972,10 @@ class FingerSequence(Task):
         """
         displays the sequence text
         """
+        # the height option specifies the font size of the text that will be displayed
         seq = visual.TextStim(self.window, text=self.sequence_text, color=[-1, -1, -1], height = 2)
-        # instr.size = 0.8
         seq.draw()
         # self.window.flip()
-
-        # return
 
     def run(self):
 
