@@ -13,7 +13,6 @@ from psychopy import visual, core, event, gui # data, logging
 import experiment_code.constants as consts
 from experiment_code.screen import Screen
 from experiment_code.ttl import ttl
-import experiment_code.constants as const
 
 class Task:
     """
@@ -24,43 +23,65 @@ class Task:
     """
 
     def __init__(self, screen, target_file, run_end, task_name, study_name, target_num):
-        self.screen = screen
-        self.window = screen.window
-        self.monitor = screen.monitor
+        self.screen      = screen
+        self.window      = screen.window
+        self.monitor     = screen.monitor
         self.target_file = target_file
-        self.run_end = run_end
-        self.clock = core.Clock()
-        self.study_name = study_name
-        self.task_name = task_name
-        self.target_num = target_num
+        self.run_end     = run_end
+        self.clock       = core.Clock()
+        self.study_name  = study_name
+        self.task_name   = task_name
+        self.target_num  = target_num
 
         # assign keys to hands
         ## from const, the response keys are imported first
-        ## response_keys = ['a', 's', 'd', 'f', 'h', 'j', 'k', 'l']
-        self.response_keys = const.response_keys
+        self.response_keys    = consts.response_keys
+          
         self.key_hand_dict = {
             'right': {    # right hand
-                True:  [self.response_keys[4], 'Index'], # index finger
-                False: [self.response_keys[5], 'Middle'],  # middle finger
-                None : [[self.response_keys[4], 'Index'], 
-                        [self.response_keys[5], 'Middle'], 
-                        [self.response_keys[6], 'Ring'], 
-                        [self.response_keys[7], 'Pinky']] # four fingers from right hand
+                'True':  [self.response_keys[4]], # index finger
+                'False': [self.response_keys[5]],  # middle finger
+                'None' : [self.response_keys[4], 
+                          self.response_keys[5], 
+                          self.response_keys[6], 
+                          self.response_keys[7]] # four fingers from right hand
                 },
             'left': {   # left hand
-                True:  [self.response_keys[2], 'Middle'], # Middle finger
-                False: [self.response_keys[3], 'Index'],  # Index finger
-                None : [[self.response_keys[0], 'Pinky'], 
-                        [self.response_keys[1], 'Ring'], 
-                        [self.response_keys[2], 'Middle'], 
-                        [self.response_keys[3], 'Index']] # four fingers from right hand
+                'True':  [self.response_keys[2]], # Middle finger
+                'False': [self.response_keys[3]],  # Index finger
+                'None' : [self.response_keys[0], 
+                          self.response_keys[1], 
+                          self.response_keys[2], 
+                          self.response_keys[3]] # four fingers from right hand
                 },
             }
+
     @property
+    def get_response_fingerMap(self):
+        # load in the finger names corresponding to keys
+        self.response_fingers = consts.response_fingers
+
+        # create a dictionary that maps response keys to fingers
+        zip_iterator = zip(self.response_keys, self.response_fingers)
+        self.response_fingerMap = dict(zip_iterator) 
+        
     def instruction_text(self):
-        # return None
+        # the instruction text depends on whether the trial type is None or (True/False)
+
+        # first use get_response_fingerMap to get the mapping between keys and finger names
+        ## a dictionary called self.response_fingerMap is created!
+        self.get_response_fingerMap
+
         hand = self.target_file['hand'][0]
-        return f"{self.task_name} task\n\nUse your {hand} hand\n\nIf true, press {consts.key_hand_dict[hand][True][0]} with {consts.key_hand_dict[hand][True][1]}\nIf false, press {consts.key_hand_dict[hand][False][0]} with {consts.key_hand_dict[hand][False][1]}"
+        ## if it's True/False:
+        if self.task_name != 'finger_sequence' : # all the tasks except for finger_sequence task
+            trueStr  = f"press {self.key_hand_dict[hand]['True'][0]} with {self.response_fingerMap[self.key_hand_dict[hand]['True'][0]]}"
+            falseStr = f"press {self.key_hand_dict[hand]['False'][0]} with {self.response_fingerMap[self.key_hand_dict[hand]['False'][0]]}" 
+            return f"{self.task_name} task\n\nUse your {hand} hand\n\nIf true, {trueStr}\nIf false, {falseStr}"
+        elif self.task_name == 'finger_sequence': # finger_sequence task
+            mapStr   = [f"press {item} with {self.response_fingerMap[item]}\n" for item in self.key_hand_dict[hand]['None']]
+            temp_str = ''.join(mapStr)
+            return f"{self.task_name} task\n\nUse your {hand} hand:\n" + temp_str
     
     def get_resp_df(self, all_trial_response):
         """
@@ -78,7 +99,7 @@ class Task:
         return df
 
     def display_instructions(self):
-        instr = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
+        instr = visual.TextStim(self.window, text=self.instruction_text(), color=[-1, -1, -1])
         # instr.size = 0.8
         instr.draw()
         self.window.flip()
@@ -93,17 +114,12 @@ class Task:
         Returns:
             correct_keys (list)     -   a list containing all the keys that are to be pressed   
         """
-        row = self.target_file.iloc[trial_index] # the row of target dataframe corresponding to the current trial 
+        row = self.target_file.iloc[trial_index] # the row of target dataframe corresponding to the current trial
 
         # get the list of keys that are to be pressed
-        keys_list = self.key_hand_dict[row['hand'][row]['trial_type']]
-
+        #** making sure that the trial_type is converted to str and it's not boolean
+        keys_list = self.key_hand_dict[row['hand']][str(row['trial_type'])]
         return keys_list
-
-    # def get_correct_key(self, trial_index):
-    #     row = self.target_file.iloc[trial_index] # the row of target dataframecorresponding to the current trial 
-    #     return row['hand'], row['trial_type']
-    #     # return consts.key_hand_dict[row['hand']][row['trial_type']][0]
 
     def get_feedback(self, dataframe, feedback_type):
         """
@@ -179,7 +195,7 @@ class Task:
         ##  How many presses should have been made?
         ##  Compare each press made with the correct corresponding key
         #----------------------------------------------------------------------------------------
-        self.correct_key = 0
+        self.correct_key_list = []
 
         self.correct_key_list = self.get_correct_key(trial_index)
         self.response_made = False
@@ -188,16 +204,24 @@ class Task:
         pressed_keys = []
         
         while (self.clock.getTime() - start_time <= wait_time): # and not resp_made:
-            pressed_keys.extend(event.getKeys(consts.response_keys, timeStamped=self.clock))
+            
+            # get the keys that are pressed and the time they were pressed:
+            ## two options here:
+            ### 1. you can just check for the keys that are specified in const.response_keys
+            ### 2. don't look for any specific keys and record every key that is pressed.
+            ## the current code doesn't look for any specific keys and records evey key press
+            # pressed_keys.extend(event.getKeys(keyList=consts.response_keys, timeStamped=self.clock))
+            pressed_keys.extend(event.getKeys(keyList=None, timeStamped=self.clock))
+            
             # print(pressed_keys.extend(event.getKeys(consts.response_keys, timeStamped=self.clock)))
             if pressed_keys and not self.response_made:
                 self.response_made = True
                 self.rt = self.clock.getTime() - start_time_rt
                 # assuming pressed_keys is sorted by timestamp; is it?
                 # determine correct response based on first key press only
-                if pressed_keys[0][0] == self.correct_key:
+                if pressed_keys[0][0] == self.correct_key_list[0]:
                     self.correct_response = True 
-                elif pressed_keys[0][0] != self.correct_key:
+                elif pressed_keys[0][0] != self.correct_key_list[0]:
                     self.correct_response = False
 
         # determine the key that was pressed
@@ -210,7 +234,7 @@ class Task:
 
 
         response_event = {
-            "corr_key": self.correct_key,
+            "corr_key": self.correct_key_list[0],
             "pressed_key": resp_key,
             # "key_presses": pressed_keys,
             "resp_made": self.response_made,
@@ -245,19 +269,6 @@ class VisualSearch(Task):
         super(VisualSearch, self).__init__(screen, target_file, run_end, task_name, study_name, target_num)
         self.feedback_type = 'rt' # reaction
         self.name          = 'visual_search'
-        self.response_keys = ['d', 'f', 'j', 'k']
-
-        # assign keys to hands
-        self.key_hand_dict = {
-            'right': {    # right hand
-                True:  [self.response_keys[2], 'Index'], # index finger
-                False: [self.response_keys[3], 'Middle'],  # middle finger
-                },
-            'left': {   # left hand
-                False:[self.response_keys[0], 'Middle'], # index finger
-                True: [self.response_keys[1], 'Index'],  # middle finger
-                },
-            } 
     
     def _get_stims(self):
         # load target and distractor stimuli
@@ -339,19 +350,6 @@ class NBack(Task):
         super(NBack, self).__init__(screen, target_file, run_end, task_name, study_name, target_num)
         self.feedback_type = 'rt' # reaction
         self.name          = 'n_back'
-        self.response_keys = ['d', 'f', 'j', 'k']
-
-        # assign keys to hands
-        self.key_hand_dict = {
-            'right': {    # right hand
-                True:  [self.response_keys[2], 'Index'], # index finger
-                False: [self.response_keys[3], 'Middle'],  # middle finger
-                },
-            'left': {   # left hand
-                False:[self.response_keys[0], 'Middle'], # index finger
-                True: [self.response_keys[1], 'Index'],  # middle finger
-                },
-            } 
 
     def _get_stims(self):
         # show image
@@ -424,27 +422,14 @@ class SocialPrediction(Task):
         super(SocialPrediction, self).__init__(screen, target_file, run_end, task_name, study_name, target_num)
         self.feedback_type = 'acc' # reaction
         self.name          = 'social_prediction'
-        self.response_keys = ['d', 'f', 'j', 'k']
-
-        # assign keys to hands
-        self.key_hand_dict = {
-            'right': {    # right hand
-                True:  [self.response_keys[2], 'Index'], # index finger
-                False: [self.response_keys[3], 'Middle'],  # middle finger
-                },
-            'left': {   # left hand
-                False:[self.response_keys[0], 'Middle'], # index finger
-                True: [self.response_keys[1], 'Index'],  # middle finger
-                },
-            } 
 
     def _get_stims(self):
         video_file = self.target_file['stim'][self.trial]
         self.path_to_video = os.path.join(consts.stim_dir, self.study_name, self.task_name, "modified_clips", video_file)
 
     def _get_trial_response(self):
-        self.correct_key = 0
-        self.correct_key = self.get_correct_key(self.trial)
+        self.correct_key_list = []
+        self.correct_key_list = self.get_correct_key(self.trial)
         self.response_made = False
         self.correct_response = False
         self.rt = 0
@@ -456,13 +441,13 @@ class SocialPrediction(Task):
             self.rt = self.clock.getTime() - self.t2
             # assuming pressed_keys is sorted by timestamp; is it?
             # determine correct response based on first key press only
-            if pressed_keys[0][0] == self.correct_key:
+            if pressed_keys[0][0] == self.correct_key_list[0]:
                 self.correct_response = True 
-            elif pressed_keys[0][0] != self.correct_key:
+            elif pressed_keys[0][0] != self.correct_key_list[0]:
                 self.correct_response = False
 
         response_event = {
-            "corr_key": self.correct_key,
+            "corr_key": self.correct_key_list[0],
             # "key_presses": pressed_keys,
             "resp_made": self.response_made,
             "corr_resp": self.correct_response,
@@ -574,20 +559,7 @@ class SemanticPrediction(Task):
         super(SemanticPrediction, self).__init__(screen, target_file, run_end, task_name, study_name, target_num)
         self.feedback_type = 'rt' # reaction
         self.name          = 'semantic_prediction'
-        self.response_keys = ['d', 'f', 'j', 'k']
 
-        # assign keys to hands
-        self.key_hand_dict = {
-            'right': {    # right hand
-                True:  [self.response_keys[2], 'Index'], # index finger
-                False: [self.response_keys[3], 'Middle'],  # middle finger
-                },
-            'left': {   # left hand
-                False:[self.response_keys[0], 'Middle'], # index finger
-                True: [self.response_keys[1], 'Index'],  # middle finger
-                },
-            } 
-    
     def _get_stims(self):
         # get stim (i.e. word)
         self.stem = self.target_file['stim'][self.trial]
@@ -684,28 +656,15 @@ class ActionObservation(Task):
     def __init__(self, screen, target_file, run_end, task_name, study_name, target_num):
         super(ActionObservation, self).__init__(screen, target_file, run_end, task_name, study_name, target_num)
         self.feedback_type = 'acc' # reaction
-        self.name          = 'action_observation'
-        self.response_keys = ['d', 'f', 'j', 'k']
-
-        # assign keys to hands
-        self.key_hand_dict = {
-            'right': {    # right hand
-                True:  [self.response_keys[2], 'Index'], # index finger
-                False: [self.response_keys[3], 'Middle'],  # middle finger
-                },
-            'left': {   # left hand
-                False:[self.response_keys[0], 'Middle'], # index finger
-                True: [self.response_keys[1], 'Index'],  # middle finger
-                },
-            } 
+        self.name          = 'action_observation' 
 
     def _get_stims(self):
         video_file = self.target_file['stim'][self.trial]
         self.path_to_video = os.path.join(consts.stim_dir, self.study_name, self.task_name, "modified_clips", video_file)
 
     def _get_trial_response(self):
-        self.correct_key = 0
-        self.correct_key = self.get_correct_key(self.trial)
+        self.correct_key_list = []
+        self.correct_key_list = self.get_correct_key(self.trial)
         self.response_made = False
         self.correct_response = False
         self.rt = 0
@@ -717,13 +676,13 @@ class ActionObservation(Task):
             self.rt = self.clock.getTime() - self.t2
             # assuming pressed_keys is sorted by timestamp; is it?
             # determine correct response based on first key press only
-            if pressed_keys[0][0] == self.correct_key:
+            if pressed_keys[0][0] == self.correct_key_list[0]:
                 self.correct_response = True 
-            elif pressed_keys[0][0] != self.correct_key:
+            elif pressed_keys[0][0] != self.correct_key_list[0]:
                 self.correct_response = False
 
         response_event = {
-            "corr_key": self.correct_key,
+            "corr_key": self.correct_key_list[0],
             # "key_presses": pressed_keys,
             "resp_made": self.response_made,
             "corr_resp": self.correct_response,
@@ -835,19 +794,6 @@ class TheoryOfMind(Task):
         super(TheoryOfMind, self).__init__(screen, target_file, run_end, task_name, study_name, target_num)
         self.feedback_type = 'acc' # reaction
         self.name          = 'theory_of_mind'
-        self.response_keys = ['d', 'f', 'j', 'k']
-
-        # assign keys to hands
-        self.key_hand_dict = {
-            'right': {    # right hand
-                True:  [self.response_keys[2], 'Index'], # index finger
-                False: [self.response_keys[3], 'Middle'],  # middle finger
-                },
-            'left': {   # left hand
-                False:[self.response_keys[0], 'Middle'], # index finger
-                True: [self.response_keys[1], 'Index'],  # middle finger
-                },
-            } 
     
     def _get_stims(self):
         # get stim (i.e. story)
@@ -943,23 +889,6 @@ class FingerSequence(Task):
         super(FingerSequence, self).__init__(screen, target_file, run_end, task_name, study_name, target_num)
         self.feedback_type = 'acc' # reaction
         self.name          = 'finger_sequence'
-        self.response_keys = ['s', 'd', 'f', 'g', 'h', 'j', 'k', 'l']
-        
-        # assign keys to hands
-        self.key_hand_dict = {
-            'right':{
-                True: [self.response_keys[4], 'Index'],  # Index
-                True: [self.response_keys[5], 'Middle'], # Middle
-                True: [self.response_keys[6], 'Ring'],   # Ring
-                True: [self.response_keys[7], 'Pinky'],  # Pinky
-            },
-            'left':{
-                True: [self.response_keys[0], 'Pinky'],  # Pinky
-                True: [self.response_keys[1], 'Ring'],   # Ring
-                True: [self.response_keys[2], 'Middle'], # Middle
-                True: [self.response_keys[3], 'Index'],  # Index
-            }
-        }
         
     def _get_stims(self):
         """
@@ -1033,8 +962,6 @@ class FingerSequence(Task):
         rDf = self.get_resp_df(all_trial_response=self.all_trial_response)
 
         return rDf
-
-
 
 class Rest(Task):
 
