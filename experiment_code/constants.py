@@ -2,19 +2,9 @@
 from pathlib import Path
 import os
 
-response_keys = ['d', 'f', 'j', 'k']
-
-# assign keys to hands
-key_hand_dict = {
-    'right': {    # right hand
-        True:  [response_keys[2], 'Index'], # index finger
-        False: [response_keys[3], 'Middle'],  # middle finger
-        },
-    'left': {   # left hand
-        False:[response_keys[0], 'Middle'], # index finger
-        True: [response_keys[1], 'Index'],  # middle finger
-        },
-    } 
+# default response keys and the corresponding fingers. Can be modified
+response_keys    = ['a', 's', 'd', 'f', 'h', 'j', 'k', 'l']
+response_fingers = ['Pinky', 'Ring', 'Middle', 'Index', 'Index', 'Middle', 'Ring', 'Pinky']
 
 base_dir   = Path(__file__).absolute().parent.parent
 stim_dir   = base_dir / "stimuli"
