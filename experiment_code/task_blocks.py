@@ -170,6 +170,7 @@ class Task:
         self.window.flip()
 
     def display_trial_feedback(self, correct_response):
+
         if correct_response:
             feedback = os.path.join(consts.stim_dir, self.study_name ,'correct.png')
         elif not correct_response:
@@ -182,19 +183,6 @@ class Task:
     
     def get_trial_response(self, wait_time, trial_index, start_time, start_time_rt, **kwargs):
 
-        #----------------------------------------------------------------------------------------
-        # the number of responses made will be different for motor sequence task.
-        # in the motor sequence task multiple presses will be made.
-        # the code should be written to incorporate those changes
-        # For most tasks, one press is enough. Even if more than one press is made, 
-        # the first press will be considered!
-        # For motor sequence task more than one press must be made and each press made 
-        # will be compared with the corresponding key
-        ##  Each task has an attribute called number_key_press
-        ##  At the end of each trial, collect the number of presses made in the trial
-        ##  How many presses should have been made?
-        ##  Compare each press made with the correct corresponding key
-        #----------------------------------------------------------------------------------------
         self.correct_key_list = []
 
         self.correct_key_list = self.get_correct_key(trial_index)
@@ -435,7 +423,7 @@ class SocialPrediction(Task):
         self.rt = 0
         pressed_keys = []
         
-        pressed_keys.extend(event.getKeys(consts.response_keys, timeStamped=self.clock))
+        pressed_keys.extend(event.getKeys(self.response_keys, timeStamped=self.clock))
         if pressed_keys and not self.response_made:
             self.response_made = True
             self.rt = self.clock.getTime() - self.t2
@@ -670,7 +658,7 @@ class ActionObservation(Task):
         self.rt = 0
         pressed_keys = []
         
-        pressed_keys.extend(event.getKeys(consts.response_keys, timeStamped=self.clock))
+        pressed_keys.extend(event.getKeys(self.response_keys, timeStamped=self.clock))
         if pressed_keys and not self.response_made:
             self.response_made = True
             self.rt = self.clock.getTime() - self.t2
@@ -816,8 +804,8 @@ class TheoryOfMind(Task):
         # display question for fixed time                       
         stim = visual.TextStim(self.window, text=self.question, pos=(0.0,0.0), color=(-1,-1,-1), units='deg')
         stim.draw()
-        self.window.flip()
-        core.wait(self.question_dur)
+        # self.window.flip()
+        # core.wait(self.question_dur)
     
     def _show_stims_all(self):
         # show story
@@ -889,7 +877,11 @@ class FingerSequence(Task):
         super(FingerSequence, self).__init__(screen, target_file, run_end, task_name, study_name, target_num)
         self.feedback_type = 'acc' # reaction
         self.name          = 'finger_sequence'
-        
+        self.key_digit     = {
+            'right':{'h':'1', 'j':'2', 'k':'3', 'l':'4'},
+            'left' :{'a':'1', 's':'2', 'd':'3', 'f':'4'}
+        }
+            
     def _get_stims(self):
         """
         get the string(text) representing the fingers that are to be pressed from the target file
@@ -905,6 +897,100 @@ class FingerSequence(Task):
         seq = visual.TextStim(self.window, text=self.sequence_text, color=[-1, -1, -1], height = 2)
         seq.draw()
         # self.window.flip()
+    
+    def _get_press_digits(self, sequence_text, hand):
+        # maps the pressed keys to digits
+        # creates self.digit_seq which contain a list of correct digits that are to be pressed
+        # and self.digits_press which contains a list of digits that have been pressed
+
+        # create a list of digits that are to be pressed
+        self.digits_seq = sequence_text.split(" ")
+
+        # get the mapping from keys to digits
+        map_k2d = self.key_digit[hand]
+
+        # map the pressed keys to pressed digits
+        self.digits_press = [map_k2d[k] for k in self.pressed_keys]
+
+    def _get_presses(self, pressed_keys_list):
+        # takes in the pressed_keys list with the key and the press time 
+        # and returns an array containing all the press times
+        # pressed_keys is a list of lists containing the keys and the press times
+
+        self.press_times  = [item[1] for item in pressed_keys_list]
+        self.pressed_keys = [item[0] for item in pressed_keys_list]
+
+    def _check_response(self):
+        # checks whether each response made is correct
+        # uses self.digits_press (the digits presses) and self.digit_seq (the digits should have been pressed)
+
+        # loop over all presses and check if they are correct
+        number_correct = 0 # number of correct presses made. Initialized at 0
+        
+        #----------------------------------------------------------------------
+        # if the number of presses made are more than the equence length:
+        # that trial will be considered an error
+        if self.number_resp > len(self.digits_seq):
+            number_correct = 0
+        else:
+            for press_index in range(self.number_resp):
+                if self.digits_press[press_index] == self.digits_seq[press_index]:
+                    number_correct += 1
+        #----------------------------------------------------------------------
+        # if the number of presses made are correct and no error was made, the trial is counted as correct
+        if number_correct == len(self.digits_seq):
+            # self.correct_trial +=1
+            self.correct_response = True
+        else:
+            # self.error_trial +=1
+            self.correct_response = False
+    
+    def _get_trial_response(self, wait_time, trial_index, start_time, start_time_rt):
+        # get the trial response and checks if the responses were correct
+
+        self.correct_key_list = []
+        self.correct_key_list = self.get_correct_key(self.trial) # correct keys that are to be pressed
+        self.response_made = False
+        self.correct_response = False
+        self.rt = 0
+        pressed_keys_list = [] # list in which the pressed keys will be added
+
+        while (self.clock.getTime() - start_time <= wait_time): # and not resp_made:
+            # wait_time = trial duration
+            # it records key presses during this time window
+            pressed_keys_list.extend(event.getKeys(self.response_keys, timeStamped=self.clock)) # records all the keys pressed
+
+        if pressed_keys_list and not self.response_made:
+            self.response_made = True
+        else:
+            self.response_made = False
+        
+        # get press times and presses in separate lists: self.pressed_keys and self.press_times
+        self._get_presses(pressed_keys_list)
+
+        if self.response_made: # if at least one press has been made, the rt is:
+            self.rt = self.press_times[0]
+        else: # if no press has been made, the rt is:
+            self.rt = None
+
+        # get number of presses made
+        self.number_resp = len(pressed_keys_list)
+
+        # check if the presses were correct!
+        ## maps the keys to digits (self.digits_press) and gets the digits that should have been pressed (self.digit_seq)
+        self._get_press_digits(self.sequence_text, self.target_file['hand'][self.trial])
+        ## check the pressed digits
+        self._check_response()
+
+        response_event = {
+            "corr_digit": self.digits_seq,
+            "resp_digit": self.digits_press,
+            "resp_made": self.response_made,
+            "corr_resp": self.correct_response,
+            "rt": self.rt
+            }
+
+        return response_event
 
     def run(self):
 
@@ -918,9 +1004,6 @@ class FingerSequence(Task):
             
             # show image
             self._get_stims()
-
-            # get the keys for each press
-            keys = self.sequence_text.split(" ") # this line assumes that in the target file spaces are included between each press
 
              # before image is shown: fixation cross hangs on screen for iti_dur
             while self.clock.getTime()-t0 <= self.target_file['start_time'][self.trial]:
@@ -941,10 +1024,10 @@ class FingerSequence(Task):
 
             # collect responses
             wait_time = self.target_file['start_time'][self.trial] + self.target_file['trial_dur'][self.trial]
-            self.trial_response = self.get_trial_response(wait_time = wait_time,
-                                    trial_index = self.trial, 
-                                    start_time = t0, 
-                                    start_time_rt = t2)
+            self.trial_response = self._get_trial_response(wait_time = wait_time,
+                                                           trial_index = self.trial, 
+                                                           start_time = t0, 
+                                                           start_time_rt = t2)
 
             # update trial response
             self.update_trial_response()
@@ -1029,15 +1112,15 @@ class Rest(Task):
 #    "rest": Rest,
 #}
 
-TASK_MAP = {
-    "visual_search": VisualSearch,
-    "theory_of_mind": TheoryOfMind,
-    "n_back": NBack,
-    "social_prediction": SocialPrediction,
-    "semantic_prediction": SemanticPrediction,
-    "action_observation": ActionObservation,
-    "rest": Rest,
-    }
+# TASK_MAP = {
+#     "visual_search": VisualSearch,
+#     "theory_of_mind": TheoryOfMind,
+#     "n_back": NBack,
+#     "social_prediction": SocialPrediction,
+#     "semantic_prediction": SemanticPrediction,
+#     "action_observation": ActionObservation,
+#     "rest": Rest,
+#     }
 
 TASK_MAP = {
     "visual_search": VisualSearch,
