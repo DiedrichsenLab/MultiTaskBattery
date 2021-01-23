@@ -254,11 +254,11 @@ def wait_endtask(timer_info, run_endTime, study_name):
         elif study_name == 'behavioral':
             pass
 
-def save_resp_df(new_resp_df, study_name, subj_id, task_name):
+def save_response(response_df, study_name, subj_id, task_name):
     """
     gets the response dataframe and save it
     Args: 
-        new_resp_df -   response dataframe
+        response_df -   response dataframe
         study_name  -   study name: fmri or behavioral
         subj_id     -   id assigned to the subject
         task_name   -   name of the task for the current task block
@@ -266,10 +266,10 @@ def save_resp_df(new_resp_df, study_name, subj_id, task_name):
     # collect existing data
     try:
         target_file_results = pd.read_csv(consts.raw_dir /study_name/ 'raw' / subj_id / f"{study_name}_{subj_id}_{task_name}.csv")
-        target_resp_df = pd.concat([target_file_results, new_resp_df], axis=0, sort=False)
+        target_resp_df = pd.concat([target_file_results, response_df], axis=0, sort=False)
         # if there is no existing data, just save current data
     except:
-        target_resp_df = new_resp_df
+        target_resp_df = response_df
         pass
     # save all data 
     target_resp_df.to_csv(consts.raw_dir / study_name/ 'raw' / subj_id / f"{study_name}_{subj_id}_{task_name}.csv", index=None, header=True)
@@ -451,7 +451,7 @@ def run():
         new_resp_df['run_iter'] = run_iter
         new_resp_df['run_num']  = run_info['run_num']
         # 8.7.3 get the response dataframe and save it
-        save_resp_df(new_resp_df, exp_info['study_name'], exp_info['subj_id'], target_binfo['task_name'])
+        save_response(new_resp_df, exp_info['study_name'], exp_info['subj_id'], target_binfo['task_name'])
 
         # 8.8 log results
         # collect real_end_time for each task
