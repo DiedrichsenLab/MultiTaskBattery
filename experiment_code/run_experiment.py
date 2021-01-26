@@ -422,12 +422,12 @@ def run():
         real_start_time = timer_info['global_clock'].getTime() - timer_info['t0']
 
         # 8.2.1 collect ttl time and counter
-        if ttl_flag:
-            ttl_time  = ttl.time - timer_info['t0']
-            ttl_count = ttl.count
-        else:
-            ttl_time  = 0
-            ttl_count = 0
+        # if ttl_flag:
+        #     ttl_time  = ttl.time - timer_info['t0']
+        #     ttl_count = ttl.count
+        # else:
+        #     ttl_time  = 0
+        #     ttl_count = 0
 
         # 8.3 get the task and append it to a list
         Task_Block = get_task(exp_info, target_binfo, run_info, 
