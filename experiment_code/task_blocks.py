@@ -22,7 +22,7 @@ class Task:
     (VisualSearch, SemanticPrediction, NBack, SocialPrediction, ActionObservation).
     """
 
-    def __init__(self, screen, target_file, run_end, task_name, study_name, target_num):
+    def __init__(self, screen, target_file, run_end, task_name, study_name, target_num, ttl_flag):
         self.screen      = screen
         self.window      = screen.window
         self.monitor     = screen.monitor
@@ -32,6 +32,7 @@ class Task:
         self.study_name  = study_name
         self.task_name   = task_name
         self.target_num  = target_num
+        self.ttl_flag    = ttl_flag
 
         # assign keys to hands
         ## from const, the response keys are imported first
@@ -64,7 +65,38 @@ class Task:
         # create a dictionary that maps response keys to fingers
         zip_iterator = zip(self.response_keys, self.response_fingers)
         self.response_fingerMap = dict(zip_iterator) 
-        
+
+    def get_trial_response2(self, ttl_flag, wait_time, start_time, start_time_rt, **kwargs):
+        """
+        wait for the response to be made. ttl_flag determines the timing. 
+        """
+        self.response_made = False
+        self.rt = 0
+        self.pressed_keys = []
+
+        if ttl_flag: # if the user has chosen to use the ttl pulse
+            #
+            pass
+        else:
+            # print(f"start_time {start_time}")
+            # print(f"current_time {self.clock.getTime()}")
+
+            # print(f"wait_time {wait_time}")
+
+            while (self.clock.getTime() - start_time <= wait_time): # and not resp_made:
+                # print("HERE!")
+                # get the keys that are pressed and the time they were pressed:
+                ## two options here:
+                ### 1. you can just check for the keys that are specified in const.response_keys
+                ### 2. don't look for any specific keys and record every key that is pressed.
+                ## the current code doesn't look for any specific keys and records evey key press
+                # pressed_keys.extend(event.getKeys(keyList=consts.response_keys, timeStamped=self.clock))
+                self.pressed_keys.extend(event.getKeys(keyList=None, timeStamped=self.clock))
+                # print(self.pressed_keys)
+                if self.pressed_keys and not self.response_made: # if at least one press is made
+                    self.response_made = True
+                    self.rt = self.clock.getTime() - start_time_rt
+                    # self.get_trial_rt(ttl_flag, start_time_rt)
     def instruction_text(self):
         # the instruction text depends on whether the trial type is None or (True/False)
 
@@ -83,7 +115,7 @@ class Task:
             temp_str = ''.join(mapStr)
             return f"{self.task_name} task\n\nUse your {hand} hand:\n" + temp_str
     
-    def get_resp_df(self, all_trial_response):
+    def get_response_df(self, all_trial_response):
         """
         get the responses made for the task and convert it to a dataframe
         Args:
@@ -180,7 +212,45 @@ class Task:
         feedback = visual.ImageStim(self.window, feedback, pos=(0, 0)) # pos=pos
         feedback.draw()
         self.window.flip()
+
+    def check_trial_response(self, wait_time, trial_index, start_time, start_time_rt, **kwargs):
+
+        self.correct_key_list = []
+        self.correct_key_list = self.get_correct_key(trial_index)
+        # self.response_made = False
+        self.correct_response = False
+
+        # get the trial response
+        self.get_trial_response2(self.ttl_flag, wait_time, start_time, start_time_rt)
+
+        # check the trial response
+        if self.pressed_keys and self.response_made:
+            # assuming pressed_keys is sorted by timestamp; is it?
+            # determine correct response based on first key press only
+            if self.pressed_keys[0][0] == self.correct_key_list[0]:
+                self.correct_response = True 
+            elif self.pressed_keys[0][0] != self.correct_key_list[0]:
+                self.correct_response = False
     
+        # determine the key that was pressed
+        # the pressed key will be recorded even if the wrong key was pressed
+        if not self.pressed_keys:
+            # then no key was pressed
+            resp_key = None
+        else:
+            resp_key = self.pressed_keys[0][0]
+
+
+        response_event = {
+            "corr_key": self.correct_key_list[0],
+            "pressed_key": resp_key,
+            # "key_presses": pressed_keys,
+            "resp_made": self.response_made,
+            "corr_resp": self.correct_response,
+            "rt": self.rt
+        }
+        return response_event
+   
     def get_trial_response(self, wait_time, trial_index, start_time, start_time_rt, **kwargs):
 
         self.correct_key_list = []
@@ -253,8 +323,8 @@ class VisualSearch(Task):
     # def instruction_text(self):
     #     return response dataframe
 
-    def __init__(self, screen, target_file, run_end, task_name, study_name, target_num):
-        super(VisualSearch, self).__init__(screen, target_file, run_end, task_name, study_name, target_num)
+    def __init__(self, screen, target_file, run_end, task_name, study_name, target_num, ttl_flag):
+        super(VisualSearch, self).__init__(screen, target_file, run_end, task_name, study_name, target_num, ttl_flag)
         self.feedback_type = 'rt' # reaction
         self.name          = 'visual_search'
     
@@ -309,10 +379,11 @@ class VisualSearch(Task):
 
             # collect responses and update 
             wait_time = self.target_file['start_time'][self.trial] + self.target_file['trial_dur'][self.trial]
-            self.trial_response = self.get_trial_response(wait_time = wait_time,
-                                                          trial_index = self.trial, 
-                                                          start_time = t0, 
-                                                          start_time_rt = t2)
+
+            self.trial_response = self.check_trial_response(wait_time = wait_time, 
+                                                            trial_index = self.trial, 
+                                                            start_time = t0, 
+                                                            start_time_rt = t2)
 
             self.update_trial_response()
 
@@ -325,7 +396,7 @@ class VisualSearch(Task):
             self.screen_quit()
 
         # get the response dataframe
-        rDf = self.get_resp_df(all_trial_response=self.all_trial_response)
+        rDf = self.get_response_df(all_trial_response=self.all_trial_response)
 
         return rDf
 
@@ -334,8 +405,8 @@ class NBack(Task):
     # def instruction_text(self):
     #     return response dataframe
 
-    def __init__(self, screen, target_file, run_end, task_name, study_name, target_num):
-        super(NBack, self).__init__(screen, target_file, run_end, task_name, study_name, target_num)
+    def __init__(self, screen, target_file, run_end, task_name, study_name, target_num, ttl_flag):
+        super(NBack, self).__init__(screen, target_file, run_end, task_name, study_name, target_num, ttl_flag)
         self.feedback_type = 'rt' # reaction
         self.name          = 'n_back'
 
@@ -379,10 +450,18 @@ class NBack(Task):
 
             # collect responses
             wait_time = self.target_file['start_time'][self.trial] + self.target_file['trial_dur'][self.trial]
-            self.trial_response = self.get_trial_response(wait_time = wait_time,
-                                    trial_index = self.trial, 
-                                    start_time = t0, 
-                                    start_time_rt = t2)
+            # self.trial_response = self.get_trial_response(wait_time = wait_time,
+            #                         trial_index = self.trial, 
+            #                         start_time = t0, 
+            #                         start_time_rt = t2)
+
+            # get video_end_time
+            video_dur = self.target_file['video_start'][self.trial] + self.target_file['video_end'][self.trial]
+
+            self.trial_response = self.check_trial_response(wait_time = wait_time + video_dur, 
+                                                            trial_index = self.trial, 
+                                                            start_time = t0, 
+                                                            start_time_rt = t2)
 
             # update trial response
             self.update_trial_response()
@@ -397,7 +476,7 @@ class NBack(Task):
             self.screen_quit()
 
         # get the response dataframe
-        rDf = self.get_resp_df(all_trial_response=self.all_trial_response)
+        rDf = self.get_response_df(all_trial_response=self.all_trial_response)
 
         return rDf
 
@@ -406,43 +485,14 @@ class SocialPrediction(Task):
     # def instruction_text(self):
     #     return "Social Prediction Task\n\nYou have the following options\n\nHandShake = 1\nHug = 2\nHighFive = 3\nKiss = 4\n\nGo as fast as you can while being accurate"
     
-    def __init__(self, screen, target_file, run_end, task_name, study_name, target_num):
-        super(SocialPrediction, self).__init__(screen, target_file, run_end, task_name, study_name, target_num)
+    def __init__(self, screen, target_file, run_end, task_name, study_name, target_num, ttl_flag):
+        super(SocialPrediction, self).__init__(screen, target_file, run_end, task_name, study_name, target_num, ttl_flag)
         self.feedback_type = 'acc' # reaction
         self.name          = 'social_prediction'
 
     def _get_stims(self):
         video_file = self.target_file['stim'][self.trial]
         self.path_to_video = os.path.join(consts.stim_dir, self.study_name, self.task_name, "modified_clips", video_file)
-
-    def _get_trial_response(self):
-        self.correct_key_list = []
-        self.correct_key_list = self.get_correct_key(self.trial)
-        self.response_made = False
-        self.correct_response = False
-        self.rt = 0
-        pressed_keys = []
-        
-        pressed_keys.extend(event.getKeys(self.response_keys, timeStamped=self.clock))
-        if pressed_keys and not self.response_made:
-            self.response_made = True
-            self.rt = self.clock.getTime() - self.t2
-            # assuming pressed_keys is sorted by timestamp; is it?
-            # determine correct response based on first key press only
-            if pressed_keys[0][0] == self.correct_key_list[0]:
-                self.correct_response = True 
-            elif pressed_keys[0][0] != self.correct_key_list[0]:
-                self.correct_response = False
-
-        response_event = {
-            "corr_key": self.correct_key_list[0],
-            # "key_presses": pressed_keys,
-            "resp_made": self.response_made,
-            "corr_resp": self.correct_response,
-            "rt": self.rt
-            }
-
-        return response_event
    
     def _get_first_response(self):
         # display trial feedback
@@ -483,12 +533,12 @@ class SocialPrediction(Task):
                 mov.draw()
                 self.window.flip()
 
-                # get trial response
-                self.trial_response_all.append(self._get_trial_response()) 
-            
-            # check for response again after movie has finished playing
-            self.trial_response_all.append(self._get_trial_response())
-    
+            # get trial response
+            self.trial_response = self.check_trial_response(wait_time = wait_time, 
+                                                            trial_index = self.trial, 
+                                                            start_time = self.t0, 
+                                                            start_time_rt = self.t2)
+               
     def run(self):
 
         # get current time
@@ -518,23 +568,29 @@ class SocialPrediction(Task):
             # display stims
             self._show_stim()
 
-            # show feedback or fixation cross
-            response_made, correct_response = self._get_first_response()
-            if self.target_file['display_trial_feedback'][self.trial] and response_made:
-                self.display_trial_feedback(correct_response = correct_response)
+            # # show feedback or fixation cross
+            # response_made, correct_response = self._get_first_response()
+
+            # # get response event
+            # self.trial_response = self._get_response_event(response_made = response_made)
+
+            
+            
+
+        
+
+            if self.target_file['display_trial_feedback'][self.trial] and self.response_made:
+                self.display_trial_feedback(correct_response = self.correct_response)
             else:
                 self.screen.fixation_cross()
-
-            # get response event
-            self.trial_response = self._get_response_event(response_made = response_made)
-
+            
             # update response
             self.update_trial_response()
 
             self.screen_quit()
 
         # get the response dataframe
-        rDf = self.get_resp_df(all_trial_response=self.all_trial_response)
+        rDf = self.get_response_df(all_trial_response=self.all_trial_response)
 
         return rDf
 
@@ -543,8 +599,8 @@ class SemanticPrediction(Task):
     # def instruction_text(self):
     #     return "Language Prediction Task\n\nYou will read a sentence and decide if the final word of the sentence makes sense\n\nIf the word makes sense, press 3\n\nIf the word does not make sense, press 4\n\nAnswer as quickly and as accurately as possible"
     
-    def __init__(self, screen, target_file, run_end, task_name, study_name, target_num):
-        super(SemanticPrediction, self).__init__(screen, target_file, run_end, task_name, study_name, target_num)
+    def __init__(self, screen, target_file, run_end, task_name, study_name, target_num, ttl_flag):
+        super(SemanticPrediction, self).__init__(screen, target_file, run_end, task_name, study_name, target_num, ttl_flag)
         self.feedback_type = 'rt' # reaction
         self.name          = 'semantic_prediction'
 
@@ -615,12 +671,16 @@ class SemanticPrediction(Task):
 
             # collect response
             wait_time = self.target_file['start_time'][self.trial] + self.target_file['trial_dur_correct'][self.trial]
-            self.trial_response = self.get_trial_response(wait_time = wait_time,
-                                    trial_index = self.trial, 
-                                    start_time = t0, 
-                                    start_time_rt = t2)
+            # self.trial_response = self.get_trial_response(wait_time = wait_time,
+            #                         trial_index = self.trial, 
+            #                         start_time = t0, 
+            #                         start_time_rt = t2)
 
-           # update response
+            self.trial_response = self.check_trial_response(wait_time = wait_time, 
+                                                            trial_index = self.trial, 
+                                                            start_time = t0, 
+                                                            start_time_rt = t2)
+            # update response
             self.update_trial_response()
 
             # display trial feedback
@@ -632,7 +692,7 @@ class SemanticPrediction(Task):
             self.screen_quit()
 
         # get the response dataframe
-        rDf = self.get_resp_df(all_trial_response=self.all_trial_response)
+        rDf = self.get_response_df(all_trial_response=self.all_trial_response)
 
         return rDf
 
@@ -641,65 +701,14 @@ class ActionObservation(Task):
     # def instruction_text(self):
     #     return "Action Observation Task\n\nYou have to decide whether the soccer player scores a goal\n\nYou will get feedback on every trial\n\nPress TRUE for goal\n\nPress FALSE for miss"
     
-    def __init__(self, screen, target_file, run_end, task_name, study_name, target_num):
-        super(ActionObservation, self).__init__(screen, target_file, run_end, task_name, study_name, target_num)
+    def __init__(self, screen, target_file, run_end, task_name, study_name, target_num, ttl_flag):
+        super(ActionObservation, self).__init__(screen, target_file, run_end, task_name, study_name, target_num, ttl_flag)
         self.feedback_type = 'acc' # reaction
         self.name          = 'action_observation' 
 
     def _get_stims(self):
         video_file = self.target_file['stim'][self.trial]
         self.path_to_video = os.path.join(consts.stim_dir, self.study_name, self.task_name, "modified_clips", video_file)
-
-    def _get_trial_response(self):
-        self.correct_key_list = []
-        self.correct_key_list = self.get_correct_key(self.trial)
-        self.response_made = False
-        self.correct_response = False
-        self.rt = 0
-        pressed_keys = []
-        
-        pressed_keys.extend(event.getKeys(self.response_keys, timeStamped=self.clock))
-        if pressed_keys and not self.response_made:
-            self.response_made = True
-            self.rt = self.clock.getTime() - self.t2
-            # assuming pressed_keys is sorted by timestamp; is it?
-            # determine correct response based on first key press only
-            if pressed_keys[0][0] == self.correct_key_list[0]:
-                self.correct_response = True 
-            elif pressed_keys[0][0] != self.correct_key_list[0]:
-                self.correct_response = False
-
-        response_event = {
-            "corr_key": self.correct_key_list[0],
-            # "key_presses": pressed_keys,
-            "resp_made": self.response_made,
-            "corr_resp": self.correct_response,
-            "rt": self.rt
-            }
-
-        return response_event
-   
-    def _get_first_response(self):
-        # display trial feedback
-        response_made = [dict['resp_made'] for dict in self.trial_response_all if dict['resp_made']]
-        correct_response = False
-        if response_made:
-            response_made = response_made[0]
-            correct_response = [dict['corr_resp'] for dict in self.trial_response_all if dict['resp_made']][0]
-        else:
-            response_made = False
-
-        return response_made, correct_response
-    
-    def _get_response_event(self, response_made):
-        # save response event
-        if response_made:
-            # save the first dict when response was made
-            response_event = [dict for dict in self.trial_response_all if dict['resp_made']][0]
-        else:
-            response_event = [dict for dict in self.trial_response_all][0]
-
-        return response_event
     
     def _show_stim(self):
         mov = visual.MovieStim3(self.window, self.path_to_video, flipVert=False, flipHoriz=False, loop=False)
@@ -717,12 +726,12 @@ class ActionObservation(Task):
                 # draw frame to screen
                 mov.draw()
                 self.window.flip()
-
-                # get trial response
-                self.trial_response_all.append(self._get_trial_response()) 
             
-            # check for response again after movie has finished playing
-            self.trial_response_all.append(self._get_trial_response())
+            # get trial response
+            self.trial_response = self.check_trial_response(wait_time = wait_time, 
+                                                            trial_index = self.trial, 
+                                                            start_time = self.t0, 
+                                                            start_time_rt = self.t2)
     
     def run(self):
 
@@ -754,14 +763,10 @@ class ActionObservation(Task):
             self._show_stim()
 
             # show feedback or fixation cross
-            response_made, correct_response = self._get_first_response()
-            if self.target_file['display_trial_feedback'][self.trial] and response_made:
-                self.display_trial_feedback(correct_response = correct_response)
+            if self.target_file['display_trial_feedback'][self.trial] and self.response_made:
+                self.display_trial_feedback(correct_response = self.correct_response)
             else:
                 self.screen.fixation_cross()
-
-            # get response event
-            self.trial_response = self._get_response_event(response_made = response_made)
 
             # update response
             self.update_trial_response()
@@ -769,7 +774,7 @@ class ActionObservation(Task):
             self.screen_quit()
 
         # get the response dataframe
-        rDf = self.get_resp_df(all_trial_response=self.all_trial_response)
+        rDf = self.get_response_df(all_trial_response=self.all_trial_response)
 
         return rDf
 
@@ -778,8 +783,8 @@ class TheoryOfMind(Task):
     # def instruction_text(self):
     #     return "Theory of Mind Task\n\nYou will read a story and decide if the answer to the question is True or False.\n\nIf the answer is True, press 3\n\nIf the answers is False, press 4\n\nAnswer as quickly and as accurately as possible"
     
-    def __init__(self, screen, target_file, run_end, task_name, study_name, target_num):
-        super(TheoryOfMind, self).__init__(screen, target_file, run_end, task_name, study_name, target_num)
+    def __init__(self, screen, target_file, run_end, task_name, study_name, target_num, ttl_flag):
+        super(TheoryOfMind, self).__init__(screen, target_file, run_end, task_name, study_name, target_num, ttl_flag)
         self.feedback_type = 'acc' # reaction
         self.name          = 'theory_of_mind'
     
@@ -869,14 +874,14 @@ class TheoryOfMind(Task):
             self.screen_quit()
 
         # get the response dataframe
-        rDf = self.get_resp_df(all_trial_response=self.all_trial_response)
+        rDf = self.get_response_df(all_trial_response=self.all_trial_response)
 
         return rDf
 
 class FingerSequence(Task):
 
-    def __init__(self, screen, target_file, run_end, task_name, study_name, target_num):
-        super(FingerSequence, self).__init__(screen, target_file, run_end, task_name, study_name, target_num)
+    def __init__(self, screen, target_file, run_end, task_name, study_name, target_num, ttl_flag):
+        super(FingerSequence, self).__init__(screen, target_file, run_end, task_name, study_name, target_num, ttl_flag)
         self.feedback_type = 'acc' # reaction
         self.name          = 'finger_sequence'
         self.key_digit     = {
@@ -1044,7 +1049,7 @@ class FingerSequence(Task):
             self.screen_quit()
 
         # get the response dataframe
-        rDf = self.get_resp_df(all_trial_response=self.all_trial_response)
+        rDf = self.get_response_df(all_trial_response=self.all_trial_response)
 
         return rDf
 
@@ -1052,8 +1057,8 @@ class Rest(Task):
 
     # @property
 
-    def __init__(self, screen, target_file, run_end, task_name, study_name, target_num):
-        super(Rest, self).__init__(screen, target_file, run_end, task_name, study_name, target_num)
+    def __init__(self, screen, target_file, run_end, task_name, study_name, target_num, ttl_flag):
+        super(Rest, self).__init__(screen, target_file, run_end, task_name, study_name, target_num, ttl_flag)
         self.feedback_type = 'none' # reaction
         self.name          = 'rest'
 
@@ -1099,7 +1104,7 @@ class Rest(Task):
             self.screen_quit()
 
         # get the response dataframe
-        rDf = self.get_resp_df(all_trial_response=self.all_trial_response)
+        rDf = self.get_response_df(all_trial_response=self.all_trial_response)
 
         return rDf
 
