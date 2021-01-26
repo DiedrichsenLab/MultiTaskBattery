@@ -110,6 +110,17 @@ class Task:
             while self.clock.getTime()-t0 <= self.target_file['start_time'][trial_index]:
                 pass
 
+    def get_real_start_time(self, t0):
+        # gets the real start time and the ttl_time.
+        # if the user has chosen not to use the ttl pulse, 
+        # ttl_time is set to 0
+        if self.ttl_flag:
+            self.real_start_time = ttl.clock.getTime() - t0
+            self.ttl_time = ttl.time - t0
+        else:
+            self.real_start_time = self.clock.getTime() - self.t0
+            self.ttl_time = 0
+
     def instruction_text(self):
         # the instruction text depends on whether the trial type is None or (True/False)
 
@@ -333,8 +344,8 @@ class VisualSearch(Task):
             self._show_stim()
             self.window.flip()
 
-            # collect real_start_time for each block
-            self.real_start_time = self.clock.getTime() - self.t0
+            # collect real_start_time for each block (self.real_start_time)
+            self.get_real_start_time(self.t0)
 
             # Start timer before display
             t2 = self.clock.getTime()
@@ -396,8 +407,8 @@ class NBack(Task):
             # show the fixation for the duration of iti
             self.show_fixation_iti(self.t0, self.trial)
 
-            # collect real_start_time for each block
-            self.real_start_time = self.clock.getTime() - self.t0
+            # collect real_start_time for each block (self.real_start_time)
+            self.get_real_start_time(self.t0)
 
             # flush any keys in buffer
             event.clearEvents()
@@ -509,8 +520,8 @@ class SocialPrediction(Task):
             # show the fixation for the duration of iti
             self.show_fixation_iti(self.t0, self.trial)
 
-            # collect real_start_time for each block
-            self.real_start_time = self.clock.getTime() - self.t0
+           # collect real_start_time for each block (self.real_start_time)
+            self.get_real_start_time(self.t0)
 
             # flush any keys in buffer
             event.clearEvents()
@@ -601,8 +612,8 @@ class SemanticPrediction(Task):
             # show the fixation for the duration of iti
             self.show_fixation_iti(self.t0, self.trial)
 
-            # collect real_start_time for each block
-            self.real_start_time = self.clock.getTime() - self.t0
+            # collect real_start_time for each block (self.real_start_time)
+            self.get_real_start_time(self.t0)
 
             # display stem
             self._show_stims_all() 
@@ -686,8 +697,8 @@ class ActionObservation(Task):
             # show the fixation for the duration of iti
             self.show_fixation_iti(self.t0, self.trial)
 
-            # collect real_start_time for each block
-            self.real_start_time = self.clock.getTime() - self.t0
+            # collect real_start_time for each block (self.real_start_time)
+            self.get_real_start_time(self.t0)
 
             # flush any keys in buffer
             event.clearEvents()
@@ -781,8 +792,8 @@ class TheoryOfMind(Task):
             # show the fixation for the duration of iti
             self.show_fixation_iti(self.t0, self.trial)
 
-            # collect real_start_time for each block
-            self.real_start_time = self.clock.getTime() - self.t0
+            # collect real_start_time for each block (self.real_start_time)
+            self.get_real_start_time(self.t0)
 
             # display stem
             self._show_stims_all() 
@@ -955,8 +966,8 @@ class FingerSequence(Task):
             # show the fixation for the duration of iti
             self.show_fixation_iti(self.t0, self.trial)
 
-            # collect real_start_time for each block
-            self.real_start_time = self.clock.getTime() - self.t0
+            # collect real_start_time for each block (self.real_start_time)
+            self.get_real_start_time(self.t0)
 
             # flush any keys in buffer
             event.clearEvents()
@@ -1020,8 +1031,8 @@ class Rest(Task):
             # show the fixation for the duration of iti
             self.show_fixation_iti(self.t0, self.trial)
 
-            # collect real_start_time for each block
-            self.real_start_time = self.clock.getTime() - self.t0
+            # collect real_start_time for each block (self.real_start_time)
+            self.get_real_start_time(self.t0)
 
             # show stim
             self._show_stim()
