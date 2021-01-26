@@ -66,6 +66,13 @@ class Task:
         zip_iterator = zip(self.response_keys, self.response_fingers)
         self.response_fingerMap = dict(zip_iterator) 
 
+    def get_current_time(self):
+        # gets the current time based on ttl_flag
+        if self.ttl_flag:
+            self.t0 = ttl.clock.getTime()
+        else:
+            self.t0 = self.clock.getTime()
+
     def get_trial_response(self, wait_time, start_time, start_time_rt, **kwargs):
         """
         wait for the response to be made. ttl_flag determines the timing. 
@@ -75,16 +82,14 @@ class Task:
         self.pressed_keys = []
 
         if self.ttl_flag: # if the user has chosen to use the ttl pulse
-            #
-            pass
-        else:
-            # print(f"start_time {start_time}")
-            # print(f"current_time {self.clock.getTime()}")
-
-            # print(f"wait_time {wait_time}")
-
+            while (ttl.clock.getTime() - start_time <= wait_time):
+                ttl.check()
+                self.pressed_keys.extend(event.getKeys(keyList=None, timeStamped=self.clock))
+                if self.pressed_keys and not self.response_made: # if at least one press is made
+                    self.response_made = True
+                    self.rt = ttl.clock.getTime() - start_time_rt
+        else: # do not wait for ttl pulse (behavioral)
             while (self.clock.getTime() - start_time <= wait_time): # and not resp_made:
-                # print("HERE!")
                 # get the keys that are pressed and the time they were pressed:
                 ## two options here:
                 ### 1. you can just check for the keys that are specified in const.response_keys
@@ -92,11 +97,9 @@ class Task:
                 ## the current code doesn't look for any specific keys and records evey key press
                 # pressed_keys.extend(event.getKeys(keyList=consts.response_keys, timeStamped=self.clock))
                 self.pressed_keys.extend(event.getKeys(keyList=None, timeStamped=self.clock))
-                # print(self.pressed_keys)
                 if self.pressed_keys and not self.response_made: # if at least one press is made
                     self.response_made = True
                     self.rt = self.clock.getTime() - start_time_rt
-
     
     def instruction_text(self):
         # the instruction text depends on whether the trial type is None or (True/False)
@@ -296,8 +299,8 @@ class VisualSearch(Task):
     
     def run(self):
 
-        # get current time
-        t0 = self.clock.getTime()
+        # get current time (self.t0)
+        self.get_current_time()
 
         self.orientations = list([90, 180, 270, 360]) # ORDER SHOULD NOT CHANGE
         self.item_size_dva = 1
@@ -312,7 +315,7 @@ class VisualSearch(Task):
         for self.trial in self.target_file.index: 
 
             # before image is shown: fixation cross hangs on screen for iti_dur
-            while self.clock.getTime()-t0 <= self.target_file['start_time'][self.trial]:
+            while self.clock.getTime()-self.t0 <= self.target_file['start_time'][self.trial]:
                 pass
 
             # flush any keys in buffer
@@ -323,7 +326,7 @@ class VisualSearch(Task):
             self.window.flip()
 
             # collect real_start_time for each block
-            self.real_start_time = self.clock.getTime() - t0
+            self.real_start_time = self.clock.getTime() - self.t0
 
             # Start timer before display
             t2 = self.clock.getTime()
@@ -333,7 +336,7 @@ class VisualSearch(Task):
 
             self.trial_response = self.check_trial_response(wait_time = wait_time, 
                                                             trial_index = self.trial, 
-                                                            start_time = t0, 
+                                                            start_time = self.t0, 
                                                             start_time_rt = t2)
 
             self.update_trial_response()
@@ -371,8 +374,8 @@ class NBack(Task):
     
     def run(self):
 
-        # get current time
-        t0 = self.clock.getTime()
+        # get current time (self.t0)
+        self.get_current_time()
 
         # loop over trials
         self.all_trial_response = [] # collect data
@@ -383,11 +386,11 @@ class NBack(Task):
             self._get_stims()
 
              # before image is shown: fixation cross hangs on screen for iti_dur
-            while self.clock.getTime()-t0 <= self.target_file['start_time'][self.trial]:
+            while self.clock.getTime()-self.t0 <= self.target_file['start_time'][self.trial]:
                 pass
 
             # collect real_start_time for each block
-            self.real_start_time = self.clock.getTime() - t0
+            self.real_start_time = self.clock.getTime() - self.t0
 
             # flush any keys in buffer
             event.clearEvents()
@@ -404,7 +407,7 @@ class NBack(Task):
 
             self.trial_response = self.check_trial_response(wait_time = wait_time, 
                                                             trial_index = self.trial, 
-                                                            start_time = t0, 
+                                                            start_time = self.t0, 
                                                             start_time_rt = t2)
 
             # update trial response
@@ -485,8 +488,8 @@ class SocialPrediction(Task):
                
     def run(self):
 
-        # get current time
-        self.t0 = self.clock.getTime()
+        # get current time (self.t0)
+        self.get_current_time()
 
         # loop over trials
         self.all_trial_response = [] # pre-allocate 
@@ -578,8 +581,8 @@ class SemanticPrediction(Task):
     
     def run(self):
 
-        # get current time
-        t0 = self.clock.getTime()
+        # get current time (self.t0)
+        self.get_current_time()
 
         # loop over trials
         self.all_trial_response = [] # pre-allocate 
@@ -590,11 +593,11 @@ class SemanticPrediction(Task):
             self._get_stims()
 
             # before word is shown: fixation cross hangs on screen for iti_dur
-            while self.clock.getTime()-t0 <= self.target_file['start_time'][self.trial]:
+            while self.clock.getTime()-self.t0 <= self.target_file['start_time'][self.trial]:
                 pass
 
             # collect real_start_time for each block
-            self.real_start_time = self.clock.getTime() - t0
+            self.real_start_time = self.clock.getTime() - self.t0
 
             # display stem
             self._show_stims_all() 
@@ -607,7 +610,7 @@ class SemanticPrediction(Task):
 
             self.trial_response = self.check_trial_response(wait_time = wait_time, 
                                                             trial_index = self.trial, 
-                                                            start_time = t0, 
+                                                            start_time = self.t0, 
                                                             start_time_rt = t2)
             # update response
             self.update_trial_response()
@@ -664,8 +667,8 @@ class ActionObservation(Task):
     
     def run(self):
 
-        # get current time
-        self.t0 = self.clock.getTime()
+        # get current time (self.t0)
+        self.get_current_time()
 
         # loop over trials
         self.all_trial_response = [] # pre-allocate 
@@ -760,8 +763,8 @@ class TheoryOfMind(Task):
     
     def run(self):
 
-        # get current time
-        t0 = self.clock.getTime()
+        # get current time (self.t0)
+        self.get_current_time()
 
         # loop over trials
         self.all_trial_response = [] # pre-allocate 
@@ -772,11 +775,11 @@ class TheoryOfMind(Task):
             self._get_stims()
 
             # before word is shown: fixation cross hangs on screen for iti_dur
-            while self.clock.getTime()-t0 <= self.target_file['start_time'][self.trial]:
+            while self.clock.getTime()-self.t0 <= self.target_file['start_time'][self.trial]:
                 pass
 
             # collect real_start_time for each block
-            self.real_start_time = self.clock.getTime() - t0
+            self.real_start_time = self.clock.getTime() - self.t0
 
             # display stem
             self._show_stims_all() 
@@ -788,7 +791,7 @@ class TheoryOfMind(Task):
             wait_time = self.target_file['start_time'][self.trial] + self.target_file['trial_dur_correct'][self.trial]
             self.trial_response = self.check_trial_response(wait_time = wait_time, 
                                                             trial_index = self.trial, 
-                                                            start_time = t0, 
+                                                            start_time = self.t0, 
                                                             start_time_rt = t2)
 
            # update response
@@ -935,8 +938,8 @@ class FingerSequence(Task):
 
     def run(self):
 
-        # get current time
-        t0 = self.clock.getTime()
+        # get current time (self.t0)
+        self.get_current_time()
 
         # loop over trials
         self.all_trial_response = [] # collect data
@@ -947,11 +950,11 @@ class FingerSequence(Task):
             self._get_stims()
 
              # before image is shown: fixation cross hangs on screen for iti_dur
-            while self.clock.getTime()-t0 <= self.target_file['start_time'][self.trial]:
+            while self.clock.getTime()-self.t0 <= self.target_file['start_time'][self.trial]:
                 pass
 
             # collect real_start_time for each block
-            self.real_start_time = self.clock.getTime() - t0
+            self.real_start_time = self.clock.getTime() - self.t0
 
             # flush any keys in buffer
             event.clearEvents()
@@ -967,7 +970,7 @@ class FingerSequence(Task):
             wait_time = self.target_file['start_time'][self.trial] + self.target_file['trial_dur'][self.trial]
             self.trial_response = self._get_trial_response(wait_time = wait_time,
                                                            trial_index = self.trial, 
-                                                           start_time = t0, 
+                                                           start_time = self.t0, 
                                                            start_time_rt = t2)
 
             # update trial response
@@ -1004,8 +1007,8 @@ class Rest(Task):
         self.screen.fixation_cross()
 
     def run(self):
-        # get current time
-        t0 = self.clock.getTime()
+        # get current time (self.t0)
+        self.get_current_time()
 
         # loop over trials
         self.all_trial_response = [] # collect data
@@ -1013,11 +1016,11 @@ class Rest(Task):
         for self.trial in self.target_file.index: 
 
              # before image is shown: fixation cross hangs on screen for iti_dur
-            while self.clock.getTime()-t0 <= self.target_file['start_time'][self.trial]:
+            while self.clock.getTime()-self.t0 <= self.target_file['start_time'][self.trial]:
                 pass
 
             # collect real_start_time for each block
-            self.real_start_time = self.clock.getTime() - t0
+            self.real_start_time = self.clock.getTime() - self.t0
 
             # show stim
             self._show_stim()
@@ -1027,7 +1030,7 @@ class Rest(Task):
 
             # leave fixation on screen for `trial_dur`
             wait_time = self.target_file['start_time'][self.trial] + self.target_file['trial_dur'][self.trial]
-            while (self.clock.getTime() - t0 <= wait_time): # and not resp_made:
+            while (self.clock.getTime() - self.t0 <= wait_time): # and not resp_made:
                 pass
 
             # update trial response
