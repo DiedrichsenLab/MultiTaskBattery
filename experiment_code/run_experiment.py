@@ -204,7 +204,8 @@ def get_task(experiment_info, target_binfo, run_info,
     BlockTask  = BlockTask(screen = screen, 
                             target_file = target_binfo['target_file'], 
                             run_end  = target_binfo['run_endTime'], task_name = target_binfo['task_name'],  
-                            study_name = experiment_info['study_name'], target_num = target_binfo['target_num'])
+                            study_name = experiment_info['study_name'], target_num = target_binfo['target_num'], 
+                            ttl_flag = experiment_info['ttl_flag'])
 
     return BlockTask
 
