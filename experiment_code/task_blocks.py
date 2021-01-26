@@ -101,6 +101,15 @@ class Task:
                     self.response_made = True
                     self.rt = self.clock.getTime() - start_time_rt
     
+    def show_fixation_iti(self, t0, trial_index):
+        # before image is shown: fixation cross hangs on screen for iti_dur
+        if self.ttl_flag: # wait for ttl pulse
+            while ttl.clock.getTime()-t0 <= self.target_file['start_time'][trial_index]:
+                ttl.check()
+        else: # do not wait for ttl pulse
+            while self.clock.getTime()-t0 <= self.target_file['start_time'][trial_index]:
+                pass
+
     def instruction_text(self):
         # the instruction text depends on whether the trial type is None or (True/False)
 
@@ -314,9 +323,8 @@ class VisualSearch(Task):
         # loop over trials
         for self.trial in self.target_file.index: 
 
-            # before image is shown: fixation cross hangs on screen for iti_dur
-            while self.clock.getTime()-self.t0 <= self.target_file['start_time'][self.trial]:
-                pass
+            # show the fixation for the duration of iti
+            self.show_fixation_iti(self.t0, self.trial)
 
             # flush any keys in buffer
             event.clearEvents()
@@ -385,9 +393,8 @@ class NBack(Task):
             # show image
             self._get_stims()
 
-             # before image is shown: fixation cross hangs on screen for iti_dur
-            while self.clock.getTime()-self.t0 <= self.target_file['start_time'][self.trial]:
-                pass
+            # show the fixation for the duration of iti
+            self.show_fixation_iti(self.t0, self.trial)
 
             # collect real_start_time for each block
             self.real_start_time = self.clock.getTime() - self.t0
@@ -499,9 +506,8 @@ class SocialPrediction(Task):
             # get stims
             self._get_stims()
 
-            # before word is shown: fixation cross hangs on screen for iti_dur
-            while self.clock.getTime()-self.t0 <= self.target_file['start_time'][self.trial]:
-                pass
+            # show the fixation for the duration of iti
+            self.show_fixation_iti(self.t0, self.trial)
 
             # collect real_start_time for each block
             self.real_start_time = self.clock.getTime() - self.t0
@@ -592,9 +598,8 @@ class SemanticPrediction(Task):
             # get stims
             self._get_stims()
 
-            # before word is shown: fixation cross hangs on screen for iti_dur
-            while self.clock.getTime()-self.t0 <= self.target_file['start_time'][self.trial]:
-                pass
+            # show the fixation for the duration of iti
+            self.show_fixation_iti(self.t0, self.trial)
 
             # collect real_start_time for each block
             self.real_start_time = self.clock.getTime() - self.t0
@@ -678,9 +683,8 @@ class ActionObservation(Task):
             # get stims
             self._get_stims()
 
-            # before word is shown: fixation cross hangs on screen for iti_dur
-            while self.clock.getTime()-self.t0 <= self.target_file['start_time'][self.trial]:
-                pass
+            # show the fixation for the duration of iti
+            self.show_fixation_iti(self.t0, self.trial)
 
             # collect real_start_time for each block
             self.real_start_time = self.clock.getTime() - self.t0
@@ -774,9 +778,8 @@ class TheoryOfMind(Task):
             # get stims
             self._get_stims()
 
-            # before word is shown: fixation cross hangs on screen for iti_dur
-            while self.clock.getTime()-self.t0 <= self.target_file['start_time'][self.trial]:
-                pass
+            # show the fixation for the duration of iti
+            self.show_fixation_iti(self.t0, self.trial)
 
             # collect real_start_time for each block
             self.real_start_time = self.clock.getTime() - self.t0
@@ -949,9 +952,8 @@ class FingerSequence(Task):
             # show image
             self._get_stims()
 
-             # before image is shown: fixation cross hangs on screen for iti_dur
-            while self.clock.getTime()-self.t0 <= self.target_file['start_time'][self.trial]:
-                pass
+            # show the fixation for the duration of iti
+            self.show_fixation_iti(self.t0, self.trial)
 
             # collect real_start_time for each block
             self.real_start_time = self.clock.getTime() - self.t0
@@ -1015,9 +1017,8 @@ class Rest(Task):
 
         for self.trial in self.target_file.index: 
 
-             # before image is shown: fixation cross hangs on screen for iti_dur
-            while self.clock.getTime()-self.t0 <= self.target_file['start_time'][self.trial]:
-                pass
+            # show the fixation for the duration of iti
+            self.show_fixation_iti(self.t0, self.trial)
 
             # collect real_start_time for each block
             self.real_start_time = self.clock.getTime() - self.t0
