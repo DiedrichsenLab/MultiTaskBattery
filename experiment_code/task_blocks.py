@@ -121,6 +121,13 @@ class Task:
             self.real_start_time = self.clock.getTime() - self.t0
             self.ttl_time = 0
 
+    def get_time_before_disp(self):
+        # start timer before display
+        if self.ttl_flag:
+            self.t2 = ttl.clock.getTime()
+        else:
+            self.t2 = self.clock.getTime()
+
     def instruction_text(self):
         # the instruction text depends on whether the trial type is None or (True/False)
 
@@ -347,8 +354,8 @@ class VisualSearch(Task):
             # collect real_start_time for each block (self.real_start_time)
             self.get_real_start_time(self.t0)
 
-            # Start timer before display
-            t2 = self.clock.getTime()
+            # Start timer before display (get self.t2)
+            self.get_time_before_disp()
 
             # collect responses and update 
             wait_time = self.target_file['start_time'][self.trial] + self.target_file['trial_dur'][self.trial]
@@ -356,7 +363,7 @@ class VisualSearch(Task):
             self.trial_response = self.check_trial_response(wait_time = wait_time, 
                                                             trial_index = self.trial, 
                                                             start_time = self.t0, 
-                                                            start_time_rt = t2)
+                                                            start_time_rt = self.t2)
 
             self.update_trial_response()
 
@@ -417,8 +424,8 @@ class NBack(Task):
             self._show_stim()
             self.window.flip()
 
-            # Start timer before display
-            t2 = self.clock.getTime()
+            # Start timer before display (get self.t2)
+            self.get_time_before_disp()
 
             # collect responses
             wait_time = self.target_file['start_time'][self.trial] + self.target_file['trial_dur'][self.trial]
@@ -426,7 +433,7 @@ class NBack(Task):
             self.trial_response = self.check_trial_response(wait_time = wait_time, 
                                                             trial_index = self.trial, 
                                                             start_time = self.t0, 
-                                                            start_time_rt = t2)
+                                                            start_time_rt = self.t2)
 
             # update trial response
             self.update_trial_response()
@@ -526,8 +533,8 @@ class SocialPrediction(Task):
             # flush any keys in buffer
             event.clearEvents()
 
-            # Start timer before display
-            self.t2 = self.clock.getTime()
+            # Start timer before display (get self.t2)
+            self.get_time_before_disp()
 
             # display stims. The responses will be recorded and checked once the video is shown
             self._show_stim()
@@ -618,8 +625,8 @@ class SemanticPrediction(Task):
             # display stem
             self._show_stims_all() 
 
-            # Start timer before display
-            t2 = self.clock.getTime()
+            # Start timer before display (get self.t2)
+            self.get_time_before_disp()
 
             # collect response
             wait_time = self.target_file['start_time'][self.trial] + self.target_file['trial_dur_correct'][self.trial]
@@ -627,7 +634,7 @@ class SemanticPrediction(Task):
             self.trial_response = self.check_trial_response(wait_time = wait_time, 
                                                             trial_index = self.trial, 
                                                             start_time = self.t0, 
-                                                            start_time_rt = t2)
+                                                            start_time_rt = self.t2)
             # update response
             self.update_trial_response()
 
@@ -703,8 +710,8 @@ class ActionObservation(Task):
             # flush any keys in buffer
             event.clearEvents()
 
-            # Start timer before display
-            self.t2 = self.clock.getTime()
+            # Start timer before display (get self.t2)
+            self.get_time_before_disp()
 
             # display stims and get trial response
             self._show_stim()
@@ -798,15 +805,15 @@ class TheoryOfMind(Task):
             # display stem
             self._show_stims_all() 
 
-            # Start timer before display
-            t2 = self.clock.getTime()
+            # Start timer before display (get self.t2)
+            self.get_time_before_disp()
 
             # collect response
             wait_time = self.target_file['start_time'][self.trial] + self.target_file['trial_dur_correct'][self.trial]
             self.trial_response = self.check_trial_response(wait_time = wait_time, 
                                                             trial_index = self.trial, 
                                                             start_time = self.t0, 
-                                                            start_time_rt = t2)
+                                                            start_time_rt = self.t2)
 
            # update response
             self.update_trial_response()
@@ -976,15 +983,15 @@ class FingerSequence(Task):
             self._show_stim()
             self.window.flip()
 
-            # Start timer before display
-            t2 = self.clock.getTime()
+            # Start timer before display (get self.t2)
+            self.get_time_before_disp()
 
             # collect responses
             wait_time = self.target_file['start_time'][self.trial] + self.target_file['trial_dur'][self.trial]
             self.trial_response = self._get_trial_response(wait_time = wait_time,
                                                            trial_index = self.trial, 
                                                            start_time = self.t0, 
-                                                           start_time_rt = t2)
+                                                           start_time_rt = self.t2)
 
             # update trial response
             self.update_trial_response()
@@ -1037,8 +1044,8 @@ class Rest(Task):
             # show stim
             self._show_stim()
 
-            # Start timer before display
-            t2 = self.clock.getTime()
+            # Start timer before display (get self.t2)
+            self.get_time_before_disp()
 
             # leave fixation on screen for `trial_dur`
             wait_time = self.target_file['start_time'][self.trial] + self.target_file['trial_dur'][self.trial]
