@@ -66,7 +66,7 @@ class Task:
         zip_iterator = zip(self.response_keys, self.response_fingers)
         self.response_fingerMap = dict(zip_iterator) 
 
-    def get_trial_response(self, ttl_flag, wait_time, start_time, start_time_rt, **kwargs):
+    def get_trial_response(self, wait_time, start_time, start_time_rt, **kwargs):
         """
         wait for the response to be made. ttl_flag determines the timing. 
         """
@@ -74,7 +74,7 @@ class Task:
         self.rt = 0
         self.pressed_keys = []
 
-        if ttl_flag: # if the user has chosen to use the ttl pulse
+        if self.ttl_flag: # if the user has chosen to use the ttl pulse
             #
             pass
         else:
@@ -96,7 +96,7 @@ class Task:
                 if self.pressed_keys and not self.response_made: # if at least one press is made
                     self.response_made = True
                     self.rt = self.clock.getTime() - start_time_rt
-                    # self.get_trial_rt(ttl_flag, start_time_rt)
+
     
     def instruction_text(self):
         # the instruction text depends on whether the trial type is None or (True/False)
@@ -222,7 +222,7 @@ class Task:
         self.correct_response = False
 
         # get the trial response
-        self.get_trial_response(self.ttl_flag, wait_time, start_time, start_time_rt)
+        self.get_trial_response(wait_time, start_time, start_time_rt)
 
         # check the trial response
         if self.pressed_keys and self.response_made:
@@ -240,56 +240,6 @@ class Task:
             resp_key = None
         else:
             resp_key = self.pressed_keys[0][0]
-
-
-        response_event = {
-            "corr_key": self.correct_key_list[0],
-            "pressed_key": resp_key,
-            # "key_presses": pressed_keys,
-            "resp_made": self.response_made,
-            "corr_resp": self.correct_response,
-            "rt": self.rt
-        }
-        return response_event
-   
-    def get_trial_response(self, wait_time, trial_index, start_time, start_time_rt, **kwargs):
-
-        self.correct_key_list = []
-
-        self.correct_key_list = self.get_correct_key(trial_index)
-        self.response_made = False
-        self.correct_response = False
-        self.rt = 0
-        pressed_keys = []
-        
-        while (self.clock.getTime() - start_time <= wait_time): # and not resp_made:
-            
-            # get the keys that are pressed and the time they were pressed:
-            ## two options here:
-            ### 1. you can just check for the keys that are specified in const.response_keys
-            ### 2. don't look for any specific keys and record every key that is pressed.
-            ## the current code doesn't look for any specific keys and records evey key press
-            # pressed_keys.extend(event.getKeys(keyList=consts.response_keys, timeStamped=self.clock))
-            pressed_keys.extend(event.getKeys(keyList=None, timeStamped=self.clock))
-            
-            # print(pressed_keys.extend(event.getKeys(consts.response_keys, timeStamped=self.clock)))
-            if pressed_keys and not self.response_made:
-                self.response_made = True
-                self.rt = self.clock.getTime() - start_time_rt
-                # assuming pressed_keys is sorted by timestamp; is it?
-                # determine correct response based on first key press only
-                if pressed_keys[0][0] == self.correct_key_list[0]:
-                    self.correct_response = True 
-                elif pressed_keys[0][0] != self.correct_key_list[0]:
-                    self.correct_response = False
-
-        # determine the key that was pressed
-        # the pressed key will be recorded even if the wrong key was pressed
-        if not pressed_keys:
-            # then no key was pressed
-            resp_key = None
-        else:
-            resp_key = pressed_keys[0][0]
 
 
         response_event = {
@@ -452,7 +402,7 @@ class NBack(Task):
             # collect responses
             wait_time = self.target_file['start_time'][self.trial] + self.target_file['trial_dur'][self.trial]
 
-            self.trial_response = self.check_trial_response(wait_time = wait_time + video_dur, 
+            self.trial_response = self.check_trial_response(wait_time = wait_time, 
                                                             trial_index = self.trial, 
                                                             start_time = t0, 
                                                             start_time_rt = t2)
@@ -836,10 +786,10 @@ class TheoryOfMind(Task):
 
             # collect response
             wait_time = self.target_file['start_time'][self.trial] + self.target_file['trial_dur_correct'][self.trial]
-            self.trial_response = self.get_trial_response(wait_time = wait_time,
-                                    trial_index = self.trial, 
-                                    start_time = t0, 
-                                    start_time_rt = t2)
+            self.trial_response = self.check_trial_response(wait_time = wait_time, 
+                                                            trial_index = self.trial, 
+                                                            start_time = t0, 
+                                                            start_time_rt = t2)
 
            # update response
             self.update_trial_response()
@@ -943,10 +893,13 @@ class FingerSequence(Task):
         self.rt = 0
         pressed_keys_list = [] # list in which the pressed keys will be added
 
-        while (self.clock.getTime() - start_time <= wait_time): # and not resp_made:
-            # wait_time = trial duration
-            # it records key presses during this time window
-            pressed_keys_list.extend(event.getKeys(self.response_keys, timeStamped=self.clock)) # records all the keys pressed
+        if self.ttl_flag:
+            pass
+        else:
+            while (self.clock.getTime() - start_time <= wait_time): # and not resp_made:
+                # wait_time = trial duration
+                # it records key presses during this time window
+                pressed_keys_list.extend(event.getKeys(self.response_keys, timeStamped=self.clock)) # records all the keys pressed
 
         if pressed_keys_list and not self.response_made:
             self.response_made = True
