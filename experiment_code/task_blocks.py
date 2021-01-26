@@ -450,13 +450,6 @@ class NBack(Task):
 
             # collect responses
             wait_time = self.target_file['start_time'][self.trial] + self.target_file['trial_dur'][self.trial]
-            # self.trial_response = self.get_trial_response(wait_time = wait_time,
-            #                         trial_index = self.trial, 
-            #                         start_time = t0, 
-            #                         start_time_rt = t2)
-
-            # get video_end_time
-            video_dur = self.target_file['video_start'][self.trial] + self.target_file['video_end'][self.trial]
 
             self.trial_response = self.check_trial_response(wait_time = wait_time + video_dur, 
                                                             trial_index = self.trial, 
@@ -565,19 +558,8 @@ class SocialPrediction(Task):
             # Start timer before display
             self.t2 = self.clock.getTime()
 
-            # display stims
+            # display stims. The responses will be recorded and checked once the video is shown
             self._show_stim()
-
-            # # show feedback or fixation cross
-            # response_made, correct_response = self._get_first_response()
-
-            # # get response event
-            # self.trial_response = self._get_response_event(response_made = response_made)
-
-            
-            
-
-        
 
             if self.target_file['display_trial_feedback'][self.trial] and self.response_made:
                 self.display_trial_feedback(correct_response = self.correct_response)
@@ -671,10 +653,6 @@ class SemanticPrediction(Task):
 
             # collect response
             wait_time = self.target_file['start_time'][self.trial] + self.target_file['trial_dur_correct'][self.trial]
-            # self.trial_response = self.get_trial_response(wait_time = wait_time,
-            #                         trial_index = self.trial, 
-            #                         start_time = t0, 
-            #                         start_time_rt = t2)
 
             self.trial_response = self.check_trial_response(wait_time = wait_time, 
                                                             trial_index = self.trial, 
@@ -954,6 +932,8 @@ class FingerSequence(Task):
     
     def _get_trial_response(self, wait_time, trial_index, start_time, start_time_rt):
         # get the trial response and checks if the responses were correct
+        # this task is different from the most tasks in that the participant needs
+        # to make multiple responses! 
 
         self.correct_key_list = []
         self.correct_key_list = self.get_correct_key(self.trial) # correct keys that are to be pressed
