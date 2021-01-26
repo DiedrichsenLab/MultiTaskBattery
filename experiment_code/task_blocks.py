@@ -117,9 +117,11 @@ class Task:
         if self.ttl_flag:
             self.real_start_time = ttl.clock.getTime() - t0
             self.ttl_time = ttl.time - t0
+            self.ttl_count = ttl.count
         else:
             self.real_start_time = self.clock.getTime() - self.t0
             self.ttl_time = 0
+            self.ttl_count = 0
 
     def get_time_before_disp(self):
         # start timer before display
@@ -287,7 +289,9 @@ class Task:
    
     def update_trial_response(self):
         # add additional variables to dict
-        self.trial_response.update({'real_start_time': self.real_start_time})
+        self.trial_response.update({'real_start_time': self.real_start_time, 
+                                    'ttl_counter': self.ttl_count, 
+                                    'ttl_time': self.ttl_time})
 
         self.all_trial_response.append(self.trial_response)
     
@@ -496,20 +500,35 @@ class SocialPrediction(Task):
         self.trial_response_all = []
         image = []
         wait_time = self.target_file['start_time'][self.trial] + self.target_file['trial_dur'][self.trial]
-        while (self.clock.getTime() - self.t0 <= wait_time): # and not resp_made:
         
-            # play movie
-            while mov.status != visual.FINISHED:
-                
-                # draw frame to screen
-                mov.draw()
-                self.window.flip()
+        if self.ttl_flag: # if the user chooses to wait for the ttl pulse
+            while (ttl.clock.getTime() - self.t0 <= wait_time): # and not resp_made:
+                # play movie
+                while mov.status != visual.FINISHED:
+                    
+                    # draw frame to screen
+                    mov.draw()
+                    self.window.flip()
 
-            # get trial response
-            self.trial_response = self.check_trial_response(wait_time = wait_time, 
-                                                            trial_index = self.trial, 
+                # get trial response
+                self.trial_response = self.check_trial_response(wait_time = wait_time, 
+                                                                trial_index = self.trial, 
                                                             start_time = self.t0, 
                                                             start_time_rt = self.t2)
+        else: 
+            while (self.clock.getTime() - self.t0 <= wait_time): # and not resp_made:
+                # play movie
+                while mov.status != visual.FINISHED:
+                    
+                    # draw frame to screen
+                    mov.draw()
+                    self.window.flip()
+
+                # get trial response
+                self.trial_response = self.check_trial_response(wait_time = wait_time, 
+                                                                trial_index = self.trial, 
+                                                            start_time = self.t0, 
+                                                            start_time_rt = self.t2)  
                
     def run(self):
 
@@ -673,17 +692,32 @@ class ActionObservation(Task):
         self.trial_response_all = []
         image = []
         wait_time = self.target_file['start_time'][self.trial] + self.target_file['trial_dur'][self.trial]
-        while (self.clock.getTime() - self.t0 <= wait_time): # and not resp_made:
         
-            # play movie
-            while mov.status != visual.FINISHED:
+        if self.ttl_flag:
+            while (ttl.clock.getTime() - self.t0 <= wait_time): # and not resp_made:
+                # play movie
+                while mov.status != visual.FINISHED:
+                    
+                    # draw frame to screen
+                    mov.draw()
+                    self.window.flip()
                 
-                # draw frame to screen
-                mov.draw()
-                self.window.flip()
-            
-            # get trial response
-            self.trial_response = self.check_trial_response(wait_time = wait_time, 
+                # get trial response
+                self.trial_response = self.check_trial_response(wait_time = wait_time, 
+                                                                trial_index = self.trial, 
+                                                            start_time = self.t0, 
+                                                            start_time_rt = self.t2)
+        else:
+            while (self.clock.getTime() - self.t0 <= wait_time): # and not resp_made:
+                # play movie
+                while mov.status != visual.FINISHED:
+                    
+                    # draw frame to screen
+                    mov.draw()
+                    self.window.flip()
+                
+                # get trial response
+                self.trial_response = self.check_trial_response(wait_time = wait_time, 
                                                             trial_index = self.trial, 
                                                             start_time = self.t0, 
                                                             start_time_rt = self.t2)
@@ -918,7 +952,10 @@ class FingerSequence(Task):
         pressed_keys_list = [] # list in which the pressed keys will be added
 
         if self.ttl_flag:
-            pass
+            while (ttl.clock.getTime() - start_time <= wait_time): # and not resp_made:
+                # wait_time = trial duration
+                # it records key presses during this time window
+                pressed_keys_list.extend(event.getKeys(self.response_keys, timeStamped=self.clock)) # records all the keys pressed
         else:
             while (self.clock.getTime() - start_time <= wait_time): # and not resp_made:
                 # wait_time = trial duration
@@ -1049,8 +1086,13 @@ class Rest(Task):
 
             # leave fixation on screen for `trial_dur`
             wait_time = self.target_file['start_time'][self.trial] + self.target_file['trial_dur'][self.trial]
-            while (self.clock.getTime() - self.t0 <= wait_time): # and not resp_made:
-                pass
+            
+            if self.ttl_flag:
+                while (ttl.clock.getTime() - self.t0 <= wait_time): # and not resp_made:
+                    ttl.check()
+            else:
+                while (self.clock.getTime() - self.t0 <= wait_time): # and not resp_made:
+                    pass
 
             # update trial response
             self.trial_response = {}
