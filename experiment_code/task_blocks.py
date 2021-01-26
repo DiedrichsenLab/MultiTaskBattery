@@ -66,7 +66,7 @@ class Task:
         zip_iterator = zip(self.response_keys, self.response_fingers)
         self.response_fingerMap = dict(zip_iterator) 
 
-    def get_trial_response2(self, ttl_flag, wait_time, start_time, start_time_rt, **kwargs):
+    def get_trial_response(self, ttl_flag, wait_time, start_time, start_time_rt, **kwargs):
         """
         wait for the response to be made. ttl_flag determines the timing. 
         """
@@ -97,6 +97,7 @@ class Task:
                     self.response_made = True
                     self.rt = self.clock.getTime() - start_time_rt
                     # self.get_trial_rt(ttl_flag, start_time_rt)
+    
     def instruction_text(self):
         # the instruction text depends on whether the trial type is None or (True/False)
 
@@ -221,7 +222,7 @@ class Task:
         self.correct_response = False
 
         # get the trial response
-        self.get_trial_response2(self.ttl_flag, wait_time, start_time, start_time_rt)
+        self.get_trial_response(self.ttl_flag, wait_time, start_time, start_time_rt)
 
         # check the trial response
         if self.pressed_keys and self.response_made:
