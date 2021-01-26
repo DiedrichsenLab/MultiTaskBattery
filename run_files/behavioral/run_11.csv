@@ -1,0 +1,6 @@
+task_name,task_num,num_trials,target_num,num_sec,target_file,start_time,end_time,instruct_dur
+social_prediction,4,10,1,30,social_prediction_30sec_01.csv,0,35,5
+rest,7,1,,10,rest_10sec.csv,35,45,0
+semantic_prediction,5,4,1,30,semantic_prediction_30sec_01.csv,180,215,5
+rest,7,1,,10,rest_10sec.csv,215,225,0
+action_observation,6,12,1,30,action_observation_30sec_01.csv,225,260,5
