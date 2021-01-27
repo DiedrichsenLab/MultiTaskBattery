@@ -102,14 +102,14 @@ class Task:
                 if self.pressed_keys and not self.response_made: # if at least one press is made
                     self.response_made = True
                     self.rt = self.clock.getTime() - start_time_rt
-    
-    def show_fixation_iti(self, t0, trial_index):
-        # before image is shown: fixation cross hangs on screen for iti_dur
+
+    def show_fixation_iti(self, t0, delta_t):
+        # shows the fixation for delta_t seconds
         if self.ttl_flag: # wait for ttl pulse
-            while ttl.clock.getTime()-t0 <= self.target_file['start_time'][trial_index]:
+            while ttl.clock.getTime()-t0 <= delta_t:
                 ttl.check()
         else: # do not wait for ttl pulse
-            while self.clock.getTime()-t0 <= self.target_file['start_time'][trial_index]:
+            while self.clock.getTime()-t0 <= delta_t:
                 pass
 
     def get_real_start_time(self, t0):
@@ -224,6 +224,10 @@ class Task:
 
         return feedback 
 
+    def wait_iti(self):
+        # wait for the duration of the iti and show the fixation
+        pass
+    
     def display_feedback(self, feedback_text):
         feedback = visual.TextStim(self.window, text=feedback_text, color=[-1, -1, -1])
         feedback.draw()
@@ -332,9 +336,6 @@ class VisualSearch(Task):
     
     def run(self):
 
-        # get current time (self.t0)
-        self.t0 = self.get_current_time()
-
         self.orientations = list([90, 180, 270, 360]) # ORDER SHOULD NOT CHANGE
         self.item_size_dva = 1
 
@@ -347,8 +348,11 @@ class VisualSearch(Task):
         # loop over trials
         for self.trial in self.target_file.index: 
 
+            # get current time (self.t0)
+            self.t0 = self.get_current_time()
+
             # show the fixation for the duration of iti
-            self.show_fixation_iti(self.t0, self.trial)
+            self.show_fixation_iti(self.t0, self.target_file['start_time'][self.trial])
 
             # flush any keys in buffer
             event.clearEvents()
@@ -406,9 +410,6 @@ class NBack(Task):
     
     def run(self):
 
-        # get current time (self.t0)
-        self.t0 = self.get_current_time()
-
         # loop over trials
         self.all_trial_response = [] # collect data
 
@@ -417,8 +418,11 @@ class NBack(Task):
             # show image
             self._get_stims()
 
+            # get current time (self.t0)
+            self.t0 = self.get_current_time()
+
             # show the fixation for the duration of iti
-            self.show_fixation_iti(self.t0, self.trial)
+            self.show_fixation_iti(self.t0, self.target_file['start_time'][self.trial])
 
             # collect real_start_time for each block (self.real_start_time)
             self.get_real_start_time(self.t0)
@@ -534,9 +538,6 @@ class SocialPrediction(Task):
                
     def run(self):
 
-        # get current time (self.t0)
-        self.t0 = self.get_current_time()
-
         # loop over trials
         self.all_trial_response = [] # pre-allocate 
 
@@ -545,8 +546,11 @@ class SocialPrediction(Task):
             # get stims
             self._get_stims()
 
+            # get current time (self.t0)
+            self.t0 = self.get_current_time()
+
             # show the fixation for the duration of iti
-            self.show_fixation_iti(self.t0, self.trial)
+            self.show_fixation_iti(self.t0, self.target_file['start_time'][self.trial])
 
            # collect real_start_time for each block (self.real_start_time)
             self.get_real_start_time(self.t0)
@@ -635,9 +639,6 @@ class SemanticPrediction(Task):
     
     def run(self):
 
-        # get current time (self.t0)
-        self.t0 = self.get_current_time()
-
         # loop over trials
         self.all_trial_response = [] # pre-allocate 
 
@@ -646,8 +647,11 @@ class SemanticPrediction(Task):
             # get stims
             self._get_stims()
 
+            # get current time (self.t0)
+            self.t0 = self.get_current_time()
+
             # show the fixation for the duration of iti
-            self.show_fixation_iti(self.t0, self.trial)
+            self.show_fixation_iti(self.t0, self.target_file['start_time'][self.trial])
 
             # collect real_start_time for each block (self.real_start_time)
             self.get_real_start_time(self.t0)
@@ -735,9 +739,6 @@ class ActionObservation(Task):
     
     def run(self):
 
-        # get current time (self.t0)
-        self.t0 = self.get_current_time()
-
         # loop over trials
         self.all_trial_response = [] # pre-allocate 
 
@@ -746,8 +747,11 @@ class ActionObservation(Task):
             # get stims
             self._get_stims()
 
+            # get current time (self.t0)
+            self.t0 = self.get_current_time()
+
             # show the fixation for the duration of iti
-            self.show_fixation_iti(self.t0, self.trial)
+            self.show_fixation_iti(self.t0, self.target_file['start_time'][self.trial])
 
             # collect real_start_time for each block (self.real_start_time)
             self.get_real_start_time(self.t0)
@@ -830,9 +834,6 @@ class TheoryOfMind(Task):
     
     def run(self):
 
-        # get current time (self.t0)
-        self.t0 = self.get_current_time()
-
         # loop over trials
         self.all_trial_response = [] # pre-allocate 
 
@@ -841,8 +842,11 @@ class TheoryOfMind(Task):
             # get stims
             self._get_stims()
 
+            # get current time (self.t0)
+            self.t0 = self.get_current_time()
+
             # show the fixation for the duration of iti
-            self.show_fixation_iti(self.t0, self.trial)
+            self.show_fixation_iti(self.t0, self.target_file['start_time'][self.trial])
 
             # collect real_start_time for each block (self.real_start_time)
             self.get_real_start_time(self.t0)
@@ -1007,9 +1011,6 @@ class FingerSequence(Task):
 
     def run(self):
 
-        # get current time (self.t0)
-        self.t0 = self.get_current_time()
-
         # loop over trials
         self.all_trial_response = [] # collect data
 
@@ -1018,8 +1019,11 @@ class FingerSequence(Task):
             # show image
             self._get_stims()
 
+            # get current time (self.t0)
+            self.t0 = self.get_current_time()
+
             # show the fixation for the duration of iti
-            self.show_fixation_iti(self.t0, self.trial)
+            self.show_fixation_iti(self.t0, self.target_file['start_time'][self.trial])
 
             # collect real_start_time for each block (self.real_start_time)
             self.get_real_start_time(self.t0)
@@ -1081,28 +1085,83 @@ class SternbergOrder(Task):
 
         self.delay_dur = self.target_file['delay_dur'][self.trial] # a delay period between memory set and probe set
 
-        self.prob_stim = self.target_file['prob_stim'][self.trial] # stimuli that will be shown during the probe (this might change in the target file)
+        self.prob = self.target_file['prob_stim'][self.trial] # stimuli that will be shown during the probe (this might change in the target file)
         self.prob_dur = self.target_file['prob_dur'][self.trial] # probe will stay on the screen for prob_dur sec
 
         self.iti_dur = self.target_file['iti_dur'][self.trial] # iti duration
 
-    def _show_digit(self):
-        # display stem words for fixed time
-        for digit in self.digits:                         
+    def _show_digits(self):
+        # display digit for fixed time
+        for digit in self.digits:   
+            self.digit_start = self.get_current_time()                     
             stim = visual.TextStim(self.window, text=digit, pos=(0.0,0.0), color=(-1,-1,-1), units='deg')
             stim.draw()
             self.window.flip()
+            # core.wait(self.stem_word_dur)
 
-            # each digit will remain on the screen for a certain amount of time (self.digit_dur)
+            # each word will remain on the screen for a certain amount of time (self.stem_word_dur)
             if self.ttl_flag: # wait for ttl pulse
-                while ttl.clock.getTime()-self.t0 <= self.digit_dur:
+                while ttl.clock.getTime()-self.digit_start <= self.digit_dur:
                     ttl.check()
             else: # do not wait for ttl pulse
-                while self.clock.getTime()-self.t0 <= self.digit_dur:
+                while self.clock.getTime()-self.digit_start <= self.digit_dur:
                     pass
+    
+    def _show_prob(self):
+        # display the prob on the screen
+        stim = visual.TextStim(self.window, text=self.prob, pos=(0.0,0.0), color=(-1,-1,-1), units='deg')
+        stim.draw()
+
+        # keep the prob on the screen?
+
 
     def run(self):
-        pass
+
+        # loop over trials
+        self.all_trial_response = [] # pre-allocate 
+
+        for self.trial in self.target_file.index: 
+
+            # get stims
+            self._get_stims()
+
+            # get current time (self.t0)
+            self.t0 = self.get_current_time()
+
+            # show the fixation for the duration of iti
+            self.show_fixation_iti(self.t0, self.target_file['start_time'][self.trial])
+
+            # collect real_start_time for each block (self.real_start_time)
+            self.get_real_start_time(self.t0)
+
+            # display stem
+            self._show_stims_all() 
+
+            # Start timer before display (get self.t2)
+            self.get_time_before_disp()
+
+            # collect response
+            wait_time = self.target_file['start_time'][self.trial] + self.target_file['trial_dur_correct'][self.trial]
+
+            self.trial_response = self.check_trial_response(wait_time = wait_time, 
+                                                            trial_index = self.trial, 
+                                                            start_time = self.t0, 
+                                                            start_time_rt = self.t2)
+            # update response
+            self.update_trial_response()
+
+            # display trial feedback
+            if self.target_file['display_trial_feedback'][self.trial] and self.response_made:
+                self.display_trial_feedback(correct_response = self.correct_response) 
+            else:
+                self.screen.fixation_cross()
+
+            self.screen_quit()
+
+        # get the response dataframe
+        rDf = self.get_response_df(all_trial_response=self.all_trial_response)
+
+        return rDf
 
 
 class Rest(Task):
@@ -1131,7 +1190,7 @@ class Rest(Task):
         for self.trial in self.target_file.index: 
 
             # show the fixation for the duration of iti
-            self.show_fixation_iti(self.t0, self.trial)
+            self.show_fixation_iti(self.t0, self.target_file['start_time'][self.trial])
 
             # collect real_start_time for each block (self.real_start_time)
             self.get_real_start_time(self.t0)
