@@ -223,10 +223,6 @@ class Task:
         feedback = {'curr': fb_curr, 'prev': fb_prev, 'measure': unit_str} 
 
         return feedback 
-
-    def wait_iti(self):
-        # wait for the duration of the iti and show the fixation
-        pass
     
     def display_feedback(self, feedback_text):
         feedback = visual.TextStim(self.window, text=feedback_text, color=[-1, -1, -1])
@@ -628,7 +624,9 @@ class SemanticPrediction(Task):
 
         # display iti before final word presentation
         self.screen.fixation_cross()
-        core.wait(self.iti_dur)
+        # core.wait(self.iti_dur)
+        tc = self.get_current_time()
+        self.show_fixation_iti(tc, self.iti_dur)
 
         # flush keys if any have been pressed
         event.clearEvents()
@@ -1074,6 +1072,7 @@ class SternbergOrder(Task):
     """
 
     def __init__(self, screen, target_file, run_end, task_name, study_name, target_num, ttl_flag):
+        super(SternbergOrder, self).__init__(screen, target_file, run_end, task_name, study_name, target_num, ttl_flag)
         self.feedback_type = 'acc' # reaction
         self.name          = 'sternberg_order'
     
@@ -1109,10 +1108,35 @@ class SternbergOrder(Task):
     
     def _show_prob(self):
         # display the prob on the screen
+        self.prob_start = self.get_current_time()
         stim = visual.TextStim(self.window, text=self.prob, pos=(0.0,0.0), color=(-1,-1,-1), units='deg')
         stim.draw()
+        self.window.flip()
+        # keep the prob on the screen
+        if self.ttl_flag: # wait for ttl pulse
+            while ttl.clock.getTime()-self.prob_start <= self.prob_dur:
+                ttl.check()
+        else: # do not wait for ttl pulse
+            while self.clock.getTime()-self.prob_start <= self.prob_dur:
+                pass
 
-        # keep the prob on the screen?
+
+    def _show_stims_all(self):
+        # show stem sentence
+        self._show_digits()
+
+        # display iti before final word presentation
+        self.screen.fixation_cross()
+        # core.wait(self.iti_dur)
+        tc = self.get_current_time()
+        self.show_fixation_iti(tc, self.delay_dur)
+
+        # flush keys if any have been pressed
+        event.clearEvents()
+
+        # display last word for fixed time
+        self._show_prob()
+        self.window.flip()
 
 
     def run(self):
@@ -1141,17 +1165,19 @@ class SternbergOrder(Task):
             self.get_time_before_disp()
 
             # collect response
-            wait_time = self.target_file['start_time'][self.trial] + self.target_file['trial_dur_correct'][self.trial]
+            wait_time = self.prob_dur
 
             self.trial_response = self.check_trial_response(wait_time = wait_time, 
                                                             trial_index = self.trial, 
-                                                            start_time = self.t0, 
+                                                            start_time = self.get_current_time(), 
                                                             start_time_rt = self.t2)
             # update response
             self.update_trial_response()
 
+            print(self.response_made)
             # display trial feedback
             if self.target_file['display_trial_feedback'][self.trial] and self.response_made:
+                
                 self.display_trial_feedback(correct_response = self.correct_response) 
             else:
                 self.screen.fixation_cross()
