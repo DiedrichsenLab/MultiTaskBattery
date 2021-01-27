@@ -1047,6 +1047,46 @@ class FingerSequence(Task):
 
         return rDf
 
+class SternbergOrder(Task):
+    # This is a toy example with a toy target file. The target file might change in the future!
+    """
+    a list of digits (with length of 6) is shown sequentially (in a serial order)
+    then a period of delay
+    then prob. The prob will be something like 1<5. This is a True False response and reads as:
+        Does 1 comes before 5 in the set?
+        The participant needs to a) figure out whether 1 and 5 were in the set and 
+                                 b) whether the order shown is correct
+    """
+
+    def __init__(self, screen, target_file, run_end, task_name, study_name, target_num, ttl_flag):
+        self.feedback_type = 'acc' # reaction
+        self.name          = 'sternberg_order'
+    
+    def _get_stims(self):
+        # get stim (i.e. word)
+        self.stim_text = self.target_file['stim'][self.trial]
+        self.stem = self.stim_text.split()
+        self.digit_dur = self.target_file['digit_dur'][self.trial] # digit will stay on the screen for digit_dur sec
+
+        self.delay_dur = self.target_file['delay_dur'][self.trial] # a delay period between memory set and probe set
+
+        self.prob_stim = self.target_file['prob_stim'][self.trial] # stimuli that will be shown during the probe (this might change in the target file)
+        self.prob_dur = self.target_file['prob_dur'][self.trial] # probe will stay on the screen for prob_dur sec
+
+        self.iti_dur = self.target_file['iti_dur'][self.trial] # iti duration
+
+    def _show_digit(self):
+        pass
+
+    def _wait_digit(self):
+        pass
+    
+    def _show_stim(self):
+        pass
+    def run(self):
+        pass
+
+
 class Rest(Task):
 
     # @property
@@ -1135,5 +1175,6 @@ TASK_MAP = {
     "semantic_prediction": SemanticPrediction,
     "action_observation": ActionObservation,
     "finger_sequence": FingerSequence,
+    "sternberg_order":SternbergOrder,
     "rest": Rest,
     }
