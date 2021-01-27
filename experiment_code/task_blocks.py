@@ -69,9 +69,11 @@ class Task:
     def get_current_time(self):
         # gets the current time based on ttl_flag
         if self.ttl_flag:
-            self.t0 = ttl.clock.getTime()
+            t_current = ttl.clock.getTime()
         else:
-            self.t0 = self.clock.getTime()
+            t_current = self.clock.getTime()
+
+        return t_current
 
     def get_trial_response(self, wait_time, start_time, start_time_rt, **kwargs):
         """
@@ -331,7 +333,7 @@ class VisualSearch(Task):
     def run(self):
 
         # get current time (self.t0)
-        self.get_current_time()
+        self.t0 = self.get_current_time()
 
         self.orientations = list([90, 180, 270, 360]) # ORDER SHOULD NOT CHANGE
         self.item_size_dva = 1
@@ -405,7 +407,7 @@ class NBack(Task):
     def run(self):
 
         # get current time (self.t0)
-        self.get_current_time()
+        self.t0 = self.get_current_time()
 
         # loop over trials
         self.all_trial_response = [] # collect data
@@ -533,7 +535,7 @@ class SocialPrediction(Task):
     def run(self):
 
         # get current time (self.t0)
-        self.get_current_time()
+        self.t0 = self.get_current_time()
 
         # loop over trials
         self.all_trial_response = [] # pre-allocate 
@@ -596,11 +598,20 @@ class SemanticPrediction(Task):
     
     def _show_stem(self):
         # display stem words for fixed time
-        for word in self.stem:                         
+        for word in self.stem:   
+            self.word_start = self.get_current_time()                     
             stim = visual.TextStim(self.window, text=word, pos=(0.0,0.0), color=(-1,-1,-1), units='deg')
             stim.draw()
             self.window.flip()
-            core.wait(self.stem_word_dur)
+            # core.wait(self.stem_word_dur)
+
+            # each word will remain on the screen for a certain amount of time (self.stem_word_dur)
+            if self.ttl_flag: # wait for ttl pulse
+                while ttl.clock.getTime()-self.word_start <= self.stem_word_dur:
+                    ttl.check()
+            else: # do not wait for ttl pulse
+                while self.clock.getTime()-self.word_start <= self.stem_word_dur:
+                    pass
 
     def _show_stim(self):
         # display last word for fixed time
@@ -625,7 +636,7 @@ class SemanticPrediction(Task):
     def run(self):
 
         # get current time (self.t0)
-        self.get_current_time()
+        self.t0 = self.get_current_time()
 
         # loop over trials
         self.all_trial_response = [] # pre-allocate 
@@ -725,7 +736,7 @@ class ActionObservation(Task):
     def run(self):
 
         # get current time (self.t0)
-        self.get_current_time()
+        self.t0 = self.get_current_time()
 
         # loop over trials
         self.all_trial_response = [] # pre-allocate 
@@ -820,7 +831,7 @@ class TheoryOfMind(Task):
     def run(self):
 
         # get current time (self.t0)
-        self.get_current_time()
+        self.t0 = self.get_current_time()
 
         # loop over trials
         self.all_trial_response = [] # pre-allocate 
@@ -997,7 +1008,7 @@ class FingerSequence(Task):
     def run(self):
 
         # get current time (self.t0)
-        self.get_current_time()
+        self.t0 = self.get_current_time()
 
         # loop over trials
         self.all_trial_response = [] # collect data
@@ -1064,8 +1075,8 @@ class SternbergOrder(Task):
     
     def _get_stims(self):
         # get stim (i.e. word)
-        self.stim_text = self.target_file['stim'][self.trial]
-        self.stem = self.stim_text.split()
+        self.stim = self.target_file['stim'][self.trial]
+        self.digits = self.stim.split()
         self.digit_dur = self.target_file['digit_dur'][self.trial] # digit will stay on the screen for digit_dur sec
 
         self.delay_dur = self.target_file['delay_dur'][self.trial] # a delay period between memory set and probe set
@@ -1076,13 +1087,20 @@ class SternbergOrder(Task):
         self.iti_dur = self.target_file['iti_dur'][self.trial] # iti duration
 
     def _show_digit(self):
-        pass
+        # display stem words for fixed time
+        for digit in self.digits:                         
+            stim = visual.TextStim(self.window, text=digit, pos=(0.0,0.0), color=(-1,-1,-1), units='deg')
+            stim.draw()
+            self.window.flip()
 
-    def _wait_digit(self):
-        pass
-    
-    def _show_stim(self):
-        pass
+            # each digit will remain on the screen for a certain amount of time (self.digit_dur)
+            if self.ttl_flag: # wait for ttl pulse
+                while ttl.clock.getTime()-self.t0 <= self.digit_dur:
+                    ttl.check()
+            else: # do not wait for ttl pulse
+                while self.clock.getTime()-self.t0 <= self.digit_dur:
+                    pass
+
     def run(self):
         pass
 
@@ -1105,7 +1123,7 @@ class Rest(Task):
 
     def run(self):
         # get current time (self.t0)
-        self.get_current_time()
+        self.t0 = self.get_current_time()
 
         # loop over trials
         self.all_trial_response = [] # collect data
