@@ -1,5 +1,6 @@
 ,stim,prob_stim,condition_name,digit_dur,delay_dur,prob_dur,trial_dur_correct,display_trial_feedback,trial_type,hand,iti_dur,start_time,trial_dur
-0,1 2 3 4 5 6,7 < 9,hard,0.5,1,1.5,5.5,True,False,right,0.5,0,7
-1,3 8 4 5 9 1,9 < 8,easy,0.5,1,1.5,5.5,True,False,right,0.5,7.5,7
-2,5 9 1 2 7 3,9 < 2,easy,0.5,1,1.5,5.5,True,True,right,0.5,15,7
-3,4 7 1 3 9 2,7 < 9,hard,0.5,1,1.5,5.5,True,True,right,0.5,22.5,7
+0,1 2 3 4 5 6,7 < 9,easy,0.5,1,1.5,5.5,True,False,right,0.5,0,5.5
+1,3 8 4 5 9 1,9 < 8,easy,0.5,1,1.5,5.5,True,False,right,0.5,6,11.5
+2,5 9 1 2 7 3,9 < 2,easy,0.5,1,1.5,5.5,True,True,right,0.5,12,17.5
+3,4 7 1 3 9 2,7 < 9,easy,0.5,1,1.5,5.5,True,True,right,0.5,18,23.5
+4,2 7 4 1 5 6,6 < 2,easy,0.5,1,1.5,5.5,True,False,right,0.5,24,29.5
