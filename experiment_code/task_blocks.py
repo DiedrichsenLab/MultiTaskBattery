@@ -908,6 +908,15 @@ class FingerSequence(Task):
         self.iti_dur = self.target_file['iti_dur'][self.trial]
         self.hand = self.target_file['hand'][self.trial]
 
+    def _show_box(self, t0, box_dur):
+        # shows the red box around the digits for the duration of the announce time
+        go_rect = visual.rect.Rect(win = self.window, units = 'deg',
+                                   width = 12, height = 5, 
+                                   lineColor = [-1, 1, -1], 
+                                   lineWidth= 5)
+        go_rect.draw()
+        pass
+    
     def _show_sequence(self):
         """
         displays the sequence text
@@ -977,13 +986,11 @@ class FingerSequence(Task):
 
         if self.ttl_flag:
             while (ttl.clock.getTime() - start_time <= wait_time): # and not resp_made:
-                # wait_time = trial duration
                 # it records key presses during this time window
                 pressed_keys_list.extend(event.getKeys(self.response_keys, timeStamped=self.clock)) # records all the keys pressed
         else:
             while (self.clock.getTime() - start_time <= wait_time): # and not resp_made:
-                # wait_time = trial duration
-                # it records key presses during this time window
+                # 1. Show the sequence and draw a red rectangle (do not start pressing yet)
                 pressed_keys_list.extend(event.getKeys(self.response_keys, timeStamped=self.clock)) # records all the keys pressed
 
         if pressed_keys_list and not self.response_made:
@@ -1040,13 +1047,14 @@ class FingerSequence(Task):
             # flush any keys in buffer
             event.clearEvents()
 
-            # 1. Show the sequence
             self._show_sequence()
+            # wait_time = trial duration
+            # it records key presses during this time window
             
             # Start timer before display (get self.t2)
             self.get_time_before_disp()
 
-            # 2.collect responses
+            # 2.collect responses and draw green rectangle (as a go signal)
             wait_time = self.trial_dur - self.announce_time
             self.trial_response = self._get_trial_response(wait_time = wait_time,
                                                            trial_index = self.trial, 
@@ -1198,6 +1206,7 @@ class SternbergOrder(Task):
         rDf = self.get_response_df(all_trial_response=self.all_trial_response)
 
         return rDf
+
 class Rest(Task):
 
     # @property
