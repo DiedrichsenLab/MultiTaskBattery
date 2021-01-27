@@ -52,7 +52,7 @@ def display_input_box():
 
     experiment_info['subj_id']    = 'test'
     experiment_info['study_name'] = 'behavioral'
-    experiment_info['run_name']   = 'run_01'
+    experiment_info['run_name']   = 'run_12'
 
     # ttl flag that will be used to determine whether the program waits for ttl pulse or not
     experiment_info['ttl_flag'] = False
@@ -459,8 +459,8 @@ def run():
         all_run_response.append({
             'real_start_time': real_start_time,
             'real_end_time': (timer_info['global_clock'].getTime() - timer_info['t0']),
-            'ttl_counter': ttl_count,
-            'ttl_time': ttl_time,
+            # 'ttl_counter': ttl_count,
+            # 'ttl_time': ttl_time,
             'run_name': exp_info['run_name'],
             'task_idx': b+1,
             'run_iter': run_iter,
