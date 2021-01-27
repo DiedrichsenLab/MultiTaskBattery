@@ -241,7 +241,6 @@ class Task:
         self.window.flip()
 
     def display_trial_feedback(self, correct_response):
-
         if correct_response:
             feedback = os.path.join(consts.stim_dir, self.study_name ,'correct.png')
         elif not correct_response:
@@ -1063,6 +1062,10 @@ class FingerSequence(Task):
             else:
                 self.screen.fixation_cross()
 
+            # show the fixation cross for the duration of iti
+            t_start_iti = self.get_current_time()
+            self.show_fixation(t_start_iti, self.iti_dur)
+
             # option to quit screen
             self.screen_quit()
 
@@ -1081,7 +1084,7 @@ class SternbergOrder(Task):
         The participant needs to a) figure out whether 1 and 5 were in the set and 
                                  b) whether the order shown is correct
 
-    The order of events in a trial:
+    The order of events in trial:
     1. show fixation (iti_dur)
     2. show digits serially
     3. show fixation for iti_dur seconds
