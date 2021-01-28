@@ -52,7 +52,7 @@ def display_input_box():
 
     experiment_info['subj_id']    = 'test'
     experiment_info['study_name'] = 'behavioral'
-    experiment_info['run_name']   = 'run_12'
+    experiment_info['run_name']   = 'run_13'
 
     # ttl flag that will be used to determine whether the program waits for ttl pulse or not
     experiment_info['ttl_flag'] = False
