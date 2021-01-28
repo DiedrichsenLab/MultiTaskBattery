@@ -885,6 +885,9 @@ class FingerSequence(Task):
     """
     a sequence of digits are shown to the participant.
     The participant needs to finish the sequence once!
+    As the participant press the digits, an immediate feedback is shown:
+        the digit turns green if the correct key was pressed
+        the digit turns red if the incorrect key was pressed
     """
 
     def __init__(self, screen, target_file, run_end, task_name, study_name, target_num, ttl_flag):
@@ -1088,7 +1091,7 @@ class SternbergOrder(Task):
     """
     a list of digits (with length of 6) is shown sequentially (in a serial order)
     then a period of delay
-    then prob. The prob will be something like 1<5. This is a True False response and reads as:
+    then prob. The prob will be something like 1<5. This is a True False response and means:
         Does 1 comes before 5 in the set?
         The participant needs to a) figure out whether 1 and 5 were in the set and 
                                  b) whether the order shown is correct
@@ -1107,7 +1110,7 @@ class SternbergOrder(Task):
         self.name          = 'sternberg_order'
     
     def _get_trial_info(self):
-        # get stim (i.e. word)
+        # get trial info from the target file
         self.stim = self.target_file['stim'][self.trial]
         self.digits = self.stim.split()
         self.digit_dur = self.target_file['digit_dur'][self.trial] # digit will stay on the screen for digit_dur sec
@@ -1120,7 +1123,7 @@ class SternbergOrder(Task):
         self.iti_dur = self.target_file['iti_dur'][self.trial] # iti duration
 
     def _show_digits(self):
-        # display digit for fixed time
+        # display digit for fixed time (self.digit_dur)
         for digit in self.digits:   
             self.digit_start = self.get_current_time()                     
             stim = visual.TextStim(self.window, text=digit, pos=(0.0,0.0), color=(-1,-1,-1), units='deg')
@@ -1137,13 +1140,14 @@ class SternbergOrder(Task):
                     pass
 
     def _show_prob(self):
-        # display the prob on the screen
+        # display the prob on the screen (the probe comes after a delay period)
         self.prob_start = self.get_current_time()
         stim = visual.TextStim(self.window, text=self.prob, pos=(0.0,0.0), color=(-1,-1,-1), units='deg')
         stim.draw()
         self.window.flip()
 
     def run(self):
+        # run the task
 
         # loop over trials
         self.all_trial_response = [] # pre-allocate 
@@ -1207,6 +1211,28 @@ class SternbergOrder(Task):
         rDf = self.get_response_df(all_trial_response=self.all_trial_response)
 
         return rDf
+
+class FlexionExtension(Task):
+    """
+    flexion extension of toes! No particular feedback
+    """
+    def __init__(self, screen, target_file, run_end, task_name, study_name, target_num, ttl_flag):
+        super(FlexionExtension, self).__init__(screen, target_file, run_end, task_name, study_name, target_num, ttl_flag)
+        self.feedback_type = 'None' # reaction
+        self.name          = 'flexion_extension'
+
+    def _get_trial_info(self):
+        # reads info from the target file
+        pass
+
+    def show_stim(self):
+        # displays the instruction:
+        # either flexion or extension appears
+        pass
+
+    def run():
+        # runs the task
+        pass
 
 class Rest(Task):
 
@@ -1289,13 +1315,14 @@ class Rest(Task):
 #     }
 
 TASK_MAP = {
-    "visual_search": VisualSearch,
-    "theory_of_mind": TheoryOfMind,
-    "n_back": NBack,
-    "social_prediction": SocialPrediction,
-    "semantic_prediction": SemanticPrediction,
-    "action_observation": ActionObservation,
-    "finger_sequence": FingerSequence,
-    "sternberg_order":SternbergOrder,
-    "rest": Rest,
+    "visual_search": VisualSearch, # task_num 1
+    "theory_of_mind": TheoryOfMind, # task_num 2
+    "n_back": NBack, # task_num 3
+    "social_prediction": SocialPrediction, # task_num 4
+    "semantic_prediction": SemanticPrediction, # task_num 5
+    "action_observation": ActionObservation, # task_num 6 
+    "finger_sequence": FingerSequence, # task_num 7
+    "sternberg_order":SternbergOrder, # task_num 8
+    "flexion_extension":FlexionExtension, # task_num 9
+    "rest": Rest, # task_num?
     }
