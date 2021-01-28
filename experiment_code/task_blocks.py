@@ -948,7 +948,7 @@ class FingerSequence(Task):
         return digit_press
 
     def _digit_feedback_color(self):
-        # change the color of digits on the screen
+        # change the color of digits on the screen (as a form of immediate feedback)
         for obj in self.seq_text_obj:
             obj.draw()
         self.window.flip()
@@ -960,20 +960,19 @@ class FingerSequence(Task):
         ## each time a key is pressed, event.getKeys return a list
         ## the returned list has one element which is also a list ([[key, time]])
         ## the first index gives the key and the second index gives the time of press
-        press = event.getKeys(self.response_keys, timeStamped=self.clock)
+        press = event.getKeys(self.response_keys, timeStamped=self.clock) # records the pressed key
         if len(press)>0: # a press has been made`
-            # self.response_made = True
-            self.pressed_digits.append(self._get_press_digit(press[0][0]))
+            self.pressed_digits.append(self._get_press_digit(press[0][0])) # the pressed key is converted to its corresponding digit and appended to the list
             self.pressed_keys.append(press[0][0]) # get the pressed key
             self.press_times.append(press[0][1])  # get the time of press for the key
 
             try:
                 if self.digits_seq[self.number_press] == self.pressed_digits[self.number_press]: # the press is correct
                     self.number_correct = self.number_correct + 1
-                    self.seq_text_obj[self.number_press].setColor([-1, 1, -1])
-                    self._digit_feedback_color()
+                    self.seq_text_obj[self.number_press].setColor([-1, 1, -1]) # set the color of the corresponding digit to green
+                    self._digit_feedback_color() # calls the function that sets the "immediate feedback color" of the digit
                 else: # the press is incorrect
-                    self.seq_text_obj[self.number_press].setColor([1, -1, -1])
+                    self.seq_text_obj[self.number_press].setColor([1, -1, -1]) # set the color of the corresponding digit to red
                     self._digit_feedback_color()
             except IndexError: # if the number of presses exceeds the length of the threshold
                 self.correct_response = False
