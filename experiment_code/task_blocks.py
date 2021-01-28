@@ -907,71 +907,75 @@ class FingerSequence(Task):
         self.start_time = self.target_file['start_time'][self.trial]
         self.iti_dur = self.target_file['iti_dur'][self.trial]
         self.hand = self.target_file['hand'][self.trial]
-
-    def _show_box(self, t0, box_dur):
-        # shows the red box around the digits for the duration of the announce time
-        go_rect = visual.rect.Rect(win = self.window, units = 'deg',
-                                   width = 12, height = 5, 
-                                   lineColor = [-1, 1, -1], 
-                                   lineWidth= 5)
-        go_rect.draw()
-        pass
+        
+        # create a list of digits that are to be pressed
+        self.digits_seq = self.sequence_text.split(" ")
     
     def _show_sequence(self):
         """
         displays the sequence text
+        creates a list containing text objects for each digit in the sequence
         """
         # the height option specifies the font size of the text that will be displayed
-        seq = visual.TextStim(self.window, text=self.sequence_text, color=[-1, -1, -1], height = 2)
-        seq.draw()
+        self.seq_text_obj = []
+        i_digit = 0 # digit counter
+        x_pos = -5 # starting x position for the digit
+        for d in self.digits_seq:
+            self.seq_text_obj.append(visual.TextStim(self.window, text = d, color = [-1, -1, -1], height = 2, pos = [x_pos, 0]))
+            self.seq_text_obj[i_digit].draw()
+            i_digit = i_digit + 1
+            x_pos = x_pos + 2
+
         self.window.flip()
     
-    def _get_press_digits(self, sequence_text, hand):
-        # maps the pressed keys to digits
-        # creates self.digit_seq which contain a list of correct digits that are to be pressed
-        # and self.digits_press which contains a list of digits that have been pressed
-
-        # create a list of digits that are to be pressed
-        self.digits_seq = sequence_text.split(" ")
-
+    def _get_press_digit(self, press):
+        """
+        mapps the pressed key to the corresponding digit
+        Args:
+            press(str)   -   pressed key
+        Returns:
+            digit_press(str)    -   digit corresponding to the pressed key
+        """
         # get the mapping from keys to digits
-        map_k2d = self.key_digit[hand]
+        map_k2d = self.key_digit[self.hand]
 
         # map the pressed keys to pressed digits
-        self.digits_press = [map_k2d[k] for k in self.pressed_keys]
+        digit_press = map_k2d[press]
 
-    def _get_presses(self, pressed_keys_list):
-        # takes in the pressed_keys list with the key and the press time 
-        # and returns an array containing all the press times
-        # pressed_keys is a list of lists containing the keys and the press times
+        return digit_press
 
-        self.press_times  = [item[1] for item in pressed_keys_list]
-        self.pressed_keys = [item[0] for item in pressed_keys_list]
-
-    def _check_response(self):
-        # checks whether each response made is correct
-        # uses self.digits_press (the digits presses) and self.digit_seq (the digits should have been pressed)
-
-        # loop over all presses and check if they are correct
-        number_correct = 0 # number of correct presses made. Initialized at 0
+    def _digit_feedback_color(self):
+        # change the color of digits on the screen
+        for obj in self.seq_text_obj:
+            obj.draw()
+        self.window.flip()
+    
+    def _wait_press(self):
+        # waits for presses and once a press is made, check whether it's the correct key or not!
+        # if correct, the digit turns into green, if incorrect, the digit turns into red
         
-        #----------------------------------------------------------------------
-        # if the number of presses made are more than the equence length:
-        # that trial will be considered an error
-        if self.number_resp > len(self.digits_seq):
-            number_correct = 0
-        else:
-            for press_index in range(self.number_resp):
-                if self.digits_press[press_index] == self.digits_seq[press_index]:
-                    number_correct += 1
-        #----------------------------------------------------------------------
-        # if the number of presses made are correct and no error was made, the trial is counted as correct
-        if number_correct == len(self.digits_seq):
-            # self.correct_trial +=1
-            self.correct_response = True
-        else:
-            # self.error_trial +=1
-            self.correct_response = False
+        ## each time a key is pressed, event.getKeys return a list
+        ## the returned list has one element which is also a list ([[key, time]])
+        ## the first index gives the key and the second index gives the time of press
+        press = event.getKeys(self.response_keys, timeStamped=self.clock)
+        if len(press)>0: # a press has been made`
+            # self.response_made = True
+            self.pressed_digits.append(self._get_press_digit(press[0][0]))
+            self.pressed_keys.append(press[0][0]) # get the pressed key
+            self.press_times.append(press[0][1])  # get the time of press for the key
+
+            try:
+                if self.digits_seq[self.number_press] == self.pressed_digits[self.number_press]: # the press is correct
+                    self.number_correct = self.number_correct + 1
+                    self.seq_text_obj[self.number_press].setColor([-1, 1, -1])
+                    self._digit_feedback_color()
+                else: # the press is incorrect
+                    self.seq_text_obj[self.number_press].setColor([1, -1, -1])
+                    self._digit_feedback_color()
+            except IndexError: # if the number of presses exceeds the length of the threshold
+                self.correct_response = False
+            finally:
+                self.number_press = self.number_press + 1 # a press has been made => increase the number of presses
     
     def _get_trial_response(self, wait_time, trial_index, start_time, start_time_rt):
         # get the trial response and checks if the responses were correct
@@ -982,42 +986,40 @@ class FingerSequence(Task):
         self.response_made = False
         self.correct_response = False
         self.rt = 0
-        pressed_keys_list = [] # list in which the pressed keys will be added
+
+        self.number_press = 0 # number of presses made!
+        self.number_correct = 0 # number of correct presses
+        self.pressed_keys = [] # array containing pressed keys
+        self.press_times = [] # array contaiing press times
+        self.pressed_digits = [] # array containing pressed digits
 
         if self.ttl_flag:
             while (ttl.clock.getTime() - start_time <= wait_time): # and not resp_made:
                 # it records key presses during this time window
-                pressed_keys_list.extend(event.getKeys(self.response_keys, timeStamped=self.clock)) # records all the keys pressed
+                self._wait_press()
         else:
             while (self.clock.getTime() - start_time <= wait_time): # and not resp_made:
-                # 1. Show the sequence and draw a red rectangle (do not start pressing yet)
-                pressed_keys_list.extend(event.getKeys(self.response_keys, timeStamped=self.clock)) # records all the keys pressed
+                self._wait_press()
+                
 
-        if pressed_keys_list and not self.response_made:
+        if self.pressed_keys and not self.response_made:
             self.response_made = True
+            self.rt = self.press_times[0]
         else:
             self.response_made = False
-        
-        # get press times and presses in separate lists: self.pressed_keys and self.press_times
-        self._get_presses(pressed_keys_list)
-
-        if self.response_made: # if at least one press has been made, the rt is:
-            self.rt = self.press_times[0]
-        else: # if no press has been made, the rt is:
             self.rt = None
-
-        # get number of presses made
-        self.number_resp = len(pressed_keys_list)
-
-        # check if the presses were correct!
-        ## maps the keys to digits (self.digits_press) and gets the digits that should have been pressed (self.digit_seq)
-        self._get_press_digits(self.sequence_text, self.hand)
-        ## check the pressed digits
-        self._check_response()
+            
+        # if the number of presses made are correct and no error was made, the trial is counted as correct
+        if (self.number_press == len(self.digits_seq)) and (self.number_correct == len(self.digits_seq)):
+            # self.correct_trial +=1
+            self.correct_response = True
+        elif self.number_press > len(self.digits_seq):
+            # self.error_trial +=1
+            self.correct_response = False
 
         response_event = {
             "corr_digit": self.digits_seq,
-            "resp_digit": self.digits_press,
+            "resp_digit": self.pressed_digits,
             "resp_made": self.response_made,
             "corr_resp": self.correct_response,
             "rt": self.rt
@@ -1047,9 +1049,8 @@ class FingerSequence(Task):
             # flush any keys in buffer
             event.clearEvents()
 
+            # show the sequence of digits
             self._show_sequence()
-            # wait_time = trial duration
-            # it records key presses during this time window
             
             # Start timer before display (get self.t2)
             self.get_time_before_disp()
