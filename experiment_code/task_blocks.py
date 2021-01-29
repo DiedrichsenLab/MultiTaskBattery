@@ -963,7 +963,7 @@ class TheoryOfMind(Task):
             self.get_time_before_disp()
 
             ## 3.3 collect response
-            wait_time = self.stim_dur
+            wait_time = self.question_dur
 
             self.trial_response = self.check_trial_response(wait_time = wait_time, 
                                                             trial_index = self.trial, 
