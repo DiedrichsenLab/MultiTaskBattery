@@ -66,7 +66,7 @@ class Utils():
         df_target = pd.concat([df_target, pd.DataFrame.from_records(data)], axis=1, ignore_index=False, sort=False)
 
         # get targetfile name
-        tf_name = f"{self.block_name}_{self.block_dur_secs}sec" # was {self.num_trials}trials
+        tf_name = f"{self.task_name}_{self.block_dur_secs}sec" # was {self.num_trials}trials
         tf_name = self._get_target_file_name(tf_name)
 
         # save out dataframe to a csv file in the target directory (TARGET_DIR)
