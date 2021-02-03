@@ -1,0 +1,15 @@
+,word,session_list,trial_dur,display_trial_feedback,hand,iti_dur,start_time,trial_dur
+0,clock       ,1,1.6,False,right,0.5,0.0,1.6
+1,thimble     ,1,1.6,False,right,0.5,2.1,1.6
+2,muscle     ,2,1.6,False,right,0.5,4.2,1.6
+3,jacuzzi    ,2,1.6,False,right,0.5,6.3,1.6
+4,butterfly   ,1,1.6,False,right,0.5,8.4,1.6
+5,pillow     ,2,1.6,False,right,0.5,10.5,1.6
+6,spool       ,1,1.6,False,right,0.5,12.6,1.6
+7,alligator   ,1,1.6,False,right,0.5,14.7,1.6
+8,author     ,2,1.6,False,right,0.5,16.8,1.6
+9,bungee     ,2,1.6,False,right,0.5,18.9,1.6
+10,pen         ,1,1.6,False,right,0.5,21.0,1.6
+11,mail        ,1,1.6,False,right,0.5,23.1,1.6
+12,pond       ,2,1.6,False,right,0.5,25.2,1.6
+13,yard       ,2,1.6,False,right,0.5,27.3,1.6

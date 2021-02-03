@@ -1,4 +1,0 @@
-task_name,task_num,num_trials,target_num,num_sec,target_file,start_time,end_time,instruct_dur
-visual_search,1,12,5,30,visual_search_30sec_05.csv,0,35,5
-theory_of_mind,2,2,5,30,theory_of_mind_30sec_05.csv,45,80,5
-rest,7,1,,10,rest_10sec.csv,80,90,0

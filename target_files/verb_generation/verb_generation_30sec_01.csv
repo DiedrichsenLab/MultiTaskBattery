@@ -1,0 +1,15 @@
+,word,session_list,trial_dur,display_trial_feedback,hand,iti_dur,start_time,trial_dur
+0,kettle      ,1,1.6,False,right,0.5,0.0,1.6
+1,camel      ,2,1.6,False,right,0.5,2.1,1.6
+2,light       ,1,1.6,False,right,0.5,4.2,1.6
+3,dog         ,1,1.6,False,right,0.5,6.3,1.6
+4,cemetery   ,2,1.6,False,right,0.5,8.4,1.6
+5,well        ,1,1.6,False,right,0.5,10.5,1.6
+6,stool       ,1,1.6,False,right,0.5,12.6,1.6
+7,wolf       ,2,1.6,False,right,0.5,14.7,1.6
+8,beetle      ,1,1.6,False,right,0.5,16.8,1.6
+9,night      ,2,1.6,False,right,0.5,18.9,1.6
+10,traffic    ,2,1.6,False,right,0.5,21.0,1.6
+11,tap        ,2,1.6,False,right,0.5,23.1,1.6
+12,planet     ,2,1.6,False,right,0.5,25.2,1.6
+13,gym         ,1,1.6,False,right,0.5,27.3,1.6
