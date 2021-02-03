@@ -933,6 +933,123 @@ class TheoryOfMind(Utils):
             self.target_dir = os.path.join(consts.target_dir, self.task_name)
             self._save_target_files(df_target)
 
+class VerbGeneration(Utils):
+    """
+    This class makes target files for Theory of Mind using parameters set in __init__
+        Args:
+            task_name (str): 'verb_generation'
+            logging_file (str): csv file containing info about stimuli
+            story_dur (int): length of story (sec)
+            question_dur (int): length of question (sec)
+            frac (int): proportion of meaningless trials. default is .3.
+            balance_blocks (dict): keys are 'condition_name'
+            block_dur_secs (int): length of task_name (sec)
+            num_blocks (int): number of blocks to make
+            tile_block (int): determines number of repeats for task_name
+            trial_dur (int): length of trial (sec)
+            iti_dur (iti): length of iti (sec)
+            instruct_dur (int): length of instruct for task_names (sec)
+            hand (str): response hand
+            replace (bool): sample stim with or without replacement
+            display_trial_feedback (bool): display trial-by-trial feedback
+    """
+    
+    def __init__(self):
+        super().__init__()
+        self.task_name = 'verb_generation'
+        self.logging_file = 'verb_generation.csv'
+        self.frac = .3
+        self.balance_blocks = {'session_list': ['1','2']}
+        self.block_dur_secs = 15
+        self.num_blocks = 5
+        self.tile_block = 1
+        self.trial_dur = 1.6
+        self.iti_dur = .5
+        self.instruct_dur = 5
+        self.hand = 'right'
+        self.replace = False
+        self.display_trial_feedback = False
+
+    def _filter_dataframe(self, dataframe):
+        dataframe = dataframe.query(f'session_list=={self.balance_blocks["session_list"]}')
+        
+        return dataframe
+
+    def _create_new_columns(self, dataframe):
+        # add condition column
+        dataframe['session_list'] = dataframe['session_list']
+        dataframe['trial_dur'] = self.trial_dur
+        dataframe['display_trial_feedback'] = self.display_trial_feedback
+
+        return dataframe
+
+    def _balance_design(self, dataframe):
+        # group the dataframe according to `balance_blocks`
+        dataframe = dataframe.groupby([*self.balance_blocks], as_index=False).apply(lambda x: x.sample(n=self.num_stims, random_state=self.random_state, replace=self.replace)).reset_index(drop=True)
+
+        # ensure that only `num_trials` are sampled
+        dataframe = dataframe.sample(n=self.num_trials, random_state=self.random_state, replace=False).reset_index(drop=True)
+
+        return dataframe
+    
+    def _get_block_info(self, **kwargs):
+        # length (in secs) of the block
+        if kwargs.get('block_dur_secs'):
+            self.block_dur_secs = kwargs['block_dur_secs']
+        
+        # repeat the target files
+        if kwargs.get('tile_block'):
+            self.tile_block = kwargs['tile_block']
+
+        # num of blocks (i.e. target files) to make
+        if kwargs.get('num_blocks'):
+            self.num_blocks = kwargs['num_blocks'] * self.tile_block
+
+        # get overall number of trials
+        self.num_trials = int(self.block_dur_secs / (self.trial_dur + self.iti_dur))  
+
+        # get `num_stims` - lowest denominator across `balance_blocks`
+        denominator = np.prod([len(stim) for stim in [*self.balance_blocks.values()]])
+        self.num_stims = ceil(self.num_trials / denominator) # round up to nearest int
+    
+    def make_targetfile(self, **kwargs):
+        """
+        makes target file(s) for theory of mind given parameters in __init__
+        """
+        # get info about block
+        self._get_block_info(**kwargs)
+
+        # return logging file
+        fpath = os.path.join(consts.stim_dir, self.task_name, self.logging_file)
+        
+        # read in stimulus dataframe
+        df = pd.read_csv(fpath)
+
+        # filter dataframe
+        df_filtered = self._filter_dataframe(dataframe = df)
+
+        # create new columns (`condition_name` etc)
+        df_filtered = self._create_new_columns(dataframe = df_filtered)
+
+        seeds = np.arange(self.num_blocks)+1
+
+        # for self.block, self.key in enumerate(self.block_design):
+        for self.block in np.arange(self.num_blocks):
+            # randomly sample so that conditions (easy and hard) are equally represented
+            self.random_state = seeds[self.block]
+
+            # balance the dataframe by `condition_name` and `player_num`
+            df_target = self._balance_design(dataframe = df_filtered)
+
+            # remove `df_target` rows from the main dataframe so that we're always sampling from unique rows
+            if self.replace==False:
+                df_filtered = df_filtered.merge(df_target, how ='left', indicator=True)
+                df_filtered = df_filtered[df_filtered['_merge'] == 'left_only'].drop('_merge', axis=1)
+            
+            # save out target files
+            self.target_dir = os.path.join(consts.target_dir, self.task_name)
+            self._save_target_files(df_target)
+
 class Rest(Utils):
     """
     This class makes target files for Rest using parameters set in __init__
@@ -1008,8 +1125,8 @@ class MakeFiles:
             counterbalance_runs (bool): counterbalance block order across runs
     """
     def __init__(self):
-        self.task_names = ['visual_search', 'theory_of_mind', 'n_back', 'social_prediction', 'semantic_prediction', 'action_observation']
-        self.feedback_types = ['rt', 'acc', 'rt', 'acc', 'rt', 'acc']
+        self.task_names = ['visual_search', 'theory_of_mind', 'verb_generation', 'n_back', 'social_prediction', 'semantic_prediction', 'action_observation']
+        self.feedback_types = ['rt', 'acc', 'rt', 'rt', 'acc', 'rt', 'acc']
         #self.task_names = ['visual_search','theory_of_mind']
         #self.feedback_types = ['rt','acc']
         self.run_name_prefix = 'run'
@@ -1211,6 +1328,7 @@ class MakeFiles:
 TASK_MAP = {
     "visual_search": VisualSearch,
     "theory_of_mind": TheoryOfMind,
+    "verb_generation": VerbGeneration,
     "n_back": NBack,
     "social_prediction": SocialPrediction,
     "semantic_prediction": SemanticPrediction,
