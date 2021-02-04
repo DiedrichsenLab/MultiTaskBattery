@@ -1486,6 +1486,131 @@ class VerbGeneration(Task):
 
         return rDf
 
+class RomanceMovie(Task):
+    # @property
+    # def instruction_text(self):
+    #     return "Romance Movie Task\n\nYou will passively watch a 30-second clip from a movie.  Please keep your head as still as possible."
+    
+    def __init__(self, screen, target_file, run_end, task_name, study_name, target_num, ttl_flag):
+        super(RomanceMovie, self).__init__(screen, target_file, run_end, task_name, study_name, target_num, ttl_flag)
+        self.feedback_type = 'acc' # reaction
+        self.name          = 'romance_movie'
+
+    def _get_stims(self):
+        video_file = self.target_file['stim'][self.trial]
+        self.iti_dur = self.target_file['iti_dur'][self.trial]
+        self.trial_dur = self.target_file['trial_dur'][self.trial]
+        self.start_time = self.target_file['start_time'][self.trial]
+        self.path_to_video = os.path.join(consts.stim_dir, self.study_name, self.task_name, 'clips', video_file)
+   
+    def _get_first_response(self):
+        # display trial feedback
+        response_made = [dict['resp_made'] for dict in self.trial_response_all if dict['resp_made']]
+        correct_response = False
+        if response_made:
+            response_made = response_made[0]
+            correct_response = [dict['corr_resp'] for dict in self.trial_response_all if dict['resp_made']][0]
+        else:
+            response_made = False
+
+        return response_made, correct_response
+    
+    def _get_response_event(self, response_made):
+        # save response event
+        if response_made:
+            # save the first dict when response was made
+            response_event = [dict for dict in self.trial_response_all if dict['resp_made']][0]
+        else:
+            response_event = [dict for dict in self.trial_response_all][0]
+
+        return response_event
+    
+    def _show_stim(self):
+        mov = visual.MovieStim3(self.window, self.path_to_video, flipVert=False, flipHoriz=False, loop=False)
+
+        # play movie
+        frames = []
+        self.trial_response_all = []
+        image = []
+        wait_time = self.trial_dur
+        
+        if self.ttl_flag: # if the user chooses to wait for the ttl pulse
+            while (ttl.clock.getTime() - self.t0 <= wait_time): # and not resp_made:
+                # play movie
+                while mov.status != visual.FINISHED:
+                    
+                    # draw frame to screen
+                    mov.draw()
+                    self.window.flip()
+
+                # get trial response
+                self.trial_response = self.check_trial_response(wait_time = wait_time, 
+                                                                trial_index = self.trial, 
+                                                                start_time = self.t0, 
+                                                                start_time_rt = self.t2)
+        else: 
+            while (self.clock.getTime() - self.t0 <= wait_time): # and not resp_made:
+                # play movie
+                while mov.status != visual.FINISHED:
+                    
+                    # draw frame to screen
+                    mov.draw()
+                    self.window.flip()
+
+                # get trial response
+                self.trial_response = self.check_trial_response(wait_time = wait_time, 
+                                                                trial_index = self.trial, 
+                                                                start_time = self.t0, 
+                                                                start_time_rt = self.t2)  
+               
+    def run(self):
+
+        # loop over trials
+        self.all_trial_response = [] # pre-allocate 
+
+        for self.trial in self.target_file.index: 
+
+            # get stims
+            self._get_stims()
+
+            # get current time (self.t0)
+            self.t0 = self.get_current_time()
+
+            # show the fixation for the duration of iti
+            self.show_fixation(self.t0, self.start_time - self.t0)
+
+           # collect real_start_time for each block (self.real_start_time)
+            self.get_real_start_time(self.t0)
+
+            # flush any keys in buffer
+            event.clearEvents()
+
+            # Start timer before display (get self.t2)
+            self.get_time_before_disp()
+
+            # display stims. The responses will be recorded and checked once the video is shown
+            self._show_stim()
+
+            if self.target_file['display_trial_feedback'][self.trial] and self.response_made:
+                self.display_trial_feedback(correct_response = self.correct_response)
+            else:
+                self.screen.fixation_cross()
+            
+            # update response
+            self.update_trial_response()
+
+            # 5 show fixation for the duration of the iti
+            ## 5.1 get current time
+            t_start_iti = self.get_current_time()
+            self.show_fixation(t_start_iti, self.iti_dur)
+
+            self.screen_quit()
+
+        # get the response dataframe
+        rDf = self.get_response_df(all_trial_response=self.all_trial_response)
+
+        return rDf
+
 class Rest(Task):
 
     # @property
