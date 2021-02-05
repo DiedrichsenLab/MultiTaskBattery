@@ -1167,6 +1167,130 @@ class RomanceMovie(Utils):
             self.target_dir = os.path.join(consts.target_dir, self.task_name)
             self._save_target_files(df_target)
 
+class ActionObservationKnots(Utils):
+    """
+    This class makes target files for Action Observation Knots using parameters set in __init__
+        Args:
+            task_name (str): 'action_observation_knots'
+            logging_file (str): csv file containing info about stimuli
+            video_name (list of str): name of video(s) to include
+            resized (bool): resize frames of video
+            block_dur_secs (int): length of task_name (sec)
+            num_blocks (int): number of blocks to make
+            tile_block (int): determines number of repeats for task_name
+            trial_dur (int): length of trial (sec)
+            iti_dur (iti): length of iti (sec)
+            instruct_dur (int): length of instruct for task_names (sec)
+            hand (str): response hand
+            replace (bool): sample stim with or without replacement
+            display_trial_feedback (bool): display trial-by-trial feedback
+    """
+    
+    def __init__(self):
+        super().__init__()
+        self.task_name = 'action_observation_knots'
+        self.logging_file = 'action_observation_knots_logging.csv'
+        self.video_name_action = ['knotAction'] 
+        self.video_name_control = ['knotControl']
+        self.balance_blocks = {'condition_name': ['knot'], 'session_list': [1,2]}
+        self.block_dur_secs = 30
+        self.num_blocks = 5
+        self.tile_block = 1
+        self.trial_dur = 20 
+        self.iti_dur = .5
+        self.instruct_dur = 5
+        self.hand = 'right'
+        self.replace = False 
+        self.display_trial_feedback = False
+
+    def _filter_dataframe(self, dataframe):
+        # remove all filenames where any of the videos have not been extracted
+        stims_to_remove = dataframe.query('extracted==False')["video_name_action"].to_list()
+        df_filtered = dataframe[~dataframe["video_name_action"].isin(stims_to_remove)]
+
+        return df_filtered
+
+    def _create_new_columns(self, dataframe):
+        # make new `stim`
+        dataframe['stim_action'] = dataframe['video_name_action'] + '.mov'
+        dataframe['stim_control'] = dataframe['video_name_control'] + '.mov'
+
+        dataframe['session_list'] = dataframe['session_list']
+
+        # set `condition name`
+        dataframe['condition_name'] = dataframe['condition_name']
+
+        dataframe['display_trial_feedback'] = self.display_trial_feedback
+
+        return dataframe
+    
+    def _balance_design(self, dataframe):
+        # group the dataframe according to `balance_blocks`
+        dataframe = dataframe.groupby([*self.balance_blocks], as_index=False).apply(lambda x: x.sample(n=self.num_stims, random_state=self.random_state, replace=self.replace)).reset_index(drop=True)
+
+        # ensure that only `num_trials` are sampled
+        dataframe = dataframe.sample(n=self.num_trials, random_state=self.random_state, replace=False).reset_index(drop=True)
+
+        return dataframe
+     
+    def _get_block_info(self, **kwargs):
+        # length (in secs) of the block
+        if kwargs.get('block_dur_secs'):
+            self.block_dur_secs = kwargs['block_dur_secs']
+        
+        # repeat the target files
+        if kwargs.get('tile_block'):
+            self.tile_block = kwargs['tile_block']
+
+        # num of blocks (i.e. target files) to make
+        if kwargs.get('num_blocks'):
+            self.num_blocks = kwargs['num_blocks'] * self.tile_block
+
+        # get overall number of trials
+        self.num_trials = int(self.block_dur_secs / (self.trial_dur + self.iti_dur))  
+
+        # get `num_stims` - lowest denominator across `balance_blocks`
+        denominator = np.prod([len(stim) for stim in [*self.balance_blocks.values()]])
+        self.num_stims = ceil(self.num_trials / denominator) # round up to nearest int
+    
+    def make_targetfile(self, **kwargs):
+        """
+        makes target file(s) for social prediction given parameters in __init__
+
+        """
+        # get info about block
+        self._get_block_info(**kwargs)
+
+        # return logging file
+        fpath = os.path.join(consts.stim_dir, self.task_name, self.logging_file)
+        
+        # read in stimulus dataframe
+        df = pd.read_csv(fpath)
+
+        # filter dataframe
+        df_filtered = self._filter_dataframe(dataframe = df)
+
+        # create new columns (`trial_type` etc)
+        df_filtered = self._create_new_columns(dataframe = df_filtered)
+
+        seeds = np.arange(self.num_blocks)+1
+
+        # for self.block, self.key in enumerate(self.block_design):
+        for self.block in np.arange(self.num_blocks):
+            # randomly sample so that conditions (easy and hard) are equally represented
+            self.random_state = seeds[self.block]
+
+            # balance the dataframe by `condition_name` and `player_num`
+            df_target = self._balance_design(dataframe = df_filtered)
+
+            # remove `df_target` rows from the main dataframe so that we're always sampling from unique rows
+            if self.replace==False:
+                df_filtered = df_filtered.merge(df_target, how='left', indicator=True)
+                df_filtered = df_filtered[df_filtered['_merge'] == 'left_only'].drop('_merge', axis=1)
+            
+            self.target_dir = os.path.join(consts.target_dir, self.task_name)
+            self._save_target_files(df_target)
+
 class Rest(Utils):
     """
     This class makes target files for Rest using parameters set in __init__
@@ -1242,8 +1366,8 @@ class MakeFiles:
             counterbalance_runs (bool): counterbalance block order across runs
     """
     def __init__(self):
-        self.task_names = ['visual_search', 'theory_of_mind', 'verb_generation', 'n_back', 'social_prediction', 'semantic_prediction', 'action_observation', 'romance_movie']
-        self.feedback_types = ['rt', 'acc', 'rt', 'rt', 'acc', 'rt', 'acc','rt']
+        self.task_names = ['visual_search', 'theory_of_mind', 'verb_generation', 'n_back', 'social_prediction', 'semantic_prediction', 'action_observation', 'romance_movie', 'action_observation_knots']
+        self.feedback_types = ['rt', 'acc', 'rt', 'rt', 'acc', 'rt', 'acc', 'rt', 'rt']
         #self.task_names = ['visual_search','theory_of_mind']
         #self.feedback_types = ['rt','acc']
         self.run_name_prefix = 'run'
@@ -1445,12 +1569,13 @@ class MakeFiles:
 TASK_MAP = {
     "visual_search": VisualSearch,
     "theory_of_mind": TheoryOfMind,
-    "verb_generation": VerbGeneration,
     "n_back": NBack,
     "social_prediction": SocialPrediction,
     "semantic_prediction": SemanticPrediction,
     "action_observation": ActionObservation,
+    "verb_generation": VerbGeneration,
     "romance_movie": RomanceMovie,
+    "action_observation_knots": ActionObservationKnots,
     "rest": Rest,
     }
 
