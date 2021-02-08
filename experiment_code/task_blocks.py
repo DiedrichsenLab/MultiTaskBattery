@@ -9,6 +9,7 @@ import math
 import glob
 
 from psychopy import visual, core, event, gui # data, logging
+from psychopy.visual import ShapeStim
 
 import experiment_code.constants as consts
 from experiment_code.screen import Screen
@@ -1124,9 +1125,6 @@ class FingerSequence(Task):
             # get current time (self.t0)
             self.t0 = self.get_current_time()
 
-            print(f"t0 {self.t0}")
-            print(f"start time {self.start_time}")
-
             # show the fixation for the duration of iti
             self.show_fixation(self.t0, self.start_time - self.t0)
 
@@ -1208,7 +1206,7 @@ class SternbergOrder(Task):
         # display digit for fixed time (self.digit_dur)
         for digit in self.digits:   
             self.digit_start = self.get_current_time()                     
-            stim = visual.TextStim(self.window, text=digit, pos=(0.0,0.0), color=(-1,-1,-1), units='deg')
+            stim = visual.TextStim(self.window, text=digit, pos=(0.0,0.0), color=(-1,-1,-1), units='deg', height = 1.5)
             stim.draw()
             self.window.flip()
             # core.wait(self.stem_word_dur)
@@ -1224,8 +1222,25 @@ class SternbergOrder(Task):
     def _show_prob(self):
         # display the prob on the screen (the probe comes after a delay period)
         self.prob_start = self.get_current_time()
-        stim = visual.TextStim(self.window, text=self.prob, pos=(0.0,0.0), color=(-1,-1,-1), units='deg')
-        stim.draw()
+        # get the prob digits
+        self.prob_dig = self.prob.split(" ")
+
+        # the first digit of the prob
+        dig_first = visual.TextStim(self.window, text=self.prob_dig[0], pos=(-1.5,0.0), color=(-1,-1,-1), units='deg', height = 1.5)
+        
+        # an arrow to show order
+        # arrowVert = [(-0.4,0.05),(-0.4,-0.05),(-.2,-0.05),(-.2,-0.1),(0,0),(-.2,0.1),(-.2,0.05)]
+        arrowVert = [(-1.4,0.5),(-1.4,-0.5),(0,-0.5),(0,-1.5),(1.5, 0),(0,1.5),(0,0.5)]
+        arrow = ShapeStim(self.window, vertices=arrowVert, fillColor='black', size=.5, lineColor='black')
+        
+        # the second digit of the prob
+        dig_second = visual.TextStim(self.window, text=self.prob_dig[1], pos=(1.5,0.0), color=(-1,-1,-1), units='deg', height = 1.5)
+        
+        # draw the prob
+        dig_first.draw()
+        arrow.draw()
+        dig_second.draw()
+        
         self.window.flip()
 
     def run(self):
@@ -1293,6 +1308,25 @@ class SternbergOrder(Task):
         rDf = self.get_response_df(all_trial_response=self.all_trial_response)
 
         return rDf
+
+class VisuospatialOrder(Task):
+
+    def __init__(self, screen, target_file, run_end, task_name, study_name, target_num, ttl_flag):
+        super(VisuospatialOrder, self).__init__(screen, target_file, run_end, task_name, study_name, target_num, ttl_flag)
+        self.feedback_type = 'acc' # reaction
+        self.name          = 'visuospatial_order'
+
+    def _get_target_info(self):
+        pass
+
+    def _show_Stim(self):
+        pass
+
+    def _show_prob(self):
+        pass
+
+    def run(self):
+        pass
 
 class FlexionExtension(Task):
     """
@@ -1404,7 +1438,8 @@ TASK_MAP = {
     "semantic_prediction": SemanticPrediction, # task_num 5
     "action_observation": ActionObservation, # task_num 6 
     "finger_sequence": FingerSequence, # task_num 7
-    "sternberg_order":SternbergOrder, # task_num 8
-    "flexion_extension":FlexionExtension, # task_num 9
+    "sternberg_order": SternbergOrder, # task_num 8
+    "visuospatial_order": VisuospatialOrder, # task 9
+    "flexion_extension":FlexionExtension, # task_num 10
     "rest": Rest, # task_num?
     }
