@@ -252,9 +252,7 @@ def wait_endtask(timer_info, run_endTime, ttl_flag):
             ttl.check()
         else:
             pass
-    print("end_task")
-    print(timer_info['global_clock'].getTime() - timer_info['t0'])
-
+        
 def save_response(response_df, study_name, subj_id, task_name):
     """
     gets the response dataframe and save it
