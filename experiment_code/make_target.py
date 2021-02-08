@@ -25,7 +25,7 @@ def visuospatial_order():
     """
     pass
 
-def sternber_order(nrun = 30, study_name = 'behavioral', 
+def sternber_order(nrun = 5, study_name = 'behavioral', 
                    digit_dur = 1, delay_dur = 1, 
                    prob_dur = 1, load_list = [4, 6], 
                    iti_dur = 0.5, trial_dur = 8, 
@@ -144,12 +144,12 @@ def sternber_order(nrun = 30, study_name = 'behavioral',
 
         df_tmp = pd.DataFrame(T)
 
-        target_filename = path2task_target / f"sternberg_order_{task_dur-5}sec_{run:02d}.csv"
+        target_filename = path2task_target / f"sternberg_order_{task_dur-5}sec_{run+1:02d}.csv"
         df_tmp.to_csv(target_filename)
 
     return
 
-def finger_sequence(nrun = 30, study_name = 'behavioral', 
+def finger_sequence(nrun = 5, study_name = 'behavioral', 
                     seq_length = 6, num_trials = 1, 
                     announce_time = 0, iti_dur = 0.5, 
                     trial_dur = 3.25, TR = 1, 
@@ -251,7 +251,7 @@ def finger_sequence(nrun = 30, study_name = 'behavioral',
 
         df_tmp = pd.DataFrame(T)
 
-        target_filename = path2task_target / f"finger_sequence_{task_dur-5}sec_{run:02d}.csv"
+        target_filename = path2task_target / f"finger_sequence_{task_dur-5}sec_{run+1:02d}.csv"
         df_tmp.to_csv(target_filename)
     return
 
@@ -334,5 +334,3 @@ def run_target():
     sternber_order()
 
     return
-
-run_target()
