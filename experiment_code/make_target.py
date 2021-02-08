@@ -26,10 +26,10 @@ def visuospatial_order():
     pass
 
 def sternber_order(nrun = 5, study_name = 'behavioral', 
-                   digit_dur = 1, delay_dur = 1, 
+                   digit_dur = 0.75, delay_dur = 0.5, 
                    prob_dur = 1, load_list = [4, 6], 
-                   iti_dur = 0.5, trial_dur = 8, 
-                   task_dur = 35, hand = 'right', 
+                   iti_dur = 0.5, trial_dur = 6, 
+                   task_dur = 30, hand = 'right', 
                    display_trial_feedback = True, num_trials = 1, 
                    TR = 1):
     """
@@ -159,7 +159,7 @@ def sternber_order(nrun = 5, study_name = 'behavioral',
 
         df_tmp = pd.DataFrame(T)
 
-        target_filename = path2task_target / f"sternberg_order_{task_dur-5}sec_{run+1:02d}.csv"
+        target_filename = path2task_target / f"sternberg_order_{task_dur}sec_{run+1:02d}.csv"
         df_tmp.to_csv(target_filename)
 
     return
