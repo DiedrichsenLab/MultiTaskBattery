@@ -387,12 +387,31 @@ def theory_of_mind():
     """
     pass
 
-def rest():
+def rest(trial_dur = 10):
     """
     creates target file for the rest task
+    Args:
+        trial_dur (float) - duration of the trial in seconds(for rest it is set at 10 seconds as default)
     target file fields:
         There are no trials really. Just one start_time and end_time
     """
+    # path to save the target files
+    path2task_target = consts.target_dir / study_name / 'rest'
+    consts.dircheck(path2task_target)
+
+    T = {} # will be converted to a dataframe and saved as the target file
+
+    T['hand']                   = 'None'
+    T['iti_dur']                = 0
+    T['star_time']              = 0
+    T['stim']                   = 'fixation'
+    T['trial_dur']              = trial_dur 
+    T['display_trial_feedback'] = False
+
+    df_tmp = pd.DataFrame(T)
+        
+    target_filename = path2task_target / f"rest_{trial_dur}sec_{run+1:02d}.csv"
+    df_tmp.to_csv(target_filename)
 
 def run_target():
 
