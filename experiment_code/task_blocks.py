@@ -1397,7 +1397,7 @@ class FlexionExtension(Task):
 
         for act in self.stim_act:
             self.act_start = self.get_current_time()  
-            stim = visual.TextStim(self.window, text = self.foot + " "+ act, pos=(0.0,0.0), color=(-1,-1,-1), units='deg', height = 1.5)
+            stim = visual.TextStim(self.window, text = self.foot + "\n "+ act, pos=(0.0,0.0), color=(-1,-1,-1), units='deg', height = 1.5)
             stim.draw()
             self.window.flip()
             
