@@ -30,9 +30,24 @@ def sternber_order(nrun = 5, study_name = 'behavioral',
                    prob_dur = 1, load_list = [4, 6], 
                    iti_dur = 0.5, trial_dur = 8, 
                    task_dur = 35, hand = 'right', 
-                   display_trial_feedback = True):
+                   display_trial_feedback = True, num_trials = 1, 
+                   TR = 1):
     """
     creates target file for the sternberg_order task
+    Args:
+        nrun (int)                    - number of runs
+        study_name (str)              - behavioral or fmri
+        load? (int)                   - number of digits to show during encoding
+        num_trials (int)              - number of repetitions per trial type
+        iti_dur (float)               - iti duration in seconds
+        delay_dur (float)             - duration of delay between encoding and prob in seconds
+        digit_dur (float)             - duration when a digit stays on the screen in seconds
+        prob_dur (float)              - duration when prob stays on the screen in seconds
+        hand (str)                    - hand with which response needs to be made
+        trial_dur_list (list)         - trial duration in seconds (first element: slow , second element: fast)
+        TR (float)                    - TR in seconds
+        task_dur (float)              - task duration in seconds
+        display_trial_feedback (bool) - True: display feedback after trial, False: don't display feedback after trial
     target file fields:
         load (number of digits)
         stim (a string with digits including space between them)
@@ -157,7 +172,7 @@ def finger_sequence(nrun = 5, study_name = 'behavioral',
     """
     creates target file for the finger sequence task
     Args:
-        run_number (int)              - run number
+        nrun (int)                    - number of runs
         study_name (str)              - behavioral or fmri
         seq_length (int)              - length of sequence or number of digits
         num_trials (int)              - number of repetitions per trial type
@@ -266,9 +281,18 @@ def language():
 def flexion_extension(nrun = 5, study_name = 'behavioral', 
                       trial_dur = 4.5, iti_dur = 0.5, 
                       stim_dur = 0.5,
-                      task_dur = 30, display_trial_feedback = False):
+                      task_dur = 30, display_trial_feedback = False, 
+                      TR = 1):
     """
     creates target file for the toe flexion extension task
+    Args:
+        nrun (int)                    - number of runs
+        study_name (str)              - behavioral or fmri
+        iti_dur (float)               - iti duration in seconds
+        stim_dur (float)              - duration when the action (either flexion or extension) stays on the screen
+        TR (float)                    - TR in seconds
+        task_dur (float)              - task duration in seconds
+        display_trial_feedback (bool) - True: display feedback after trial, False: don't display feedback after trial
     target file fields:
         trial_num (a column with no name - just the trial number starting from 0)
         stim (either flex or extend toes)
