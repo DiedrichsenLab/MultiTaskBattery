@@ -1389,7 +1389,11 @@ class FlexionExtension(Task):
     def _show_stim(self):
         # displays the instruction:
         # either flexion or extension appears
-        self.stim_act = self.stim.split()
+        self.stim_pair = self.stim.split()
+        n_rep = int(self.trial_dur/(self.stim_dur*2)) # number of times a stimulus pair will be repeated
+
+        self.stim_act = np.tile(self.stim_pair, n_rep)
+
 
         for act in self.stim_act:
             self.act_start = self.get_current_time()  
@@ -1429,10 +1433,7 @@ class FlexionExtension(Task):
             self.get_real_start_time(self.t0)
 
             # 1. show actions
-            iter = 0 # counter for the stimulus
-            while iter <= (self.trial_dur/self.stim_dur): # determine the frequency
-                self._show_stim()
-                iter +=1
+            self._show_stim()
 
             ## 3.2 get the time before collecting responses (self.t2)
             self.get_time_before_disp()

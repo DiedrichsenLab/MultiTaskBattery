@@ -38,7 +38,7 @@ def display_input_box():
 
     # inputDlg.show()
 
-    # record input variables
+    # # record input variables
     experiment_info = {}
     # if gui.OK:
     #     experiment_info['subj_id']    = inputDlg.data[0]
@@ -50,9 +50,9 @@ def display_input_box():
     # else:
     #     sys.exit()
 
-    experiment_info['subj_id']    = 'test'
+    experiment_info['subj_id']    = 'test2'
     experiment_info['study_name'] = 'behavioral'
-    experiment_info['run_name']   = 'run_13'
+    experiment_info['run_name']   = 'run_11'
 
     # ttl flag that will be used to determine whether the program waits for ttl pulse or not
     experiment_info['ttl_flag'] = False
@@ -209,7 +209,7 @@ def get_task(experiment_info, target_binfo, run_info,
 
     return BlockTask
 
-def wait_starttask(timer_info, run_startTime, study_name):
+def wait_starttask(timer_info, run_startTime, ttl_flag):
     """
     Wait till it's time to start the task (reads info from target file)
     Args:
@@ -218,12 +218,12 @@ def wait_starttask(timer_info, run_startTime, study_name):
         study_name(str) -   'fmri' or 'behavioral'
     """
     while timer_info['global_clock'].getTime() - timer_info['t0'] <= run_startTime:
-        if study_name == 'fmri':
+        if ttl_flag:
             ttl.check()
-        elif study_name == 'behavioral':
+        else:
             pass
             
-def wait_instruct(timer_info, run_startTime, instruct_dur, study_name):
+def wait_instruct(timer_info, run_startTime, instruct_dur, ttl_flag):
     """
     Wait for a specific amount of time for the instructions specified in the target file
     Args:
@@ -234,13 +234,12 @@ def wait_instruct(timer_info, run_startTime, instruct_dur, study_name):
     """
     wait_time = run_startTime + instruct_dur
     while timer_info['global_clock'].getTime() - timer_info['t0'] <= wait_time: # timed presentation
-        
-        if study_name == 'fmri':
+        if ttl_flag:
             ttl.check()
-        elif study_name == 'behavioral':
+        else:
             pass
 
-def wait_endtask(timer_info, run_endTime, study_name):
+def wait_endtask(timer_info, run_endTime, ttl_flag):
     """"
     Waits till the timer reaches the end time of the task 
     Args:
@@ -249,11 +248,12 @@ def wait_endtask(timer_info, run_endTime, study_name):
         study_name(str) -   'fmri' or 'behavioral'
     """
     while timer_info['global_clock'].getTime() - timer_info['t0'] <= run_endTime: # timed presentation
-
-        if study_name == 'fmri':
+        if ttl_flag:
             ttl.check()
-        elif study_name == 'behavioral':
+        else:
             pass
+    print("end_task")
+    print(timer_info['global_clock'].getTime() - timer_info['t0'])
 
 def save_response(response_df, study_name, subj_id, task_name):
     """
@@ -437,13 +437,13 @@ def run():
 
 
         # 8.4 wait for first start task
-        wait_starttask(timer_info, target_binfo['run_startTime'], exp_info['study_name'])
+        wait_starttask(timer_info, target_binfo['run_startTime'], exp_info['ttl_flag'])
 
         # 8.5 display instructions
         Task_Block.display_instructions()
 
         # 8.6 wait for a time period equal to instruction duration
-        wait_instruct(timer_info, target_binfo['run_startTime'], target_binfo['instruct_dur'], exp_info['study_name'])
+        wait_instruct(timer_info, target_binfo['run_startTime'], target_binfo['instruct_dur'], exp_info['ttl_flag'])
 
         # 8.7.1 run task and collect feedback
         new_resp_df = Task_Block.run()
@@ -468,7 +468,7 @@ def run():
         })
 
         # 8.9 wait for end-of-task
-        wait_endtask(timer_info, target_binfo['run_endTime'], exp_info['study_name'])
+        wait_endtask(timer_info, target_binfo['run_endTime'], exp_info['ttl_flag'])
 
     # 9.1 get the run result as a dataframe
     df_run_results = get_runfile_results(run_info['run_file'], all_run_response, run_file_results)
