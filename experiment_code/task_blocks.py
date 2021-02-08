@@ -886,20 +886,27 @@ class TheoryOfMind(Task):
         
     
     def _show_story(self):
-        # display story for fixed time                       
-        stim = visual.TextStim(self.window, text=self.story, alignHoriz='center', pos=(0.0,0.0), color=(-1,-1,-1), units='deg')
+        # display story for fixed time    
+        self.story_start = self.get_current_time()                  
+        stim = visual.TextStim(self.window, text=self.story, alignHoriz='center', wrapWidth=20, pos=(0.0,0.0), color=(-1,-1,-1), units='deg')
         stim.text = stim.text  # per PsychoPy documentation, this should reduce timing delays in displaying text
         stim.draw()
         self.window.flip()
-        core.wait(self.story_dur)
+        
+        # the story will remain on the screen for a certain amount of time (self.story_dur)
+        if self.ttl_flag: # wait for ttl pulse
+            while ttl.clock.getTime()-self.story_start <= self.story_dur:
+                    ttl.check()
+        else: # do not wait for ttl pulse
+            while self.clock.getTime()-self.story_start <= self.story_dur:
+                pass
 
     def _show_stim(self):
         # display question for fixed time                       
         stim = visual.TextStim(self.window, text=self.question, pos=(0.0,0.0), color=(-1,-1,-1), units='deg')
         stim.text = stim.text  # per PsychoPy documentation, this should reduce timing delays in displaying text
         stim.draw()
-        # self.window.flip()
-        # core.wait(self.question_dur)
+        self.window.flip()
     
     def _show_stims_all(self):
         # show story
@@ -917,6 +924,7 @@ class TheoryOfMind(Task):
         self.window.flip()
     
     def run(self):
+        # run the task
 
         # loop over trials
         self.all_trial_response = [] # pre-allocate 
@@ -924,38 +932,57 @@ class TheoryOfMind(Task):
         for self.trial in self.target_file.index: 
 
             # get stims
-            self._get_stims()
+            self._get_trial_info()
 
             # get current time (self.t0)
             self.t0 = self.get_current_time()
 
             # show the fixation for the duration of iti
-            self.show_fixation(self.t0, self.target_file['start_time'][self.trial])
+            # wait here till the startTime 
+            self.show_fixation(self.t0, self.start_time - self.t0)
 
             # collect real_start_time for each block (self.real_start_time)
             self.get_real_start_time(self.t0)
 
-            # display stem
-            self._show_stims_all() 
+            # 1. show story
+            self._show_story()
 
-            # Start timer before display (get self.t2)
+            # 2. display fixation for the duration of the iti
+            ## 2.1 get the current time
+            t_story_end = self.get_current_time()
+            ## 2.2 get the iti duration
+            self.screen.fixation_cross()
+            self.show_fixation(t_story_end, self.iti_dur)
+            ## 2.3 clear any button presses before collecting response
+            event.clearEvents()
+
+            # 3. display the probe and collect reponse
+            ## 3.1 display prob
+            self._show_stim()
+
+            ## 3.2 get the time before collecting responses (self.t2)
             self.get_time_before_disp()
 
-            # collect response
-            wait_time = self.target_file['start_time'][self.trial] + self.target_file['trial_dur_correct'][self.trial]
+            ## 3.3 collect response
+            wait_time = self.question_dur
+
             self.trial_response = self.check_trial_response(wait_time = wait_time, 
                                                             trial_index = self.trial, 
-                                                            start_time = self.t0, 
+                                                            start_time = self.get_current_time(), 
                                                             start_time_rt = self.t2)
-
-           # update response
+            ## 3.4 update response
             self.update_trial_response()
 
-            # display trial feedback
+            # 4. display trial feedback
             if self.target_file['display_trial_feedback'][self.trial] and self.response_made:
                 self.display_trial_feedback(correct_response = self.correct_response) 
             else:
                 self.screen.fixation_cross()
+            
+            # 5 show fixation for the duration of the iti
+            ## 5.1 get current time
+            t_start_iti = self.get_current_time()
+            self.show_fixation(t_start_iti, self.iti_dur)
 
             self.screen_quit()
 
@@ -1441,5 +1468,6 @@ TASK_MAP = {
     "sternberg_order": SternbergOrder, # task_num 8
     "visuospatial_order": VisuospatialOrder, # task 9
     "flexion_extension":FlexionExtension, # task_num 10
+    "flexion_extension": FlexionExtension, # task_num 9
     "rest": Rest, # task_num?
     }
