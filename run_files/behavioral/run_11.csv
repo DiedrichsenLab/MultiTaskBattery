@@ -1,6 +1,8 @@
 task_name,task_num,num_trials,target_num,num_sec,target_file,start_time,end_time,instruct_dur
-social_prediction,4,10,1,30,social_prediction_30sec_01.csv,0,35,5
-rest,7,1,,10,rest_10sec.csv,35,45,0
-semantic_prediction,5,4,1,30,semantic_prediction_30sec_01.csv,180,215,5
-rest,7,1,,10,rest_10sec.csv,215,225,0
-action_observation,6,12,1,30,action_observation_30sec_01.csv,225,260,5
+sternberg_order,8,4,1,30,sternberg_order_30sec_01.csv,0,35,5
+rest,9,1,,10,rest_10sec.csv,35,45,0
+finger_sequence,7,8,1,30,finger_sequence_30sec_01.csv,45,80,5
+rest,9,1,,10,rest_10sec.csv,80,90,0
+flexion_extension,10,6,1,30,flexion_extension_30sec_01.csv,90,125,5
+rest,9,1,,10,rest_10sec.csv,125,135,0
+visual_search,1,12,2,30,visual_search_30sec_02.csv,135,170,5
