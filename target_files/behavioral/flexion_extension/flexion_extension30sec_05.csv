@@ -1,8 +1,7 @@
 ,stim,trial_dur,iti_dur,start_time,end_time,trial_type,display_trial_feedback,foot
 0,flexion extension,4.5,0.5,0.0,4.5,None,False,right
-1,flexion extension,4.5,0.5,5.0,9.5,None,False,left
+1,flexion extension,4.5,0.5,5.0,9.5,None,False,right
 2,flexion extension,4.5,0.5,10.0,14.5,None,False,left
-3,flexion extension,4.5,0.5,15.0,19.5,None,False,left
-4,flexion extension,4.5,0.5,20.0,24.5,None,False,right
-5,flexion extension,4.5,0.5,25.0,29.5,None,False,right
-6,flexion extension,4.5,0.5,30.0,34.5,None,False,right
+3,flexion extension,4.5,0.5,15.0,19.5,None,False,right
+4,flexion extension,4.5,0.5,20.0,24.5,None,False,left
+5,flexion extension,4.5,0.5,25.0,29.5,None,False,left
