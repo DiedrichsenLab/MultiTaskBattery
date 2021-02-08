@@ -251,7 +251,7 @@ def finger_sequence(nrun = 5, study_name = 'behavioral',
 
         df_tmp = pd.DataFrame(T)
 
-        target_filename = path2task_target / f"finger_sequence_{task_dur-5}sec_{run+1:02d}.csv"
+        target_filename = path2task_target / f"finger_sequence_{task_dur}sec_{run+1:02d}.csv"
         df_tmp.to_csv(target_filename)
     return
 
@@ -263,7 +263,9 @@ def language():
     """
     pass
 
-def flexion_extension():
+def flexion_extension(nrun = 5, study_name = 'behavioral', 
+                      trial_dur = 4.5, iti_dur = 0.5, 
+                      task_dur = 30, display_trial_feedback = False):
     """
     creates target file for the toe flexion extension task
     target file fields:
@@ -277,7 +279,44 @@ def flexion_extension():
         end_time (time when the trial ends)
         trial_dur (trial duration)
     """
-    pass
+    # path to save the target files
+    path2task_target = consts.target_dir / study_name / 'flexion_extension'
+    consts.dircheck(path2task_target)
+
+    # loop over runs and create target files
+    for run in range(nrun):
+        T = {} # this will be converted to a dataframe and saved as target file
+
+        n_trials       = int(task_dur/trial_dur+iti_dur) # total number of trials
+        n_trials_left  = int(n_trials/2) # trials for left foot
+        n_trials_right = n_trials - n_trials_left # trials for right foot
+
+        # fill in fields
+        T['stim']                   = ["flexion extension" for i in range(n_trials)]
+        T['trial_dur']              = [trial_dur for i in range(n_trials)]
+        T['iti_dur']                = [iti_dur for i in range(n_trials)]
+        T['start_time']             = [(trial_dur + iti_dur)*i for i in range(n_trials)]
+        T['end_time']               = [(i+1)*trial_dur + i*iti_dur for i in range(n_trials)]
+        T['trial_type']             = ['None' for i in range(n_trials)]
+        T['display_trial_feedback'] = [display_trial_feedback for i in range(n_trials)]
+
+        ## determine the foot
+        trials_left  = np.tile("left", n_trials_left).T.flatten()
+        trials_right = np.tile("right", n_trials_right).T.flatten()
+
+        trials_foot = np.concatenate((trials_left, trials_right), axis = 0)
+
+        ### randomly shuffle feet
+        np.random.shuffle(trials_foot)
+
+        T['foot'] = trials_foot
+
+        df_tmp = pd.DataFrame(T)
+        
+        target_filename = path2task_target / f"flexion_extension{task_dur}sec_{run+1:02d}.csv"
+        df_tmp.to_csv(target_filename)
+
+    return
 
 def visual_search():
     """
@@ -332,5 +371,6 @@ def run_target():
 
     finger_sequence()
     sternber_order()
+    flexion_extension()
 
     return
