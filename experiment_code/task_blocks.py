@@ -139,20 +139,28 @@ class Task:
     def instruction_text(self):
         # the instruction text depends on whether the trial type is None or (True/False)
 
-        # first use get_response_fingerMap to get the mapping between keys and finger names
-        ## a dictionary called self.response_fingerMap is created!
-        self.get_response_fingerMap
-
-        hand = self.target_file['hand'][0]
+        
         ## if it's True/False:
-        if self.task_name != 'finger_sequence' : # all the tasks except for finger_sequence task
+        if self.task_name != 'finger_sequence' and self.task_name != 'flexion_extension' : # all the tasks except for finger_sequence task
+            # first use get_response_fingerMap to get the mapping between keys and finger names
+            ## a dictionary called self.response_fingerMap is created!
+            self.get_response_fingerMap
+
+            hand = self.target_file['hand'][0]
             trueStr  = f"press {self.key_hand_dict[hand]['True'][0]} with {self.response_fingerMap[self.key_hand_dict[hand]['True'][0]]}"
             falseStr = f"press {self.key_hand_dict[hand]['False'][0]} with {self.response_fingerMap[self.key_hand_dict[hand]['False'][0]]}" 
             return f"{self.task_name} task\n\nUse your {hand} hand\n\nIf true, {trueStr}\nIf false, {falseStr}"
         elif self.task_name == 'finger_sequence': # finger_sequence task
+            # first use get_response_fingerMap to get the mapping between keys and finger names
+            ## a dictionary called self.response_fingerMap is created!
+            self.get_response_fingerMap
+
+            hand = self.target_file['hand'][0]
             mapStr   = [f"press {item} with {self.response_fingerMap[item]}\n" for item in self.key_hand_dict[hand]['None']]
             temp_str = ''.join(mapStr)
             return f"{self.task_name} task\n\nUse your {hand} hand:\n" + temp_str
+        elif self.task_name == 'flexion_extension': # flexion extension of toes
+            return f"{self.task_name} task \n\n flex and extend your right and left toes"
     
     def get_response_df(self, all_trial_response):
         """
@@ -213,6 +221,9 @@ class Task:
 
             unit_mult = 100 # multiplied by the calculated measure
             unit_str  = '%' # string representing the unit measure
+        else: # for flexion extension task
+            fb = pd.DataFrame()
+            unit_str = ''
         # add other possible types of feedback here   
 
         fb_curr = None
@@ -1366,16 +1377,83 @@ class FlexionExtension(Task):
 
     def _get_trial_info(self):
         # reads info from the target file
-        pass
-
-    def show_stim(self):
+        self.stim = self.target_file['stim'][self.trial]
+        self.stim_dur = self.target_file['stim_dur'][self.trial]
+        self.trial_dur = self.target_file['trial_dur'][self.trial]
+        self.iti_dur = self.target_file['iti_dur'][self.trial]
+        self.start_time = self.target_file['start_time'][self.trial]
+        self.trial_type = self.target_file['trial_type'][self.trial]
+        self.display_trial_feedback = self.target_file['display_trial_feedback'][self.trial]
+        self.foot = self.target_file['foot'][self.trial]
+        
+    def _show_stim(self):
         # displays the instruction:
         # either flexion or extension appears
-        pass
+        self.stim_act = self.stim.split()
 
-    def run():
-        # runs the task
-        pass
+        for act in self.stim_act:
+            self.act_start = self.get_current_time()  
+            stim = visual.TextStim(self.window, text = self.foot + " "+ act, pos=(0.0,0.0), color=(-1,-1,-1), units='deg', height = 1.5)
+            stim.draw()
+            self.window.flip()
+            
+            # core.wait(self.stem_word_dur)
+
+            # each word will remain on the screen for a certain amount of time (self.stem_word_dur)
+            if self.ttl_flag: # wait for ttl pulse
+                while ttl.clock.getTime()-self.act_start <= self.stim_dur:
+                    ttl.check()
+            else: # do not wait for ttl pulse
+                while self.clock.getTime()-self.act_start <= self.stim_dur:
+                    pass       
+
+    def run(self):
+        # run the task
+
+        # loop over trials
+        self.all_trial_response = [] # pre-allocate 
+
+        for self.trial in self.target_file.index: 
+
+            # get stims
+            self._get_trial_info()
+
+            # get current time (self.t0)
+            self.t0 = self.get_current_time()
+
+            # show the fixation for the duration of iti
+            # wait here till the startTime 
+            self.show_fixation(self.t0, self.start_time - self.t0)
+
+            # collect real_start_time for each block (self.real_start_time)
+            self.get_real_start_time(self.t0)
+
+            # 1. show actions
+            iter = 0 # counter for the stimulus
+            while iter <= (self.trial_dur/self.stim_dur): # determine the frequency
+                self._show_stim()
+                iter +=1
+
+            ## 3.2 get the time before collecting responses (self.t2)
+            self.get_time_before_disp()
+
+            # 4. display trial feedback
+            if self.target_file['display_trial_feedback'][self.trial] and self.response_made:
+                self.display_trial_feedback(correct_response = self.correct_response) 
+            else:
+                self.screen.fixation_cross()
+            
+            # 5 show fixation for the duration of the iti
+            ## 5.1 get current time
+            t_start_iti = self.get_current_time()
+            self.show_fixation(t_start_iti, self.iti_dur)
+
+            self.screen_quit()
+
+        # get the response dataframe
+        rDf = self.get_response_df(all_trial_response=self.all_trial_response)
+
+        return rDf
 
 class Rest(Task):
 
@@ -1435,27 +1513,6 @@ class Rest(Task):
         rDf = self.get_response_df(all_trial_response=self.all_trial_response)
 
         return rDf
-
-
-#TASK_MAP = {
-#    "visual_search": VisualSearch,
-#    "n_back": NBack,
-#    "social_prediction": SocialPrediction,
-#    "semantic_prediction": SemanticPrediction,
-#    "action_observation": ActionObservation,
-#    "theory_of_mind": TheoryOfMind,
-#    "rest": Rest,
-#}
-
-# TASK_MAP = {
-#     "visual_search": VisualSearch,
-#     "theory_of_mind": TheoryOfMind,
-#     "n_back": NBack,
-#     "social_prediction": SocialPrediction,
-#     "semantic_prediction": SemanticPrediction,
-#     "action_observation": ActionObservation,
-#     "rest": Rest,
-#     }
 
 TASK_MAP = {
     "visual_search": VisualSearch, # task_num 1
