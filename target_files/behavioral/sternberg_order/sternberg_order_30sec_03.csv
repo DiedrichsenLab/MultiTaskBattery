@@ -1,0 +1,5 @@
+,stim,trial_type,trial_dur,iti_dur,delay_dur,digit_dur,prob_dur,hand,display_trial_feedback,start_time,end_time,prob_stim
+0,3 4 8 1 9 6 ,True,8,0.5,1,1,1,right,True,0.0,8.0,4 6
+1,4 1 8 6 5 2 ,True,8,0.5,1,1,1,right,True,8.5,16.5,1 2
+2,5 3 7 1 2 9 ,False,8,0.5,1,1,1,right,True,17.0,25.0,8 9 
+3,3 1 4 9 8 6 ,False,8,0.5,1,1,1,right,True,25.5,33.5,6 9
