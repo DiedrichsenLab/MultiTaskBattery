@@ -287,7 +287,7 @@ def flexion_extension(nrun = 5, study_name = 'behavioral',
     for run in range(nrun):
         T = {} # this will be converted to a dataframe and saved as target file
 
-        n_trials       = int(task_dur/trial_dur+iti_dur) # total number of trials
+        n_trials       = int(task_dur/(trial_dur+iti_dur)) # total number of trials
         n_trials_left  = int(n_trials/2) # trials for left foot
         n_trials_right = n_trials - n_trials_left # trials for right foot
 
