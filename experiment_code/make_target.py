@@ -279,8 +279,8 @@ def language():
     pass
 
 def flexion_extension(nrun = 5, study_name = 'behavioral', 
-                      trial_dur = 4.5, iti_dur = 0.5, 
-                      stim_dur = 0.5,
+                      trial_dur = 14, iti_dur = 1, 
+                      stim_dur = 1,
                       task_dur = 30, display_trial_feedback = False, 
                       TR = 1):
     """
@@ -327,20 +327,20 @@ def flexion_extension(nrun = 5, study_name = 'behavioral',
         T['display_trial_feedback'] = [display_trial_feedback for i in range(n_trials)]
 
         ## determine the foot
-        trials_left  = list(np.tile("left", n_trials_left).T.flatten())
-        trials_right = list(np.tile("right", n_trials_right).T.flatten())         
+        # trials_left  = list(np.tile("left", n_trials_left).T.flatten())
+        # trials_right = list(np.tile("right", n_trials_right).T.flatten())         
 
         ### foot assignment
         #### random makes it difficult!
         # np.random.shuffle(trials_foot)
         #### maybe make it so that every other trial is right foot?
-        trials_foot = trials_left + trials_right
-        trials_foot[::2] = trials_left 
-        trials_foot[1::2] = trials_right
+        # trials_foot = trials_left + trials_right
+        # trials_foot[::2] = trials_left 
+        # trials_foot[1::2] = trials_right
         #### do nothing fancy and just concatenate them?
         # trials_foot = np.concatenate((trials_left, trials_right), axis = 0)
 
-        T['foot'] = trials_foot
+        # T['foot'] = trials_foot
 
         df_tmp = pd.DataFrame(T)
         
