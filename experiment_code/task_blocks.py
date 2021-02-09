@@ -1384,7 +1384,7 @@ class FlexionExtension(Task):
         self.start_time = self.target_file['start_time'][self.trial]
         self.trial_type = self.target_file['trial_type'][self.trial]
         self.display_trial_feedback = self.target_file['display_trial_feedback'][self.trial]
-        self.foot = self.target_file['foot'][self.trial]
+        # self.foot = self.target_file['foot'][self.trial]
         
     def _show_stim(self):
         # displays the instruction:
@@ -1397,7 +1397,8 @@ class FlexionExtension(Task):
 
         for act in self.stim_act:
             self.act_start = self.get_current_time()  
-            stim = visual.TextStim(self.window, text = self.foot + "\n "+ act, pos=(0.0,0.0), color=(-1,-1,-1), units='deg', height = 1.5)
+            # stim = visual.TextStim(self.window, text = self.foot + "\n "+ act, pos=(0.0,0.0), color=(-1,-1,-1), units='deg', height = 1.5)
+            stim = visual.TextStim(self.window, text = act, pos=(0.0,0.0), color=(-1,-1,-1), units='deg', height = 1.5)
             stim.draw()
             self.window.flip()
             
