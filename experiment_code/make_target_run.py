@@ -1196,7 +1196,7 @@ class ActionObservationKnots(Utils):
         self.block_dur_secs = 30
         self.num_blocks = 5
         self.tile_block = 1
-        self.trial_dur = 20 
+        self.trial_dur = 15 
         self.iti_dur = .5
         self.instruct_dur = 5
         self.hand = 'right'
@@ -1367,9 +1367,7 @@ class MakeFiles:
     """
     def __init__(self):
         self.task_names = ['visual_search', 'theory_of_mind', 'n_back', 'social_prediction', 'semantic_prediction', 'action_observation', 'verb_generation', 'romance_movie', 'action_observation_knots']
-        self.feedback_types = ['rt', 'acc', 'rt', 'acc', 'rt', 'acc', 'rt', 'rt', 'rt']
-        #self.task_names = ['visual_search','theory_of_mind']
-        #self.feedback_types = ['rt','acc']
+        self.feedback_types = ['rt', 'acc', 'rt', 'acc', 'rt', 'acc', 'None', 'None', 'None']
         self.run_name_prefix = 'run'
         self.tile_run = 1
         self.instruct_dur = 5
