@@ -1355,27 +1355,27 @@ class VerbGeneration(Task):
     
     def _get_trial_info(self):
         # get stim (i.e. story)
-        self.noun = self.target_file['noun'][self.trial]
+        self.noun = self.target_file['word'][self.trial]
 
         self.iti_dur = self.target_file['iti_dur'][self.trial]
         self.trial_dur = self.target_file['trial_dur'][self.trial]
         self.start_time = self.target_file['start_time'][self.trial]
         
     
-    def _show_noun(self):
-        # display noun for fixed time    
-        self.noun_start = self.get_current_time()                  
-        stim = visual.TextStim(self.window, text=self.noun, alignHoriz='center', pos=(0.0,0.0), color=(-1,-1,-1), units='deg')
+    def _show_word(self):
+        # display word for fixed time    
+        self.word_start = self.get_current_time()                  
+        stim = visual.TextStim(self.window, text=self.noun, pos=(0.0,0.0), color=(-1,-1,-1), units='deg')
         stim.text = stim.text  # per PsychoPy documentation, this should reduce timing delays in displaying text
         stim.draw()
         self.window.flip()
         
-        # the noun will remain on the screen for a certain amount of time (self.noun_dur)
+        # the word will remain on the screen for a certain amount of time (self.trial_dur)
         if self.ttl_flag: # wait for ttl pulse
-            while ttl.clock.getTime()-self.noun_start <= self.trial_dur:
+            while ttl.clock.getTime()-self.word_start <= self.trial_dur:
                     ttl.check()
         else: # do not wait for ttl pulse
-            while self.clock.getTime()-self.noun_start <= self.trial_dur:
+            while self.clock.getTime()-self.word_start <= self.trial_dur:
                 pass
 
     def _show_instruct_read(self):
@@ -1388,10 +1388,10 @@ class VerbGeneration(Task):
 
         # the instruction will remain on the screen for a certain amount of time (self.instruct_dur_secs)
         if self.ttl_flag: # wait for ttl pulse
-            while ttl.clock.getTime()-self.instruct_read_start <= self.trial_dur_secs:
+            while ttl.clock.getTime()-self.instruct_read_start <= self.trial_dur:
                     ttl.check()
         else: # do not wait for ttl pulse
-            while self.clock.getTime()-self.instruct_read_start <= self.trial_dur_secs:
+            while self.clock.getTime()-self.instruct_read_start <= self.trial_dur:
                 pass
 
     def _show_instruct_generate(self):
@@ -1404,10 +1404,10 @@ class VerbGeneration(Task):
 
         # the instruction will remain on the screen for a certain amount of time (self.instruct_dur_secs)
         if self.ttl_flag: # wait for ttl pulse
-            while ttl.clock.getTime()-self.instruct_generate_start <= self.trial_dur_secs:
+            while ttl.clock.getTime()-self.instruct_generate_start <= self.trial_dur:
                     ttl.check()
         else: # do not wait for ttl pulse
-            while self.clock.getTime()-self.instruct_generate_start <= self.trial_dur_secs:
+            while self.clock.getTime()-self.instruct_generate_start <= self.trial_dur:
                 pass
     
     def run(self):
@@ -1434,45 +1434,49 @@ class VerbGeneration(Task):
             # 0. Show 'READ' instruction if this is first stimulus
             if self.trial == 0:
                 self._show_instruct_read()
+                t_start_iti = self.get_current_time()
+                self.show_fixation(t_start_iti, self.iti_dur)
 
             # 0.1 Show "GENERATE" instruction if this is half-way point
-            if self.trial == 8:
+            if self.trial == 7:
                 self._show_instruct_generate()
+                t_start_iti = self.get_current_time()
+                self.show_fixation(t_start_iti, self.iti_dur)
 
-            # 1. show story
-            self._show_noun()
+            # 1. show word
+            self._show_word()
 
             # 2. display fixation for the duration of the iti
             ## 2.1 get the current time
-            t_noun_end = self.get_current_time()
+            t_word_end = self.get_current_time()
             ## 2.2 get the iti duration
             self.screen.fixation_cross()
-            self.show_fixation(t_noun_end, self.iti_dur)
+            self.show_fixation(t_word_end, self.iti_dur)
             ## 2.3 clear any button presses before collecting response
-            event.clearEvents()
+            #event.clearEvents()
 
             # 3. display the probe and collect reponse
             ## 3.1 display prob
-            self._show_stim()
+            #self._show_stim()
 
             ## 3.2 get the time before collecting responses (self.t2)
-            self.get_time_before_disp()
+            #self.get_time_before_disp()
 
             ## 3.3 collect response
-            wait_time = self.question_dur
+            #wait_time = self.trial_dur
 
-            self.trial_response = self.check_trial_response(wait_time = wait_time, 
-                                                            trial_index = self.trial, 
-                                                            start_time = self.get_current_time(), 
-                                                            start_time_rt = self.t2)
+            #self.trial_response = self.check_trial_response(wait_time = wait_time, 
+            #                                                trial_index = self.trial, 
+            #                                                start_time = self.get_current_time(), 
+            #                                                start_time_rt = self.t2)
             ## 3.4 update response
-            self.update_trial_response()
+            #self.update_trial_response()
 
             # 4. display trial feedback
-            if self.target_file['display_trial_feedback'][self.trial] and self.response_made:
-                self.display_trial_feedback(correct_response = self.correct_response) 
-            else:
-                self.screen.fixation_cross()
+            #if self.target_file['display_trial_feedback'][self.trial] and self.response_made:
+            #    self.display_trial_feedback(correct_response = self.correct_response) 
+            #else:
+            #    self.screen.fixation_cross()
             
             # 5 show fixation for the duration of the iti
             ## 5.1 get current time
@@ -1502,28 +1506,6 @@ class RomanceMovie(Task):
         self.trial_dur = self.target_file['trial_dur'][self.trial]
         self.start_time = self.target_file['start_time'][self.trial]
         self.path_to_video = os.path.join(consts.stim_dir, self.study_name, self.task_name, 'clips', video_file)
-   
-    def _get_first_response(self):
-        # display trial feedback
-        response_made = [dict['resp_made'] for dict in self.trial_response_all if dict['resp_made']]
-        correct_response = False
-        if response_made:
-            response_made = response_made[0]
-            correct_response = [dict['corr_resp'] for dict in self.trial_response_all if dict['resp_made']][0]
-        else:
-            response_made = False
-
-        return response_made, correct_response
-    
-    def _get_response_event(self, response_made):
-        # save response event
-        if response_made:
-            # save the first dict when response was made
-            response_event = [dict for dict in self.trial_response_all if dict['resp_made']][0]
-        else:
-            response_event = [dict for dict in self.trial_response_all][0]
-
-        return response_event
     
     def _show_stim(self):
         mov = visual.MovieStim3(self.window, self.path_to_video, flipVert=False, flipHoriz=False, loop=False)
@@ -1544,10 +1526,10 @@ class RomanceMovie(Task):
                     self.window.flip()
 
                 # get trial response
-                self.trial_response = self.check_trial_response(wait_time = wait_time, 
-                                                                trial_index = self.trial, 
-                                                                start_time = self.t0, 
-                                                                start_time_rt = self.t2)
+                #self.trial_response = self.check_trial_response(wait_time = wait_time, 
+                #                                                trial_index = self.trial, 
+                #                                                start_time = self.t0, 
+                #                                                start_time_rt = self.t2)
         else: 
             while (self.clock.getTime() - self.t0 <= wait_time): # and not resp_made:
                 # play movie
@@ -1558,10 +1540,10 @@ class RomanceMovie(Task):
                     self.window.flip()
 
                 # get trial response
-                self.trial_response = self.check_trial_response(wait_time = wait_time, 
-                                                                trial_index = self.trial, 
-                                                                start_time = self.t0, 
-                                                                start_time_rt = self.t2)  
+                #self.trial_response = self.check_trial_response(wait_time = wait_time, 
+                #                                                trial_index = self.trial, 
+                #                                                start_time = self.t0, 
+                #                                                start_time_rt = self.t2)  
                
     def run(self):
 
@@ -1597,7 +1579,7 @@ class RomanceMovie(Task):
                 self.screen.fixation_cross()
             
             # update response
-            self.update_trial_response()
+            #self.update_trial_response()
 
             # 5 show fixation for the duration of the iti
             ## 5.1 get current time
@@ -1621,7 +1603,7 @@ class ActionObservationKnots(Task):
         self.feedback_type = 'rt' # reaction
         self.name          = 'action_observation_knots'
 
-    def _get_stims(self):
+    def _get_trial_info(self):
         video_file_action = self.target_file['stim_action'][self.trial]
         video_file_control = self.target_file['stim_control'][self.trial]
         self.iti_dur = self.target_file['iti_dur'][self.trial]
@@ -1629,28 +1611,6 @@ class ActionObservationKnots(Task):
         self.start_time = self.target_file['start_time'][self.trial]
         self.path_to_video_action = os.path.join(consts.stim_dir, self.study_name, self.task_name, 'clips', video_file_action)
         self.path_to_video_control = os.path.join(consts.stim_dir, self.study_name, self.task_name, 'clips', video_file_control)
-
-    def _get_first_response(self):
-        # display trial feedback
-        response_made = [dict['resp_made'] for dict in self.trial_response_all if dict['resp_made']]
-        correct_response = False
-        if response_made:
-            response_made = response_made[0]
-            correct_response = [dict['corr_resp'] for dict in self.trial_response_all if dict['resp_made']][0]
-        else:
-            response_made = False
-
-        return response_made, correct_response
-    
-    def _get_response_event(self, response_made):
-        # save response event
-        if response_made:
-            # save the first dict when response was made
-            response_event = [dict for dict in self.trial_response_all if dict['resp_made']][0]
-        else:
-            response_event = [dict for dict in self.trial_response_all][0]
-
-        return response_event
     
     def _show_stim_action(self):
         mov = visual.MovieStim3(self.window, self.path_to_video_action, flipVert=False, flipHoriz=False, loop=False)
@@ -1671,10 +1631,10 @@ class ActionObservationKnots(Task):
                     self.window.flip()
 
                 # get trial response
-                self.trial_response = self.check_trial_response(wait_time = wait_time, 
-                                                                trial_index = self.trial, 
-                                                                start_time = self.t0, 
-                                                                start_time_rt = self.t2)
+                #self.trial_response = self.check_trial_response(wait_time = wait_time, 
+                #                                                trial_index = self.trial, 
+                #                                                start_time = self.t0, 
+                #                                                start_time_rt = self.t2)
         else: 
             while (self.clock.getTime() - self.t0 <= wait_time): # and not resp_made:
                 # play movie
@@ -1685,10 +1645,10 @@ class ActionObservationKnots(Task):
                     self.window.flip()
 
                 # get trial response
-                self.trial_response = self.check_trial_response(wait_time = wait_time, 
-                                                                trial_index = self.trial, 
-                                                                start_time = self.t0, 
-                                                                start_time_rt = self.t2)
+                #self.trial_response = self.check_trial_response(wait_time = wait_time, 
+                #                                                trial_index = self.trial, 
+                #                                                start_time = self.t0, 
+                #                                                start_time_rt = self.t2)
 
     def _show_stim_control(self):
         mov = visual.MovieStim3(self.window, self.path_to_video_control, flipVert=False, flipHoriz=False, loop=False)
@@ -1709,10 +1669,10 @@ class ActionObservationKnots(Task):
                     self.window.flip()
 
                 # get trial response
-                self.trial_response = self.check_trial_response(wait_time = wait_time, 
-                                                                trial_index = self.trial, 
-                                                                start_time = self.t0, 
-                                                                start_time_rt = self.t2)
+                #self.trial_response = self.check_trial_response(wait_time = wait_time, 
+                #                                                trial_index = self.trial, 
+                #                                                start_time = self.t0, 
+                #                                                start_time_rt = self.t2)
         else: 
             while (self.clock.getTime() - self.t0 <= wait_time): # and not resp_made:
                 # play movie
@@ -1723,12 +1683,13 @@ class ActionObservationKnots(Task):
                     self.window.flip()
 
                 # get trial response
-                self.trial_response = self.check_trial_response(wait_time = wait_time, 
-                                                                trial_index = self.trial, 
-                                                                start_time = self.t0, 
-                                                                start_time_rt = self.t2)  
+                #self.trial_response = self.check_trial_response(wait_time = wait_time, 
+                #                                                trial_index = self.trial, 
+                #                                                start_time = self.t0, 
+                #                                                start_time_rt = self.t2)  
                
     def run(self):
+        # run the task
 
         # loop over trials
         self.all_trial_response = [] # pre-allocate 
@@ -1736,35 +1697,43 @@ class ActionObservationKnots(Task):
         for self.trial in self.target_file.index: 
 
             # get stims
-            self._get_stims()
+            self._get_trial_info()
 
             # get current time (self.t0)
             self.t0 = self.get_current_time()
 
             # show the fixation for the duration of iti
+            # wait here till the startTime 
             self.show_fixation(self.t0, self.start_time - self.t0)
 
-           # collect real_start_time for each block (self.real_start_time)
+            # collect real_start_time for each block (self.real_start_time)
             self.get_real_start_time(self.t0)
 
-            # flush any keys in buffer
-            event.clearEvents()
-
-            # Start timer before display (get self.t2)
-            self.get_time_before_disp()
-
-            # display stims. The responses will be recorded and checked once the video is shown
+            # 1. show story
             self._show_stim_action()
+
+            # 2. display fixation for the duration of the iti
+            ## 2.1 get the current time
+            t_action_end = self.get_current_time()
+            ## 2.2 get the iti duration
+            self.screen.fixation_cross()
+            self.show_fixation(t_action_end, self.iti_dur)
+            ## 2.3 clear any button presses before collecting response
+            #event.clearEvents()
+
+            # 3. display the probe and collect reponse
+            ## 3.1 display prob
             self._show_stim_control()
 
+            ## 3.2 get the time before collecting responses (self.t2)
+            #self.get_time_before_disp()
+
+            # 4. display trial feedback
             if self.target_file['display_trial_feedback'][self.trial] and self.response_made:
-                self.display_trial_feedback(correct_response = self.correct_response)
+                self.display_trial_feedback(correct_response = self.correct_response) 
             else:
                 self.screen.fixation_cross()
             
-            # update response
-            self.update_trial_response()
-
             # 5 show fixation for the duration of the iti
             ## 5.1 get current time
             t_start_iti = self.get_current_time()
