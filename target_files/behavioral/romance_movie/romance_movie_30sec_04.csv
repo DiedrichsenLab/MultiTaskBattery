@@ -1,0 +1,2 @@
+,label,video_name,condition_name,media,extracted,video_start,video_end,stim,display_trial_feedback,hand,iti_dur,start_time,trial_dur
+0,movie,7_romance,romance,video,True,0,30,7_romance.mov,False,right,0.5,0.0,20
