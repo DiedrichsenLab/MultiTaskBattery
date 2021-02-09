@@ -1366,8 +1366,8 @@ class MakeFiles:
             counterbalance_runs (bool): counterbalance block order across runs
     """
     def __init__(self):
-        self.task_names = ['visual_search', 'theory_of_mind', 'verb_generation', 'n_back', 'social_prediction', 'semantic_prediction', 'action_observation', 'romance_movie', 'action_observation_knots']
-        self.feedback_types = ['rt', 'acc', 'rt', 'rt', 'acc', 'rt', 'acc', 'rt', 'rt']
+        self.task_names = ['visual_search', 'theory_of_mind', 'n_back', 'social_prediction', 'semantic_prediction', 'action_observation', 'verb_generation', 'romance_movie', 'action_observation_knots']
+        self.feedback_types = ['rt', 'acc', 'rt', 'acc', 'rt', 'acc', 'rt', 'rt', 'rt']
         #self.task_names = ['visual_search','theory_of_mind']
         #self.feedback_types = ['rt','acc']
         self.run_name_prefix = 'run'
