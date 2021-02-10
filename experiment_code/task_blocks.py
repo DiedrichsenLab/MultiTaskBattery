@@ -140,18 +140,21 @@ class Task:
 
         # first use get_response_fingerMap to get the mapping between keys and finger names
         ## a dictionary called self.response_fingerMap is created!
-        self.get_response_fingerMap
+        if self.target_file['hand'][0] == 'None':
+            return f"{self.task_name} task"
+        else:
+            self.get_response_fingerMap
 
-        hand = self.target_file['hand'][0]
+            hand = self.target_file['hand'][0]
         ## if it's True/False:
-        if self.task_name != 'finger_sequence' : # all the tasks except for finger_sequence task
-            trueStr  = f"press {self.key_hand_dict[hand]['True'][0]} with {self.response_fingerMap[self.key_hand_dict[hand]['True'][0]]}"
-            falseStr = f"press {self.key_hand_dict[hand]['False'][0]} with {self.response_fingerMap[self.key_hand_dict[hand]['False'][0]]}" 
-            return f"{self.task_name} task\n\nUse your {hand} hand\n\nIf true, {trueStr}\nIf false, {falseStr}"
-        elif self.task_name == 'finger_sequence': # finger_sequence task
-            mapStr   = [f"press {item} with {self.response_fingerMap[item]}\n" for item in self.key_hand_dict[hand]['None']]
-            temp_str = ''.join(mapStr)
-            return f"{self.task_name} task\n\nUse your {hand} hand:\n" + temp_str
+            if self.task_name != 'finger_sequence' : # all the tasks except for finger_sequence task
+                trueStr  = f"press {self.key_hand_dict[hand]['True'][0]} with {self.response_fingerMap[self.key_hand_dict[hand]['True'][0]]}"
+                falseStr = f"press {self.key_hand_dict[hand]['False'][0]} with {self.response_fingerMap[self.key_hand_dict[hand]['False'][0]]}" 
+                return f"{self.task_name} task\n\nUse your {hand} hand\n\nIf true, {trueStr}\nIf false, {falseStr}"
+            elif self.task_name == 'finger_sequence': # finger_sequence task
+                mapStr   = [f"press {item} with {self.response_fingerMap[item]}\n" for item in self.key_hand_dict[hand]['None']]
+                temp_str = ''.join(mapStr)
+                return f"{self.task_name} task\n\nUse your {hand} hand:\n" + temp_str
     
     def get_response_df(self, all_trial_response):
         """
@@ -212,6 +215,9 @@ class Task:
 
             unit_mult = 100 # multiplied by the calculated measure
             unit_str  = '%' # string representing the unit measure
+        
+        elif feedback_type == 'None':
+            fb = dataframe
         # add other possible types of feedback here   
 
         fb_curr = None
@@ -1350,7 +1356,7 @@ class VerbGeneration(Task):
     
     def __init__(self, screen, target_file, run_end, task_name, study_name, target_num, ttl_flag):
         super(VerbGeneration, self).__init__(screen, target_file, run_end, task_name, study_name, target_num, ttl_flag)
-        self.feedback_type = 'none' # no feedback
+        self.feedback_type = 'None' # no feedback
         self.name          = 'verb_generation'
     
     def _get_trial_info(self):
@@ -1372,10 +1378,10 @@ class VerbGeneration(Task):
         
         # the word will remain on the screen for a certain amount of time (self.trial_dur)
         if self.ttl_flag: # wait for ttl pulse
-            while ttl.clock.getTime()-self.word_start <= self.trial_dur:
+            while ttl.clock.getTime()-self.word_start <= self.trial_dur - 0.1:
                     ttl.check()
         else: # do not wait for ttl pulse
-            while self.clock.getTime()-self.word_start <= self.trial_dur:
+            while self.clock.getTime()-self.word_start <= self.trial_dur - 0.1:
                 pass
 
     def _show_instruct_read(self):
@@ -1388,10 +1394,10 @@ class VerbGeneration(Task):
 
         # the instruction will remain on the screen for a certain amount of time (self.instruct_dur_secs)
         if self.ttl_flag: # wait for ttl pulse
-            while ttl.clock.getTime()-self.instruct_read_start <= self.trial_dur:
+            while ttl.clock.getTime()-self.instruct_read_start <= self.trial_dur - 0.1:
                     ttl.check()
         else: # do not wait for ttl pulse
-            while self.clock.getTime()-self.instruct_read_start <= self.trial_dur:
+            while self.clock.getTime()-self.instruct_read_start <= self.trial_dur - 0.1:
                 pass
 
     def _show_instruct_generate(self):
@@ -1404,10 +1410,10 @@ class VerbGeneration(Task):
 
         # the instruction will remain on the screen for a certain amount of time (self.instruct_dur_secs)
         if self.ttl_flag: # wait for ttl pulse
-            while ttl.clock.getTime()-self.instruct_generate_start <= self.trial_dur:
+            while ttl.clock.getTime()-self.instruct_generate_start <= self.trial_dur - 0.1:
                     ttl.check()
         else: # do not wait for ttl pulse
-            while self.clock.getTime()-self.instruct_generate_start <= self.trial_dur:
+            while self.clock.getTime()-self.instruct_generate_start <= self.trial_dur - 0.1:
                 pass
     
     def run(self):
@@ -1432,32 +1438,28 @@ class VerbGeneration(Task):
             self.get_real_start_time(self.t0)
 
             # 0. Show 'READ' instruction if this is first stimulus
-            if self.trial == self.target_file.index.start:
-                self._show_instruct_read()
-                t_start_iti = self.get_current_time()
-                self.show_fixation(t_start_iti, self.iti_dur)
+            #if self.trial == self.target_file.index.start:
+            #    self._show_instruct_read()
 
             # 0.1 Show "GENERATE" instruction if this is half-way point
             if self.trial == int(self.target_file.index.stop/2):
                 self._show_instruct_generate()
-                t_start_iti = self.get_current_time()
-                self.show_fixation(t_start_iti, self.iti_dur)
 
             # 1. show word
             self._show_word()
 
-            # 2. display fixation for the duration of the iti
+            # 2. Display fixation cross - no targets, so just use call to fixation cross in step 5
             ## 2.1 get the current time
             t_word_end = self.get_current_time()
             ## 2.2 get the iti duration
             self.screen.fixation_cross()
             self.show_fixation(t_word_end, self.iti_dur)
-            ## 2.3 clear any button presses before collecting response
-            #event.clearEvents()
 
             # 3. display the probe and collect reponse
 
             ## 3.3 collect response
+            #wait_time = self.trial_dur - 0.1
+
             self.trial_response = {}
 
             ## 3.4 update response
@@ -1471,8 +1473,8 @@ class VerbGeneration(Task):
             
             # 5 show fixation for the duration of the iti
             ## 5.1 get current time
-            t_start_iti = self.get_current_time()
-            self.show_fixation(t_start_iti, self.iti_dur)
+            #t_start_iti = self.get_current_time()
+            #self.show_fixation(t_start_iti, self.iti_dur)
 
             self.screen_quit()
 
@@ -1488,7 +1490,7 @@ class RomanceMovie(Task):
     
     def __init__(self, screen, target_file, run_end, task_name, study_name, target_num, ttl_flag):
         super(RomanceMovie, self).__init__(screen, target_file, run_end, task_name, study_name, target_num, ttl_flag)
-        self.feedback_type = 'none' # no feedback
+        self.feedback_type = 'None' # no feedback
         self.name          = 'romance_movie'
 
     def _get_stims(self):
@@ -1518,7 +1520,6 @@ class RomanceMovie(Task):
 
                 # get trial response
                 self.trial_response = {}
-                self.update_trial_response()
         else: 
             while (self.clock.getTime() - self.t0 <= wait_time): # and not resp_made:
                 # play movie
@@ -1530,7 +1531,6 @@ class RomanceMovie(Task):
 
                 # get trial response
                 self.trial_response = {}
-                self.update_trial_response()
                
     def run(self):
 
@@ -1551,12 +1551,17 @@ class RomanceMovie(Task):
            # collect real_start_time for each block (self.real_start_time)
             self.get_real_start_time(self.t0)
 
+            # show movie
             self._show_stim()
 
+            # display feedback (does nothing, as display_trial_feedback = False)
             if self.target_file['display_trial_feedback'][self.trial] and self.response_made:
                 self.display_trial_feedback(correct_response = self.correct_response)
             else:
                 self.screen.fixation_cross()
+
+            # update response
+            self.update_trial_response()
 
             # 5 show fixation for the duration of the iti
             ## 5.1 get current time
@@ -1577,7 +1582,7 @@ class ActionObservationKnots(Task):
     
     def __init__(self, screen, target_file, run_end, task_name, study_name, target_num, ttl_flag):
         super(ActionObservationKnots, self).__init__(screen, target_file, run_end, task_name, study_name, target_num, ttl_flag)
-        self.feedback_type = 'none' # no feedback
+        self.feedback_type = 'None' # no feedback
         self.name          = 'action_observation_knots'
 
     def _get_trial_info(self):
@@ -1609,7 +1614,6 @@ class ActionObservationKnots(Task):
 
                 # get trial response
                 self.trial_response = {}
-                self.update_trial_response()
         else: 
             while (self.clock.getTime() - self.t0 <= wait_time): # and not resp_made:
                 # play movie
@@ -1621,7 +1625,6 @@ class ActionObservationKnots(Task):
 
                 # get trial response
                 self.trial_response = {}
-                self.update_trial_response()
 
     def _show_stim_control(self):
         mov = visual.MovieStim3(self.window, self.path_to_video_control, flipVert=False, flipHoriz=False, loop=False)
@@ -1643,7 +1646,6 @@ class ActionObservationKnots(Task):
 
                 # get trial response
                 self.trial_response = {}
-                self.update_trial_response()
 
         else: 
             while (self.clock.getTime() - self.t0 <= wait_time): # and not resp_made:
@@ -1656,7 +1658,6 @@ class ActionObservationKnots(Task):
 
                 # get trial response
                 self.trial_response = {}
-                self.update_trial_response()
                
     def run(self):
         # run the task
@@ -1703,11 +1704,14 @@ class ActionObservationKnots(Task):
                 self.display_trial_feedback(correct_response = self.correct_response) 
             else:
                 self.screen.fixation_cross()
+
+            # update response
+            self.update_trial_response()
             
             # 5 show fixation for the duration of the iti
             ## 5.1 get current time
-            t_start_iti = self.get_current_time()
-            self.show_fixation(t_start_iti, self.iti_dur)
+            #t_start_iti = self.get_current_time()
+            #self.show_fixation(t_start_iti, self.iti_dur)
 
             self.screen_quit()
 

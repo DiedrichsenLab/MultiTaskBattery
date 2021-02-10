@@ -966,7 +966,7 @@ class VerbGeneration(Utils):
         self.trial_dur = 1.6
         self.iti_dur = .5
         self.instruct_dur = 5
-        self.hand = 'right'
+        self.hand = 'None'
         self.replace = False
         self.display_trial_feedback = False
 
@@ -1081,7 +1081,7 @@ class RomanceMovie(Utils):
         self.trial_dur = 20 
         self.iti_dur = .5
         self.instruct_dur = 5
-        self.hand = 'right'
+        self.hand = 'None'
         self.replace = False 
         self.display_trial_feedback = False
 
@@ -1199,7 +1199,7 @@ class ActionObservationKnots(Utils):
         self.trial_dur = 15 
         self.iti_dur = .5
         self.instruct_dur = 5
-        self.hand = 'right'
+        self.hand = 'None'
         self.replace = False 
         self.display_trial_feedback = False
 
