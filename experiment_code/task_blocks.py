@@ -217,7 +217,8 @@ class Task:
             unit_str  = '%' # string representing the unit measure
         
         elif feedback_type == 'None':
-            fb = dataframe
+            fb = pd.dataframe()
+
         # add other possible types of feedback here   
 
         fb_curr = None
@@ -292,6 +293,18 @@ class Task:
             "resp_made": self.response_made,
             "corr_resp": self.correct_response,
             "rt": self.rt
+        }
+        return response_event
+
+    def fake_trial_response(self, wait_time, trial_index, start_time, start_time_rt, **kwargs):
+        ## Create fake response columns for tasks that have no in-scanner response
+        response_event = {
+            "corr_key": "None",
+            "pressed_key": False,
+            # "key_presses": pressed_keys,
+            "resp_made": False,
+            "corr_resp": "None",
+            "rt": 0     
         }
         return response_event
 
@@ -1457,10 +1470,16 @@ class VerbGeneration(Task):
 
             # 3. display the probe and collect reponse
 
-            ## 3.3 collect response
-            #wait_time = self.trial_dur - 0.1
+            ## 3.2 get the time before collecting responses (self.t2)
+            self.get_time_before_disp()
 
-            self.trial_response = {}
+            ## 3.3 collect response
+            wait_time = self.trial_dur - 0.1
+
+            self.trial_response = self.fake_trial_response(wait_time = wait_time,
+                                                           trial_index = self.trial,
+                                                           start_time = self.get_current_time(),
+                                                           start_time_rt = self.t2)
 
             ## 3.4 update response
             self.update_trial_response()
@@ -1519,7 +1538,10 @@ class RomanceMovie(Task):
                     self.window.flip()
 
                 # get trial response
-                self.trial_response = {}
+                self.trial_response = self.fake_trial_response(wait_time = wait_time,
+                                                           trial_index = self.trial,
+                                                           start_time = self.get_current_time(),
+                                                           start_time_rt = self.t2)
         else: 
             while (self.clock.getTime() - self.t0 <= wait_time): # and not resp_made:
                 # play movie
@@ -1530,7 +1552,10 @@ class RomanceMovie(Task):
                     self.window.flip()
 
                 # get trial response
-                self.trial_response = {}
+                self.trial_response = self.fake_trial_response(wait_time = wait_time,
+                                                           trial_index = self.trial,
+                                                           start_time = self.get_current_time(),
+                                                           start_time_rt = self.t2)
                
     def run(self):
 
@@ -1551,8 +1576,16 @@ class RomanceMovie(Task):
            # collect real_start_time for each block (self.real_start_time)
             self.get_real_start_time(self.t0)
 
+            ## 3.2 get the time before collecting responses (self.t2)
+            self.get_time_before_disp()
+
             # show movie
             self._show_stim()
+
+            # 3. display the probe and collect reponse
+
+            ## 3.3 collect response
+            wait_time = self.trial_dur
 
             # display feedback (does nothing, as display_trial_feedback = False)
             if self.target_file['display_trial_feedback'][self.trial] and self.response_made:
@@ -1613,7 +1646,11 @@ class ActionObservationKnots(Task):
                     self.window.flip()
 
                 # get trial response
-                self.trial_response = {}
+                self.trial_response = self.fake_trial_response(wait_time = wait_time,
+                                                           trial_index = self.trial,
+                                                           start_time = self.get_current_time(),
+                                                           start_time_rt = self.t2)
+
         else: 
             while (self.clock.getTime() - self.t0 <= wait_time): # and not resp_made:
                 # play movie
@@ -1624,7 +1661,10 @@ class ActionObservationKnots(Task):
                     self.window.flip()
 
                 # get trial response
-                self.trial_response = {}
+                self.trial_response = self.fake_trial_response(wait_time = wait_time,
+                                                           trial_index = self.trial,
+                                                           start_time = self.get_current_time(),
+                                                           start_time_rt = self.t2)
 
     def _show_stim_control(self):
         mov = visual.MovieStim3(self.window, self.path_to_video_control, flipVert=False, flipHoriz=False, loop=False)
@@ -1645,7 +1685,10 @@ class ActionObservationKnots(Task):
                     self.window.flip()
 
                 # get trial response
-                self.trial_response = {}
+                self.trial_response = self.fake_trial_response(wait_time = wait_time,
+                                                           trial_index = self.trial,
+                                                           start_time = self.get_current_time(),
+                                                           start_time_rt = self.t2)
 
         else: 
             while (self.clock.getTime() - self.t0 <= wait_time): # and not resp_made:
@@ -1657,7 +1700,10 @@ class ActionObservationKnots(Task):
                     self.window.flip()
 
                 # get trial response
-                self.trial_response = {}
+                self.trial_response = self.fake_trial_response(wait_time = wait_time,
+                                                           trial_index = self.trial,
+                                                           start_time = self.get_current_time(),
+                                                           start_time_rt = self.t2)
                
     def run(self):
         # run the task
@@ -1680,7 +1726,9 @@ class ActionObservationKnots(Task):
             # collect real_start_time for each block (self.real_start_time)
             self.get_real_start_time(self.t0)
 
-            # 1. show story
+            # 1. show action video
+            self.get_time_before_disp()
+
             self._show_stim_action()
 
             # 2. display fixation for the duration of the iti
@@ -1693,11 +1741,11 @@ class ActionObservationKnots(Task):
             #event.clearEvents()
 
             # 3. display the probe and collect reponse
-            ## 3.1 display prob
-            self._show_stim_control()
-
             ## 3.2 get the time before collecting responses (self.t2)
-            #self.get_time_before_disp()
+            self.get_time_before_disp()
+
+            ## 3.1 display control video
+            self._show_stim_control()
 
             # 4. display trial feedback
             if self.target_file['display_trial_feedback'][self.trial] and self.response_made:
