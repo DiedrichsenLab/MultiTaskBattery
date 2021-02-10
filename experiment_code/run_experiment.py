@@ -345,7 +345,8 @@ def show_scoreboard(subj_dir, taskObjs, screen):
         t_name = obj.name
         
         # discard rest. There are no specific feedback for rest and it can be excluded from the final scoreboard
-        if t_name != 'rest':
+        #if t_name != 'rest':
+        if t_name not in ['rest', 'verb_generation', 'romance_movie', 'action_observation_knots']:
 
             # get the response dataframe saved for the task
             dataframe = pd.read_csv(glob.glob(os.path.join(subj_dir , f'*{t_name}*'))[0])

@@ -1,2 +1,2 @@
 ,label,video_name_action,video_name_control,knot,session_list,condition_name,media,extracted,video_start,video_end,stim_action,stim_control,display_trial_feedback,hand,iti_dur,start_time,trial_dur
-0,movie,knotActionCornice,knotControlCornice,cornice,1,knot,video,True,0,14,knotActionCornice.mov,knotControlCornice.mov,False,right,0.5,0.0,15
+0,movie,knotActionCornice,knotControlCornice,cornice,1,knot,video,True,0,14,knotActionCornice.mov,knotControlCornice.mov,False,None,0.5,0.0,15
