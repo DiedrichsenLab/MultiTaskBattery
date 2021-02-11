@@ -9,7 +9,6 @@ import math
 import glob
 
 from psychopy import visual, core, event, gui # data, logging
-from psychopy.visual import ShapeStim
 
 import experiment_code.constants as consts
 from experiment_code.screen import Screen
@@ -139,34 +138,23 @@ class Task:
     def instruction_text(self):
         # the instruction text depends on whether the trial type is None or (True/False)
 
-        
+        # first use get_response_fingerMap to get the mapping between keys and finger names
+        ## a dictionary called self.response_fingerMap is created!
+        if self.target_file['hand'][0] == 'None':
+            return f"{self.task_name} task"
+        else:
+            self.get_response_fingerMap
+
+            hand = self.target_file['hand'][0]
         ## if it's True/False:
-        if self.task_name != 'finger_sequence' and self.task_name != 'flexion_extension' and self.task_name != 'verb_generation' and self.task_name != 'romance_movie' and self.task_name != 'act_obs_knots' : # all the tasks except for finger_sequence task
-            # first use get_response_fingerMap to get the mapping between keys and finger names
-            ## a dictionary called self.response_fingerMap is created!
-            self.get_response_fingerMap
-
-            hand = self.target_file['hand'][0]
-            trueStr  = f"press {self.key_hand_dict[hand]['True'][0]} with {self.response_fingerMap[self.key_hand_dict[hand]['True'][0]]}"
-            falseStr = f"press {self.key_hand_dict[hand]['False'][0]} with {self.response_fingerMap[self.key_hand_dict[hand]['False'][0]]}" 
-            return f"{self.task_name} task\n\nUse your {hand} hand\n\nIf true, {trueStr}\nIf false, {falseStr}"
-        elif self.task_name == 'finger_sequence': # finger_sequence task
-            # first use get_response_fingerMap to get the mapping between keys and finger names
-            ## a dictionary called self.response_fingerMap is created!
-            self.get_response_fingerMap
-
-            hand = self.target_file['hand'][0]
-            mapStr   = [f"press {item} with {self.response_fingerMap[item]}\n" for item in self.key_hand_dict[hand]['None']]
-            temp_str = ''.join(mapStr)
-            return f"{self.task_name} task\n\nUse your {hand} hand:\n" + temp_str
-        elif self.task_name == 'flexion_extension': # flexion extension of toes
-            return f"{self.task_name} task \n\n flex and extend your right and left toes"
-        elif self.task_name == 'verb_generation':
-            return f"{self.task_name} task \n\n Silently read the words presented.  \n\n When GENERATE is shown, silently think of verbs that go with the words."
-        elif self.task_name == 'romance_movie':
-            return f"{self.task_name} task \n\n Please keep your head still while watching the movie clip."
-        elif self.task_name == 'act_obs_knots':
-            return f"{self.task_name} task \n\n Keep your head still while watching to two clips. \n\n Try and remember the knot shown."
+            if self.task_name != 'finger_sequence' : # all the tasks except for finger_sequence task
+                trueStr  = f"press {self.key_hand_dict[hand]['True'][0]} with {self.response_fingerMap[self.key_hand_dict[hand]['True'][0]]}"
+                falseStr = f"press {self.key_hand_dict[hand]['False'][0]} with {self.response_fingerMap[self.key_hand_dict[hand]['False'][0]]}" 
+                return f"{self.task_name} task\n\nUse your {hand} hand\n\nIf true, {trueStr}\nIf false, {falseStr}"
+            elif self.task_name == 'finger_sequence': # finger_sequence task
+                mapStr   = [f"press {item} with {self.response_fingerMap[item]}\n" for item in self.key_hand_dict[hand]['None']]
+                temp_str = ''.join(mapStr)
+                return f"{self.task_name} task\n\nUse your {hand} hand:\n" + temp_str
     
     def get_response_df(self, all_trial_response):
         """
@@ -227,9 +215,11 @@ class Task:
 
             unit_mult = 100 # multiplied by the calculated measure
             unit_str  = '%' # string representing the unit measure
-        else: # for flexion extension task
+        
+        else: # for tasks with no in-scanner response (e.g., flexion extension, verb generation, romance movie, etc.)
             fb = pd.DataFrame()
             unit_str = ''
+
         # add other possible types of feedback here   
 
         fb_curr = None
@@ -304,6 +294,18 @@ class Task:
             "resp_made": self.response_made,
             "corr_resp": self.correct_response,
             "rt": self.rt
+        }
+        return response_event
+
+    def fake_trial_response(self, wait_time, trial_index, start_time, start_time_rt, **kwargs):
+        ## Create fake response columns for tasks that have no in-scanner response
+        response_event = {
+            "corr_key": "None",
+            "pressed_key": False,
+            # "key_presses": pressed_keys,
+            "resp_made": False,
+            "corr_resp": "None",
+            "rt": 0     
         }
         return response_event
 
@@ -1169,6 +1171,9 @@ class FingerSequence(Task):
             # get current time (self.t0)
             self.t0 = self.get_current_time()
 
+            print(f"t0 {self.t0}")
+            print(f"start time {self.start_time}")
+
             # show the fixation for the duration of iti
             self.show_fixation(self.t0, self.start_time - self.t0)
 
@@ -1221,6 +1226,7 @@ class SternbergOrder(Task):
         Does 1 comes before 5 in the set?
         The participant needs to a) figure out whether 1 and 5 were in the set and 
                                  b) whether the order shown is correct
+
     The order of events in trial:
     1. show fixation (iti_dur)
     2. show digits serially
@@ -1249,7 +1255,7 @@ class SternbergOrder(Task):
         # display digit for fixed time (self.digit_dur)
         for digit in self.digits:   
             self.digit_start = self.get_current_time()                     
-            stim = visual.TextStim(self.window, text=digit, pos=(0.0,0.0), color=(-1,-1,-1), units='deg', height = 1.5)
+            stim = visual.TextStim(self.window, text=digit, pos=(0.0,0.0), color=(-1,-1,-1), units='deg')
             stim.draw()
             self.window.flip()
             # core.wait(self.stem_word_dur)
@@ -1265,25 +1271,8 @@ class SternbergOrder(Task):
     def _show_prob(self):
         # display the prob on the screen (the probe comes after a delay period)
         self.prob_start = self.get_current_time()
-        # get the prob digits
-        self.prob_dig = self.prob.split(" ")
-
-        # the first digit of the prob
-        dig_first = visual.TextStim(self.window, text=self.prob_dig[0], pos=(-1.5,0.0), color=(-1,-1,-1), units='deg', height = 1.5)
-        
-        # an arrow to show order
-        # arrowVert = [(-0.4,0.05),(-0.4,-0.05),(-.2,-0.05),(-.2,-0.1),(0,0),(-.2,0.1),(-.2,0.05)]
-        arrowVert = [(-1.4,0.5),(-1.4,-0.5),(0,-0.5),(0,-1.5),(1.5, 0),(0,1.5),(0,0.5)]
-        arrow = ShapeStim(self.window, vertices=arrowVert, fillColor='black', size=.5, lineColor='black')
-        
-        # the second digit of the prob
-        dig_second = visual.TextStim(self.window, text=self.prob_dig[1], pos=(1.5,0.0), color=(-1,-1,-1), units='deg', height = 1.5)
-        
-        # draw the prob
-        dig_first.draw()
-        arrow.draw()
-        dig_second.draw()
-        
+        stim = visual.TextStim(self.window, text=self.prob, pos=(0.0,0.0), color=(-1,-1,-1), units='deg')
+        stim.draw()
         self.window.flip()
 
     def run(self):
@@ -1352,25 +1341,6 @@ class SternbergOrder(Task):
 
         return rDf
 
-class VisuospatialOrder(Task):
-
-    def __init__(self, screen, target_file, run_end, task_name, study_name, target_num, ttl_flag):
-        super(VisuospatialOrder, self).__init__(screen, target_file, run_end, task_name, study_name, target_num, ttl_flag)
-        self.feedback_type = 'acc' # reaction
-        self.name          = 'visuospatial_order'
-
-    def _get_target_info(self):
-        pass
-
-    def _show_Stim(self):
-        pass
-
-    def _show_prob(self):
-        pass
-
-    def run(self):
-        pass
-
 class FlexionExtension(Task):
     """
     flexion extension of toes! No particular feedback
@@ -1382,84 +1352,16 @@ class FlexionExtension(Task):
 
     def _get_trial_info(self):
         # reads info from the target file
-        self.stim = self.target_file['stim'][self.trial]
-        self.stim_dur = self.target_file['stim_dur'][self.trial]
-        self.trial_dur = self.target_file['trial_dur'][self.trial]
-        self.iti_dur = self.target_file['iti_dur'][self.trial]
-        self.start_time = self.target_file['start_time'][self.trial]
-        self.trial_type = self.target_file['trial_type'][self.trial]
-        self.display_trial_feedback = self.target_file['display_trial_feedback'][self.trial]
-        self.foot = self.target_file['foot'][self.trial]
-        
-    def _show_stim(self):
+        pass
+
+    def show_stim(self):
         # displays the instruction:
         # either flexion or extension appears
-        self.stim_pair = self.stim.split()
-        n_rep = int(self.trial_dur/(self.stim_dur*2)) # number of times a stimulus pair will be repeated
+        pass
 
-        self.stim_act = np.tile(self.stim_pair, n_rep)
-
-
-        for act in self.stim_act:
-            self.act_start = self.get_current_time()  
-            stim = visual.TextStim(self.window, text = self.foot + "\n "+ act, pos=(0.0,0.0), color=(-1,-1,-1), units='deg', height = 1.5)
-            stim.draw()
-            self.window.flip()
-            
-            # core.wait(self.stem_word_dur)
-
-            # each word will remain on the screen for a certain amount of time (self.stem_word_dur)
-            if self.ttl_flag: # wait for ttl pulse
-                while ttl.clock.getTime()-self.act_start <= self.stim_dur:
-                    ttl.check()
-            else: # do not wait for ttl pulse
-                while self.clock.getTime()-self.act_start <= self.stim_dur:
-                    pass       
-
-    def run(self):
-        # run the task
-
-        # loop over trials
-        self.all_trial_response = [] # pre-allocate 
-
-        for self.trial in self.target_file.index: 
-
-            # get stims
-            self._get_trial_info()
-
-            # get current time (self.t0)
-            self.t0 = self.get_current_time()
-
-            # show the fixation for the duration of iti
-            # wait here till the startTime 
-            self.show_fixation(self.t0, self.start_time - self.t0)
-
-            # collect real_start_time for each block (self.real_start_time)
-            self.get_real_start_time(self.t0)
-
-            # 1. show actions
-            self._show_stim()
-
-            ## 3.2 get the time before collecting responses (self.t2)
-            self.get_time_before_disp()
-
-            # 4. display trial feedback
-            if self.target_file['display_trial_feedback'][self.trial] and self.response_made:
-                self.display_trial_feedback(correct_response = self.correct_response) 
-            else:
-                self.screen.fixation_cross()
-            
-            # 5 show fixation for the duration of the iti
-            ## 5.1 get current time
-            t_start_iti = self.get_current_time()
-            self.show_fixation(t_start_iti, self.iti_dur)
-
-            self.screen_quit()
-
-        # get the response dataframe
-        rDf = self.get_response_df(all_trial_response=self.all_trial_response)
-
-        return rDf
+    def run():
+        # runs the task
+        pass
 
 class VerbGeneration(Task):
     # @property
@@ -1480,7 +1382,7 @@ class VerbGeneration(Task):
         self.start_time = self.target_file['start_time'][self.trial]
         
     
-    def _show_stim(self):
+    def _show_word(self):
         # display word for fixed time    
         self.word_start = self.get_current_time()                  
         stim = visual.TextStim(self.window, text=self.noun, pos=(0.0,0.0), color=(-1,-1,-1), units='deg')
@@ -1527,7 +1429,7 @@ class VerbGeneration(Task):
         else: # do not wait for ttl pulse
             while self.clock.getTime()-self.instruct_generate_start <= self.trial_dur - 0.1:
                 pass
-
+    
     def run(self):
         # run the task
 
@@ -1549,15 +1451,30 @@ class VerbGeneration(Task):
             # collect real_start_time for each block (self.real_start_time)
             self.get_real_start_time(self.t0)
 
+            # 0. Show 'READ' instruction if this is first stimulus
+            #if self.trial == self.target_file.index.start:
+            #    self._show_instruct_read()
+
             # 0.1 Show "GENERATE" instruction if this is half-way point
             if self.trial == int(self.target_file.index.stop/2):
                 self._show_instruct_generate()
 
-            # 1. show actions
-            self._show_stim()
+            # 1. show word
+            self._show_word()
 
             ## 3.2 get the time before collecting responses (self.t2)
             self.get_time_before_disp()
+
+            ## 3.3 collect response
+            #wait_time = self.trial_dur - 0.1
+
+            #self.trial_response = self.fake_trial_response(wait_time = wait_time,
+            #                                               trial_index = self.trial,
+            #                                               start_time = self.get_current_time(),
+            #                                               start_time_rt = self.t2)
+
+            ## 3.4 update response
+            #self.update_trial_response()
 
             # 4. display trial feedback
             if self.target_file['display_trial_feedback'][self.trial] and self.response_made:
@@ -1587,7 +1504,7 @@ class RomanceMovie(Task):
         self.feedback_type = 'None' # no feedback
         self.name          = 'romance_movie'
 
-    def _get_trial_info(self):
+    def _get_stims(self):
         video_file = self.target_file['stim'][self.trial]
         self.iti_dur = self.target_file['iti_dur'][self.trial]
         self.trial_dur = self.target_file['trial_dur'][self.trial]
@@ -1612,6 +1529,11 @@ class RomanceMovie(Task):
                     mov.draw()
                     self.window.flip()
 
+                # get trial response
+                #self.trial_response = self.fake_trial_response(wait_time = wait_time,
+                #                                           trial_index = self.trial,
+                #                                           start_time = self.get_current_time(),
+                #                                           start_time_rt = self.t2)
         else: 
             while (self.clock.getTime() - self.t0 <= wait_time): # and not resp_made:
                 # play movie
@@ -1621,8 +1543,13 @@ class RomanceMovie(Task):
                     mov.draw()
                     self.window.flip()
 
+                # get trial response
+                #self.trial_response = self.fake_trial_response(wait_time = wait_time,
+                #                                           trial_index = self.trial,
+                #                                           start_time = self.get_current_time(),
+                #                                           start_time_rt = self.t2)
+               
     def run(self):
-        # run the task
 
         # loop over trials
         self.all_trial_response = [] # pre-allocate 
@@ -1630,30 +1557,37 @@ class RomanceMovie(Task):
         for self.trial in self.target_file.index: 
 
             # get stims
-            self._get_trial_info()
+            self._get_stims()
 
             # get current time (self.t0)
             self.t0 = self.get_current_time()
 
             # show the fixation for the duration of iti
-            # wait here till the startTime 
             self.show_fixation(self.t0, self.start_time - self.t0)
 
-            # collect real_start_time for each block (self.real_start_time)
+           # collect real_start_time for each block (self.real_start_time)
             self.get_real_start_time(self.t0)
 
             ## 3.2 get the time before collecting responses (self.t2)
             self.get_time_before_disp()
 
-            # 1. show actions
+            # show movie
             self._show_stim()
 
-            # 4. display trial feedback
+            # 3. display the probe and collect reponse
+
+            ## 3.3 collect response
+            #wait_time = self.trial_dur
+
+            # display feedback (does nothing, as display_trial_feedback = False)
             if self.target_file['display_trial_feedback'][self.trial] and self.response_made:
-                self.display_trial_feedback(correct_response = self.correct_response) 
+                self.display_trial_feedback(correct_response = self.correct_response)
             else:
                 self.screen.fixation_cross()
-            
+
+            # update response
+            #self.update_trial_response()
+
             # 5 show fixation for the duration of the iti
             ## 5.1 get current time
             t_start_iti = self.get_current_time()
@@ -1674,7 +1608,7 @@ class ActionObservationKnots(Task):
     def __init__(self, screen, target_file, run_end, task_name, study_name, target_num, ttl_flag):
         super(ActionObservationKnots, self).__init__(screen, target_file, run_end, task_name, study_name, target_num, ttl_flag)
         self.feedback_type = 'None' # no feedback
-        self.name          = 'act_obs_knots'
+        self.name          = 'action_observation_knots'
 
     def _get_trial_info(self):
         video_file_action = self.target_file['stim_action'][self.trial]
@@ -1703,6 +1637,12 @@ class ActionObservationKnots(Task):
                     mov.draw()
                     self.window.flip()
 
+                # get trial response
+                #self.trial_response = self.fake_trial_response(wait_time = wait_time,
+                #                                           trial_index = self.trial,
+                #                                           start_time = self.get_current_time(),
+                #                                           start_time_rt = self.t2)
+
         else: 
             while (self.clock.getTime() - self.t0 <= wait_time): # and not resp_made:
                 # play movie
@@ -1711,6 +1651,12 @@ class ActionObservationKnots(Task):
                     # draw frame to screen
                     mov.draw()
                     self.window.flip()
+
+                # get trial response
+                #self.trial_response = self.fake_trial_response(wait_time = wait_time,
+                #                                           trial_index = self.trial,
+                #                                           start_time = self.get_current_time(),
+                #                                           start_time_rt = self.t2)
 
     def _show_stim_control(self):
         mov = visual.MovieStim3(self.window, self.path_to_video_control, flipVert=False, flipHoriz=False, loop=False)
@@ -1730,6 +1676,12 @@ class ActionObservationKnots(Task):
                     mov.draw()
                     self.window.flip()
 
+                # get trial response
+                #self.trial_response = self.fake_trial_response(wait_time = wait_time,
+                #                                           trial_index = self.trial,
+                #                                           start_time = self.get_current_time(),
+                #                                           start_time_rt = self.t2)
+
         else: 
             while (self.clock.getTime() - self.t0 <= wait_time): # and not resp_made:
                 # play movie
@@ -1739,6 +1691,12 @@ class ActionObservationKnots(Task):
                     mov.draw()
                     self.window.flip()
 
+                # get trial response
+                #self.trial_response = self.fake_trial_response(wait_time = wait_time,
+                #                                           trial_index = self.trial,
+                #                                           start_time = self.get_current_time(),
+                #                                           start_time_rt = self.t2)
+               
     def run(self):
         # run the task
 
@@ -1760,10 +1718,9 @@ class ActionObservationKnots(Task):
             # collect real_start_time for each block (self.real_start_time)
             self.get_real_start_time(self.t0)
 
-            ## 3.2 get the time before collecting responses (self.t2)
+            # 1. show action video
             self.get_time_before_disp()
 
-            # 1. show actions
             self._show_stim_action()
 
             # 2. display fixation for the duration of the iti
@@ -1772,6 +1729,8 @@ class ActionObservationKnots(Task):
             ## 2.2 get the iti duration
             self.screen.fixation_cross()
             self.show_fixation(t_action_end, self.iti_dur)
+            ## 2.3 clear any button presses before collecting response
+            #event.clearEvents()
 
             # 3. display the probe and collect reponse
             ## 3.2 get the time before collecting responses (self.t2)
@@ -1785,6 +1744,9 @@ class ActionObservationKnots(Task):
                 self.display_trial_feedback(correct_response = self.correct_response) 
             else:
                 self.screen.fixation_cross()
+
+            # update response
+            #self.update_trial_response()
             
             # 5 show fixation for the duration of the iti
             ## 5.1 get current time
@@ -1857,6 +1819,7 @@ class Rest(Task):
 
         return rDf
 
+
 TASK_MAP = {
     "visual_search": VisualSearch, # task_num 1
     "theory_of_mind": TheoryOfMind, # task_num 2
@@ -1866,11 +1829,9 @@ TASK_MAP = {
     "action_observation": ActionObservation, # task_num 6 
     "finger_sequence": FingerSequence, # task_num 7
     "sternberg_order": SternbergOrder, # task_num 8
-    "visuospatial_order": VisuospatialOrder, # task 9
-    "flexion_extension": FlexionExtension, # task_num 10
     "flexion_extension": FlexionExtension, # task_num 9
-    "verb_generation": VerbGeneration, # task_num 11
-    "romance_movie": RomanceMovie, #task_num 12
-    "act_obs_knots": ActionObservationKnots, #task_num 13
+    "verb_generation": VerbGeneration, #task_num 10
+    "romance_movie": RomanceMovie, #task_num 11
+    "action_observation_knots": ActionObservationKnots, #task_num 12
     "rest": Rest, # task_num?
     }

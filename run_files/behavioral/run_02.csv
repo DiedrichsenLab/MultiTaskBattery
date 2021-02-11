@@ -15,4 +15,4 @@ verb_generation,7,14,2,30,verb_generation_30sec_02.csv,270,305,5,None
 rest,10,1,,10,rest_10sec.csv,305,315,0,
 romance_movie,8,1,2,30,romance_movie_30sec_02.csv,315,350,5,None
 rest,10,1,,10,rest_10sec.csv,350,360,0,
-action_observation_knots,9,1,2,30,action_observation_knots_30sec_02.csv,360,395,5,None
+act_obs_knots,9,1,2,30,act_obs_knots_30sec_02.csv,360,395,5,None
