@@ -11,7 +11,7 @@ def visuospatial_order(nrun = 5, study_name = 'behavioral',
                        trial_dur = 6, task_dur = 30, 
                        hand = 'right', TR = 1, 
                        display_trial_feedback = True, num_trials = 1, 
-                       circle_radius = 5):
+                       circle_radius = 5, load = 6):
     """
     creates target file for the visuospatial_order task
     target file fields:
@@ -75,15 +75,12 @@ def visuospatial_order(nrun = 5, study_name = 'behavioral',
             ## Using the equations for the circle to create x and y
             x = circle_radius*np.cos(tt)
             y = circle_radius*np.sin(tt)
-            circle_xys = np.vstack((x, y)).T
+            circle_xys = [[xi, yi] for xi in x for yi in y] 
 
             # randomly select from circle_xys
-            dot_idx = np.random.choice(circle_xys.shape[0], size = 6, replace=False)
+            dot_idx = np.random.choice(len(circle_xys), size = load, replace=False)
 
-            dot_xys      = circle_xys[dot_idx, :]
-            # ndot_xys_idx = range(circle_xys.shape[0]) != dot_idx
-            # ndot_xys     = circle_xys[ndot_xys_idx, :]
-
+            dot_xys      = [circle_xys[i] for i in dot_idx]
             T['xys_stim'].append(dot_xys) 
 
             # randomly pick two of the dots for probe based on the trial type
@@ -91,7 +88,7 @@ def visuospatial_order(nrun = 5, study_name = 'behavioral',
             current_tt = T['trial_type'][t]
 
             # pick two dots
-            rand_probs = np.random.choice(dot_xys.shape[0], size = 2, replace = False)
+            rand_probs = np.random.choice(len(dot_xys), size = 2, replace = False)
 
             if ~ current_tt: # False trial
                 # the trial is false so two wrong digits with wrong order can be generated
@@ -101,7 +98,7 @@ def visuospatial_order(nrun = 5, study_name = 'behavioral',
                 # sort the indices in ascending order to make sure that their order is conserved
                 probs_idx = np.sort(rand_probs)
             
-            probs_xys  = dot_xys[probs_idx, :]
+            probs_xys  = [dot_xys[i] for i in probs_idx]
             T['xys_prob'].append(probs_xys) 
 
         df_tmp = pd.DataFrame(T)
