@@ -1474,7 +1474,7 @@ class VerbGeneration(Task):
     def _get_trial_info(self):
         # get stim (i.e. story)
         self.noun = self.target_file['word'][self.trial]
-
+        self.noun = self.noun.strip()
         self.iti_dur = self.target_file['iti_dur'][self.trial]
         self.trial_dur = self.target_file['trial_dur'][self.trial]
         self.start_time = self.target_file['start_time'][self.trial]
