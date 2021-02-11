@@ -2,10 +2,16 @@
 # @ Ladan Shahshahani Feb. 6 2021
 import numpy as np
 import pandas as pd
-import experiment_code.constants as consts
-# import constants as consts
+# import experiment_code.constants as consts
+import constants as consts
 
-def visuospatial_order():
+def visuospatial_order(nrun = 5, study_name = 'behavioral', 
+                       dot_dur = 0.75, delay_dur = 0.5, 
+                       prob_dur = 1, iti_dur = 0.5,
+                       trial_dur = 6, task_dur = 30, 
+                       hand = 'right', TR = 1, 
+                       display_trial_feedback = True, num_trials = 1, 
+                       circle_radius = 5):
     """
     creates target file for the visuospatial_order task
     target file fields:
@@ -23,7 +29,86 @@ def visuospatial_order():
         start_time (time when the trial starts)
         end_time (time when the trial ends)
     """
-    pass
+    # path to save the target files
+    path2task_target = consts.target_dir / study_name / 'visuospatial_order'
+    consts.dircheck(path2task_target)
+
+    # Version 1. Simple: Considers a circle with a certain radius and draws random dots from the circle
+
+    # loop over runs and create target 
+    for run in range(nrun):
+        T = {} # dictionary that will be converted to a dataframe later
+
+        n_trials = int(task_dur/(trial_dur + iti_dur)) # total number of trials
+
+        # assign trial_types
+        n_trials_T = int(n_trials/2)
+        n_trials_F = n_trials - n_trials_T
+
+        trials_True  = np.tile(True, n_trials_T)
+        trials_False = np.tile(False, n_trials_F)
+
+        trials_types = np.concatenate((trials_True, trials_False), axis = 0)
+
+        # randomly shuffle trials
+        np.random.shuffle(trials_types)
+
+        # fill in fields
+        T['trial_type']             = trials_types     
+        T['trial_dur']              = [trial_dur for i in range(n_trials)]
+        T['iti_dur']                = [iti_dur for i in range(n_trials)]
+        T['delay_dur']              = [delay_dur for i in range(n_trials)]
+        T['dot_dur']                = [dot_dur for i in range(n_trials)]
+        T['prob_dur']               = [prob_dur for i in range(n_trials)]
+        T['hand']                   = [hand for i in range(n_trials)]
+        T['display_trial_feedback'] = [display_trial_feedback for i in range(n_trials)]
+        T['start_time']             = [(trial_dur + iti_dur)*i for i in range(n_trials)]
+        T['end_time']               = [(i+1)*trial_dur + i*iti_dur for i in range(n_trials)]
+        T['circle_radius']          = [circle_radius for i in range(n_trials)]
+
+        T['xys_stim'] = []
+        T['xys_prob'] = []
+        for t in range(n_trials):
+
+            ## Create the circle with a certain radius
+            tt = np.linspace(0, 10000, num = 100, endpoint=True)
+            ## Using the equations for the circle to create x and y
+            x = circle_radius*np.cos(tt)
+            y = circle_radius*np.sin(tt)
+            circle_xys = np.vstack((x, y)).T
+
+            # randomly select from circle_xys
+            dot_idx = np.random.choice(circle_xys.shape[0], size = 6, replace=False)
+
+            dot_xys      = circle_xys[dot_idx, :]
+            # ndot_xys_idx = range(circle_xys.shape[0]) != dot_idx
+            # ndot_xys     = circle_xys[ndot_xys_idx, :]
+
+            T['xys_stim'].append(dot_xys) 
+
+            # randomly pick two of the dots for probe based on the trial type
+            # get the trial_type for the current trial
+            current_tt = T['trial_type'][t]
+
+            # pick two dots
+            rand_probs = np.random.choice(dot_xys.shape[0], size = 2, replace = False)
+
+            if ~ current_tt: # False trial
+                # the trial is false so two wrong digits with wrong order can be generated
+                # sort the indices in descending order to make sure that their order is flipped
+                probs_idx = np.sort(rand_probs)[::-1]
+            else: # True trial
+                # sort the indices in ascending order to make sure that their order is conserved
+                probs_idx = np.sort(rand_probs)
+            
+            probs_xys  = dot_xys[probs_idx, :]
+            T['xys_prob'].append(probs_xys) 
+
+        df_tmp = pd.DataFrame(T)
+
+        target_filename = path2task_target / f"visuospatial_order_{task_dur}sec_{run+1:02d}.csv"
+        df_tmp.to_csv(target_filename)
+    return
 
 def sternber_order(nrun = 5, study_name = 'behavioral', 
                    digit_dur = 0.75, delay_dur = 0.5, 
@@ -83,8 +168,6 @@ def sternber_order(nrun = 5, study_name = 'behavioral',
 
         trials_types = np.concatenate((trials_True, trials_False), axis = 0)
 
-        # print(trials_types)
-
         # randomly shuffle trials
         np.random.shuffle(trials_types)
 
@@ -98,7 +181,6 @@ def sternber_order(nrun = 5, study_name = 'behavioral',
             stim_str.append(rand_str)
 
         # fill in fields
-        ## generate a random sequence of numbers between 1 and 9
         T['stim']                   = stim_str      
         T['trial_type']             = trials_types     
         T['trial_dur']              = [trial_dur for i in range(n_trials)]
@@ -419,8 +501,13 @@ def run_target():
     create target files for the tasks
     """
 
-    finger_sequence()
-    sternber_order()
-    flexion_extension()
+    # finger_sequence()
+    # sternber_order()
+    # flexion_extension()
+    visuospatial_order()
 
     return
+
+
+
+run_target()
