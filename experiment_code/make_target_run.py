@@ -1188,7 +1188,7 @@ class ActionObservationKnots(Utils):
     
     def __init__(self):
         super().__init__()
-        self.task_name = 'action_observation_knots'
+        self.task_name = 'act_obs_knots'
         self.logging_file = 'action_observation_knots_logging.csv'
         self.video_name_action = ['knotAction'] 
         self.video_name_control = ['knotControl']
@@ -1366,7 +1366,7 @@ class MakeFiles:
             counterbalance_runs (bool): counterbalance block order across runs
     """
     def __init__(self):
-        self.task_names = ['visual_search', 'theory_of_mind', 'n_back', 'social_prediction', 'semantic_prediction', 'action_observation', 'verb_generation', 'romance_movie', 'action_observation_knots']
+        self.task_names = ['visual_search', 'theory_of_mind', 'n_back', 'social_prediction', 'semantic_prediction', 'action_observation', 'verb_generation', 'romance_movie', 'act_obs_knots']
         self.feedback_types = ['rt', 'acc', 'rt', 'acc', 'rt', 'acc', 'None', 'None', 'None']
         self.run_name_prefix = 'run'
         self.tile_run = 1
@@ -1554,15 +1554,6 @@ class MakeFiles:
         # create run files
         self.make_runfiles()
 
-#TASK_MAP = {
-#    "visual_search": VisualSearch,
-#    "n_back": NBack,
-#    "social_prediction": SocialPrediction,
-#    "semantic_prediction": SemanticPrediction,
-#    "action_observation": ActionObservation,
-#    "theory_of_mind": TheoryOfMind,
-#    "rest": Rest,
-#    }
 
 TASK_MAP = {
     "visual_search": VisualSearch,
@@ -1573,7 +1564,7 @@ TASK_MAP = {
     "action_observation": ActionObservation,
     "verb_generation": VerbGeneration,
     "romance_movie": RomanceMovie,
-    "action_observation_knots": ActionObservationKnots,
+    "act_obs_knots": ActionObservationKnots,
     "rest": Rest,
     }
 
