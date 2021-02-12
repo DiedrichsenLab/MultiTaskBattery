@@ -2,6 +2,7 @@
 # @ Ladan Shahshahani Feb. 6 2021
 import numpy as np
 import pandas as pd
+import math
 # import experiment_code.constants as consts
 import constants as consts
 
@@ -68,21 +69,23 @@ def visuospatial_order(nrun = 5, study_name = 'behavioral',
 
         T['xys_stim'] = []
         T['xys_prob'] = []
+        T['angle_prob'] = []
         for t in range(n_trials):
 
             ## Create the circle with a certain radius
-            tt = np.linspace(0, 10000, num = 100, endpoint=True)
+            tt = np.linspace(0, 10000, num = 6, endpoint=True)
             ## Using the equations for the circle to create x and y
             x = circle_radius*np.cos(tt)
             y = circle_radius*np.sin(tt)
-            circle_xys = [[xi, yi] for xi in x for yi in y] 
+            
+            circle_xys = [[x[i], y[i]] for i in range(len(x))]
 
             # randomly select from circle_xys
             dot_idx = np.random.choice(len(circle_xys), size = load, replace=False)
 
             dot_xys      = [circle_xys[i] for i in dot_idx]
-            T['xys_stim'].append(dot_xys) 
 
+            T['xys_stim'].append(dot_xys) 
             # randomly pick two of the dots for probe based on the trial type
             # get the trial_type for the current trial
             current_tt = T['trial_type'][t]
@@ -99,7 +102,12 @@ def visuospatial_order(nrun = 5, study_name = 'behavioral',
                 probs_idx = np.sort(rand_probs)
             
             probs_xys  = [dot_xys[i] for i in probs_idx]
+            ## get the angle between the prob_dots
+            abs_y = np.abs(probs_xys[0][1]) + np.abs(probs_xys[1][1])
+            abs_x = np.abs(probs_xys[0][0]) + np.abs(probs_xys[1][0])
+            prob_angle = math.degrees(math.atan(abs_y/abs_x))
             T['xys_prob'].append(probs_xys) 
+            T['angle_prob'].append(prob_angle)
 
         df_tmp = pd.DataFrame(T)
 
