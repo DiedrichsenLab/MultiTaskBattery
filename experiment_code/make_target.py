@@ -104,8 +104,6 @@ def visuospatial_order(nrun = 5, study_name = 'behavioral',
             probs_xys  = [dot_xys[i] for i in probs_idx]
             ## get the angle between the prob_dots
             abs_y = np.abs(probs_xys[0][1] - probs_xys[1][1])
-            # abs_y = np.abs(probs_xys[0][1]) + np.abs(probs_xys[1][1])
-            # abs_x = np.abs(probs_xys[0][0]) + np.abs(probs_xys[1][0])
             abs_x = np.abs(probs_xys[0][0] - probs_xys[1][0])
             prob_angle = math.degrees(math.atan(abs_y/abs_x))
             T['xys_prob'].append(probs_xys) 
