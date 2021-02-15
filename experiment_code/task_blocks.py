@@ -1266,15 +1266,17 @@ class SternbergOrder(Task):
         self.prob_dig = self.prob.split(" ")
 
         # the first digit of the prob
-        dig_first = visual.TextStim(self.window, text=self.prob_dig[0], pos=(-1.5,0.0), color=(-1,-1,-1), units='deg', height = 1.5)
+        dig_first = visual.TextStim(self.window, text=self.prob_dig[0], pos=(-1,0.0), color=(-1,-1,-1), units='deg', height = 1.5)
         
-        # an arrow to show order
-        # arrowVert = [(-0.4,0.05),(-0.4,-0.05),(-.2,-0.05),(-.2,-0.1),(0,0),(-.2,0.1),(-.2,0.05)]
-        arrowVert = [(-1.4,0.5),(-1.4,-0.5),(0,-0.5),(0,-1.5),(1.5, 0),(0,1.5),(0,0.5)]
-        arrow = ShapeStim(self.window, vertices=arrowVert, fillColor='black', size=.5, lineColor='black')
+        # an arrow to show order   
+        arrowVert = [(-1.6,0.2),(-1.6,-0.2),(-.8,-0.2),(-.8,-0.4),(0,0),(-.8,0.4),(-.8,0.2)]        # arrow = ShapeStim(self.window, vertices=arrowVert, fillColor='black', size=.5, lineColor='black')
+        # arrowVert = [(0, 0), (1, 0), (1, 0.5), (1.5, 0), (1, -0.5), (1, 0)]
+        # arrowVert = [(-1, 0), (0, 0), (0, 0.5), (1, 0), (0, -0.5), (0, 0)]
+        arrow = ShapeStim(self.window, vertices=arrowVert, closeShape=True, lineWidth=3, pos=(0,0), ori=90, units = "deg", fillColor = [-1, -1, -1], lineColor = [-1, -1, -1])
+        arrow.pos = [(-1, 1)]
         
         # the second digit of the prob
-        dig_second = visual.TextStim(self.window, text=self.prob_dig[1], pos=(1.5,0.0), color=(-1,-1,-1), units='deg', height = 1.5)
+        dig_second = visual.TextStim(self.window, text=self.prob_dig[1], pos=(1,0.0), color=(-1,-1,-1), units='deg', height = 1.5)
         
         # draw the prob
         dig_first.draw()
@@ -1376,7 +1378,7 @@ class VisuospatialOrder(Task):
         self.xys_stim               = self.target_file['xys_stim'][self.trial]
         self.xys_prob               = self.target_file['xys_prob'][self.trial]
         self.angle_prob             = self.target_file['angle_prob'][self.trial]
-
+    
     def _show_stim(self):
         # display dot for a fixed duration (self.dot_dur)
         for dot_idx in self.xys_stim: 
@@ -1384,9 +1386,13 @@ class VisuospatialOrder(Task):
             # circle = visual.Circle(win=self.window, units='deg', radius=self.circle_radius, fillColor=[0, 0, 0], 
             #                        lineColor=[-1, -1, -1], edges = 128, lineWidth = 5)  
             # circle.draw()
-            dot_stim = visual.ElementArrayStim( win=self.window, units='deg', nElements=1, elementTex=None, elementMask="circle",
-                                                xys=[dot_idx],
-                                                sizes=1, colors = [-1, -1, -1])
+            # dot_stim = visual.ElementArrayStim( win=self.window, units='deg', nElements=1, elementTex=None, elementMask="circle",
+            #                                     xys=[dot_idx],
+            #                                     sizes=1, colors = [-1, -1, -1])
+
+            dot_stim = visual.Circle(win=self.window, units='deg', radius=0.3, fillColor=[-1,-1,-1], 
+                                   lineColor=[-1, -1, -1], edges = 128, lineWidth = 5, pos = dot_idx)  
+            dot_stim.draw()
 
             dot_stim.draw()
             self.window.flip()
@@ -1403,24 +1409,21 @@ class VisuospatialOrder(Task):
         # display the prob on the screen (the probe comes after a delay period)
         self.prob_start = self.get_current_time()
 
-        # # display a circle 
+        # display a circle 
         # circle = visual.Circle(win=self.window, units='deg', radius=self.circle_radius, fillColor=[0, 0, 0], 
         #                         lineColor=[-1, -1, -1], edges = 128, lineWidth = 5)  
         # circle.draw()
 
-        # the first digit of the prob
-        dot_first = visual.ElementArrayStim(win=self.window, units='deg', nElements=1, elementTex=None, elementMask="circle",
-                                                       xys=[self.xys_prob[0]],
-                                                       sizes=1, colors = [-1, -1, -1])
+        dot_first = visual.Circle(win=self.window, units='deg', radius=0.3, fillColor=[-1,-1,-1], 
+                                   lineColor=[-1, -1, -1], edges = 128, lineWidth = 5, pos = self.xys_prob[0]) 
         
-        # an arrow to show order
-        arrowVert = [(-4.5, 1),(-4.5, -1),(3.5, -1),(3.5, -2),(4.5, 0),(3.5, 2),(3.5, 1)]
-        arrow = ShapeStim(self.window, vertices=arrowVert, fillColor='black', size=.5, lineColor='black', ori = self.angle_prob)
         
-        # the second digit of the prob
-        dot_second = dot_stim = visual.ElementArrayStim(win=self.window, units='deg', nElements=1, elementTex=None, elementMask="circle",
-                                                       xys=[self.xys_prob[1]],
-                                                       sizes=1, colors = [-1, -1, -1])
+        arrowVert = [(-1.6,0.2),(-1.6,-0.2),(-.8,-0.2),(-.8,-0.4),(0,0),(-.8,0.4),(-.8,0.2)]        # arrow = ShapeStim(self.window, vertices=arrowVert, fillColor='black', size=.5, lineColor='black')
+        arrow = ShapeStim(self.window, vertices=arrowVert, closeShape=True, lineWidth=3, pos=(0,0), ori=90, units = "deg", fillColor = [-1, -1, -1], lineColor = [-1, -1, -1])
+        arrow.pos = [self.xys_prob[0][0], self.xys_prob[0][1]+0.2]
+
+        dot_second = visual.Circle(win=self.window, units='deg', radius=0.3, fillColor=[-1,-1,-1], 
+                                   lineColor=[-1, -1, -1], edges = 128, lineWidth = 5, pos = self.xys_prob[1]) 
         
         # draw the prob
         dot_first.draw()
@@ -1656,5 +1659,6 @@ TASK_MAP = {
     "sternberg_order": SternbergOrder, # task_num 8
     "visuospatial_order": VisuospatialOrder, # task_num 9
     "flexion_extension": FlexionExtension, # task_num 10
+    "theory_of_mind": TheoryOfMind, # task_num 11
     "rest": Rest, # task_num?
     }
