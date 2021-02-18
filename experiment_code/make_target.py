@@ -6,13 +6,13 @@ import math
 # import experiment_code.constants as consts
 import constants as consts
 
-def visuospatial_order_v1(nrun = 5, study_name = 'behavioral', 
+def visuospatial_order(nrun = 5, study_name = 'behavioral', 
                           dot_dur = 0.75, delay_dur = 0.5, 
                           prob_dur = 1, iti_dur = 0.5,
                           trial_dur = 6, task_dur = 30, 
                           hand = 'right', TR = 1, 
                           display_trial_feedback = True, num_trials = 1, 
-                          circle_radius = 3, load = 6):
+                          circle_radius = 5, load = 6):
     """
     creates target file for the visuospatial_order task
     target file fields:
@@ -73,10 +73,12 @@ def visuospatial_order_v1(nrun = 5, study_name = 'behavioral',
         for t in range(n_trials):
 
             ## Create the circle with a certain radius
-            tt = np.linspace(0, 10000, num = 6, endpoint=True)
+            # tt = np.linspace(0, 10000, num = 6, endpoint=True)
             ## Using the equations for the circle to create x and y
-            x = circle_radius*np.cos(tt)
-            y = circle_radius*np.sin(tt)
+            # x = circle_radius*np.cos(tt)
+            # y = circle_radius*np.sin(tt)
+            x = np.linspace(-circle_radius/2, circle_radius/2, num = 6, endpoint = True)
+            y = np.linspace(-circle_radius/2, circle_radius/2, num = 6, endpoint = True)
             
             circle_xys = [[x[i], y[i]] for i in range(len(x))]
 
@@ -115,13 +117,13 @@ def visuospatial_order_v1(nrun = 5, study_name = 'behavioral',
         df_tmp.to_csv(target_filename)
     return
 
-def visuospatial_order(nrun = 5, study_name = 'behavioral', 
+def visuospatial_order_v2(nrun = 5, study_name = 'behavioral', 
                        dot_dur = 0.75, delay_dur = 0.5, 
                        prob_dur = 1, iti_dur = 0.5,
                        trial_dur = 6, task_dur = 30, 
                        hand = 'right', TR = 1, 
                        display_trial_feedback = True, num_trials = 1, 
-                       max_range = 10, load = 6):
+                       max_range = 5, load = 6):
     """
     creates target file for the visuospatial_order task
     target file fields:
@@ -182,8 +184,8 @@ def visuospatial_order(nrun = 5, study_name = 'behavioral',
 
             # randomly generate #load x and y coordinates
             ## the coordinates will be drawn from a uniform distribution
-            x = np.random.uniform(0, max_range, load)
-            y = np.random.uniform(0, max_range, load)
+            x = np.random.uniform(-max_range, max_range, load)
+            y = np.random.uniform(-max_range, max_range, load)
             x = np.sort(x)
             y = np.sort(y)
             
@@ -207,6 +209,7 @@ def visuospatial_order(nrun = 5, study_name = 'behavioral',
             
             probs_xys  = [dot_xys[i] for i in probs_idx]
             T['xys_prob'].append(probs_xys) 
+
 
         df_tmp = pd.DataFrame(T)
 
