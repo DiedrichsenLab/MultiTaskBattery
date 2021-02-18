@@ -12,7 +12,7 @@ def visuospatial_order(nrun = 5, study_name = 'behavioral',
                           trial_dur = 6, task_dur = 30, 
                           hand = 'right', TR = 1, 
                           display_trial_feedback = True, num_trials = 1, 
-                          circle_radius = 5, load = 6):
+                          circle_radius = 8, load = 6):
     """
     creates target file for the visuospatial_order task
     target file fields:
@@ -69,7 +69,7 @@ def visuospatial_order(nrun = 5, study_name = 'behavioral',
 
         T['xys_stim'] = []
         T['xys_prob'] = []
-        T['angle_prob'] = []
+        # T['angle_prob'] = []
         for t in range(n_trials):
 
             ## Create the circle with a certain radius
@@ -77,8 +77,11 @@ def visuospatial_order(nrun = 5, study_name = 'behavioral',
             ## Using the equations for the circle to create x and y
             # x = circle_radius*np.cos(tt)
             # y = circle_radius*np.sin(tt)
-            x = np.linspace(-circle_radius/2, circle_radius/2, num = 6, endpoint = True)
-            y = np.linspace(-circle_radius/2, circle_radius/2, num = 6, endpoint = True)
+            # x = np.linspace(0, circle_radius+1, num = 1000, endpoint = True)
+            # y = np.linspace(0, circle_radius+1, num = 1000, endpoint = True)
+
+            x = np.random.randint(-circle_radius/2, circle_radius/2, size=1000)
+            y = np.random.randint(-circle_radius/2, circle_radius/2, size=1000)
             
             circle_xys = [[x[i], y[i]] for i in range(len(x))]
 
@@ -107,9 +110,9 @@ def visuospatial_order(nrun = 5, study_name = 'behavioral',
             ## get the angle between the prob_dots
             abs_y = np.abs(probs_xys[0][1] - probs_xys[1][1])
             abs_x = np.abs(probs_xys[0][0] - probs_xys[1][0])
-            prob_angle = math.degrees(math.atan(abs_y/abs_x))
+            # prob_angle = math.degrees(math.atan(abs_y/abs_x))
             T['xys_prob'].append(probs_xys) 
-            T['angle_prob'].append(prob_angle)
+            # T['angle_prob'].append(prob_angle)
 
         df_tmp = pd.DataFrame(T)
 
