@@ -6,13 +6,13 @@ import math
 # import experiment_code.constants as consts
 import constants as consts
 
-def visuospatial_order(nrun = 5, study_name = 'behavioral', 
-                       dot_dur = 0.75, delay_dur = 0.5, 
-                       prob_dur = 1, iti_dur = 0.5,
-                       trial_dur = 6, task_dur = 30, 
-                       hand = 'right', TR = 1, 
-                       display_trial_feedback = True, num_trials = 1, 
-                       circle_radius = 3, load = 6):
+def visuospatial_order_v1(nrun = 5, study_name = 'behavioral', 
+                          dot_dur = 0.75, delay_dur = 0.5, 
+                          prob_dur = 1, iti_dur = 0.5,
+                          trial_dur = 6, task_dur = 30, 
+                          hand = 'right', TR = 1, 
+                          display_trial_feedback = True, num_trials = 1, 
+                          circle_radius = 3, load = 6):
     """
     creates target file for the visuospatial_order task
     target file fields:
@@ -108,6 +108,105 @@ def visuospatial_order(nrun = 5, study_name = 'behavioral',
             prob_angle = math.degrees(math.atan(abs_y/abs_x))
             T['xys_prob'].append(probs_xys) 
             T['angle_prob'].append(prob_angle)
+
+        df_tmp = pd.DataFrame(T)
+
+        target_filename = path2task_target / f"visuospatial_order_{task_dur}sec_{run+1:02d}.csv"
+        df_tmp.to_csv(target_filename)
+    return
+
+def visuospatial_order(nrun = 5, study_name = 'behavioral', 
+                       dot_dur = 0.75, delay_dur = 0.5, 
+                       prob_dur = 1, iti_dur = 0.5,
+                       trial_dur = 6, task_dur = 30, 
+                       hand = 'right', TR = 1, 
+                       display_trial_feedback = True, num_trials = 1, 
+                       max_range = 10, load = 6):
+    """
+    creates target file for the visuospatial_order task
+    target file fields:
+        trial_num (a column with no name - just the trial number starting from 0)
+        load (number of dots)
+        dot_dur (time duration when the dot remains on the screen and then disapears)
+        delay_dur (duration of the delay)
+        trial_type (True/False)
+        prob_dots (the dots that are chosen for the prob number or coordinates?)
+        prob_dur (duration when prob stayes on the screen)
+        trial_dur (duration of the trial)
+        display_trial_feedback (True/False)
+        hand (left/right)
+        iti_dur (duration of iti)
+        start_time (time when the trial starts)
+        end_time (time when the trial ends)
+    """
+    # path to save the target files
+    path2task_target = consts.target_dir / study_name / 'visuospatial_order'
+    consts.dircheck(path2task_target)
+
+    # Version 1. Simple: Considers a circle with a certain radius and draws random dots from the circle
+
+    # loop over runs and create target 
+    for run in range(nrun):
+        T = {} # dictionary that will be converted to a dataframe later
+
+        n_trials = int(task_dur/(trial_dur + iti_dur)) # total number of trials
+
+        # assign trial_types
+        n_trials_T = int(n_trials/2)
+        n_trials_F = n_trials - n_trials_T
+
+        trials_True  = np.tile(True, n_trials_T)
+        trials_False = np.tile(False, n_trials_F)
+
+        trials_types = np.concatenate((trials_True, trials_False), axis = 0)
+
+        # randomly shuffle trials
+        np.random.shuffle(trials_types)
+
+        # fill in fields
+        T['trial_type']             = trials_types     
+        T['trial_dur']              = [trial_dur for i in range(n_trials)]
+        T['iti_dur']                = [iti_dur for i in range(n_trials)]
+        T['delay_dur']              = [delay_dur for i in range(n_trials)]
+        T['dot_dur']                = [dot_dur for i in range(n_trials)]
+        T['prob_dur']               = [prob_dur for i in range(n_trials)]
+        T['hand']                   = [hand for i in range(n_trials)]
+        T['display_trial_feedback'] = [display_trial_feedback for i in range(n_trials)]
+        T['start_time']             = [(trial_dur + iti_dur)*i for i in range(n_trials)]
+        T['end_time']               = [(i+1)*trial_dur + i*iti_dur for i in range(n_trials)]
+        T['circle_radius']          = [max_range for i in range(n_trials)]
+
+        T['xys_stim'] = []
+        T['xys_prob'] = []
+        for t in range(n_trials):
+
+            # randomly generate #load x and y coordinates
+            ## the coordinates will be drawn from a uniform distribution
+            x = np.random.uniform(0, max_range, load)
+            y = np.random.uniform(0, max_range, load)
+            x = np.sort(x)
+            y = np.sort(y)
+            
+            dot_xys = [[x[i], y[i]] for i in range(len(x))]
+
+            T['xys_stim'].append(dot_xys) 
+            # randomly pick two of the dots for probe based on the trial type
+            # get the trial_type for the current trial
+            current_tt = T['trial_type'][t]
+
+            # pick two dots
+            rand_probs = np.random.choice(len(dot_xys), size = 2, replace = False)
+
+            if ~ current_tt: # False trial
+                # the trial is false so two wrong digits with wrong order can be generated
+                # sort the indices in descending order to make sure that their order is flipped
+                probs_idx = np.sort(rand_probs)[::-1]
+            else: # True trial
+                # sort the indices in ascending order to make sure that their order is conserved
+                probs_idx = np.sort(rand_probs)
+            
+            probs_xys  = [dot_xys[i] for i in probs_idx]
+            T['xys_prob'].append(probs_xys) 
 
         df_tmp = pd.DataFrame(T)
 
@@ -436,7 +535,10 @@ def flexion_extension(nrun = 5, study_name = 'behavioral',
 
     return
 
-def visual_search():
+def visual_search(nrun = 5, study_name = 'behavioral', 
+                  hand = 'right', iti_dur = 0.5, 
+                  trial_dur = 2, display_trial_feedback = True,
+                  TR = 1, task_dur = 30):
     """
     creates target file for the visual_search task
     target file fields:
@@ -458,7 +560,15 @@ def visual_search():
         ypos (y_coordinate)
         orientation (orientation of the stimuli)
     """
-    pass
+    # path to save the target files
+    path2task_target = consts.target_dir / study_name / 'visual_search2'
+    consts.dircheck(path2task_target)
+
+    # loop over runs and create target files
+    for run in range(nrun):
+        T = {} # dictionary that will be converted to a dataframe later
+
+        n_trials = int(task_dur/(trial_dur + iti_dur)) # total number of trials
 
 def theory_of_mind():
     """
@@ -509,6 +619,7 @@ def run_target():
     # finger_sequence()
     # sternber_order()
     # flexion_extension()
+    # visuospatial_order_v1()
     visuospatial_order()
 
     return
