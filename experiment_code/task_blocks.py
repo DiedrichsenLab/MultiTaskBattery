@@ -1379,7 +1379,7 @@ class VisuospatialOrder(Task):
         self.circle_radius          = self.target_file['circle_radius'][self.trial]
         self.xys_stim               = self.target_file['xys_stim'][self.trial]
         self.xys_prob               = self.target_file['xys_prob'][self.trial]
-        self.angle_prob             = self.target_file['angle_prob'][self.trial]
+        # self.angle_prob             = self.target_file['angle_prob'][self.trial]
     
     def _show_stim(self):
         # display dot for a fixed duration (self.dot_dur)
@@ -1394,7 +1394,7 @@ class VisuospatialOrder(Task):
             
             # donut.draw()
 
-            rect = visual.Rect(win=self.window, units='deg', width = self.circle_radius, height = self.circle_radius, fillColor=[0, 0, 0], 
+            rect = visual.Rect(win=self.window, units='deg', width = self.circle_radius+1, height = self.circle_radius+1, fillColor=[0, 0, 0], 
                                    lineColor=[1, 1, 1], lineWidth = 5)  
             rect.draw()
             
@@ -1422,9 +1422,12 @@ class VisuospatialOrder(Task):
         self.prob_start = self.get_current_time()
 
         # display a circle 
-        circle = visual.Circle(win=self.window, units='deg', radius=self.circle_radius, fillColor=[0, 0, 0], 
-                                lineColor=[1, 1, 1], edges = 128, lineWidth = 5)  
-        circle.draw()
+        # circle = visual.Circle(win=self.window, units='deg', radius=self.circle_radius, fillColor=[0, 0, 0], 
+        #                         lineColor=[1, 1, 1], edges = 128, lineWidth = 5)  
+        # circle.draw()
+        rect = visual.Rect(win=self.window, units='deg', width = self.circle_radius+1, height = self.circle_radius+1, fillColor=[0, 0, 0], 
+                                   lineColor=[1, 1, 1], lineWidth = 5)  
+        rect.draw()
 
         dot_first = visual.Circle(win=self.window, units='deg', radius=0.3, fillColor=[-1,-1,-1], 
                                    lineColor=[-1, -1, -1], edges = 128, lineWidth = 5, pos = self.xys_prob[0]) 
