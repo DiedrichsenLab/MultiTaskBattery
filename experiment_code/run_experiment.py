@@ -15,6 +15,8 @@ from experiment_code.screen import Screen
 from experiment_code.task_blocks import TASK_MAP
 from experiment_code.ttl import ttl
 import experiment_code.constants as const
+
+from ast import literal_eval
 # -----------------------------------------------------------------------------
 
 def display_input_box():
@@ -52,7 +54,7 @@ def display_input_box():
 
     experiment_info['subj_id']    = 'test2'
     experiment_info['study_name'] = 'behavioral'
-    experiment_info['run_name']   = 'run_11'
+    experiment_info['run_name']   = 'run_15'
 
     # ttl flag that will be used to determine whether the program waits for ttl pulse or not
     experiment_info['ttl_flag'] = False
