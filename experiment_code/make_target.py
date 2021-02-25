@@ -12,7 +12,8 @@ def visuospatial_order(nrun = 5, study_name = 'behavioral',
                           trial_dur = 6, task_dur = 30, 
                           hand = 'right', TR = 1, 
                           display_trial_feedback = True, num_trials = 1, 
-                          circle_radius = 8, load = 6):
+                          circle_radius = 8, load = 6, 
+                          min_distance = 1):
     """
     creates target file for the visuospatial_order task
     target file fields:
@@ -72,6 +73,7 @@ def visuospatial_order(nrun = 5, study_name = 'behavioral',
         # T['angle_prob'] = []
         for t in range(n_trials):
 
+            # ?????????????????????? Points on a circle ????????????????????????????
             ## Create the circle with a certain radius
             # tt = np.linspace(0, 10000, num = 6, endpoint=True)
             ## Using the equations for the circle to create x and y
@@ -79,17 +81,54 @@ def visuospatial_order(nrun = 5, study_name = 'behavioral',
             # y = circle_radius*np.sin(tt)
             # x = np.linspace(0, circle_radius+1, num = 1000, endpoint = True)
             # y = np.linspace(0, circle_radius+1, num = 1000, endpoint = True)
+            # ???????????????????????????????????????????????????????????????????????
 
-            x = np.random.randint(-circle_radius/2, circle_radius/2, size=1000)
-            y = np.random.randint(-circle_radius/2, circle_radius/2, size=1000)
+            # ?????????????????????? Points within a square (OLD) ????????????????????????????
+            # x = np.random.randint(-circle_radius/2, circle_radius/2, size=1000)
+            # y = np.random.randint(-circle_radius/2, circle_radius/2, size=1000)
             
-            circle_xys = [[x[i], y[i]] for i in range(len(x))]
+            # circle_xys = [[x[i], y[i]] for i in range(len(x))]
 
             # randomly select from circle_xys
-            dot_idx = np.random.choice(len(circle_xys), size = load, replace=False)
+            # dot_idx = np.random.choice(len(circle_xys), size = load, replace=False)
 
-            dot_xys      = [circle_xys[i] for i in dot_idx]
+            # dot_xys      = [circle_xys[i] for i in dot_idx]
+            # ????????????????????????????????????????????????????????????????????????????????
 
+            # ------------------ Generate random numbers iteratively ------------------------
+            # generate random points iteratively,
+            x = np.random.uniform(-circle_radius/2, circle_radius/2) 
+            y = np.random.uniform(-circle_radius/2, circle_radius/2)
+
+            # checks the distance between all the points to make sure they are at a minimum distance
+            counter  = 2 # counter for the point
+            dot_xys = []
+            dot_xys.append([x, y])
+            while counter < load + 1:
+                # start generating the other points
+                ## generate another random point 
+                next_point = False
+                xi = np.random.uniform(-circle_radius/2, circle_radius/2) 
+                yi = np.random.uniform(-circle_radius/2, circle_radius/2)
+
+                # check the distance between this point and all the other points already in the list dot_xys
+                for point in dot_xys:
+                    # calculate the distance
+                    distance = np.sqrt(((point[0] - xi)**2) + ((point[1] - yi)**2))
+                    # print(distance)
+                    
+                    # if the distance is lower than a threshold, break the loop and generate another point
+                    if distance < min_distance:
+                        next_point = True
+                        break
+                    else:
+                        continue
+                # append the point to the list of dots only if its distance from 
+                # all the other points is larger than min_distance
+                if not next_point:
+                    counter+=1
+                    dot_xys.append([xi, yi])
+            # -------------------------------------------------------------------------------
             T['xys_stim'].append(dot_xys) 
             # randomly pick two of the dots for probe based on the trial type
             # get the trial_type for the current trial
