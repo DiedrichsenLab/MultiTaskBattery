@@ -1513,10 +1513,10 @@ class VisuospatialOrder(Task):
 
         return rDf
 
-class VisuospatialOrder_V2(Task):
+class VisuospatialOrderV2(Task):
 
     def __init__(self, screen, target_file, run_end, task_name, study_name, target_num, ttl_flag):
-        super(VisuospatialOrder, self).__init__(screen, target_file, run_end, task_name, study_name, target_num, ttl_flag)
+        super(VisuospatialOrderV2, self).__init__(screen, target_file, run_end, task_name, study_name, target_num, ttl_flag)
         self.feedback_type = 'acc' # reaction
         self.name          = 'visuospatial_order'
 
@@ -1829,6 +1829,7 @@ TASK_MAP = {
     "finger_sequence": FingerSequence, # task_num 7
     "sternberg_order": SternbergOrder, # task_num 8
     "visuospatial_order": VisuospatialOrder, # task_num 9
+    "visuospatial_order_v2": VisuospatialOrderV2, # task_num 9
     "flexion_extension": FlexionExtension, # task_num 10
     "theory_of_mind": TheoryOfMind, # task_num 11
     "rest": Rest, # task_num?
