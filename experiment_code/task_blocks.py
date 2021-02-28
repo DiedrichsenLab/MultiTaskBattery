@@ -15,6 +15,8 @@ import experiment_code.constants as consts
 from experiment_code.screen import Screen
 from experiment_code.ttl import ttl
 
+from ast import literal_eval
+
 class Task:
     """
     Task: takes in inputs from run_experiment.py and methods (e.g. 'instruction_text', 'save_to_df' etc) 
@@ -1221,6 +1223,7 @@ class SternbergOrder(Task):
         Does 1 comes before 5 in the set?
         The participant needs to a) figure out whether 1 and 5 were in the set and 
                                  b) whether the order shown is correct
+
     The order of events in trial:
     1. show fixation (iti_dur)
     2. show digits serially
@@ -1269,15 +1272,17 @@ class SternbergOrder(Task):
         self.prob_dig = self.prob.split(" ")
 
         # the first digit of the prob
-        dig_first = visual.TextStim(self.window, text=self.prob_dig[0], pos=(-1.5,0.0), color=(-1,-1,-1), units='deg', height = 1.5)
+        dig_first = visual.TextStim(self.window, text=self.prob_dig[0], pos=(-1,0.0), color=(-1,-1,-1), units='deg', height = 1.5)
         
-        # an arrow to show order
-        # arrowVert = [(-0.4,0.05),(-0.4,-0.05),(-.2,-0.05),(-.2,-0.1),(0,0),(-.2,0.1),(-.2,0.05)]
-        arrowVert = [(-1.4,0.5),(-1.4,-0.5),(0,-0.5),(0,-1.5),(1.5, 0),(0,1.5),(0,0.5)]
-        arrow = ShapeStim(self.window, vertices=arrowVert, fillColor='black', size=.5, lineColor='black')
+        # an arrow to show order   
+        arrowVert = [(-1.6,0.2),(-1.6,-0.2),(-.8,-0.2),(-.8,-0.4),(0,0),(-.8,0.4),(-.8,0.2)]        # arrow = ShapeStim(self.window, vertices=arrowVert, fillColor='black', size=.5, lineColor='black')
+        # arrowVert = [(0, 0), (1, 0), (1, 0.5), (1.5, 0), (1, -0.5), (1, 0)]
+        # arrowVert = [(-1, 0), (0, 0), (0, 0.5), (1, 0), (0, -0.5), (0, 0)]
+        arrow = ShapeStim(self.window, vertices=arrowVert, closeShape=True, lineWidth=3, pos=(0,0), ori=90, units = "deg", fillColor = [-1, -1, -1], lineColor = [-1, -1, -1])
+        arrow.pos = [(-1, 1)]
         
         # the second digit of the prob
-        dig_second = visual.TextStim(self.window, text=self.prob_dig[1], pos=(1.5,0.0), color=(-1,-1,-1), units='deg', height = 1.5)
+        dig_second = visual.TextStim(self.window, text=self.prob_dig[1], pos=(1,0.0), color=(-1,-1,-1), units='deg', height = 1.5)
         
         # draw the prob
         dig_first.draw()
@@ -1359,17 +1364,313 @@ class VisuospatialOrder(Task):
         self.feedback_type = 'acc' # reaction
         self.name          = 'visuospatial_order'
 
-    def _get_target_info(self):
-        pass
+        # the coordinates are stored in lists and saved in the csv file
+        # after reading the csv file, the coordinates lists will be loaded as strings, not lists
+        # literal eval gets these columns and convert them into a "proper" type (in this case, list)
+        self.target_file[['xys_stim', 'xys_prob']]= self.target_file[['xys_stim', 'xys_prob']].applymap(literal_eval)
 
-    def _show_Stim(self):
-        pass
+    def _get_trial_info(self):
+
+        self.trial_type             = self.target_file['trial_type'][self.trial]
+        self.trial_dur              = self.target_file['trial_dur'][self.trial]
+        self.iti_dur                = self.target_file['iti_dur'][self.trial]
+        self.delay_dur              = self.target_file['delay_dur'][self.trial]
+        self.dot_dur                = self.target_file['dot_dur'][self.trial]
+        self.prob_dur               = self.target_file['prob_dur'][self.trial]
+        self.hand                   = self.target_file['hand'][self.trial]
+        self.start_time             = self.target_file['start_time'][self.trial]
+        self.end_time               = self.target_file['end_time'][self.trial]
+        self.circle_radius          = self.target_file['circle_radius'][self.trial]
+        self.xys_stim               = self.target_file['xys_stim'][self.trial]
+        self.xys_prob               = self.target_file['xys_prob'][self.trial]
+        # self.angle_prob             = self.target_file['angle_prob'][self.trial]
+    
+    def _show_stim(self):
+        # display dot for a fixed duration (self.dot_dur)
+        for dot_idx in self.xys_stim: 
+            # display a circle 
+            # circle = visual.Circle(win=self.window, units='deg', radius=self.circle_radius, fillColor=[0, 0, 0], 
+            #                        lineColor=[1, 1, 1], edges = 128, lineWidth = 5)  
+            # circle.draw()
+            # donutVert = [ [(-self.circle_radius-0.2,-self.circle_radius-0.2),(-self.circle_radius-0.2,self.circle_radius+0.2),(self.circle_radius+0.2,self.circle_radius+0.2),(self.circle_radius+0.2,-self.circle_radius-0.2)],
+            #               [(-self.circle_radius,-self.circle_radius),(-self.circle_radius,self.circle_radius),(self.circle_radius,self.circle_radius),(self.circle_radius,-self.circle_radius)]]
+            # donut = ShapeStim(win=self.window, units = 'deg', vertices=donutVert, fillColor=[0, 0, 0], lineColor=[1, 1, 1], lineWidth=1, size=.75, pos=(0,0))
+            
+            # donut.draw()
+
+            rect = visual.Rect(win=self.window, units='deg', width = self.circle_radius+1, height = self.circle_radius+1, fillColor=[0, 0, 0], 
+                                   lineColor=[1, 1, 1], lineWidth = 5)  
+            rect.draw()
+            
+            dot_stim = visual.ElementArrayStim( win=self.window, units='deg', nElements=1, elementTex=None, elementMask="circle",
+                                                xys=[dot_idx],
+                                                sizes=1, colors = [-1, -1, -1])
+
+            dot_stim = visual.Circle(win=self.window, units='deg', radius=0.3, fillColor=[-1,-1,-1], 
+                                   lineColor=[-1, -1, -1], edges = 128, lineWidth = 5, pos = dot_idx)  
+            dot_stim.draw()
+
+            dot_stim.draw()
+            self.window.flip()
+            self.dot_start = self.get_current_time()                     
+            # each word will remain on the screen for a certain amount of time (self.stem_word_dur)
+            if self.ttl_flag: # wait for ttl pulse
+                while ttl.clock.getTime()-self.dot_start <= self.dot_dur:
+                    ttl.check()
+            else: # do not wait for ttl pulse
+                while self.clock.getTime()-self.dot_start <= self.dot_dur:
+                    pass
 
     def _show_prob(self):
-        pass
+        # display the prob on the screen (the probe comes after a delay period)
+        self.prob_start = self.get_current_time()
+
+        # display a circle 
+        # circle = visual.Circle(win=self.window, units='deg', radius=self.circle_radius, fillColor=[0, 0, 0], 
+        #                         lineColor=[1, 1, 1], edges = 128, lineWidth = 5)  
+        # circle.draw()
+        rect = visual.Rect(win=self.window, units='deg', width = self.circle_radius+1, height = self.circle_radius+1, fillColor=[0, 0, 0], 
+                                   lineColor=[1, 1, 1], lineWidth = 5)  
+        rect.draw()
+
+        dot_first = visual.Circle(win=self.window, units='deg', radius=0.3, fillColor=[-1,-1,-1], 
+                                   lineColor=[-1, -1, -1], edges = 128, lineWidth = 5, pos = self.xys_prob[0]) 
+        
+        
+        arrowVert = [(-1.6,0.2),(-1.6,-0.2),(-.8,-0.2),(-.8,-0.4),(0,0),(-.8,0.4),(-.8,0.2)]        # arrow = ShapeStim(self.window, vertices=arrowVert, fillColor='black', size=.5, lineColor='black')
+        arrow = ShapeStim(self.window, vertices=arrowVert, closeShape=True, lineWidth=3, pos=(0,0), ori=90, units = "deg", fillColor = [-1, -1, -1], lineColor = [-1, -1, -1])
+        arrow.pos = [self.xys_prob[0][0], self.xys_prob[0][1]+0.2]
+
+        dot_second = visual.Circle(win=self.window, units='deg', radius=0.3, fillColor=[-1,-1,-1], 
+                                   lineColor=[-1, -1, -1], edges = 128, lineWidth = 5, pos = self.xys_prob[1]) 
+        
+        # draw the prob
+        dot_first.draw()
+        arrow.draw()
+        dot_second.draw()
+        
+        self.window.flip()
 
     def run(self):
-        pass
+        # run the task
+
+        # loop over trials
+        self.all_trial_response = [] # pre-allocate 
+
+        for self.trial in self.target_file.index: 
+
+            # get stims
+            self._get_trial_info()
+
+            # get current time (self.t0)
+            self.t0 = self.get_current_time()
+
+            # show the fixation for the duration of iti
+            # wait here till the startTime 
+            self.show_fixation(self.t0, self.start_time - self.t0)
+
+            # collect real_start_time for each block (self.real_start_time)
+            self.get_real_start_time(self.t0)
+
+            # 1. show digits
+            self._show_stim()
+
+            # 2. display fixation for the duration of the delay
+            ## 2.1 get the current time
+            t_stim_end = self.get_current_time()
+            ## 2.2 get the delay duration
+            self.screen.fixation_cross()
+            self.show_fixation(t_stim_end, self.delay_dur)
+
+            # 3. display the probe and collect reponse
+            ## 3.1 display prob
+            self._show_prob()
+
+            ## 3.2 get the time before collecting responses (self.t2)
+            self.get_time_before_disp()
+
+            ## 3.3 collect response
+            wait_time = self.prob_dur
+
+            self.trial_response = self.check_trial_response(wait_time = wait_time, 
+                                                            trial_index = self.trial, 
+                                                            start_time = self.get_current_time(), 
+                                                            start_time_rt = self.t2)
+            ## 3.4 update response
+            self.update_trial_response()
+
+            # 4. display trial feedback
+            if self.target_file['display_trial_feedback'][self.trial] and self.response_made:
+                self.display_trial_feedback(correct_response = self.correct_response) 
+            else:
+                self.screen.fixation_cross()
+            
+            # 5 show fixation for the duration of the iti
+            ## 5.1 get current time
+            t_start_iti = self.get_current_time()
+            self.show_fixation(t_start_iti, self.iti_dur)
+
+            self.screen_quit()
+
+        # get the response dataframe
+        rDf = self.get_response_df(all_trial_response=self.all_trial_response)
+
+        return rDf
+
+class VisuospatialOrderV2(Task):
+    def __init__(self, screen, target_file, run_end, task_name, study_name, target_num, ttl_flag):
+        super(VisuospatialOrderV2, self).__init__(screen, target_file, run_end, task_name, study_name, target_num, ttl_flag)
+        self.feedback_type = 'acc' # reaction
+        self.name          = 'visuospatial_order'
+
+        # the coordinates are stored in lists and saved in the csv file
+        # after reading the csv file, the coordinates lists will be loaded as strings, not lists
+        # literal eval gets these columns and convert them into a "proper" type (in this case, list)
+        self.target_file[['xys_stim', 'xys_prob']]= self.target_file[['xys_stim', 'xys_prob']].applymap(literal_eval)
+
+    def _get_trial_info(self):
+
+        self.trial_type             = self.target_file['trial_type'][self.trial]
+        self.trial_dur              = self.target_file['trial_dur'][self.trial]
+        self.iti_dur                = self.target_file['iti_dur'][self.trial]
+        self.delay_dur              = self.target_file['delay_dur'][self.trial]
+        self.dot_dur                = self.target_file['dot_dur'][self.trial]
+        self.prob_dur               = self.target_file['prob_dur'][self.trial]
+        self.hand                   = self.target_file['hand'][self.trial]
+        self.start_time             = self.target_file['start_time'][self.trial]
+        self.end_time               = self.target_file['end_time'][self.trial]
+        self.circle_radius          = self.target_file['circle_radius'][self.trial]
+        self.xys_stim               = self.target_file['xys_stim'][self.trial]
+        self.xys_prob               = self.target_file['xys_prob'][self.trial]
+    
+    def _fit_spline(self):
+        # get the x and ys of the trial separated
+        self.x = np.array([xys[0] for xys in self.xys_stim])
+        self.y = np.array([xys[1] for xys in self.xys_stim])
+
+        # append the starting x,y coordinates, closing the loop
+        self.x = np.r_[self.x, self.x[0]]
+        self.y = np.r_[self.y, self.y[0]]
+
+        # fit splines to x=f(u) and y=g(u), treating both as periodic. also note that s=0
+        # is needed in order to force the spline fit to pass through all the input points.
+        tck, u = interpolate.splprep([self.x, self.y], s=0, per=True)
+
+        # evaluate the spline fits for 1000 evenly spaced distance values
+        xi, yi = interpolate.splev(np.linspace(0, 1, 1000), tck)
+
+        return xi, yi
+
+    def _show_stim(self):
+        # fit a closed b spline curve to the x y coordinates of the dots
+        self.xi, self.yi = self._fit_spline()
+
+        for idx in range(len(self.xi)): 
+            for f in range(1):
+
+                dot_stim = visual.Circle(win=self.window, units='deg', radius=0.3, fillColor=[-1,-1,-1], 
+                                    lineColor=[-1, -1, -1], edges = 128, lineWidth = 5, pos = [self.xi[idx], self.yi[idx]])  
+                dot_stim.draw()
+
+                dot_stim.draw()
+                self.window.flip()
+                # self.dot_start = self.get_current_time()                     
+            # # each word will remain on the screen for a certain amount of time (self.stem_word_dur)
+            # if self.ttl_flag: # wait for ttl pulse
+            #     while ttl.clock.getTime()-self.dot_start <= 0.001:
+            #         ttl.check()
+            # else: # do not wait for ttl pulse
+            #     print(self.clock.getTime()-self.dot_start)
+            #     while self.clock.getTime()-self.dot_start <= 0.001:
+            #         pass
+
+    def _show_prob(self):
+        # display the prob on the screen (the probe comes after a delay period)
+        self.prob_start = self.get_current_time()
+
+        dot_first = visual.Circle(win=self.window, units='deg', radius=0.3, fillColor=[-1,-1,-1], 
+                                   lineColor=[-1, -1, -1], edges = 128, lineWidth = 5, pos = self.xys_prob[0]) 
+        
+        
+        arrowVert = [(-1.6,0.2),(-1.6,-0.2),(-.8,-0.2),(-.8,-0.4),(0,0),(-.8,0.4),(-.8,0.2)]        # arrow = ShapeStim(self.window, vertices=arrowVert, fillColor='black', size=.5, lineColor='black')
+        arrow = ShapeStim(self.window, vertices=arrowVert, closeShape=True, lineWidth=3, pos=(0,0), ori=90, units = "deg", fillColor = [-1, -1, -1], lineColor = [-1, -1, -1])
+        arrow.pos = [self.xys_prob[0][0], self.xys_prob[0][1]+0.2]
+
+        dot_second = visual.Circle(win=self.window, units='deg', radius=0.3, fillColor=[-1,-1,-1], 
+                                   lineColor=[-1, -1, -1], edges = 128, lineWidth = 5, pos = self.xys_prob[1]) 
+        
+        # draw the prob
+        dot_first.draw()
+        arrow.draw()
+        dot_second.draw()
+        
+        self.window.flip()
+
+    def run(self):
+        # run the task
+
+        # loop over trials
+        self.all_trial_response = [] # pre-allocate 
+
+        for self.trial in self.target_file.index: 
+
+            # get stims
+            self._get_trial_info()
+
+            # get current time (self.t0)
+            self.t0 = self.get_current_time()
+
+            # show the fixation for the duration of iti
+            # wait here till the startTime 
+            self.show_fixation(self.t0, self.start_time - self.t0)
+
+            # collect real_start_time for each block (self.real_start_time)
+            self.get_real_start_time(self.t0)
+
+            # 1. show digits
+            self._show_stim()
+
+            # 2. display fixation for the duration of the delay
+            ## 2.1 get the current time
+            t_stim_end = self.get_current_time()
+            ## 2.2 get the delay duration
+            self.screen.fixation_cross()
+            self.show_fixation(t_stim_end, self.delay_dur)
+
+            # 3. display the probe and collect reponse
+            ## 3.1 display prob
+            self._show_prob()
+
+            ## 3.2 get the time before collecting responses (self.t2)
+            self.get_time_before_disp()
+
+            ## 3.3 collect response
+            wait_time = self.prob_dur
+
+            self.trial_response = self.check_trial_response(wait_time = wait_time, 
+                                                            trial_index = self.trial, 
+                                                            start_time = self.get_current_time(), 
+                                                            start_time_rt = self.t2)
+            ## 3.4 update response
+            self.update_trial_response()
+
+            # 4. display trial feedback
+            if self.target_file['display_trial_feedback'][self.trial] and self.response_made:
+                self.display_trial_feedback(correct_response = self.correct_response) 
+            else:
+                self.screen.fixation_cross()
+            
+            # 5 show fixation for the duration of the iti
+            ## 5.1 get current time
+            t_start_iti = self.get_current_time()
+            self.show_fixation(t_start_iti, self.iti_dur)
+
+            self.screen_quit()
+
+        # get the response dataframe
+        rDf = self.get_response_df(all_trial_response=self.all_trial_response)
+
+        return rDf
 
 class FlexionExtension(Task):
     """
@@ -1389,7 +1690,7 @@ class FlexionExtension(Task):
         self.start_time = self.target_file['start_time'][self.trial]
         self.trial_type = self.target_file['trial_type'][self.trial]
         self.display_trial_feedback = self.target_file['display_trial_feedback'][self.trial]
-        self.foot = self.target_file['foot'][self.trial]
+        # self.foot = self.target_file['foot'][self.trial]
         
     def _show_stim(self):
         # displays the instruction:
@@ -1402,7 +1703,8 @@ class FlexionExtension(Task):
 
         for act in self.stim_act:
             self.act_start = self.get_current_time()  
-            stim = visual.TextStim(self.window, text = self.foot + "\n "+ act, pos=(0.0,0.0), color=(-1,-1,-1), units='deg', height = 1.5)
+            # stim = visual.TextStim(self.window, text = self.foot + "\n "+ act, pos=(0.0,0.0), color=(-1,-1,-1), units='deg', height = 1.5)
+            stim = visual.TextStim(self.window, text = act, pos=(0.0,0.0), color=(-1,-1,-1), units='deg', height = 1.5)
             stim.draw()
             self.window.flip()
             
@@ -1868,7 +2170,6 @@ TASK_MAP = {
     "sternberg_order": SternbergOrder, # task_num 8
     "visuospatial_order": VisuospatialOrder, # task 9
     "flexion_extension": FlexionExtension, # task_num 10
-    "flexion_extension": FlexionExtension, # task_num 9
     "verb_generation": VerbGeneration, # task_num 11
     "romance_movie": RomanceMovie, #task_num 12
     "act_obs_knots": ActionObservationKnots, #task_num 13
