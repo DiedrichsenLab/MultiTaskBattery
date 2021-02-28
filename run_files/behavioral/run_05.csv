@@ -16,3 +16,12 @@ rest,10,1,,10,rest_10sec.csv,305,315,0,
 romance_movie,8,1,5,30,romance_movie_30sec_05.csv,315,350,5,None
 rest,10,1,,10,rest_10sec.csv,350,360,0,
 act_obs_knots,9,1,5,30,act_obs_knots_30sec_05.csv,360,395,5,None
+rest,10,1,,10,rest_10sec.csv,395,405,0,
+finger_sequence,1,12,5,30,finger_sequence_30sec_05.csv,405,440,5,rt
+rest,10,1,,10,rest_10sec.csv,440,450,0,
+flexion_extension,1,12,5,30,flexion_extension_30sec_05.csv,450,485,5,None
+rest,10,1,,10,rest_10sec.csv,485,495,0,
+sternberg_order,1,12,5,30,sternberg_order_30sec_05.csv,495,530,5,rt
+rest,10,1,,10,rest_10sec.csv,530,540,0,
+visuospatial_order,1,12,5,30,visuospatial_order_30sec_05.csv,540,575,5,rt
+rest,10,1,,10,rest_10sec.csv,575,585,0,
