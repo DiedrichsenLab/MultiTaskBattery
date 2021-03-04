@@ -350,6 +350,7 @@ class VisualSearch(Task):
         self.start_time = self.target_file['start_time'][self.trial]
         self.trial_dur = self.target_file['trial_dur'][self.trial]
         self.iti_dur = self.target_file['iti_dur'][self.trial]
+        self.hand = self.target_file['hand'][self.trial]
 
     def _show_stim(self):
         # loop over items and display

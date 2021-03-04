@@ -1,0 +1,3 @@
+task_name,task_num,num_trials,target_num,num_sec,target_file,start_time,end_time,instruct_dur
+semantic_prediction,5,4,5,30,semantic_prediction_30sec_05.csv,0,35,5
+rest,7,1,,10,rest_10sec.csv,35,45,0

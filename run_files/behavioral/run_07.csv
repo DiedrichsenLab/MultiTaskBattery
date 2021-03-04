@@ -1,0 +1,3 @@
+task_name,task_num,num_trials,target_num,num_sec,target_file,start_time,end_time,instruct_dur,feedback_type
+visuospatial_order,1,12,5,30,visuospatial_order_30sec_05.csv,0,35,5,rt
+rest,10,1,,10,rest_10sec.csv,35,45,0,
