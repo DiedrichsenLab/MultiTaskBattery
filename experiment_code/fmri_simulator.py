@@ -16,6 +16,9 @@ from builtins import range
 from psychopy import visual, event, core, gui
 from psychopy.hardware.emulator import launchScan
 
+# importing experiment stuff
+from experiment_code.run_experiment import run
+
 # settings for launchScan:
 MR_settings = {
     'TR': 2.000,     # duration (sec) per whole-brain volume
@@ -30,6 +33,8 @@ if not infoDlg.OK:
 
 win = visual.Window(fullscr=False)
 globalClock = core.Clock()
+
+
 
 # summary of run timing, for each key press:
 output = u'vol    onset key\n'
@@ -53,12 +58,13 @@ while globalClock.getTime() < duration:
         if key == MR_settings['sync']:
             onset = globalClock.getTime()
             # do your experiment code at this point if you want it sync'd to the TR
-            # for demo just display a counter & time, updated at the start of each TR
-            counter.setText(u"%d volumes\n%.3f seconds" % (vol, onset))
-            output += u"%3d  %7.3f sync\n" % (vol, onset)
-            counter.draw()
-            win.flip()
-            vol += 1
+            run()
+            # # for demo just display a counter & time, updated at the start of each TR
+            # counter.setText(u"%d volumes\n%.3f seconds" % (vol, onset))
+            # output += u"%3d  %7.3f sync\n" % (vol, onset)
+            # counter.draw()
+            # win.flip()
+            # vol += 1
         else:
             # handle keys (many fiber-optic buttons become key-board key-presses)
             output += u"%3d  %7.3f %s\n" % (vol-1, globalClock.getTime(), str(key))
