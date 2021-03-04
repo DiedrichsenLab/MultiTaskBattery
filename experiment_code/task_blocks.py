@@ -17,6 +17,7 @@ from experiment_code.ttl import ttl
 
 from ast import literal_eval
 
+
 class Task:
     """
     Task: takes in inputs from run_experiment.py and methods (e.g. 'instruction_text', 'save_to_df' etc) 
@@ -89,7 +90,7 @@ class Task:
         if self.ttl_flag: # if the user has chosen to use the ttl pulse
             while (ttl.clock.getTime() - start_time <= wait_time):
                 ttl.check()
-                self.pressed_keys.extend(event.getKeys(keyList=None, timeStamped=self.clock))
+                self.pressed_keys.extend(event.getKeys(keyList= consts.response_keys, timeStamped=self.clock))
                 if self.pressed_keys and not self.response_made: # if at least one press is made
                     self.response_made = True
                     self.rt = ttl.clock.getTime() - start_time_rt
@@ -1223,7 +1224,6 @@ class SternbergOrder(Task):
         Does 1 comes before 5 in the set?
         The participant needs to a) figure out whether 1 and 5 were in the set and 
                                  b) whether the order shown is correct
-
     The order of events in trial:
     1. show fixation (iti_dur)
     2. show digits serially
@@ -1272,17 +1272,15 @@ class SternbergOrder(Task):
         self.prob_dig = self.prob.split(" ")
 
         # the first digit of the prob
-        dig_first = visual.TextStim(self.window, text=self.prob_dig[0], pos=(-1,0.0), color=(-1,-1,-1), units='deg', height = 1.5)
+        dig_first = visual.TextStim(self.window, text=self.prob_dig[0], pos=(-1.5,0.0), color=(-1,-1,-1), units='deg', height = 1.5)
         
-        # an arrow to show order   
-        arrowVert = [(-1.6,0.2),(-1.6,-0.2),(-.8,-0.2),(-.8,-0.4),(0,0),(-.8,0.4),(-.8,0.2)]        # arrow = ShapeStim(self.window, vertices=arrowVert, fillColor='black', size=.5, lineColor='black')
-        # arrowVert = [(0, 0), (1, 0), (1, 0.5), (1.5, 0), (1, -0.5), (1, 0)]
-        # arrowVert = [(-1, 0), (0, 0), (0, 0.5), (1, 0), (0, -0.5), (0, 0)]
-        arrow = ShapeStim(self.window, vertices=arrowVert, closeShape=True, lineWidth=3, pos=(0,0), ori=90, units = "deg", fillColor = [-1, -1, -1], lineColor = [-1, -1, -1])
-        arrow.pos = [(-1, 1)]
+        # an arrow to show order
+        # arrowVert = [(-0.4,0.05),(-0.4,-0.05),(-.2,-0.05),(-.2,-0.1),(0,0),(-.2,0.1),(-.2,0.05)]
+        arrowVert = [(-1.4,0.5),(-1.4,-0.5),(0,-0.5),(0,-1.5),(1.5, 0),(0,1.5),(0,0.5)]
+        arrow = ShapeStim(self.window, vertices=arrowVert, fillColor='black', size=.5, lineColor='black')
         
         # the second digit of the prob
-        dig_second = visual.TextStim(self.window, text=self.prob_dig[1], pos=(1,0.0), color=(-1,-1,-1), units='deg', height = 1.5)
+        dig_second = visual.TextStim(self.window, text=self.prob_dig[1], pos=(1.5,0.0), color=(-1,-1,-1), units='deg', height = 1.5)
         
         # draw the prob
         dig_first.draw()
@@ -1690,7 +1688,7 @@ class FlexionExtension(Task):
         self.start_time = self.target_file['start_time'][self.trial]
         self.trial_type = self.target_file['trial_type'][self.trial]
         self.display_trial_feedback = self.target_file['display_trial_feedback'][self.trial]
-        # self.foot = self.target_file['foot'][self.trial]
+        self.foot = self.target_file['foot'][self.trial]
         
     def _show_stim(self):
         # displays the instruction:
@@ -1703,8 +1701,7 @@ class FlexionExtension(Task):
 
         for act in self.stim_act:
             self.act_start = self.get_current_time()  
-            # stim = visual.TextStim(self.window, text = self.foot + "\n "+ act, pos=(0.0,0.0), color=(-1,-1,-1), units='deg', height = 1.5)
-            stim = visual.TextStim(self.window, text = act, pos=(0.0,0.0), color=(-1,-1,-1), units='deg', height = 1.5)
+            stim = visual.TextStim(self.window, text = self.foot + "\n "+ act, pos=(0.0,0.0), color=(-1,-1,-1), units='deg', height = 1.5)
             stim.draw()
             self.window.flip()
             
