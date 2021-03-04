@@ -1,0 +1,2 @@
+task_name,task_num,num_trials,target_num,num_sec,target_file,start_time,end_time,instruct_dur
+finger_sequence,7,5,1,30,finger_sequence_30sec_01.csv,0,35,5

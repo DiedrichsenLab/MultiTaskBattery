@@ -42,6 +42,7 @@ def display_input_box():
 
     # # record input variables
     experiment_info = {}
+<<<<<<< HEAD
     if gui.OK:
         experiment_info['subj_id']    = inputDlg.data[0]
         experiment_info['study_name'] = inputDlg.data[1]
@@ -58,6 +59,24 @@ def display_input_box():
 
     # # ttl flag that will be used to determine whether the program waits for ttl pulse or not
     # experiment_info['ttl_flag'] = True
+=======
+    # if gui.OK:
+    #     experiment_info['subj_id']    = inputDlg.data[0]
+    #     experiment_info['study_name'] = inputDlg.data[1]
+    #     experiment_info['run_name']   = inputDlg.data[2]
+
+    #     # ttl flag that will be used to determine whether the program waits for ttl pulse or not
+    #     experiment_info['ttl_flag'] = inputDlg.data[3]
+    # else:
+    #     sys.exit()
+
+    experiment_info['subj_id']    = 'test2'
+    experiment_info['study_name'] = 'behavioral'
+    experiment_info['run_name']   = 'run_15'
+
+    # ttl flag that will be used to determine whether the program waits for ttl pulse or not
+    experiment_info['ttl_flag'] = False
+>>>>>>> timing
     
     return experiment_info
 

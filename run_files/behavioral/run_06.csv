@@ -1,0 +1,11 @@
+task_name,task_num,num_trials,target_num,num_sec,target_file,start_time,end_time,instruct_dur,feedback_type
+act_obs_knots,9,1,5,30,act_obs_knots_30sec_05.csv,0,35,5,None
+rest,10,1,,10,rest_10sec.csv,35,45,0,
+finger_sequence,1,12,5,30,finger_sequence_30sec_05.csv,45,80,5,rt
+rest,10,1,,10,rest_10sec.csv,80,90,0,
+flexion_extension,1,12,5,30,flexion_extension_30sec_05.csv,90,125,5,None
+rest,10,1,,10,rest_10sec.csv,125,135,0,
+sternberg_order,1,12,5,30,sternberg_order_30sec_05.csv,135,170,5,rt
+rest,10,1,,10,rest_10sec.csv,170,180,0,
+visuospatial_order,1,12,5,30,visuospatial_order_30sec_05.csv,180,215,5,rt
+rest,10,1,,10,rest_10sec.csv,215,225,0,
