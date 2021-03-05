@@ -42,7 +42,6 @@ def display_input_box():
 
     # # record input variables
     experiment_info = {}
-<<<<<<< HEAD
     if gui.OK:
         experiment_info['subj_id']    = inputDlg.data[0]
         experiment_info['study_name'] = inputDlg.data[1]
@@ -59,24 +58,6 @@ def display_input_box():
 
     # # ttl flag that will be used to determine whether the program waits for ttl pulse or not
     # experiment_info['ttl_flag'] = True
-=======
-    # if gui.OK:
-    #     experiment_info['subj_id']    = inputDlg.data[0]
-    #     experiment_info['study_name'] = inputDlg.data[1]
-    #     experiment_info['run_name']   = inputDlg.data[2]
-
-    #     # ttl flag that will be used to determine whether the program waits for ttl pulse or not
-    #     experiment_info['ttl_flag'] = inputDlg.data[3]
-    # else:
-    #     sys.exit()
-
-    experiment_info['subj_id']    = 'test2'
-    experiment_info['study_name'] = 'behavioral'
-    experiment_info['run_name']   = 'run_15'
-
-    # ttl flag that will be used to determine whether the program waits for ttl pulse or not
-    experiment_info['ttl_flag'] = False
->>>>>>> timing
     
     return experiment_info
 
@@ -132,39 +113,31 @@ def check_runfile_results(experiment_info):
 
     return run_iter, run_file_results
 
-def wait_ttl():
-    """
-    waits for the ttl pulse (only for fmri study)
-    Args:
-        NONE
-    Returns:
-        timer_info(dict)    -   a dictionary with time info. keys:
-        t0 : the time??
-    """
-    print(f"waiting for the TTL pulse")
-    timer_info = {}
-    ttl.reset()
-    while ttl.count <= 0:
-        ttl.check()
-
-    # start timer
-    timer_info['global_clock'] = ttl.clock
-    timer_info['t0'] = timer_info['global_clock'].getTime()
-
-    return timer_info
-
-def start_timer():
+def start_timer(ttl_flag):
     """
     starts the timer for the experiment (for behavioral study)
     Args:
-        NONE
+        ttl_flag(bool) - either True or False. Specifies whether the code needs to wait for the ttl pulse
     Returns:
         timer_info(dict)    -   a dictionary with all the info for the timer. keys are:
         global_clock : the clock from psychopy?
-        t0           : the time???
+        t0           : the start time
     """
+    #initialize a dictionary with timer info
     timer_info = {}
-    timer_info['global_clock'] = core.Clock()
+
+    # wait for ttl pulse or not?
+    if ttl_flag: # if true then wait
+        print(f"waiting for the TTL pulse")
+        ttl.reset()
+        while ttl.count <= 0:
+            ttl.check()
+        print(f"Received TTL pulse")
+        # get the ttl clock
+        timer_info['global_clock'] = ttl.clock
+    else:
+        timer_info['global_clock'] = core.Clock()
+    
     timer_info['t0']           = timer_info['global_clock'].getTime()
 
     return timer_info
@@ -181,8 +154,8 @@ def get_targetfile_info(study_name, run_file, b):
         task_name     : task name
         task_num      : task number
         target_file   : target csv file opened as a pandas dataframe
-        run_endTime   : end time of the task run 
-        run_startTime : start time of the task run
+        task_endTime   : end time of the task run 
+        task_startTime : start time of the task run
         instruct_dur  : duration of instruction for the task
     """
     target_binfo = {}
@@ -197,11 +170,11 @@ def get_targetfile_info(study_name, run_file, b):
     # load target file
     target_binfo['target_file'] = pd.read_csv(consts.target_dir / study_name / target_binfo['task_name'] / run_file['target_file'][b])
 
-    # get end of run
-    target_binfo['run_endTime'] = run_file['end_time'][b]
+    # get end time of task
+    target_binfo['task_endTime'] = run_file['end_time'][b]
 
-    # get start of run
-    target_binfo['run_startTime'] = run_file['start_time'][b]
+    # get start time of task
+    target_binfo['task_startTime'] = run_file['start_time'][b]
 
     # get instruct dur
     target_binfo['instruct_dur'] = run_file['instruct_dur'][b]
@@ -225,51 +198,49 @@ def get_task(experiment_info, target_binfo, run_info,
 
     BlockTask  = BlockTask(screen = screen, 
                             target_file = target_binfo['target_file'], 
-                            run_end  = target_binfo['run_endTime'], task_name = target_binfo['task_name'],  
+                            run_end  = target_binfo['task_endTime'], task_name = target_binfo['task_name'],  
                             study_name = experiment_info['study_name'], target_num = target_binfo['target_num'], 
                             ttl_flag = experiment_info['ttl_flag'])
 
     return BlockTask
 
-def wait_starttask(timer_info, run_startTime, ttl_flag):
+def wait_starttask(timer_info, task_startTime, ttl_flag):
     """
     Wait till it's time to start the task (reads info from target file)
     Args:
         timer_info      -   a timer object
-        run_startTime   -   start time of the task in a specific run
-        study_name(str) -   'fmri' or 'behavioral'
+        task_startTime   -   start time of the task in a specific run
     """
-    while timer_info['global_clock'].getTime() - timer_info['t0'] <= run_startTime:
+    while timer_info['global_clock'].getTime() - timer_info['t0'] <= task_startTime:
         if ttl_flag:
             ttl.check()
         else:
             pass
             
-def wait_instruct(timer_info, run_startTime, instruct_dur, ttl_flag):
+def wait_instruct(timer_info, task_startTime, instruct_dur, ttl_flag):
     """
     Wait for a specific amount of time for the instructions specified in the target file
     Args:
         timer_info      -   a timer object
-        run_starttime   -   start time of the task in a specific run
+        task_startTime   -   start time of the task in a specific run
         instruct_dur    -   duration of the instruction for the current task
         study_name(str) -   'fmri' or 'behavioral'
     """
-    wait_time = run_startTime + instruct_dur
-    while timer_info['global_clock'].getTime() - timer_info['t0'] <= wait_time: # timed presentation
+    wait_time = task_startTime + instruct_dur
+    while timer_info['global_clock'].getTime() - timer_info['t0'] <= wait_time: # timed presentation of the instruction
         if ttl_flag:
             ttl.check()
         else:
             pass
 
-def wait_endtask(timer_info, run_endTime, ttl_flag):
+def wait_endtask(timer_info, task_endTime, ttl_flag):
     """"
     Waits till the timer reaches the end time of the task 
     Args:
-        timer_info      -   a timer object 
-        run_endTime     -   end time of the task in the run
-        study_name(str) -   'fmri' or 'behavioral'
+        timer_info       -   a timer object 
+        task_endTime     -   end time of the task in the run
     """
-    while timer_info['global_clock'].getTime() - timer_info['t0'] <= run_endTime: # timed presentation
+    while timer_info['global_clock'].getTime() - timer_info['t0'] <= task_endTime: # timed presentation
         if ttl_flag:
             ttl.check()
         else:
@@ -317,38 +288,6 @@ def get_runfile_results(run_file, all_run_response, run_file_results):
 
     return df_run_results
 
-def _get_feedback_text(task_name, feedback):
-    """
-    creates a feedback text
-    Args:
-        task_name   -   name of the task
-        feedback    -   feedback calculated based on either RT or ACC
-    Returns:
-        a string with the feedback
-    """
-    return f'{task_name}\n\nCurrent score: {feedback["curr"]} {feedback["measure"]}\n\nPrevious score: {feedback["prev"]} {feedback["measure"]}'
-
-def _display_feedback_text(feedback_all, screen):
-    """
-    used to display the feedback on the screen
-    Args:
-        feedback_all    -   feedback for the whole run
-        screen          -   screen objects
-    """
-    positions = [(-9, -6), (0, -6), (9, -6),
-                (-9, 3), (0, 3), (9, 3)]
-
-    for position, feedback in zip(positions, feedback_all):
-        scoreboard = visual.TextStim(screen.window, text = feedback, color = [-1, -1, -1], pos = position, height = 0.5)
-        scoreboard.draw()
-
-    screen.window.flip()
-
-    # wait for end-of-task
-    event.waitKeys()
-
-    return
-
 def show_scoreboard(subj_dir, taskObjs, screen):
     """
     Presents a score board in the end of the run
@@ -375,10 +314,20 @@ def show_scoreboard(subj_dir, taskObjs, screen):
             feedback = obj.get_feedback(dataframe, obj.feedback_type)
 
             # get the corresponding text for the feedback and append it to the overal list 
-            feedback_all.append(_get_feedback_text(t_name, feedback))
+            feedback_text = f'{t_name}\n\nCurrent score: {feedback["curr"]} {feedback["measure"]}\n\nPrevious score: {feedback["prev"]} {feedback["measure"]}'
+            feedback_all.append(feedback_text)
 
-    # display feedback text
-    _display_feedback_text(feedback_all, screen)
+    # display feedback table at the end of the run
+    ## position where the feedback for each task will be shown
+    positions = [(-9, -6), (0, -6), (9, -6),
+                (-9, 3), (0, 3), (9, 3)]
+    for position, feedback in zip(positions, feedback_all):
+        scoreboard = visual.TextStim(screen.window, text = feedback, color = [-1, -1, -1], pos = position, height = 0.5)
+        scoreboard.draw()
+
+    screen.window.flip()
+
+    event.waitKeys()
 
     return
 
@@ -403,7 +352,7 @@ def run():
     $experimentName_subjId_taskName.csv
     """
 
-    # 1. open up the input box
+    # 1. open up the input box to get the experiment info from the experimenter
     exp_info = display_input_box()
 
     # 2. get the run information
@@ -420,27 +369,23 @@ def run():
     exp_screen = Screen()
 
     # 6. timer stuff!
-    ## get the ttl flag
-    ttl_flag = exp_info['ttl_flag']
-    if ttl_flag:
-        # wait for ttl to begin the task
-        timer_info = wait_ttl()
-    else:
-        # start timer
-        timer_info = start_timer()
+    ## start the timer. Needs to know whether the experimenter has chosen to wait for ttl pulse 
+    timer_info = start_timer(exp_info['ttl_flag'])
 
     # 7. initialize a list for responses
     all_run_response = []
 
-    # 8. loop over tasks
+    # 8. loop over tasks in the run file
     taskObj_list  = [] # an empty list. Task classes will be appended to this list
     for b in run_info['task_nums']:
 
         # 8.1 get target info
         target_binfo = get_targetfile_info(exp_info['study_name'], run_info['run_file'], b)
 
-        # 8.2 get the real strat time for each task
+        # 8.2 get the real strat time for each task 
+        ## for debugging make sure that this is at about the start_time specified in the run file
         real_start_time = timer_info['global_clock'].getTime() - timer_info['t0']
+        print(f"real_start_time:{real_start_time} == start_time: {target_binfo['task_startTime']}????") # for debugging purposes!
 
         # 8.2.1 collect ttl time and counter
         # if ttl_flag:
@@ -450,24 +395,24 @@ def run():
         #     ttl_time  = 0
         #     ttl_count = 0
 
-        # 8.3 get the task and append it to a list
+        # 8.3 get the task object and append it to a list
         Task_Block = get_task(exp_info, target_binfo, run_info, 
                                exp_screen, run_iter)
 
         taskObj_list.append(Task_Block)
 
+        # 8.4 wait till it's time to start the task
+        wait_starttask(timer_info, target_binfo['task_startTime'], exp_info['ttl_flag'])
 
-        # 8.4 wait for first start task
-        wait_starttask(timer_info, target_binfo['run_startTime'], exp_info['ttl_flag'])
-
-        # 8.5 display instructions
+        # 8.5 get the instruction text for the task and display it
         Task_Block.display_instructions()
 
         # 8.6 wait for a time period equal to instruction duration
-        wait_instruct(timer_info, target_binfo['run_startTime'], target_binfo['instruct_dur'], exp_info['ttl_flag'])
+        wait_instruct(timer_info, target_binfo['task_startTime'], target_binfo['instruct_dur'], exp_info['ttl_flag'])
 
         # 8.7.1 run task and collect feedback
         new_resp_df = Task_Block.run()
+
         # 8.7.2 adding run information to response dataframe
         new_resp_df['run_name'] = exp_info['run_name']
         new_resp_df['run_iter'] = run_iter
@@ -488,8 +433,8 @@ def run():
             'run_num': run_info['run_num'],
         })
 
-        # 8.9 wait for end-of-task
-        wait_endtask(timer_info, target_binfo['run_endTime'], exp_info['ttl_flag'])
+        # 8.9 wait till it's time to end the task
+        wait_endtask(timer_info, target_binfo['task_endTime'], exp_info['ttl_flag'])
 
     # 9.1 get the run result as a dataframe
     df_run_results = get_runfile_results(run_info['run_file'], all_run_response, run_file_results)
