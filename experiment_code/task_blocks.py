@@ -27,16 +27,22 @@ class Task:
     """
 
     def __init__(self, screen, target_file, run_end, task_name, study_name, target_num, ttl_flag):
-        self.screen      = screen
-        self.window      = screen.window
-        self.monitor     = screen.monitor
+        self.screen  = screen
+        self.window  = screen.window
+        self.monitor = screen.monitor
+        
+        self.clock    = core.Clock()
+        self.ttl_flag = ttl_flag
+
         self.target_file = target_file
         self.run_end     = run_end
-        self.clock       = core.Clock()
+        
         self.study_name  = study_name
         self.task_name   = task_name
         self.target_num  = target_num
-        self.ttl_flag    = ttl_flag
+        
+        self.trial_response     = {} # an empty dictionary which will be filled with trial responses
+        self.all_trial_response = [] # an empty list which will be appended with the responses from each trial
 
         # assign keys to hands
         ## from const, the response keys are imported first
@@ -124,11 +130,18 @@ class Task:
         # if the user has chosen not to use the ttl pulse, 
         # ttl_time is set to 0
         if self.ttl_flag:
-            self.real_start_time = ttl.clock.getTime() - t0
-            self.ttl_time = ttl.time - t0
+            # self.real_start_time = ttl.clock.getTime() - t0
+            # self.ttl_time = ttl.time - t0
+            self.real_start_time = ttl.clock.getTime()
+            self.ttl_time = t0 - ttl.time
+            # self.ttl_time = ttl.time
             self.ttl_count = ttl.count
+            print(f"ttl count {self.ttl_count}")
+            print(f"ttl time {self.ttl_time}")
+
         else:
-            self.real_start_time = self.clock.getTime() - t0
+            # self.real_start_time = self.clock.getTime() - t0
+            self.real_start_time = self.clock.getTime()
             self.ttl_time = 0
             self.ttl_count = 0
 
@@ -1091,6 +1104,11 @@ class FingerSequence(Task):
         ## each time a key is pressed, event.getKeys return a list
         ## the returned list has one element which is also a list ([[key, time]])
         ## the first index gives the key and the second index gives the time of press
+        # each word will remain on the screen for a certain amount of time (self.stem_word_dur)
+        if self.ttl_flag: # wait for ttl pulse
+            ttl.check()
+        else: # do not wait for ttl pulse
+            pass
         press = event.getKeys(self.response_keys, timeStamped=self.clock) # records the pressed key
         if len(press)>0: # a press has been made`
             self.pressed_digits.append(self._get_press_digit(press[0][0])) # the pressed key is converted to its corresponding digit and appended to the list
@@ -1225,6 +1243,7 @@ class SternbergOrder(Task):
         Does 1 comes before 5 in the set?
         The participant needs to a) figure out whether 1 and 5 were in the set and 
                                  b) whether the order shown is correct
+
     The order of events in trial:
     1. show fixation (iti_dur)
     2. show digits serially
@@ -1273,15 +1292,17 @@ class SternbergOrder(Task):
         self.prob_dig = self.prob.split(" ")
 
         # the first digit of the prob
-        dig_first = visual.TextStim(self.window, text=self.prob_dig[0], pos=(-1.5,0.0), color=(-1,-1,-1), units='deg', height = 1.5)
+        dig_first = visual.TextStim(self.window, text=self.prob_dig[0], pos=(-1,0.0), color=(-1,-1,-1), units='deg', height = 1.5)
         
-        # an arrow to show order
-        # arrowVert = [(-0.4,0.05),(-0.4,-0.05),(-.2,-0.05),(-.2,-0.1),(0,0),(-.2,0.1),(-.2,0.05)]
-        arrowVert = [(-1.4,0.5),(-1.4,-0.5),(0,-0.5),(0,-1.5),(1.5, 0),(0,1.5),(0,0.5)]
-        arrow = ShapeStim(self.window, vertices=arrowVert, fillColor='black', size=.5, lineColor='black')
+        # an arrow to show order   
+        arrowVert = [(-1.6,0.2),(-1.6,-0.2),(-.8,-0.2),(-.8,-0.4),(0,0),(-.8,0.4),(-.8,0.2)]        # arrow = ShapeStim(self.window, vertices=arrowVert, fillColor='black', size=.5, lineColor='black')
+        # arrowVert = [(0, 0), (1, 0), (1, 0.5), (1.5, 0), (1, -0.5), (1, 0)]
+        # arrowVert = [(-1, 0), (0, 0), (0, 0.5), (1, 0), (0, -0.5), (0, 0)]
+        arrow = ShapeStim(self.window, vertices=arrowVert, closeShape=True, lineWidth=3, pos=(0,0), ori=90, units = "deg", fillColor = [-1, -1, -1], lineColor = [-1, -1, -1])
+        arrow.pos = [(-1, 1)]
         
         # the second digit of the prob
-        dig_second = visual.TextStim(self.window, text=self.prob_dig[1], pos=(1.5,0.0), color=(-1,-1,-1), units='deg', height = 1.5)
+        dig_second = visual.TextStim(self.window, text=self.prob_dig[1], pos=(1,0.0), color=(-1,-1,-1), units='deg', height = 1.5)
         
         # draw the prob
         dig_first.draw()
@@ -1517,6 +1538,7 @@ class VisuospatialOrder(Task):
         return rDf
 
 class VisuospatialOrderV2(Task):
+
     def __init__(self, screen, target_file, run_end, task_name, study_name, target_num, ttl_flag):
         super(VisuospatialOrderV2, self).__init__(screen, target_file, run_end, task_name, study_name, target_num, ttl_flag)
         self.feedback_type = 'acc' # reaction
@@ -1689,7 +1711,7 @@ class FlexionExtension(Task):
         self.start_time = self.target_file['start_time'][self.trial]
         self.trial_type = self.target_file['trial_type'][self.trial]
         self.display_trial_feedback = self.target_file['display_trial_feedback'][self.trial]
-        self.foot = self.target_file['foot'][self.trial]
+        # self.foot = self.target_file['foot'][self.trial]
         
     def _show_stim(self):
         # displays the instruction:
@@ -1702,7 +1724,8 @@ class FlexionExtension(Task):
 
         for act in self.stim_act:
             self.act_start = self.get_current_time()  
-            stim = visual.TextStim(self.window, text = self.foot + "\n "+ act, pos=(0.0,0.0), color=(-1,-1,-1), units='deg', height = 1.5)
+            # stim = visual.TextStim(self.window, text = self.foot + "\n "+ act, pos=(0.0,0.0), color=(-1,-1,-1), units='deg', height = 1.5)
+            stim = visual.TextStim(self.window, text = act, pos=(0.0,0.0), color=(-1,-1,-1), units='deg', height = 1.5)
             stim.draw()
             self.window.flip()
             
@@ -1754,6 +1777,18 @@ class FlexionExtension(Task):
             t_start_iti = self.get_current_time()
             self.show_fixation(t_start_iti, self.iti_dur)
 
+            # if self.ttl_flag:
+            #     while (ttl.clock.getTime() - self.t0 <= wait_time): # and not resp_made:
+            #         ttl.check()
+            # else:
+            #     while (self.clock.getTime() - self.t0 <= wait_time): # and not resp_made:
+            #         pass
+
+            # update trial response
+            self.trial_response = {}
+            self.update_trial_response()
+
+            # option to quit screen
             self.screen_quit()
 
         # get the response dataframe
