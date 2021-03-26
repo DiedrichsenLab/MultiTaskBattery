@@ -10,6 +10,7 @@ import glob
 
 from psychopy import visual, core, event, gui # data, logging
 
+
 import experiment_code.constants as consts
 from experiment_code.screen import Screen
 from experiment_code.task_blocks import TASK_MAP
@@ -180,71 +181,6 @@ def get_targetfile_info(study_name, run_file, b):
     target_binfo['instruct_dur'] = run_file['instruct_dur'][b]
 
     return target_binfo
-
-def get_task(experiment_info, target_binfo, run_info, 
-                   screen, run_iter):
-    """
-    creates a class for the task 
-    Args:
-        experiment_info(dict)     -   experiment information:subj_id, study_name, run_name
-        screen                    -   screen object
-        target_binfo              -   target file information (see get_targetfile_info)
-        run_info                  -   run information (see get_runfile_info)
-        run_iter                  -   if the run has been done more than one time, this represent the number of repetition of a run
-    Returns:
-        BlockTask   -   a task class with all the att. and methods associated to the current task in the task
-    """
-    BlockTask = TASK_MAP[target_binfo['task_name']]
-
-    BlockTask  = BlockTask(screen = screen, 
-                            target_file = target_binfo['target_file'], 
-                            run_end  = target_binfo['task_endTime'], task_name = target_binfo['task_name'],  
-                            study_name = experiment_info['study_name'], target_num = target_binfo['target_num'], 
-                            ttl_flag = experiment_info['ttl_flag'])
-
-    return BlockTask
-
-def wait_starttask(timer_info, task_startTime, ttl_flag):
-    """
-    Wait till it's time to start the task (reads info from target file)
-    Args:
-        timer_info      -   a timer object
-        task_startTime   -   start time of the task in a specific run
-    """
-    while timer_info['global_clock'].getTime() - timer_info['t0'] <= task_startTime:
-        if ttl_flag:
-            ttl.check()
-        else:
-            pass
-            
-def wait_instruct(timer_info, task_startTime, instruct_dur, ttl_flag):
-    """
-    Wait for a specific amount of time for the instructions specified in the target file
-    Args:
-        timer_info      -   a timer object
-        task_startTime   -   start time of the task in a specific run
-        instruct_dur    -   duration of the instruction for the current task
-        study_name(str) -   'fmri' or 'behavioral'
-    """
-    wait_time = task_startTime + instruct_dur
-    while timer_info['global_clock'].getTime() - timer_info['t0'] <= wait_time: # timed presentation of the instruction
-        if ttl_flag:
-            ttl.check()
-        else:
-            pass
-
-def wait_endtask(timer_info, task_endTime, ttl_flag):
-    """"
-    Waits till the timer reaches the end time of the task 
-    Args:
-        timer_info       -   a timer object 
-        task_endTime     -   end time of the task in the run
-    """
-    while timer_info['global_clock'].getTime() - timer_info['t0'] <= task_endTime: # timed presentation
-        if ttl_flag:
-            ttl.check()
-        else:
-            pass
         
 def save_response(response_df, study_name, subj_id, task_name):
     """
@@ -331,18 +267,6 @@ def show_scoreboard(subj_dir, taskObjs, screen):
 
     return
 
-def end_experiment(screen):
-    """
-    just ends the experiment
-    """
-    # end experiment
-    event.waitKeys()
-
-    # quit screen and exit
-    screen.window.close()
-    core.quit()
-    return
-
 def run():
     """
     opens up a GUI with fields for subject id, experiment name, and run file name
@@ -396,19 +320,33 @@ def run():
         #     ttl_count = 0
 
         # 8.3 get the task object and append it to a list
-        Task_Block = get_task(exp_info, target_binfo, run_info, 
-                               exp_screen, run_iter)
+        TaskName = TASK_MAP[target_binfo['task_name']]
+
+        Task_Block  = TaskName(screen = exp_screen, 
+                              target_file = target_binfo['target_file'], 
+                              run_end  = target_binfo['task_endTime'], task_name = target_binfo['task_name'],  
+                              study_name = exp_info['study_name'], target_num = target_binfo['target_num'], 
+                              ttl_flag = exp_info['ttl_flag'])
 
         taskObj_list.append(Task_Block)
 
         # 8.4 wait till it's time to start the task
-        wait_starttask(timer_info, target_binfo['task_startTime'], exp_info['ttl_flag'])
-
+        while timer_info['global_clock'].getTime() - timer_info['t0'] <= target_binfo['task_startTime']:
+            if exp_info['ttl_flag']:
+                ttl.check()
+            else:
+                pass
+    
         # 8.5 get the instruction text for the task and display it
         Task_Block.display_instructions()
 
         # 8.6 wait for a time period equal to instruction duration
-        wait_instruct(timer_info, target_binfo['task_startTime'], target_binfo['instruct_dur'], exp_info['ttl_flag'])
+        wait_time = target_binfo['task_startTime'] + target_binfo['instruct_dur']
+        while timer_info['global_clock'].getTime() - timer_info['t0'] <= wait_time: # timed presentation of the instruction
+            if exp_info['ttl_flag']:
+                ttl.check()
+            else:
+                pass
 
         # 8.7.1 run task and collect feedback
         new_resp_df = Task_Block.run()
@@ -434,7 +372,11 @@ def run():
         })
 
         # 8.9 wait till it's time to end the task
-        wait_endtask(timer_info, target_binfo['task_endTime'], exp_info['ttl_flag'])
+        while timer_info['global_clock'].getTime() - timer_info['t0'] <= target_binfo['task_endTime']: # timed presentation
+            if exp_info['ttl_flag']:
+                ttl.check()
+            else:
+                pass
 
     # 9.1 get the run result as a dataframe
     df_run_results = get_runfile_results(run_info['run_file'], all_run_response, run_file_results)
@@ -448,6 +390,10 @@ def run():
 
     # 11. end experiment
     Task_Block.display_end_run()
-    end_experiment(exp_screen)
+    # waits for a key press to end the experiment
+    event.waitKeys()
+    # quit screen and exit
+    screen.window.close()
+    core.quit()
 
     return
