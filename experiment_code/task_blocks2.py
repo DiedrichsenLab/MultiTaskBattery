@@ -20,8 +20,12 @@ from ast import literal_eval
 
 class Task:
     """
-    Task: takes in inputs from run_experiment.py and methods (e.g. 'instruction_text', 'save_to_df' etc) 
-    are universal across all tasks.
+    Task: takes in inputs from run_experiment.py and methods
+    some methods are universal across all tasks. Those methods are included in the super class Task.
+    There are methods like display_instructions which are the same across most of the tasks. 
+    There are, however, some tasks that have different instructions from the rest (like fingerSequence).
+    For those tasks, a display_instructions method is defined within the corresponding class which overrides
+    the universal display_instruction method.
     Each of other classes runs a unique task given input from target files and from the Task class
     (VisualSearch, SemanticPrediction, NBack, SocialPrediction, ActionObservation).
     """
@@ -283,7 +287,7 @@ class Task:
         response_df = pd.concat([self.target_file, pd.DataFrame.from_records(all_trial_response)], axis=1)
         return response_df
     
-    ##
+    ## get the current time in the trial
     def get_current_trial_time(self):
         """
         gets the current time in the trial. The ttl_flag determines the timings.  
@@ -295,7 +299,7 @@ class Task:
             t_current = self.clock.getTime()
 
         return t_current
-    ##
+    ## get the real start time of the trial
     def get_real_start_time(self, t0):
         """  
         gets the real start time and the ttl time
@@ -319,7 +323,7 @@ class Task:
             self.real_start_time = self.clock.getTime()
             self.ttl_time = 0
             self.ttl_count = 0
-    ##
+    ##????????????????????????????????????
     def get_time_before_disp(self):
         # start timer before display
         if self.ttl_flag:
@@ -327,14 +331,14 @@ class Task:
         else:
             self.t2 = self.clock.getTime()
 
-    ### 
+    ### quits the screen 
     def screen_quit(self):
         keys = event.getKeys()
         for key in keys:
             if 'q' and 'esc' in key:
                 self.window.close()
                 core.quit()
-    ### 
+    ### shows fixation
     def show_fixation(self, t0, delta_t):
         if self.ttl_flag: # wait for ttl pulse
             while ttl.clock.getTime()-t0 <= delta_t:
