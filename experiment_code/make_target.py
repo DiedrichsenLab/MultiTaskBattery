@@ -555,6 +555,7 @@ def flexion_extension(nrun = 5, study_name = 'behavioral',
         T['start_time']             = [(trial_dur + iti_dur)*i for i in range(n_trials)]
         T['end_time']               = [(i+1)*trial_dur + i*iti_dur for i in range(n_trials)]
         T['trial_type']             = ['None' for i in range(n_trials)]
+        T['hand']                   = ['None' for i in range(n_trials)]
         T['display_trial_feedback'] = [display_trial_feedback for i in range(n_trials)]
 
         ## determine the foot
@@ -663,9 +664,9 @@ def run_target():
 
     # finger_sequence()
     # sternber_order()
-    # flexion_extension()
+    flexion_extension()
     # visuospatial_order_v1()
-    visuospatial_order()
+    # visuospatial_order()
 
     return
 
