@@ -13,8 +13,7 @@ from psychopy import visual, core, event, gui # data, logging
 
 import experiment_code.constants as consts
 from experiment_code.screen import Screen
-# from experiment_code.task_blocks import TASK_MAP
-from experiment_code.task_blocks2 import TASK_MAP
+from experiment_code.task_blocks import TASK_MAP
 from experiment_code.ttl import ttl
 import experiment_code.constants as const
 
@@ -53,13 +52,6 @@ def display_input_box():
         experiment_info['ttl_flag'] = inputDlg.data[3]
     else:
         sys.exit()
-
-    # experiment_info['subj_id']    = 'test2'
-    # experiment_info['study_name'] = 'fmri'
-    # experiment_info['run_name']   = 'run_05'
-
-    # # ttl flag that will be used to determine whether the program waits for ttl pulse or not
-    # experiment_info['ttl_flag'] = True
     
     return experiment_info
 
@@ -392,14 +384,14 @@ def run():
     # 11. end experiment
     # end_exper_text = f"End of run {self.run_num}\n\nTake a break!"
     end_exper_text = f"End of run\n\nTake a break!"
-    end_experiment = visual.TextStim(self.window, text=end_exper_text, color=[-1, -1, -1])
+    end_experiment = visual.TextStim(exp_screen.window, text=end_exper_text, color=[-1, -1, -1])
     end_experiment.draw()
-    self.window.flip()
+    exp_screen.window.flip()
 
     # waits for a key press to end the experiment
     event.waitKeys()
     # quit screen and exit
-    screen.window.close()
+    exp_screen.window.close()
     core.quit()
 
     return
