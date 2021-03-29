@@ -20,8 +20,12 @@ from ast import literal_eval
 
 class Task:
     """
-    Task: takes in inputs from run_experiment.py and methods (e.g. 'instruction_text', 'save_to_df' etc) 
-    are universal across all tasks.
+    Task: takes in inputs from run_experiment.py and methods
+    some methods are universal across all tasks. Those methods are included in the super class Task.
+    There are methods like display_instructions which are the same across most of the tasks. 
+    There are, however, some tasks that have different instructions from the rest (like fingerSequence).
+    For those tasks, a display_instructions method is defined within the corresponding class which overrides
+    the universal display_instruction method.
     Each of other classes runs a unique task given input from target files and from the Task class
     (VisualSearch, SemanticPrediction, NBack, SocialPrediction, ActionObservation).
     """
@@ -67,30 +71,73 @@ class Task:
                 },
             }
 
-    @property
-    def get_response_fingerMap(self):
-        # load in the finger names corresponding to keys
+    # 1. get trial info (info that is shared across the tasks)
+    def get_trial_info(self, trial_index):
+        """
+        get the information for the current trial
+        task-specific trial info will be loaded inside the specific task class
+        """
+        self.start_time = self.target_file['start_time'][trial_index]
+        # self.end_time   = self.target_file['end_time'][trial_index]
+        self.trial_dur  = self.target_file['trial_dur'][trial_index]
+        self.iti_dur    = self.target_file['iti_dur'][trial_index]
+        self.hand       = self.target_file['hand'][trial_index]
+    # 2. get the mapping from the keys to fingers 
+    def get_response_finger_map(self):
+        """
+        get the response mapping for the task 
+        Creates a dictoinary 
+        """
+        # 2.1 load in the finger names corresponding to keys
         self.response_fingers = consts.response_fingers
 
-        # create a dictionary that maps response keys to fingers
+        # 2.2 create a dictionary that maps response keys to fingers
         zip_iterator = zip(self.response_keys, self.response_fingers)
-        self.response_fingerMap = dict(zip_iterator) 
+        return dict(zip_iterator)
+    # 3. display the instructions for the task
+    def display_instructions(self):
+        """
+        displays the instruction for the task
+        Most tasks have the same instructions. (Tasks that have True/False responses)
+        Those tasks that have different instructions will have their own routine   
+        """
+        # 3.1 create the instruction text
+        # first use get_response_fingerMap to get the mapping between keys and finger names
+        ## a dictionary called self.response_fingerMap is created!
+        self.response_fingerMap = self.get_response_finger_map()
+        hand = self.target_file['hand'][0]
+        trueStr  = f"press {self.key_hand_dict[hand]['True'][0]} with {self.response_fingerMap[self.key_hand_dict[hand]['True'][0]]}"
+        falseStr = f"press {self.key_hand_dict[hand]['False'][0]} with {self.response_fingerMap[self.key_hand_dict[hand]['False'][0]]}" 
+ 
+        self.instruction_text = f"{self.task_name} task\n\nUse your {hand} hand\n\nIf true, {trueStr}\nIf false, {falseStr}"
 
-    def get_current_time(self):
-        # gets the current time based on ttl_flag
-        if self.ttl_flag:
-            t_current = ttl.clock.getTime()
-        else:
-            t_current = self.clock.getTime()
+        # 3.2 display the instruction text        
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
+        # instr.size = 0.8
+        instr_visual.draw()
+        self.window.flip()
+    
+    # 4. show task stimuli
+    # After displaying the instructions, the stimuli will be shown. 
+    # As the stimuli for most of the tasks are different, the show_stim routing was added
+    # as an attribute of each specific task 
 
-        return t_current
-
+    # 5. get the trial response  
     def get_trial_response(self, wait_time, start_time, start_time_rt, **kwargs):
+        """ 
+        get the trial response. the ttl flag determines the timing 
+        Args:
+            wait_time     - how long will it wait for a response to be made
+            start_time    - start time of the trial
+            start_time_rt - ?????????
+        *** if a task requires a different routine for getting the trial response, it will be added 
+        as an attribute for that specific task. This is a general form!
         """
-        wait for the response to be made. ttl_flag determines the timing. 
-        """
+        # 5.1 reset the flag that shows whether a response was made
         self.response_made = False
+        # 5.2 reset the reaction time
         self.rt = 0
+        # 5.3 reset the list that will contain the pressed keys
         self.pressed_keys = []
 
         if self.ttl_flag: # if the user has chosen to use the ttl pulse
@@ -112,117 +159,84 @@ class Task:
                 if self.pressed_keys and not self.response_made: # if at least one press is made
                     self.response_made = True
                     self.rt = self.clock.getTime() - start_time_rt
-
-    def show_fixation(self, t0, delta_t):
-        # print("show fixation")
-        # print(f"t0 {t0}")
-        # print(f"delta_t {delta_t}")
-        # shows the fixation for delta_t seconds
-        if self.ttl_flag: # wait for ttl pulse
-            while ttl.clock.getTime()-t0 <= delta_t:
-                ttl.check()
-        else: # do not wait for ttl pulse
-            while self.clock.getTime()-t0 <= delta_t:
-                pass
-
-    def get_real_start_time(self, t0):
-        # gets the real start time and the ttl_time.
-        # if the user has chosen not to use the ttl pulse, 
-        # ttl_time is set to 0
-        if self.ttl_flag:
-            # self.real_start_time = ttl.clock.getTime() - t0
-            # self.ttl_time = ttl.time - t0
-            self.real_start_time = ttl.clock.getTime()
-            self.ttl_time = t0 - ttl.time
-            # self.ttl_time = ttl.time
-            self.ttl_count = ttl.count
-            print(f"ttl count {self.ttl_count}")
-            print(f"ttl time {self.ttl_time}")
-
-        else:
-            # self.real_start_time = self.clock.getTime() - t0
-            self.real_start_time = self.clock.getTime()
-            self.ttl_time = 0
-            self.ttl_count = 0
-
-    def get_time_before_disp(self):
-        # start timer before display
-        if self.ttl_flag:
-            self.t2 = ttl.clock.getTime()
-        else:
-            self.t2 = self.clock.getTime()
-
-    def instruction_text(self):
-        # the instruction text depends on whether the trial type is None or (True/False)
-
-        
-        ## if it's True/False:
-        if self.task_name != 'finger_sequence' and self.task_name != 'flexion_extension' and self.task_name != 'verb_generation' and self.task_name != 'romance_movie' and self.task_name != 'act_obs_knots' : # all the tasks except for finger_sequence task
-            # first use get_response_fingerMap to get the mapping between keys and finger names
-            ## a dictionary called self.response_fingerMap is created!
-            self.get_response_fingerMap
-
-            hand = self.target_file['hand'][0]
-            trueStr  = f"press {self.key_hand_dict[hand]['True'][0]} with {self.response_fingerMap[self.key_hand_dict[hand]['True'][0]]}"
-            falseStr = f"press {self.key_hand_dict[hand]['False'][0]} with {self.response_fingerMap[self.key_hand_dict[hand]['False'][0]]}" 
-            return f"{self.task_name} task\n\nUse your {hand} hand\n\nIf true, {trueStr}\nIf false, {falseStr}"
-        elif self.task_name == 'finger_sequence': # finger_sequence task
-            # first use get_response_fingerMap to get the mapping between keys and finger names
-            ## a dictionary called self.response_fingerMap is created!
-            self.get_response_fingerMap
-
-            hand = self.target_file['hand'][0]
-            mapStr   = [f"press {item} with {self.response_fingerMap[item]}\n" for item in self.key_hand_dict[hand]['None']]
-            temp_str = ''.join(mapStr)
-            return f"{self.task_name} task\n\nUse your {hand} hand:\n" + temp_str
-        elif self.task_name == 'flexion_extension': # flexion extension of toes
-            return f"{self.task_name} task \n\n flex and extend your right and left toes"
-        elif self.task_name == 'verb_generation':
-            return f"{self.task_name} task \n\n Silently read the words presented.  \n\n When GENERATE is shown, silently think of verbs that go with the words."
-        elif self.task_name == 'romance_movie':
-            return f"{self.task_name} task \n\n Please keep your head still while watching the movie clip."
-        elif self.task_name == 'act_obs_knots':
-            return f"{self.task_name} task \n\n Keep your head still while watching to two clips. \n\n Try and remember the knot shown."
-    
-    def get_response_df(self, all_trial_response):
+    # 6. check the trial response
+    def check_trial_response(self, wait_time, trial_index, start_time, start_time_rt, **kwargs):
         """
-        get the responses made for the task and convert it to a dataframe
+        Checks whether the response made in the trial is correct
         Args:
-            all_trial_response  -   responses made for all the trials in the task
-        Outputs:
-            resp_df     -   dataframe containing the responses made for the task
-        """
-        # df for current data
-        resp_df = pd.concat([self.target_file, pd.DataFrame.from_records(all_trial_response)], axis=1)
-        return resp_df
-    
-    def run(self, df):
-        return df
-
-    def display_instructions(self):
-        instr = visual.TextStim(self.window, text=self.instruction_text(), color=[-1, -1, -1])
-        # instr.size = 0.8
-        instr.draw()
-        self.window.flip()
-
-    def get_correct_key(self, trial_index):
-        """
-        uses the trial index to get the trial_type and hand id from the target file and
-        returns a list of keys that are to be pressed in order for the trial to be recorded as 
-        a correct trial. 
-        Args:
-            trial_index (int)     -     trial index (a number)
+            wait_time     - length of time allowed for a response to be made
+            trial_index   - index of the trial (as read from the target file). Will be used to get the correct response  
+            start_time    - the start time from when a response should have been made
+            start_time_rt - ????????
         Returns:
-            correct_keys (list)     -   a list containing all the keys that are to be pressed   
+            response_event - a dictionary with fields that correspond to the response:
+                             "corr_key"    : the correct key that should have been pressed,
+                             "pressed_key" : the key that was pressed,
+                             "resp_made"   : whether a response was made or not (True: a response was made),
+                             "corr_resp"   : whether the response was correct,
+                             "rt"          : the reaction time
         """
+        # get the row that correspsonds to the current trial
         row = self.target_file.iloc[trial_index] # the row of target dataframe corresponding to the current trial
-
         # get the list of keys that are to be pressed
         #** making sure that the trial_type is converted to str and it's not boolean
-        keys_list = self.key_hand_dict[row['hand']][str(row['trial_type'])]
-        return keys_list
+        self.correct_key_list = self.key_hand_dict[row['hand']][str(row['trial_type'])]
+        self.correct_response = False
 
-    def get_feedback(self, dataframe, feedback_type):
+        # 6.1 get the trial response
+        self.get_trial_response(wait_time, start_time, start_time_rt)
+
+        # 6.2 check the trial response
+        if self.pressed_keys and self.response_made:
+            # assuming pressed_keys is sorted by timestamp; is it?
+            # determine correct response based on first key press only
+            if self.pressed_keys[0][0] == self.correct_key_list[0]:
+                self.correct_response = True 
+            elif self.pressed_keys[0][0] != self.correct_key_list[0]:
+                self.correct_response = False
+    
+        # 6.3 determine the key that was pressed
+        # the pressed key will be recorded even if it's the wrong key
+        if not self.pressed_keys:
+            # then no key was pressed
+            resp_key = None
+        else:
+            resp_key = self.pressed_keys[0][0]
+
+        response_event = {
+            "corr_key": self.correct_key_list[0],
+            "pressed_key": resp_key,
+            "resp_made": self.response_made,
+            "corr_resp": self.correct_response,
+            "rt": self.rt
+        }
+        return response_event
+    # 7. display the feedback for the current trial
+    def display_trial_feedback(self, correct_response):
+        """
+        display the feedback for the current trial (correct response or not?)  
+        Args:
+            correct_response - a boolean variable. True if the response was correct, False otherwise
+        """
+        if correct_response:
+            feedback = os.path.join(consts.stim_dir, self.study_name ,'correct.png')
+        elif not correct_response:
+            feedback = os.path.join(consts.stim_dir, self.study_name, 'incorrect.png')
+
+        # display feedback on screen
+        feedback = visual.ImageStim(self.window, feedback, pos=(0, 0)) # pos=pos
+        feedback.draw()
+        self.window.flip()
+    # 8. Update the trial response (append the response to the list)
+    def update_trial_response(self):
+        # add additional variables to dict
+        self.trial_response.update({'real_start_time': self.real_start_time, 
+                                    'ttl_counter': self.ttl_count, 
+                                    'ttl_time': self.ttl_time})
+
+        self.all_trial_response.append(self.trial_response)
+    # 9. Get the feedback for the task (the type of feedback is different across tasks)
+    def get_task_feedback(self, dataframe, feedback_type):
         """
         gets overall feedback of the task based on the feedback type
         Args: 
@@ -260,87 +274,79 @@ class Task:
         feedback = {'curr': fb_curr, 'prev': fb_prev, 'measure': unit_str} 
 
         return feedback 
+    # 10. Get task response dataframe
+    def get_task_response(self, all_trial_response):
+        """
+        get the responses made for the task and convert it to a dataframe
+        Args:
+            all_trial_response  -   responses made for all the trials in the task
+        Outputs:
+            response_df     -   dataframe containing the responses made for the task
+        """
+        # df for current data
+        response_df = pd.concat([self.target_file, pd.DataFrame.from_records(all_trial_response)], axis=1)
+        return response_df
     
-    def display_feedback(self, feedback_text):
-        print(f"displaying feedback")
-        feedback = visual.TextStim(self.window, text=feedback_text, color=[-1, -1, -1])
-        feedback.draw()
-        self.window.flip()
-
-    def display_end_run(self):
-        # end_exper_text = f"End of run {self.run_num}\n\nTake a break!"
-        end_exper_text = f"End of run\n\nTake a break!"
-        end_experiment = visual.TextStim(self.window, text=end_exper_text, color=[-1, -1, -1])
-        end_experiment.draw()
-        self.window.flip()
-
-    def display_trial_feedback(self, correct_response):
-        if correct_response:
-            feedback = os.path.join(consts.stim_dir, self.study_name ,'correct.png')
-        elif not correct_response:
-            feedback = os.path.join(consts.stim_dir, self.study_name, 'incorrect.png')
-
-        # display feedback on screen
-        feedback = visual.ImageStim(self.window, feedback, pos=(0, 0)) # pos=pos
-        feedback.draw()
-        self.window.flip()
-
-    def check_trial_response(self, wait_time, trial_index, start_time, start_time_rt, **kwargs):
-
-        self.correct_key_list = []
-        self.correct_key_list = self.get_correct_key(trial_index)
-        # self.response_made = False
-        self.correct_response = False
-
-        # get the trial response
-        self.get_trial_response(wait_time, start_time, start_time_rt)
-
-        # check the trial response
-        if self.pressed_keys and self.response_made:
-            # assuming pressed_keys is sorted by timestamp; is it?
-            # determine correct response based on first key press only
-            if self.pressed_keys[0][0] == self.correct_key_list[0]:
-                self.correct_response = True 
-            elif self.pressed_keys[0][0] != self.correct_key_list[0]:
-                self.correct_response = False
-    
-        # determine the key that was pressed
-        # the pressed key will be recorded even if the wrong key was pressed
-        if not self.pressed_keys:
-            # then no key was pressed
-            resp_key = None
+    ## get the current time in the trial
+    def get_current_trial_time(self):
+        """
+        gets the current time in the trial. The ttl_flag determines the timings.  
+        """
+        # gets the current time based on ttl_flag
+        if self.ttl_flag:
+            t_current = ttl.clock.getTime()
         else:
-            resp_key = self.pressed_keys[0][0]
+            t_current = self.clock.getTime()
 
+        return t_current
+    ## get the real start time of the trial
+    def get_real_start_time(self, t0):
+        """  
+        gets the real start time and the ttl time
+        If the user has chosen not to use the ttl pulse. 
+        ttl_time is set to 0.
+        Args:
+            t0 - ?????????
+        """
+        if self.ttl_flag:
+            # self.real_start_time = ttl.clock.getTime() - t0
+            # self.ttl_time = ttl.time - t0
+            self.real_start_time = ttl.clock.getTime()
+            self.ttl_time = t0 - ttl.time
+            # self.ttl_time = ttl.time
+            self.ttl_count = ttl.count
+            print(f"ttl count {self.ttl_count}")
+            print(f"ttl time {self.ttl_time}")
 
-        response_event = {
-            "corr_key": self.correct_key_list[0],
-            "pressed_key": resp_key,
-            # "key_presses": pressed_keys,
-            "resp_made": self.response_made,
-            "corr_resp": self.correct_response,
-            "rt": self.rt
-        }
-        return response_event
+        else:
+            # self.real_start_time = self.clock.getTime() - t0
+            self.real_start_time = self.clock.getTime()
+            self.ttl_time = 0
+            self.ttl_count = 0
+    ##????????????????????????????????????
+    def get_time_before_disp(self):
+        # start timer before display
+        if self.ttl_flag:
+            self.t2 = ttl.clock.getTime()
+        else:
+            self.t2 = self.clock.getTime()
 
-    def _show_stim(self):
-        raise NotImplementedError
-   
-    def update_trial_response(self):
-        # add additional variables to dict
-        self.trial_response.update({'real_start_time': self.real_start_time, 
-                                    'ttl_counter': self.ttl_count, 
-                                    'ttl_time': self.ttl_time})
-
-        self.all_trial_response.append(self.trial_response)
-    
+    ### quits the screen 
     def screen_quit(self):
         keys = event.getKeys()
         for key in keys:
             if 'q' and 'esc' in key:
                 self.window.close()
                 core.quit()
-
+    ### shows fixation
+    def show_fixation(self, t0, delta_t):
+        if self.ttl_flag: # wait for ttl pulse
+            while ttl.clock.getTime()-t0 <= delta_t:
+                ttl.check()
+        else: # do not wait for ttl pulse
+            while self.clock.getTime()-t0 <= delta_t:
+                pass
+    
 
 class VisualSearch(Task): 
     # @property
@@ -360,10 +366,10 @@ class VisualSearch(Task):
         self.tf_display = pd.read_csv(path_to_display[0])
 
     def _get_trial_info(self):
-        self.start_time = self.target_file['start_time'][self.trial]
-        self.trial_dur = self.target_file['trial_dur'][self.trial]
-        self.iti_dur = self.target_file['iti_dur'][self.trial]
-        self.hand = self.target_file['hand'][self.trial]
+        # for this task, no extra fields of the target file are needed
+        # but just to be consistent with all the other tasks, I'm including a _get_trial_info routine
+        # which is just calling get_trial_info from the parent class
+        super().get_trial_info(self.trial)
 
     def _show_stim(self):
         # loop over items and display
@@ -392,7 +398,7 @@ class VisualSearch(Task):
             self._get_trial_info()
 
             # get current time (self.t0)
-            self.t0 = self.get_current_time()
+            self.t0 = self.get_current_trial_time()
 
             # show the fixation for the duration of iti
             self.show_fixation(self.t0, self.start_time - self.t0)
@@ -428,13 +434,14 @@ class VisualSearch(Task):
 
             # 5 show fixation for the duration of the iti
             ## 5.1 get current time
-            t_start_iti = self.get_current_time()
+            t_start_iti = self.get_current_trial_time()
             self.show_fixation(t_start_iti, self.iti_dur)
             
+            # 6. 
             self.screen_quit()
 
         # get the response dataframe
-        rDf = self.get_response_df(all_trial_response=self.all_trial_response)
+        rDf = self.get_task_response(all_trial_response=self.all_trial_response)
 
         return rDf
 
@@ -449,10 +456,7 @@ class NBack(Task):
         self.name          = 'n_back'
 
     def _get_trial_info(self):
-        # show image
-        self.iti_dur = self.target_file['iti_dur'][self.trial]
-        self.start_time = self.target_file['start_time'][self.trial]
-        self.trial_dur = self.target_file['trial_dur'][self.trial]
+        super().get_trial_info(self.trial)
         stim_path = consts.stim_dir / self.study_name / self.task_name / self.target_file['stim'][self.trial]
         self.stim = visual.ImageStim(self.window, str(stim_path))
     
@@ -471,7 +475,7 @@ class NBack(Task):
             self._get_trial_info()
 
             # get current time (self.t0)
-            self.t0 = self.get_current_time()
+            self.t0 = self.get_current_trial_time()
 
             # show the fixation for the duration of iti
             self.show_fixation(self.t0, self.start_time- self.t0)
@@ -507,13 +511,14 @@ class NBack(Task):
 
             # 5 show fixation for the duration of the iti
             ## 5.1 get current time
-            t_start_iti = self.get_current_time()
+            t_start_iti = self.get_current_trial_time()
             self.show_fixation(t_start_iti, self.iti_dur)
 
+            # 6.
             self.screen_quit()
 
         # get the response dataframe
-        rDf = self.get_response_df(all_trial_response=self.all_trial_response)
+        rDf = self.get_task_response(all_trial_response=self.all_trial_response)
 
         return rDf
 
@@ -527,12 +532,10 @@ class SocialPrediction(Task):
         self.feedback_type = 'acc' # reaction
         self.name          = 'social_prediction'
 
-    def _get_stims(self):
+    def _get_trial_info(self):
+        super().get_trial_info(self.trial)
         video_file = self.target_file['stim'][self.trial]
-        self.iti_dur = self.target_file['iti_dur'][self.trial]
-        self.trial_dur = self.target_file['trial_dur'][self.trial]
-        self.start_time = self.target_file['start_time'][self.trial]
-        self.path_to_video = os.path.join(consts.stim_dir, self.study_name, self.task_name, "modified_clips", video_file)
+        self.path_to_video = os.path.join(consts.stim_dir, self.study_name, self.task_name, "modified_clips", video_file)       
    
     def _get_first_response(self):
         # display trial feedback
@@ -601,11 +604,11 @@ class SocialPrediction(Task):
 
         for self.trial in self.target_file.index: 
 
-            # get stims
-            self._get_stims()
+            # get trial_info + stims
+            self._get_trial_info()
 
             # get current time (self.t0)
-            self.t0 = self.get_current_time()
+            self.t0 = self.get_current_trial_time()
 
             # show the fixation for the duration of iti
             self.show_fixation(self.t0, self.start_time - self.t0)
@@ -632,13 +635,14 @@ class SocialPrediction(Task):
 
             # 5 show fixation for the duration of the iti
             ## 5.1 get current time
-            t_start_iti = self.get_current_time()
+            t_start_iti = self.get_current_trial_time()
             self.show_fixation(t_start_iti, self.iti_dur)
 
+            # 6.
             self.screen_quit()
 
         # get the response dataframe
-        rDf = self.get_response_df(all_trial_response=self.all_trial_response)
+        rDf = self.get_task_response(all_trial_response=self.all_trial_response)
 
         return rDf
 
@@ -654,13 +658,12 @@ class SemanticPrediction(Task):
 
     def _get_trial_info(self):
         # get trial info from the target file
+        super().get_trial_info(self.trial)
         self.stem = self.target_file['stim'][self.trial]
         self.stem = self.stem.split()
         self.stem_word_dur = self.target_file['stem_word_dur'][self.trial]
         self.last_word = self.target_file['last_word'][self.trial]
         self.last_word_dur = self.target_file['last_word_dur'][self.trial]
-        self.iti_dur = self.target_file['iti_dur'][self.trial]
-        self.start_time = self.target_file['start_time'][self.trial]
 
     def _get_stims(self):
         # get stim (i.e. word)
@@ -675,7 +678,7 @@ class SemanticPrediction(Task):
     def _show_stem(self):
         # display stem words for fixed time
         for word in self.stem:   
-            self.word_start = self.get_current_time()                     
+            self.word_start = self.get_current_trial_time()                     
             stim = visual.TextStim(self.window, text=word, pos=(0.0,0.0), color=(-1,-1,-1), units='deg')
             stim.draw()
             self.window.flip()
@@ -691,7 +694,7 @@ class SemanticPrediction(Task):
 
     def _show_last_word(self):
         # display last word for fixed time
-        self.word_start = self.get_current_time()
+        self.word_start = self.get_current_trial_time()
         stim = visual.TextStim(self.window, text=self.last_word, pos=(0.0,0.0), color=(-1,-1,-1), units='deg')
         stim.draw()
         self.window.flip()
@@ -703,7 +706,7 @@ class SemanticPrediction(Task):
         # display iti before final word presentation
         self.screen.fixation_cross()
         # core.wait(self.iti_dur)
-        tc = self.get_current_time()
+        tc = self.get_current_trial_time()
         self.show_fixation(tc, self.iti_dur)
 
         # flush keys if any have been pressed
@@ -725,7 +728,7 @@ class SemanticPrediction(Task):
             self._get_trial_info()
 
             # get current time (self.t0)
-            self.t0 = self.get_current_time()
+            self.t0 = self.get_current_trial_time()
 
             # show the fixation for the duration of iti
             # wait here till the startTime 
@@ -739,7 +742,7 @@ class SemanticPrediction(Task):
 
             # 2. display fixation for the duration of the delay
             ## 2.1 get the current time
-            t_stem_end = self.get_current_time()
+            t_stem_end = self.get_current_trial_time()
             ## 2.2 get the delay duration
             self.screen.fixation_cross()
             self.show_fixation(t_stem_end, self.iti_dur) 
@@ -769,13 +772,14 @@ class SemanticPrediction(Task):
 
             # 5 show fixation for the duration of the iti
             ## 5.1 get current time
-            t_start_iti = self.get_current_time()
+            t_start_iti = self.get_current_trial_time()
             self.show_fixation(t_start_iti, self.iti_dur)
 
+            # 6.
             self.screen_quit()
 
         # get the response dataframe
-        rDf = self.get_response_df(all_trial_response=self.all_trial_response)
+        rDf = self.get_task_response(all_trial_response=self.all_trial_response)
 
         return rDf
 
@@ -789,11 +793,8 @@ class ActionObservation(Task):
         self.feedback_type = 'acc' # reaction
         self.name          = 'action_observation' 
 
-    def _get_stims(self):
-        self.trial_dur = self.target_file['trial_dur'][self.trial]
-        self.iti_dur = self.target_file['iti_dur'][self.trial]
-        self.start_time = self.target_file['start_time'][self.trial]
-
+    def _get_trial_info(self):
+        super().get_trial_info(self.trial)
         video_file = self.target_file['stim'][self.trial]
         self.path_to_video = os.path.join(consts.stim_dir, self.study_name, self.task_name, "modified_clips", video_file)
     
@@ -842,11 +843,11 @@ class ActionObservation(Task):
 
         for self.trial in self.target_file.index: 
 
-            # get stims
-            self._get_stims()
+            # get trial info and stims
+            self._get_trial_info()
 
             # get current time (self.t0)
-            self.t0 = self.get_current_time()
+            self.t0 = self.get_current_trial_time()
 
             # show the fixation for the duration of iti
             self.show_fixation(self.t0, self.start_time - self.t0)
@@ -874,13 +875,14 @@ class ActionObservation(Task):
 
             # 5 show fixation for the duration of the iti
             ## 5.1 get current time
-            t_start_iti = self.get_current_time()
+            t_start_iti = self.get_current_trial_time()
             self.show_fixation(t_start_iti, self.iti_dur)
 
+            # 6.
             self.screen_quit()
 
         # get the response dataframe
-        rDf = self.get_response_df(all_trial_response=self.all_trial_response)
+        rDf = self.get_task_response(all_trial_response=self.all_trial_response)
 
         return rDf
 
@@ -895,16 +897,13 @@ class TheoryOfMind(Task):
         self.name          = 'theory_of_mind'
     
     def _get_trial_info(self):
+        super().get_trial_info(self.trial)
         # get stim (i.e. story)
         self.story = self.target_file['story'][self.trial]
         self.story_dur = self.target_file['story_dur'][self.trial]
 
         self.question = self.target_file['question'][self.trial]
         self.question_dur = self.target_file['question_dur'][self.trial]
-
-        self.iti_dur = self.target_file['iti_dur'][self.trial]
-        self.trial_dur = self.target_file['trial_dur'][self.trial]
-        self.start_time = self.target_file['start_time'][self.trial]
     
     def _get_stims(self):
         # get stim (i.e. story)
@@ -916,12 +915,11 @@ class TheoryOfMind(Task):
 
         self.iti_dur = self.target_file['iti_dur'][self.trial]
         self.trial_dur = self.target_file['trial_dur'][self.trial]
-        self.start_time = self.target_file['start_time'][self.trial]
-        
+        self.start_time = self.target_file['start_time'][self.trial]     
     
     def _show_story(self):
         # display story for fixed time    
-        self.story_start = self.get_current_time()                  
+        self.story_start = self.get_current_trial_time()                  
         stim = visual.TextStim(self.window, text=self.story, alignHoriz='center', wrapWidth=20, pos=(0.0,0.0), color=(-1,-1,-1), units='deg')
         stim.text = stim.text  # per PsychoPy documentation, this should reduce timing delays in displaying text
         stim.draw()
@@ -969,7 +967,7 @@ class TheoryOfMind(Task):
             self._get_trial_info()
 
             # get current time (self.t0)
-            self.t0 = self.get_current_time()
+            self.t0 = self.get_current_trial_time()
 
             # show the fixation for the duration of iti
             # wait here till the startTime 
@@ -983,7 +981,7 @@ class TheoryOfMind(Task):
 
             # 2. display fixation for the duration of the iti
             ## 2.1 get the current time
-            t_story_end = self.get_current_time()
+            t_story_end = self.get_current_trial_time()
             ## 2.2 get the iti duration
             self.screen.fixation_cross()
             self.show_fixation(t_story_end, self.iti_dur)
@@ -1002,7 +1000,7 @@ class TheoryOfMind(Task):
 
             self.trial_response = self.check_trial_response(wait_time = wait_time, 
                                                             trial_index = self.trial, 
-                                                            start_time = self.get_current_time(), 
+                                                            start_time = self.get_current_trial_time(), 
                                                             start_time_rt = self.t2)
             ## 3.4 update response
             self.update_trial_response()
@@ -1015,13 +1013,14 @@ class TheoryOfMind(Task):
             
             # 5 show fixation for the duration of the iti
             ## 5.1 get current time
-            t_start_iti = self.get_current_time()
+            t_start_iti = self.get_current_trial_time()
             self.show_fixation(t_start_iti, self.iti_dur)
 
+            # 6.
             self.screen_quit()
 
         # get the response dataframe
-        rDf = self.get_response_df(all_trial_response=self.all_trial_response)
+        rDf = self.get_task_response(all_trial_response=self.all_trial_response)
 
         return rDf
 
@@ -1042,22 +1041,36 @@ class FingerSequence(Task):
             'right':{'h':'1', 'j':'2', 'k':'3', 'l':'4'},
             'left' :{'a':'1', 's':'2', 'd':'3', 'f':'4'}
         }
-            
+
     def _get_trial_info(self):
         """
         get the string(text) representing the fingers that are to be pressed from the target file
         in the target file, the field called sequence must contain a string with spaces between the keys
         """
+        super().get_trial_info(self.trial)
         self.sequence_text = str(self.target_file['sequence'][self.trial])
         self.announce_time = self.target_file['announce_time'][self.trial]
-        self.trial_dur = self.target_file['trial_dur'][self.trial] # self.announce_time + time dedicated to collect responses (does not include self.iti_dur)
-        self.start_time = self.target_file['start_time'][self.trial]
-        self.iti_dur = self.target_file['iti_dur'][self.trial]
-        self.hand = self.target_file['hand'][self.trial]
         
         # create a list of digits that are to be pressed
         self.digits_seq = self.sequence_text.split(" ")
     
+    def display_instructions(self): # overriding the display instruction from the parent class
+        # first use get_response_fingerMap to get the mapping between keys and finger names
+        ## a dictionary called self.response_fingerMap is created!
+        hand = self.target_file['hand'][0]
+        self.response_fingerMap = self.get_response_finger_map()
+
+        mapStr   = [f"press {item} with {self.response_fingerMap[item]}\n" for item in self.key_hand_dict[hand]['None']]
+        temp_str = ''.join(mapStr)
+
+        self.instruction_text = f"{self.task_name} task\n\nUse your {hand} hand:\n" + temp_str
+
+        # display the instruction text        
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
+        # instr.size = 0.8
+        instr_visual.draw()
+        self.window.flip()
+
     def _show_sequence(self):
         """
         displays the sequence text
@@ -1132,8 +1145,11 @@ class FingerSequence(Task):
         # get the trial response and checks if the responses were correct
         # this task is different from the most tasks in that the participant needs
         # to make multiple responses! 
-        self.correct_key_list = []
-        self.correct_key_list = self.get_correct_key(self.trial) # correct keys that are to be pressed
+        row = self.target_file.iloc[trial_index] # the row of target dataframe corresponding to the current trial
+        # get the list of keys that are to be pressed
+        #** making sure that the trial_type is converted to str and it's not boolean
+        self.correct_key_list = self.key_hand_dict[row['hand']][str(row['trial_type'])]
+        self.correct_response = False
         self.response_made = False
         self.correct_response = False
         self.rt = 0
@@ -1189,7 +1205,7 @@ class FingerSequence(Task):
             self._get_trial_info()
 
             # get current time (self.t0)
-            self.t0 = self.get_current_time()
+            self.t0 = self.get_current_trial_time()
 
             # show the fixation for the duration of iti
             self.show_fixation(self.t0, self.start_time - self.t0)
@@ -1223,14 +1239,14 @@ class FingerSequence(Task):
                 self.screen.fixation_cross()
 
             # show the fixation cross for the duration of iti
-            t_start_iti = self.get_current_time()
+            t_start_iti = self.get_current_trial_time()
             self.show_fixation(t_start_iti, self.iti_dur)
 
-            # option to quit screen
+            # 6.
             self.screen_quit()
 
         # get the response dataframe
-        rDf = self.get_response_df(all_trial_response=self.all_trial_response)
+        rDf = self.get_task_response(all_trial_response=self.all_trial_response)
 
         return rDf
 
@@ -1257,21 +1273,20 @@ class SternbergOrder(Task):
         self.feedback_type = 'acc' # reaction
         self.name          = 'sternberg_order'
     
-    def _get_trial_info(self):
+    def _get_trial_info(self, trial_index):
         # get trial info from the target file
-        self.stim = self.target_file['stim'][self.trial]
-        self.digits = self.stim.split()
-        self.start_time = self.target_file['start_time'][self.trial]
+        super().get_trial_info(self.trial)
+        self.stim      = self.target_file['stim'][self.trial]
+        self.digits    = self.stim.split()
         self.digit_dur = self.target_file['digit_dur'][self.trial] # digit will stay on the screen for digit_dur sec
         self.delay_dur = self.target_file['delay_dur'][self.trial] # a delay period between memory set and probe set
-        self.prob = self.target_file['prob_stim'][self.trial] # stimuli that will be shown during the probe (this might change in the target file)
-        self.prob_dur = self.target_file['prob_dur'][self.trial] # probe will stay on the screen for prob_dur sec
-        self.iti_dur = self.target_file['iti_dur'][self.trial] # iti duration
+        self.prob      = self.target_file['prob_stim'][self.trial] # stimuli that will be shown during the probe (this might change in the target file)
+        self.prob_dur  = self.target_file['prob_dur'][self.trial] # probe will stay on the screen for prob_dur sec
 
     def _show_digits(self):
         # display digit for fixed time (self.digit_dur)
         for digit in self.digits:   
-            self.digit_start = self.get_current_time()                     
+            self.digit_start = self.get_current_trial_time()                     
             stim = visual.TextStim(self.window, text=digit, pos=(0.0,0.0), color=(-1,-1,-1), units='deg', height = 1.5)
             stim.draw()
             self.window.flip()
@@ -1287,7 +1302,7 @@ class SternbergOrder(Task):
 
     def _show_prob(self):
         # display the prob on the screen (the probe comes after a delay period)
-        self.prob_start = self.get_current_time()
+        self.prob_start = self.get_current_trial_time()
         # get the prob digits
         self.prob_dig = self.prob.split(" ")
 
@@ -1320,10 +1335,10 @@ class SternbergOrder(Task):
         for self.trial in self.target_file.index: 
 
             # get stims
-            self._get_trial_info()
+            self._get_trial_info(self.trial)
 
             # get current time (self.t0)
-            self.t0 = self.get_current_time()
+            self.t0 = self.get_current_trial_time()
 
             # show the fixation for the duration of iti
             # wait here till the startTime 
@@ -1337,7 +1352,7 @@ class SternbergOrder(Task):
 
             # 2. display fixation for the duration of the delay
             ## 2.1 get the current time
-            t_digit_end = self.get_current_time()
+            t_digit_end = self.get_current_trial_time()
             ## 2.2 get the delay duration
             self.screen.fixation_cross()
             self.show_fixation(t_digit_end, self.delay_dur)
@@ -1354,7 +1369,7 @@ class SternbergOrder(Task):
 
             self.trial_response = self.check_trial_response(wait_time = wait_time, 
                                                             trial_index = self.trial, 
-                                                            start_time = self.get_current_time(), 
+                                                            start_time = self.get_current_trial_time(), 
                                                             start_time_rt = self.t2)
             ## 3.4 update response
             self.update_trial_response()
@@ -1367,13 +1382,14 @@ class SternbergOrder(Task):
             
             # 5 show fixation for the duration of the iti
             ## 5.1 get current time
-            t_start_iti = self.get_current_time()
+            t_start_iti = self.get_current_trial_time()
             self.show_fixation(t_start_iti, self.iti_dur)
 
+            # 6. 
             self.screen_quit()
 
         # get the response dataframe
-        rDf = self.get_response_df(all_trial_response=self.all_trial_response)
+        rDf = self.get_task_response(all_trial_response=self.all_trial_response)
 
         return rDf
 
@@ -1391,15 +1407,11 @@ class VisuospatialOrder(Task):
 
     def _get_trial_info(self):
 
+        super().get_trial_info(self.trial)
         self.trial_type             = self.target_file['trial_type'][self.trial]
-        self.trial_dur              = self.target_file['trial_dur'][self.trial]
-        self.iti_dur                = self.target_file['iti_dur'][self.trial]
         self.delay_dur              = self.target_file['delay_dur'][self.trial]
         self.dot_dur                = self.target_file['dot_dur'][self.trial]
         self.prob_dur               = self.target_file['prob_dur'][self.trial]
-        self.hand                   = self.target_file['hand'][self.trial]
-        self.start_time             = self.target_file['start_time'][self.trial]
-        self.end_time               = self.target_file['end_time'][self.trial]
         self.circle_radius          = self.target_file['circle_radius'][self.trial]
         self.xys_stim               = self.target_file['xys_stim'][self.trial]
         self.xys_prob               = self.target_file['xys_prob'][self.trial]
@@ -1432,7 +1444,7 @@ class VisuospatialOrder(Task):
 
             dot_stim.draw()
             self.window.flip()
-            self.dot_start = self.get_current_time()                     
+            self.dot_start = self.get_current_trial_time()                     
             # each word will remain on the screen for a certain amount of time (self.stem_word_dur)
             if self.ttl_flag: # wait for ttl pulse
                 while ttl.clock.getTime()-self.dot_start <= self.dot_dur:
@@ -1443,7 +1455,7 @@ class VisuospatialOrder(Task):
 
     def _show_prob(self):
         # display the prob on the screen (the probe comes after a delay period)
-        self.prob_start = self.get_current_time()
+        self.prob_start = self.get_current_trial_time()
 
         # display a circle 
         # circle = visual.Circle(win=self.window, units='deg', radius=self.circle_radius, fillColor=[0, 0, 0], 
@@ -1483,7 +1495,7 @@ class VisuospatialOrder(Task):
             self._get_trial_info()
 
             # get current time (self.t0)
-            self.t0 = self.get_current_time()
+            self.t0 = self.get_current_trial_time()
 
             # show the fixation for the duration of iti
             # wait here till the startTime 
@@ -1497,7 +1509,7 @@ class VisuospatialOrder(Task):
 
             # 2. display fixation for the duration of the delay
             ## 2.1 get the current time
-            t_stim_end = self.get_current_time()
+            t_stim_end = self.get_current_trial_time()
             ## 2.2 get the delay duration
             self.screen.fixation_cross()
             self.show_fixation(t_stim_end, self.delay_dur)
@@ -1514,7 +1526,7 @@ class VisuospatialOrder(Task):
 
             self.trial_response = self.check_trial_response(wait_time = wait_time, 
                                                             trial_index = self.trial, 
-                                                            start_time = self.get_current_time(), 
+                                                            start_time = self.get_current_trial_time(), 
                                                             start_time_rt = self.t2)
             ## 3.4 update response
             self.update_trial_response()
@@ -1527,13 +1539,14 @@ class VisuospatialOrder(Task):
             
             # 5 show fixation for the duration of the iti
             ## 5.1 get current time
-            t_start_iti = self.get_current_time()
+            t_start_iti = self.get_current_trial_time()
             self.show_fixation(t_start_iti, self.iti_dur)
 
+            # 6.
             self.screen_quit()
 
         # get the response dataframe
-        rDf = self.get_response_df(all_trial_response=self.all_trial_response)
+        rDf = self.get_task_response(all_trial_response=self.all_trial_response)
 
         return rDf
 
@@ -1551,15 +1564,12 @@ class VisuospatialOrderV2(Task):
 
     def _get_trial_info(self):
 
+        super().get_trial_info(self.trial)
+
         self.trial_type             = self.target_file['trial_type'][self.trial]
-        self.trial_dur              = self.target_file['trial_dur'][self.trial]
-        self.iti_dur                = self.target_file['iti_dur'][self.trial]
         self.delay_dur              = self.target_file['delay_dur'][self.trial]
         self.dot_dur                = self.target_file['dot_dur'][self.trial]
         self.prob_dur               = self.target_file['prob_dur'][self.trial]
-        self.hand                   = self.target_file['hand'][self.trial]
-        self.start_time             = self.target_file['start_time'][self.trial]
-        self.end_time               = self.target_file['end_time'][self.trial]
         self.circle_radius          = self.target_file['circle_radius'][self.trial]
         self.xys_stim               = self.target_file['xys_stim'][self.trial]
         self.xys_prob               = self.target_file['xys_prob'][self.trial]
@@ -1595,7 +1605,7 @@ class VisuospatialOrderV2(Task):
 
                 dot_stim.draw()
                 self.window.flip()
-                # self.dot_start = self.get_current_time()                     
+                # self.dot_start = self.get_current_trial_time()                     
             # # each word will remain on the screen for a certain amount of time (self.stem_word_dur)
             # if self.ttl_flag: # wait for ttl pulse
             #     while ttl.clock.getTime()-self.dot_start <= 0.001:
@@ -1607,7 +1617,7 @@ class VisuospatialOrderV2(Task):
 
     def _show_prob(self):
         # display the prob on the screen (the probe comes after a delay period)
-        self.prob_start = self.get_current_time()
+        self.prob_start = self.get_current_trial_time()
 
         dot_first = visual.Circle(win=self.window, units='deg', radius=0.3, fillColor=[-1,-1,-1], 
                                    lineColor=[-1, -1, -1], edges = 128, lineWidth = 5, pos = self.xys_prob[0]) 
@@ -1639,7 +1649,7 @@ class VisuospatialOrderV2(Task):
             self._get_trial_info()
 
             # get current time (self.t0)
-            self.t0 = self.get_current_time()
+            self.t0 = self.get_current_trial_time()
 
             # show the fixation for the duration of iti
             # wait here till the startTime 
@@ -1653,7 +1663,7 @@ class VisuospatialOrderV2(Task):
 
             # 2. display fixation for the duration of the delay
             ## 2.1 get the current time
-            t_stim_end = self.get_current_time()
+            t_stim_end = self.get_current_trial_time()
             ## 2.2 get the delay duration
             self.screen.fixation_cross()
             self.show_fixation(t_stim_end, self.delay_dur)
@@ -1670,7 +1680,7 @@ class VisuospatialOrderV2(Task):
 
             self.trial_response = self.check_trial_response(wait_time = wait_time, 
                                                             trial_index = self.trial, 
-                                                            start_time = self.get_current_time(), 
+                                                            start_time = self.get_current_trial_time(), 
                                                             start_time_rt = self.t2)
             ## 3.4 update response
             self.update_trial_response()
@@ -1683,13 +1693,14 @@ class VisuospatialOrderV2(Task):
             
             # 5 show fixation for the duration of the iti
             ## 5.1 get current time
-            t_start_iti = self.get_current_time()
+            t_start_iti = self.get_current_trial_time()
             self.show_fixation(t_start_iti, self.iti_dur)
 
+            # 6. 
             self.screen_quit()
 
         # get the response dataframe
-        rDf = self.get_response_df(all_trial_response=self.all_trial_response)
+        rDf = self.get_task_response(all_trial_response=self.all_trial_response)
 
         return rDf
 
@@ -1704,15 +1715,19 @@ class FlexionExtension(Task):
 
     def _get_trial_info(self):
         # reads info from the target file
+        super().get_trial_info(self.trial)
         self.stim = self.target_file['stim'][self.trial]
         self.stim_dur = self.target_file['stim_dur'][self.trial]
-        self.trial_dur = self.target_file['trial_dur'][self.trial]
-        self.iti_dur = self.target_file['iti_dur'][self.trial]
-        self.start_time = self.target_file['start_time'][self.trial]
         self.trial_type = self.target_file['trial_type'][self.trial]
         self.display_trial_feedback = self.target_file['display_trial_feedback'][self.trial]
         # self.foot = self.target_file['foot'][self.trial]
-        
+
+    def display_instructions(self): # overriding the display instruction from the parent class
+        self.instruction_text = f"{self.task_name} task \n\n flex and extend your right and left toes"   
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
+        instr_visual.draw()
+        self.window.flip() 
+    
     def _show_stim(self):
         # displays the instruction:
         # either flexion or extension appears
@@ -1723,7 +1738,7 @@ class FlexionExtension(Task):
 
 
         for act in self.stim_act:
-            self.act_start = self.get_current_time()  
+            self.act_start = self.get_current_trial_time()  
             # stim = visual.TextStim(self.window, text = self.foot + "\n "+ act, pos=(0.0,0.0), color=(-1,-1,-1), units='deg', height = 1.5)
             stim = visual.TextStim(self.window, text = act, pos=(0.0,0.0), color=(-1,-1,-1), units='deg', height = 1.5)
             stim.draw()
@@ -1751,7 +1766,7 @@ class FlexionExtension(Task):
             self._get_trial_info()
 
             # get current time (self.t0)
-            self.t0 = self.get_current_time()
+            self.t0 = self.get_current_trial_time()
 
             # show the fixation for the duration of iti
             # wait here till the startTime 
@@ -1774,7 +1789,7 @@ class FlexionExtension(Task):
             
             # 5 show fixation for the duration of the iti
             ## 5.1 get current time
-            t_start_iti = self.get_current_time()
+            t_start_iti = self.get_current_trial_time()
             self.show_fixation(t_start_iti, self.iti_dur)
 
             # if self.ttl_flag:
@@ -1788,11 +1803,11 @@ class FlexionExtension(Task):
             self.trial_response = {}
             self.update_trial_response()
 
-            # option to quit screen
+            # 6.
             self.screen_quit()
 
         # get the response dataframe
-        rDf = self.get_response_df(all_trial_response=self.all_trial_response)
+        rDf = self.get_task_response(all_trial_response=self.all_trial_response)
 
         return rDf
 
@@ -1808,16 +1823,21 @@ class VerbGeneration(Task):
     
     def _get_trial_info(self):
         # get stim (i.e. story)
+        super().get_trial_info(self.trial)
         self.noun = self.target_file['word'][self.trial]
         self.noun = self.noun.strip()
-        self.iti_dur = self.target_file['iti_dur'][self.trial]
-        self.trial_dur = self.target_file['trial_dur'][self.trial]
         self.start_time = self.target_file['start_time'][self.trial]
         
-    
+    def display_instructions(self): # overriding the display instruction from the parent class
+
+        self.instruction_text = f"{self.task_name} task \n\n Silently read the words presented.  \n\n When GENERATE is shown, silently think of verbs that go with the words."
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
+        instr_visual.draw()
+        self.window.flip()
+
     def _show_stim(self):
         # display word for fixed time    
-        self.word_start = self.get_current_time()                  
+        self.word_start = self.get_current_trial_time()                  
         stim = visual.TextStim(self.window, text=self.noun, pos=(0.0,0.0), color=(-1,-1,-1), units='deg')
         stim.text = stim.text  # per PsychoPy documentation, this should reduce timing delays in displaying text
         stim.draw()
@@ -1833,7 +1853,7 @@ class VerbGeneration(Task):
 
     def _show_instruct_read(self):
         # display instruction for fixed time
-        self.instruct_read_start = self.get_current_time()                        
+        self.instruct_read_start = self.get_current_trial_time()                        
         stim = visual.TextStim(self.window, text='READ', pos=(0.0,0.0), color=(-1,-1,-1), units='deg')
         stim.text = stim.text  # per PsychoPy documentation, this should reduce timing delays in displaying text
         stim.draw()
@@ -1849,7 +1869,7 @@ class VerbGeneration(Task):
 
     def _show_instruct_generate(self):
         # display instruction for fixed time
-        self.instruct_generate_start = self.get_current_time()                       
+        self.instruct_generate_start = self.get_current_trial_time()                       
         stim = visual.TextStim(self.window, text='GENERATE', pos=(0.0,0.0), color=(-1,-1,-1), units='deg')
         stim.text = stim.text  # per PsychoPy documentation, this should reduce timing delays in displaying text
         stim.draw()
@@ -1875,7 +1895,7 @@ class VerbGeneration(Task):
             self._get_trial_info()
 
             # get current time (self.t0)
-            self.t0 = self.get_current_time()
+            self.t0 = self.get_current_trial_time()
 
             # show the fixation for the duration of iti
             # wait here till the startTime 
@@ -1902,13 +1922,14 @@ class VerbGeneration(Task):
             
             # 5 show fixation for the duration of the iti
             ## 5.1 get current time
-            t_start_iti = self.get_current_time()
+            t_start_iti = self.get_current_trial_time()
             self.show_fixation(t_start_iti, self.iti_dur)
 
+            # 6.
             self.screen_quit()
 
         # get the response dataframe
-        rDf = self.get_response_df(all_trial_response=self.all_trial_response)
+        rDf = self.get_task_response(all_trial_response=self.all_trial_response)
 
         return rDf
 
@@ -1928,6 +1949,12 @@ class RomanceMovie(Task):
         self.trial_dur = self.target_file['trial_dur'][self.trial]
         self.start_time = self.target_file['start_time'][self.trial]
         self.path_to_video = os.path.join(consts.stim_dir, self.study_name, self.task_name, 'clips', video_file)
+    
+    def display_instructions(self): # overriding the display instruction from the parent class
+        self.instruction_text = f"{self.task_name} task \n\n Please keep your head still while watching the movie clip."
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
+        instr_visual.draw()
+        self.window.flip() 
     
     def _show_stim(self):
         mov = visual.MovieStim3(self.window, self.path_to_video, flipVert=False, flipHoriz=False, loop=False)
@@ -1968,7 +1995,7 @@ class RomanceMovie(Task):
             self._get_trial_info()
 
             # get current time (self.t0)
-            self.t0 = self.get_current_time()
+            self.t0 = self.get_current_trial_time()
 
             # show the fixation for the duration of iti
             # wait here till the startTime 
@@ -1991,13 +2018,14 @@ class RomanceMovie(Task):
             
             # 5 show fixation for the duration of the iti
             ## 5.1 get current time
-            t_start_iti = self.get_current_time()
+            t_start_iti = self.get_current_trial_time()
             self.show_fixation(t_start_iti, self.iti_dur)
 
+            # 6.
             self.screen_quit()
 
         # get the response dataframe
-        rDf = self.get_response_df(all_trial_response=self.all_trial_response)
+        rDf = self.get_task_response(all_trial_response=self.all_trial_response)
 
         return rDf
 
@@ -2019,6 +2047,13 @@ class ActionObservationKnots(Task):
         self.start_time = self.target_file['start_time'][self.trial]
         self.path_to_video_action = os.path.join(consts.stim_dir, self.study_name, self.task_name, 'clips', video_file_action)
         self.path_to_video_control = os.path.join(consts.stim_dir, self.study_name, self.task_name, 'clips', video_file_control)
+    
+    def display_instructions(self): # overriding the display instruction from the parent class
+
+        self.instruction_text = f"{self.task_name} task \n\n Keep your head still while watching to two clips. \n\n Try and remember the knot shown."
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
+        instr_visual.draw()
+        self.window.flip() 
     
     def _show_stim_action(self):
         mov = visual.MovieStim3(self.window, self.path_to_video_action, flipVert=False, flipHoriz=False, loop=False)
@@ -2086,7 +2121,7 @@ class ActionObservationKnots(Task):
             self._get_trial_info()
 
             # get current time (self.t0)
-            self.t0 = self.get_current_time()
+            self.t0 = self.get_current_trial_time()
 
             # show the fixation for the duration of iti
             # wait here till the startTime 
@@ -2103,7 +2138,7 @@ class ActionObservationKnots(Task):
 
             # 2. display fixation for the duration of the iti
             ## 2.1 get the current time
-            t_action_end = self.get_current_time()
+            t_action_end = self.get_current_trial_time()
             ## 2.2 get the iti duration
             self.screen.fixation_cross()
             self.show_fixation(t_action_end, self.iti_dur)
@@ -2123,13 +2158,14 @@ class ActionObservationKnots(Task):
             
             # 5 show fixation for the duration of the iti
             ## 5.1 get current time
-            t_start_iti = self.get_current_time()
+            t_start_iti = self.get_current_trial_time()
             self.show_fixation(t_start_iti, self.iti_dur)
 
+            # 6.
             self.screen_quit()
 
         # get the response dataframe
-        rDf = self.get_response_df(all_trial_response=self.all_trial_response)
+        rDf = self.get_task_response(all_trial_response=self.all_trial_response)
 
         return rDf
 
@@ -2141,9 +2177,13 @@ class Rest(Task):
         super(Rest, self).__init__(screen, target_file, run_end, task_name, study_name, target_num, ttl_flag)
         self.feedback_type = 'none' # reaction
         self.name          = 'rest'
-
-    def instruction_text(self):
-        return None
+    
+    def display_instructions(self): # overriding the display instruction routine from the parent
+        self.instruction_text = None
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
+        # instr.size = 0.8
+        instr_visual.draw()
+        self.window.flip()
     
     def _show_stim(self):
         # show fixation cross
@@ -2151,7 +2191,7 @@ class Rest(Task):
 
     def run(self):
         # get current time (self.t0)
-        self.t0 = self.get_current_time()
+        self.t0 = self.get_current_trial_time()
 
         # loop over trials
         self.all_trial_response = [] # collect data
@@ -2184,11 +2224,11 @@ class Rest(Task):
             self.trial_response = {}
             self.update_trial_response()
 
-            # option to quit screen
+            # 6.
             self.screen_quit()
 
         # get the response dataframe
-        rDf = self.get_response_df(all_trial_response=self.all_trial_response)
+        rDf = self.get_task_response(all_trial_response=self.all_trial_response)
 
         return rDf
 
