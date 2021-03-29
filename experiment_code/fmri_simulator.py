@@ -34,6 +34,8 @@ if not infoDlg.OK:
 win = visual.Window(fullscr=False)
 globalClock = core.Clock()
 
+
+
 # summary of run timing, for each key press:
 output = u'vol    onset key\n'
 for i in range(-1 * MR_settings['skip'], 0):
