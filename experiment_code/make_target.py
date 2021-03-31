@@ -79,11 +79,9 @@ class FingerSequence(Target):
                  iti_dur = 0.5, run_number = 1, display_trial_feedback = True, 
                  task_dur=30, tr = 1, seq_length = 6):
 
-        print(run_number)
         super(FingerSequence, self).__init__(study_name = study_name, task_name = 'finger_sequence', hand = hand, 
                                              trial_dur = trial_dur, iti_dur = iti_dur, run_number = run_number, 
                                              display_trial_feedback = display_trial_feedback, task_dur = task_dur, tr = tr)
-        self.task_name  = "finger_sequence"
         self.seq_length = seq_length
 
         # the sequences
@@ -95,7 +93,7 @@ class FingerSequence(Target):
         self.seq['simple'] = ['1 1 1 1 1 1', '2 2 2 2 2 2', 
                         '3 3 3 3 3 3', '4 4 4 4 4 4']
 
-    def _add_info(self):
+    def _add_task_info(self):
         super().make_trials() # first fill in the common fields
 
         n_complex = int(self.num_trials/2)
@@ -116,10 +114,71 @@ class FingerSequence(Target):
             self.target_dict['condition_type'] = np.concatenate((np.tile('simple', n_simple), np.tile('complex', n_simple)), axis=0)
             self.target_dict['sequence']       = np.concatenate((self.seq['simple'], self.seq['complex']), axis=0).T.flatten()
 
-
 class SternbergOrder(Target):
-    def __init__(self):
-        pass
+    def __init__(self, study_name = 'behavioral', hand = 'right', trial_dur = 6,
+                 iti_dur = 0.5, run_number = 1, display_trial_feedback = True, 
+                 task_dur=30, tr = 1, digit_dur = 0.75, delay_dur = 0.5, 
+                 prob_dur = 1, load = 6):
+        super(SternbergOrder, self).__init__(study_name = study_name, task_name = 'sternberg_order', hand = hand, 
+                                             trial_dur = trial_dur, iti_dur = iti_dur, run_number = run_number, 
+                                             display_trial_feedback = display_trial_feedback, task_dur = task_dur, tr = tr)
+
+        self.prob_dur  = prob_dur  # length of time the prob remains on the screen (also time length for response to be made)
+        self.digit_dur = digit_dur # length of time each digit remains on the screen
+        self.delay_dur = delay_dur # duration of the delay
+        self.load      = load      # memory load
+    
+    def _add_task_info(self):
+        super().make_trials() # first fill in the common fields
+
+        # randomly select trialTypes
+        self.target_dict['trial_type'] = np.random.choice([True, False], size = self.num_trials, replace=True)
+
+        self.target_dict['delay_dur'] = [self.delay_dur for i in range(self.num_trials)]
+        self.target_dict['digit_dur'] = [self.digit_dur for i in range(self.num_trials)]
+        self.target_dict['prob_dur']  = [self.prob_dur for i in range(self.num_trials)]
+
+        # generate random numbers betweem 1 and 9 
+        rand_nums = [np.random.choice(range(1, 10), size = 6, replace = False) for i in range(self.num_trials)]
+        ## convert the random numbers to str and concatenate them
+        stim_str = []
+        for nums in rand_nums:
+            rand_str = ""
+            for x in nums: rand_str += str(x) + " "
+            stim_str.append(rand_str)
+
+        self.target_dict['stim'] = stim_str
+
+        # determine the prob stim for each trial based on trial type
+        prob_stim = []
+        for t in range(self.num_trials):
+            # get the trial_type for the current trial
+            current_tt = self.target_dict['trial_type'][t]
+
+            # get the current stims
+            current_stim = self.target_dict['stim'][t]
+            current_stim_digits = current_stim.split()
+
+            # pick two random digits from current stimulus
+            probs_str = np.random.choice(current_stim_digits, size = 2, replace = False)
+            # determine the order
+            prob_order = [current_stim_digits.index(x) for x in probs_str]
+
+            if ~ current_tt: # if it's False:
+                # the trial is false so the order will be changed
+                ## find the one that comes last and put it as the first digit in the prob
+                first_prob_digit = current_stim_digits[max(prob_order)]
+                last_prob_digit  = current_stim_digits[min(prob_order)]
+            else: # if it's True
+                ## find the one that comes first and put it as the first digit in the prob
+                first_prob_digit = current_stim_digits[min(prob_order)]
+                last_prob_digit  = current_stim_digits[max(prob_order)]
+
+            # generate the prob stim and append it 
+            prob_stim.append(first_prob_digit + " " + last_prob_digit)
+
+        self.target_dict['prob_stim'] = prob_stim
+
 
 class FlexionExtension(Target):
     def __init__(self):
@@ -188,8 +247,8 @@ TASK_MAP = {
     }
 
 
-FS = FingerSequence()
-FS._add_info()
+FS = SternbergOrder()
+FS._add_task_info()
 FS.save_target_file()
 
 
