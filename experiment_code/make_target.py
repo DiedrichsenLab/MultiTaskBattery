@@ -1,5 +1,6 @@
 # Create target file for different tasks
 # @ Ladan Shahshahani  - Maedbh King March 30 2021
+from numpy.core.defchararray import startswith
 import pandas as pd
 import numpy as np
 import os
@@ -14,7 +15,8 @@ import constants as consts
 class Target():
 
     def __init__(self, study_name, task_name, hand, trial_dur, iti_dur,
-                 run_number, display_trial_feedback = True, task_dur = 30, tr = 1):
+                 run_number, display_trial_feedback = True, task_dur = 30, 
+                 tr = 1, random_seed = True):
 
         """
         variables and information shared across all tasks
@@ -29,7 +31,8 @@ class Target():
         self.tr                     = tr                     # the TR of the scanner
         self.run_number             = run_number             # the number of run
         self.replace                = False
-        self.target_dict            = {}                     # a dicttionary that will be saved as target file for the task
+        self.random_seed            = random_seed            # if set to true, random.seed will set a seed for random operations (for replicability)
+        self.target_dataframe       = pd.DataFrame()         # an empty dataframe
 
         # file naming stuff
         self.target_filename = f"{self.task_name}_{self.task_dur}sec_{self.run_number:02d}"
@@ -37,6 +40,11 @@ class Target():
         consts.dircheck(self.target_dir)
 
         self.target_filedir = self.target_dir / f"{self.target_filename}.csv"
+
+        # set the random seed to be able to reproduce?
+        if self.random_seed:
+            # run number is used as the seed
+            random.seed(a = self.run_number, version=2)
          
     def make_trials(self):
         """
@@ -45,11 +53,12 @@ class Target():
         self.num_trials = int(self.task_dur/(self.trial_dur + self.iti_dur)) # total number of trials
         # self.target_dict['start_time'] = [(self.trial_dur + self.iti_dur)*trial_number for trial_number in range(self.num_trials)]
         # self.target_dict['end_time']   = [(trial_number+1)*self.trial_dur + trial_number*self.iti_dur for trial_number in range(self.num_trials)]
-        self.target_dict['hand']       = np.tile(self.hand, self.num_trials).T.flatten() 
-        self.target_dict['trial_dur']  = [self.trial_dur for trial_number in range(self.num_trials)]
-        self.target_dict['iti_dur']    = [self.iti_dur for trial_number in range(self.num_trials)]
-        self.target_dict['run_number'] = [self.run_number for trial_number in range(self.num_trials)]
-        self.target_dict['display_trial_feedback'] = [self.display_trial_feedback for trial_number in range(self.num_trials)]
+        self.target_dataframe['hand']       = np.tile(self.hand, self.num_trials).T.flatten() 
+        self.target_dataframe['trial_dur']  = [self.trial_dur for trial_number in range(self.num_trials)]
+        self.target_dataframe['iti_dur']    = [self.iti_dur for trial_number in range(self.num_trials)]
+        self.target_dataframe['run_number'] = [self.run_number for trial_number in range(self.num_trials)]
+
+        self.target_dataframe['display_trial_feedback'] = [self.display_trial_feedback for trial_number in range(self.num_trials)]
 
     def make_trials_time(self, dataframe):
         """
@@ -61,13 +70,17 @@ class Target():
 
         return dataframe
     
-    def balance_design(self, dataframe, random_state):
+    def shuffle_rows(self, dataframe):
         """
-        balancing design
+        randomly shuffles rows of the dataframe
         """
-        # groupbyObject.sample returns a random sample of items from each group.
-        # dataframe = dataframe.groupby([*self.trials_info], as_index=False).apply(lambda x: x.sample(n=int(self.num_stims), random_state=random_state, replace=self.replace)).reset_index(drop=True)
-        dataframe = dataframe.sample(frac = 1, random_state=random_state)
+        # randomly shuffle rows of the dataframe
+        # Method 1: doesn't seem to be shuffling correctly!
+        # dataframe = dataframe.sample(frac = 1, random_state=random_state, axis = 0).reset_index(drop=True)
+        # Method 2: 
+        indx = np.arange(len(dataframe.index))
+        np.random.shuffle(indx)
+        dataframe = (dataframe.iloc[indx]).reset_index(drop = True)
         return dataframe
 
     def save_target_file(self, dataframe):
@@ -138,7 +151,8 @@ class FingerSequence(Target):
         np.random.shuffle(self.seq['complex'])
         np.random.shuffle(self.seq['simple'])
 
-        self.target_dict['trial_type'] = ['None' for trial_number in range(self.num_trials)]
+        # self.target_dict['trial_type'] = ['None' for trial_number in range(self.num_trials)]
+        self.target_dataframe['trial_type'] = ['None' for trial_number in range(self.num_trials)]
 
         # fill in fields ?????????????????????????
         # ## randomize order of complex and simple conditions across runs
@@ -149,14 +163,12 @@ class FingerSequence(Target):
         #     self.target_dict['condition_name'] = np.concatenate((np.tile('simple', n_simple), np.tile('complex', n_simple)), axis=0)
         #     self.target_dict['sequence']       = np.concatenate((self.seq['simple'], self.seq['complex']), axis=0).T.flatten()
 
-        self.target_dict['condition_name'] = np.concatenate((np.tile('complex', n_complex), np.tile('simple', n_complex)), axis=0)
-        self.target_dict['sequence']       = np.concatenate((self.seq['complex'], self.seq['simple']), axis=0).T.flatten()
-        self.target_dict['feedback_type']  = [self.feedback_type for trial_number in range(self.num_trials)]
+        self.target_dataframe['condition_name'] = np.concatenate((np.tile('complex', n_complex), np.tile('simple', n_complex)), axis=0)
+        self.target_dataframe['sequence']       = np.concatenate((self.seq['complex'], self.seq['simple']), axis=0).T.flatten()
+        self.target_dataframe['feedback_type']  = [self.feedback_type for trial_number in range(self.num_trials)]
 
-        dataframe = pd.DataFrame(self.target_dict) # convert to dataframe
-
-        # randomly shuffle the rows of the dataframe
-        dataframe = dataframe.sample(frac = 1, random_state=random_state, axis = 0).reset_index(drop=True)
+        # randomly shuffle rows of the dataframe
+        dataframe = self.shuffle_rows(self.target_dataframe)
 
         return dataframe
     
@@ -186,15 +198,26 @@ class SternbergOrder(Target):
         self.delay_dur     = delay_dur # duration of the delay
         self.load          = load      # memory load
     
-    def _get_prob_stims(self):
+    def _get_stim_digits(self):
+
+        # generate random numbers betweem 1 and 9 
+        rand_nums = [np.random.choice(range(1, 10), size = 6, replace = False) for i in range(self.num_trials)]
+        ## convert the random numbers to str and concatenate them
+        self.stim_str = []
+        for nums in rand_nums:
+            rand_str = ""
+            for x in nums: rand_str += str(x) + " "
+            self.stim_str.append(rand_str)
+    
+    def _get_prob_digits(self):
         # determine the prob stim for each trial based on trial type
         self.prob_stim = []
         for trial in range(self.num_trials):
             # get the trial_type for the current trial
-            current_tt = self.target_dict['trial_type'][trial]
+            current_tt = self.target_dataframe['trial_type'].loc[trial]
 
             # get the current stims
-            current_stim = self.target_dict['stim'][trial]
+            current_stim = self.target_dataframe['stim'].loc[trial]
             current_stim_digits = current_stim.split()
 
             # pick two random digits from current stimulus
@@ -220,32 +243,23 @@ class SternbergOrder(Target):
 
         # randomly select trialTypes
         # self.target_dict['trial_type'] = np.random.choice([True, False], size = self.num_trials, replace=True)
-        self.target_dict['trial_type'] = (int(self.num_trials/len(self.trials_info['trial_type'])))*self.trials_info['trial_type']
+        self.target_dataframe['trial_type'] = (int(self.num_trials/len(self.trials_info['trial_type'])))*self.trials_info['trial_type']
 
-        self.target_dict['delay_dur'] = [self.delay_dur for i in range(self.num_trials)]
-        self.target_dict['digit_dur'] = [self.digit_dur for i in range(self.num_trials)]
-        self.target_dict['prob_dur']  = [self.prob_dur for i in range(self.num_trials)]
+        self.target_dataframe['delay_dur'] = [self.delay_dur for i in range(self.num_trials)]
+        self.target_dataframe['digit_dur'] = [self.digit_dur for i in range(self.num_trials)]
+        self.target_dataframe['prob_dur']  = [self.prob_dur for i in range(self.num_trials)]
 
-        # generate random numbers betweem 1 and 9 
-        rand_nums = [np.random.choice(range(1, 10), size = 6, replace = False) for i in range(self.num_trials)]
-        ## convert the random numbers to str and concatenate them
-        stim_str = []
-        for nums in rand_nums:
-            rand_str = ""
-            for x in nums: rand_str += str(x) + " "
-            stim_str.append(rand_str)
+        # get random digits as stimulus
+        self._get_stim_digits()
 
-        self.target_dict['stim'] = stim_str
+        self.target_dataframe['stim'] = self.stim_str
 
         # get the prob stimulus of trials
-        self._get_prob_stims()
+        self._get_prob_digits()
 
-        self.target_dict['prob_stim'] = self.prob_stim
-        dataframe = pd.DataFrame(self.target_dict) # convert to dataframe
-        # dataframe['trial_type'] = dataframe['trial_type'].sort_values().reset_index(drop=True)
-
-        # randomly shuffle rows of the dataframe
-        dataframe = dataframe.sample(frac = 1, random_state=random_state, axis = 0).reset_index(drop=True)
+        self.target_dataframe['prob_stim'] = self.prob_stim
+        
+        dataframe = self.shuffle_rows(self.target_dataframe)
 
         return dataframe
 
@@ -274,15 +288,13 @@ class FlexionExtension(Target):
     def _add_task_info(self, random_state):
         super().make_trials() # first fill in the common fields
 
-        self.target_dict['stim']       = ["flexion extension" for i in range(self.num_trials)]
-        self.target_dict['stim_dur']   = [self.stim_dur for i in range(self.num_trials)]
-        self.target_dict['trial_type'] = ['None' for i in range(self.num_trials)] # there are no true of false responses
-        self.target_dict['hand']       = ['None' for i in range(self.num_trials)] # hand is not used
+        self.target_dataframe['stim']       = ["flexion extension" for i in range(self.num_trials)]
+        self.target_dataframe['stim_dur']   = [self.stim_dur for i in range(self.num_trials)]
+        self.target_dataframe['trial_type'] = ['None' for i in range(self.num_trials)] # there are no true of false responses
+        self.target_dataframe['hand']       = ['None' for i in range(self.num_trials)] # hand is not used
 
-        dataframe = pd.DataFrame(self.target_dict) # convert to dataframe
-
-        # randomly shuffle the rows of the dataframe
-        dataframe = dataframe.sample(frac = 1, random_state=random_state, axis = 0).reset_index(drop=True)
+        # randomly shuffle rows of the dataframe
+        dataframe = self.shuffle_rows(self.target_dataframe)
 
         return dataframe
 
@@ -315,7 +327,7 @@ class VisuospatialOrder(Target):
                                                 display_trial_feedback = display_trial_feedback, task_dur = task_dur, tr = tr)
 
         
-        self.trials_info = {'condition_name':[], "trial_type":[True, False]}
+        self.trials_info = {'condition_name':[None], "trial_type":[True, False]}
         self.prob_dur     = prob_dur     # length of time the prob remains on the screen (also time length for response to be made)
         self.digit_dur    = dot_dur      # length of time each digit remains on the screen
         self.delay_dur    = delay_dur    # duration of the delay
@@ -323,7 +335,66 @@ class VisuospatialOrder(Target):
         self.width        = width        # width of the enclosing square (or can be circle)
         self.min_distance = min_distance # minimum distance between dots
 
-    def _add_task_info(self):
+    def _get_trial_stim_coords(self):
+        """
+        creates coordinates for dots to be used as stimulus
+        """
+        # generate random points
+        x = np.random.uniform(-self.width/2, self.width/2) 
+        y = np.random.uniform(-self.width/2, self.width/2)
+
+        # checks the distance between all the points to make sure they are at a minimum distance
+        counter = 2 # counter for the point
+        self.dot_xyz = []
+        self.dot_xyz.append([x, y])
+        while counter < self.load + 1:
+            # start generating the other points
+            ## generate another random point 
+            next_point = False
+            xi = np.random.uniform(-self.width/2, self.width/2) 
+            yi = np.random.uniform(-self.width/2, self.width/2)
+
+            # check the distance between this point and all the other points already in the list dot_xys
+            for point in self.dot_xyz:
+                # calculate the distance
+                distance = np.sqrt(((point[0] - xi)**2) + ((point[1] - yi)**2))
+                # print(distance)
+                
+                # if the distance is lower than a threshold, break the loop and generate another point
+                if distance < self.min_distance:
+                    next_point = True
+                    break
+                else:
+                    continue
+            # append the point to the list of dots only if its distance from 
+            # all the other points is larger than min_distance
+            if not next_point:
+                counter+=1
+                self.dot_xyz.append([xi, yi])
+
+    def _get_trial_prob_coords(self, trial_number):
+        """
+        create coordinates for the prob dots based on the trial type of the current trial
+        """
+
+        # randomly pick two of the dots for probe based on the trial type
+        # get the trial_type for the current trial
+        current_tt = self.target_dataframe['trial_type'].loc[trial_number]  
+
+        # pick two dots
+        rand_probs = np.random.choice(len(self.dot_xyz), size = 2, replace = False) 
+
+        if ~ current_tt: # False trial
+            # the trial is false so two wrong digits with wrong order can be generated
+            # sort the indices in descending order to make sure that their order is flipped
+            self.probs_idx = np.sort(rand_probs)[::-1]
+        else: # True trial
+            # sort the indices in ascending order to make sure that their order is conserved
+            self.probs_idx = np.sort(rand_probs)
+        
+        self.probs_xyz  = [self.dot_xyz[i] for i in self.probs_idx]  
+    
+    def _add_task_info(self, random_state):
         super().make_trials() # first fill in the common fields
 
         # ---------------------------------------------------------------
@@ -341,74 +412,45 @@ class VisuospatialOrder(Target):
         # self.target_dict['trial_type'] = trial_types
         # ----------------------------------------------------------------
         # or 2. 
-        self.target_dict['trial_type'] = np.random.choice([True, False], size = self.num_trials, replace=True)
+        # self.target_dict['trial_type'] = np.random.choice([True, False], size = self.num_trials, replace=True)
+        self.target_dataframe['trial_type'] = (int(self.num_trials/len(self.trials_info['trial_type'])))*self.trials_info['trial_type']
         # ------------------------------------------------------------------
 
-        self.target_dict['delay_dur'] = [self.delay_dur for i in range(self.num_trials)]
-        self.target_dict['dot_dur']   = [self.digit_dur for i in range(self.num_trials)]
-        self.target_dict['prob_dur']  = [self.prob_dur for i in range(self.num_trials)]
-        self.target_dict['width']     = [self.width for i in range(self.num_trials)]
+        self.target_dataframe['delay_dur'] = [self.delay_dur for i in range(self.num_trials)]
+        self.target_dataframe['dot_dur']   = [self.digit_dur for i in range(self.num_trials)]
+        self.target_dataframe['prob_dur']  = [self.prob_dur for i in range(self.num_trials)]
+        self.target_dataframe['width']     = [self.width for i in range(self.num_trials)]
 
         # creating empty lists for coordinates of dots
-        self.target_dict['xyz_stim'] = [] # for the stimulus
-        self.target_dict['xyz_prob'] = [] # for the probe
-
+        coords_stim = []
+        coords_prob = []
         # loop over trials and create coordinates of stim and prob
-        for t in range(self.num_trials):
-            # ------------------- Generate random coordinates -------------------------
-            # generate random points
-            x = np.random.uniform(-self.width/2, self.width/2) 
-            y = np.random.uniform(-self.width/2, self.width/2)
-
-            # checks the distance between all the points to make sure they are at a minimum distance
-            counter  = 2 # counter for the point
-            dot_xys = []
-            dot_xys.append([x, y])
-            while counter < self.load + 1:
-                # start generating the other points
-                ## generate another random point 
-                next_point = False
-                xi = np.random.uniform(-self.width/2, self.width/2) 
-                yi = np.random.uniform(-self.width/2, self.width/2)
-
-                # check the distance between this point and all the other points already in the list dot_xys
-                for point in dot_xys:
-                    # calculate the distance
-                    distance = np.sqrt(((point[0] - xi)**2) + ((point[1] - yi)**2))
-                    # print(distance)
-                    
-                    # if the distance is lower than a threshold, break the loop and generate another point
-                    if distance < self.min_distance:
-                        next_point = True
-                        break
-                    else:
-                        continue
-                # append the point to the list of dots only if its distance from 
-                # all the other points is larger than min_distance
-                if not next_point:
-                    counter+=1
-                    dot_xys.append([xi, yi])
-
-            self.target_dict['xyz_stim'].append(dot_xys) 
-
-            # randomly pick two of the dots for probe based on the trial type
-            # get the trial_type for the current trial
-            current_tt = self.target_dict['trial_type'][t]  
-
-            # pick two dots
-            rand_probs = np.random.choice(len(dot_xys), size = 2, replace = False) 
-
-            if ~ current_tt: # False trial
-                # the trial is false so two wrong digits with wrong order can be generated
-                # sort the indices in descending order to make sure that their order is flipped
-                probs_idx = np.sort(rand_probs)[::-1]
-            else: # True trial
-                # sort the indices in ascending order to make sure that their order is conserved
-                probs_idx = np.sort(rand_probs)
+        for trial_number in range(self.num_trials):
             
-            probs_xys  = [dot_xys[i] for i in probs_idx]   
+            # get coordinates for stimulus dot
+            self._get_trial_stim_coords()
+            coords_stim.append(self.dot_xyz)
 
-            self.target_dict['xys_prob'].append(probs_xys) 
+            # get coordinates for prob stimulus
+            self._get_trial_prob_coords(trial_number)
+            coords_prob.append(self.probs_xyz)
+
+        self.target_dataframe['xyz_stim'] = pd.Series(coords_stim)
+        self.target_dataframe['xyz_prob'] = pd.Series(coords_prob)
+        # randomly shuffle rows of the dataframe
+        dataframe = self.shuffle_rows(self.target_dataframe)
+
+        return dataframe
+
+    def _make_files(self):
+        """
+        makes target file and (if exists) related task info and  saves them
+        """
+
+        # save target file
+        self.df = self._add_task_info(random_state=self.run_number)
+        self.df = self.make_trials_time(self.df)
+        self.save_target_file(self.df)
 
 class VisualSearch(Target):
     def __init__(self, study_name = 'behavioral', hand = 'right', 
@@ -435,18 +477,17 @@ class VisualSearch(Target):
         conds       = [self.trials_info['condition_name'][key] for key in self.trials_info['condition_name'].keys()]
         conds_names = [key for key in self.trials_info['condition_name'].keys()]
         
-        self.target_dict['stim']            = (int(self.num_trials/len(conds)))*conds
-        self.target_dict['condition_name']  = (int(self.num_trials/len(conds_names)))*conds_names
-        self.target_dict['trial_type']      = (int(self.num_trials/len(self.trials_info['trial_type'])))*self.trials_info['trial_type']
-        self.target_dict['feedback_type']   = [self.feedback_type for trial_number in range(self.num_trials)]
+        self.target_dataframe['stim']            = (int(self.num_trials/len(conds)))*conds
+        self.target_dataframe['condition_name']  = (int(self.num_trials/len(conds_names)))*conds_names
+        self.target_dataframe['trial_type']      = (int(self.num_trials/len(self.trials_info['trial_type'])))*self.trials_info['trial_type']
+        self.target_dataframe['feedback_type']   = [self.feedback_type for trial_number in range(self.num_trials)]
         
 
-        dataframe = pd.DataFrame(self.target_dict) # convert to dataframe
         # dataframe['trial_type'] = dataframe['trial_type'].sort_values().reset_index(drop=True)
-        dataframe['stim']       = dataframe['stim'].astype(int) # convert stim to int 
+        self.target_dataframe['stim'] = self.target_dataframe['stim'].astype(int) # convert stim to int 
 
         # randomly shuffle rows of the dataframe
-        dataframe = dataframe.sample(frac = 1, random_state=random_state, axis = 0).reset_index(drop=True)
+        dataframe = self.shuffle_rows(self.target_dataframe)
 
         return dataframe
 
@@ -521,8 +562,105 @@ class VisualSearch(Target):
         self._save_visual_display(self.df)
 
 class SemanticPrediction(Target):
-    def __init__(self):
-        pass
+    def __init__(self, study_name = 'behavioral', hand = 'right', trial_dur = 6,
+                 iti_dur = 0.5, run_number = 1, display_trial_feedback = True, 
+                 task_dur=30, tr = 1, stem_word_dur = 0.5, last_word_dur = 1.5, frac = 0.3):
+        super(SemanticPrediction, self).__init__(study_name = study_name, task_name = 'semantic_prediction', hand = hand, 
+                                                 trial_dur = trial_dur, iti_dur = iti_dur, run_number = run_number, 
+                                                 display_trial_feedback = display_trial_feedback, task_dur = task_dur, tr = tr)
+
+        self.trials_info = {"condition_name": {"high cloze": "easy", "low cloze": "hard"},
+                            "CoRT_descript": ["strong non-CoRT", "ambiguous", "strong CoRT"]}
+
+        self.feedback_type = 'rt'
+        self.stem_word_dur = stem_word_dur  # length of time the prob remains on the screen (also time length for response to be made)
+        self.last_word_dur = last_word_dur  # length of time each digit remains on the screen
+        self.frac          = frac           # ??????
+
+    def _get_stim(self):
+        """
+        get stimulus dataframe
+        For this task, the target dataframe is created differently. 
+        No target_dict is created. Instead, a csv file with the stimulus sentence and related info is loaded and 
+        the rest of the columns are added to it.
+        """
+        # read in the stimulus csv file
+        stim_dir = os.path.join(consts.stim_dir, self.study_name, self.task_name)
+        stim_df  = pd.read_csv(os.path.join(stim_dir, 'sentence_validation.csv'))
+
+        # conds = [self.balance_blocks['condition_name'][key] for key in self.balance_blocks['condition_name'].keys()]  
+        conds   = list(self.trials_info['condition_name'].keys()) 
+        self.stim_df = stim_df.query(f'cloze_descript=={conds}')
+
+        # get full sentence:
+        sentence = self.stim_df['full_sentence']
+        # strip erroneous characters from sentences
+        self.stim_df['stim'] = sentence.str.replace('|', ' ')
+
+    def _balance_design(self, random_state):
+
+        # group the dataframe according to `balance_blocks`
+        self.stim_df = self.stim_df.groupby([*self.trials_info], as_index=False).apply(lambda x: x.sample(n=self.num_stims, random_state=random_state, replace=False)).reset_index(drop=True)
+
+        # ensure that only `num_trials` are sampled
+        num_stims = int(self.num_trials / len(self.trials_info['condition_name']))
+        self.stim_df = self.stim_df.groupby('condition_name', as_index=False).apply(lambda x: x.sample(n=num_stims, random_state=random_state, replace=False)).reset_index(drop=True)
+    
+    def _add_random_word(self, random_state, columns):
+        """ sample `frac_random` and add to `full_sentence`
+            Args: 
+                dataframe (pandas dataframe): dataframe
+            Returns: 
+                dataframe with modified `full_sentence` col
+        """
+        idx = self.stim_df.groupby(columns).apply(lambda x: x.sample(frac=self.frac, replace=False, random_state=random_state)).index
+        
+        sampidx = idx.get_level_values(len(columns)) # get third level
+        self.stim_df["trial_type"] = ~self.stim_df.index.isin(sampidx)
+        self.stim_df["last_word"]  = self.stim_df.apply(lambda x: x["random_word"] if not x["trial_type"] else x["target_word"], axis=1)
+
+        # shuffle the order of the trials
+        self.target_df = self.stim_df.apply(lambda x: x.sample(n=self.num_trials, random_state=random_state, replace=False)).reset_index(drop=True)
+    
+    def _add_task_info(self, random_state):
+        super().make_trials() # first fill in the common fields
+
+        # get `num_stims`
+        self.num_stims = int(self.num_trials / len(self.trials_info['condition_name']))
+
+        # get the full sentence for the stimulus
+        self._get_stim()
+
+        self.stim_df['condition_name']         = self.stim_df['cloze_descript'].apply(lambda x: self.trials_info['condition_name'][x])
+        self.stim_df['stem_word_dur']          = self.stem_word_dur
+        self.stim_df['last_word_dur']          = self.last_word_dur
+        self.stim_df['trial_dur_correct']      = (self.stim_df['word_count'] * self.stim_df['stem_word_dur']) + self.iti_dur + self.stim_df['last_word_dur']
+        self.stim_df['display_trial_feedback'] = self.display_trial_feedback
+        self.stim_df['replace_stimuli']        = self.replace
+        self.stim_df['feedback_type']          = self.feedback_type
+        
+        self.stim_df.drop({'full_sentence'}, inplace=True, axis=1)
+
+        # balance design
+        self._balance_design(random_state=random_state)
+
+        # add random word based on `self.frac`. target_dataframe is created after using this method
+        self._add_random_word(random_state=random_state, columns=['condition_name']) # 'CoRT_descript'
+
+        # randomly shuffle rows of the dataframe
+        dataframe = self.shuffle_rows(self.target_df)
+
+        return dataframe
+
+    def _make_files(self):
+        """
+        makes target file and (if exists) related task info and  saves them
+        """
+
+        # save target file
+        self.df = self._add_task_info(random_state=self.run_number)
+        self.df = self.make_trials_time(self.df)
+        self.save_target_file(self.df)
 
 class VerbGeneration(Target):
     pass
@@ -540,7 +678,74 @@ class Rest(Target):
     pass
 
 class NBack(Target):
-    pass
+    def __init__(self, study_name = 'behavioral', hand = 'right', trial_dur = 2,
+                 iti_dur = 0.5, run_number = 1, display_trial_feedback = True, 
+                 task_dur=30, tr = 1, n_back = 2, replace = False):
+        super(NBack, self).__init__(study_name = study_name, task_name = 'n_back', hand = hand, 
+                                                 trial_dur = trial_dur, iti_dur = iti_dur, run_number = run_number, 
+                                                 display_trial_feedback = display_trial_feedback, task_dur = task_dur, tr = tr)
+
+        self.feedback_type = 'rt'
+        self.n_back        = n_back
+        self.replace       = replace
+        self.trials_info   = {"condition_name": {"easy": "2_back-", "hard": "2_back+"}, 'trial_type': [True, False]}
+
+    def _get_stim(self):
+        """
+        get the stimulus file
+        """
+        # load in stimuli
+        stim_dir   = os.path.join(consts.stim_dir, self.study_name, self.task_name)
+        stim_files = [f for f in os.listdir(str(stim_dir)) if ((f.endswith('g')) and not(f.startswith('.')))]
+
+        # first two images are always random (and false)
+        # all other images are either match or not a match
+        stim_list = random.sample(stim_files, k=self.n_back)
+        for tt in self.target_dataframe['trial_type'][self.n_back:]: # loop over n+self.n_back
+            match_img     = stim_list[-self.n_back]
+            no_match_imgs = [stim for stim in stim_files if stim != match_img] # was match_img[0]
+            if tt == False: # not a match
+                # random.seed(self.random_state)
+                stim_list.append(random.sample(no_match_imgs, k=self.n_back-1))
+            else:           # match
+                stim_list.append(match_img)
+
+        self.target_dataframe["stim"] = [''.join(x) for x in stim_list]
+    
+    def _add_task_info(self, random_state):
+        super().make_trials() # first fill in the common fields
+
+        # get `num_stims`
+        self.num_stims = int(self.num_trials / len(self.trials_info['condition_name']))
+
+        self.target_dataframe['trial_type'] = self.num_stims*(True, False)
+        # self.target_dataframe = self.target_dataframe.sample(n=self.num_trials, random_state=self.random_state, replace=False).reset_index(drop=True) 
+        self.target_dataframe['trial_type'][:self.n_back] = False # first n+cond_type trials (depending on cond_type) have to be False
+
+        # make `n_back` and `condition_name` cols
+        conds = [self.trials_info['condition_name'][key] for key in self.trials_info['condition_name'].keys()]
+        self.target_dataframe['n_back'] = np.where(self.target_dataframe["trial_type"]==False, conds[0], conds[1])
+
+        # create a dictionary with inverse mapping between condition name and n-back 
+        inv_condition_map = dict((v, k) for k, v in self.trials_info['condition_name'].items())
+        self.target_dataframe['condition_name'] = self.target_dataframe['n_back'].apply(lambda x: inv_condition_map[x])
+
+        self.target_dataframe['display_trial_feedback'] = self.display_trial_feedback
+        self.target_dataframe['replace_stimuli']        = self.replace
+        self.target_dataframe['feedback_type']          = self.feedback_type
+
+        # get the stimulus based on trial_type
+        self._get_stim()
+
+        # randomly shuffle rows of the dataframe
+        dataframe = self.shuffle_rows(self.target_dataframe)
+
+        return dataframe
+    def _make_files(self):
+        # save target file
+        self.df = self._add_task_info(random_state=self.run_number)
+        self.df = self.make_trials_time(self.df)
+        self.save_target_file(self.df)
 
 class SocialPrediction(Target):
     pass
@@ -571,16 +776,24 @@ TASK_MAP = {
     }
 
 
-VS = VisualSearch()
-VS._make_files()
+# VS = VisualSearch()
+# VS._make_files()
 
-FS = FingerSequence()
-FS._make_files()
+# FS = FingerSequence()
+# FS._make_files()
 
-SO = SternbergOrder()
-SO._make_files()
+# SO = SternbergOrder()
+# SO._make_files()
 
-FE = FlexionExtension()
-FE._make_files()
+# FE = FlexionExtension()
+# FE._make_files()
 
+# VO = VisuospatialOrder()
+# VO._make_files()
+
+# SP = SemanticPrediction()
+# SP._make_files()
+
+NB = NBack()
+NB._make_files()
 
