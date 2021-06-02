@@ -308,15 +308,6 @@ class FlexionExtension(Target):
         self.df = self.make_trials_time(self.df)
         self.save_target_file(self.df)
 
-class ActionObservationKnots(Target):
-    def __init__(self, study_name = 'behavioral', hand = 'right', trial_dur = 3.25,
-                 iti_dur = 0.5, run_number = 1, display_trial_feedback = True, 
-                 task_dur=30, tr = 1, seq_length = 6):
-
-        super(ActionObservationKnots, self).__init__(study_name = study_name, task_name = 'act_obs_knots', hand = hand, 
-                                             trial_dur = trial_dur, iti_dur = iti_dur, run_number = run_number, 
-                                             display_trial_feedback = display_trial_feedback, task_dur = task_dur, tr = tr)
-
 class VisuospatialOrder(Target):
     def __init__(self, study_name = 'behavioral', hand = 'right', trial_dur = 6,
                  iti_dur = 0.5, run_number = 1, display_trial_feedback = True, 
@@ -580,9 +571,6 @@ class SemanticPrediction(Target):
     def _get_stim(self):
         """
         get stimulus dataframe
-        For this task, the target dataframe is created differently. 
-        No target_dict is created. Instead, a csv file with the stimulus sentence and related info is loaded and 
-        the rest of the columns are added to it.
         """
         # read in the stimulus csv file
         stim_dir = os.path.join(consts.stim_dir, self.study_name, self.task_name)
@@ -628,7 +616,7 @@ class SemanticPrediction(Target):
         # get `num_stims`
         self.num_stims = int(self.num_trials / len(self.trials_info['condition_name']))
 
-        # get the full sentence for the stimulus
+        # get the stimuls dataframe
         self._get_stim()
 
         self.stim_df['condition_name']         = self.stim_df['cloze_descript'].apply(lambda x: self.trials_info['condition_name'][x])
@@ -661,21 +649,6 @@ class SemanticPrediction(Target):
         self.df = self._add_task_info(random_state=self.run_number)
         self.df = self.make_trials_time(self.df)
         self.save_target_file(self.df)
-
-class VerbGeneration(Target):
-    pass
-
-class ActionObservation(Target):
-    pass
-
-class TheoryOfMind(Target):
-    pass
-
-class RomanceMovie(Target):
-    pass
-
-class Rest(Target):
-    pass
 
 class NBack(Target):
     def __init__(self, study_name = 'behavioral', hand = 'right', trial_dur = 2,
@@ -741,13 +714,163 @@ class NBack(Target):
         dataframe = self.shuffle_rows(self.target_dataframe)
 
         return dataframe
+    
     def _make_files(self):
         # save target file
         self.df = self._add_task_info(random_state=self.run_number)
         self.df = self.make_trials_time(self.df)
         self.save_target_file(self.df)
 
+class TheoryOfMind(Target):
+    def __init__(self, study_name = 'behavioral', hand = 'right', trial_dur = 14,
+                 iti_dur = 0.5, run_number = 1, display_trial_feedback = True, 
+                 task_dur=30, tr = 1, story_dur = 10, question_dur = 4, frac = 0.3):
+        super(TheoryOfMind, self).__init__(study_name = study_name, task_name = 'theory_of_mind', hand = hand, 
+                                           trial_dur = trial_dur, iti_dur = iti_dur, run_number = run_number, 
+                                           display_trial_feedback = display_trial_feedback, task_dur = task_dur, tr = tr)
+
+        self.trials_info = {'condition_name': ['belief','photo'],'trial_type': [True, False]}
+
+        self.feedback_type = 'acc'
+        self.story_dur     = story_dur    # length of time the story remains on the screen
+        self.question_dur  = question_dur # length of time question remains on the screen
+        self.frac          = frac         # ??????
+    
+    def _get_story(self):
+        """
+        get stories dataframe
+        """
+        # read in the stimulus csv file
+        stim_dir = os.path.join(consts.stim_dir, self.study_name, self.task_name)
+        stim_df  = pd.read_csv(os.path.join(stim_dir, 'theory_of_mind.csv'))
+
+        # conds = [self.balance_blocks['condition_name'][key] for key in self.balance_blocks['condition_name'].keys()]  
+        conds        = self.trials_info['condition_name'] 
+        self.stim_df = stim_df.query(f'condition=={conds} and response=={self.trials_info["trial_type"]}')
+
+        # # get full sentence:
+        # sentence = self.stim_df['full_sentence']
+        # # strip erroneous characters from sentences
+        # self.stim_df['stim'] = sentence.str.replace('|', ' ')
+    
+    def _balance_design(self, random_state):
+        # group the dataframe according to `balance_blocks`
+        self.stim_df = self.stim_df.groupby([*self.trials_info], as_index=False).apply(lambda x: x.sample(n=self.num_stims, random_state=random_state, replace=self.replace)).reset_index(drop=True)
+
+        # ensure that only `num_trials` are sampled
+        self.target_df = self.stim_df.sample(n=self.num_trials, random_state=random_state, replace=False).reset_index(drop=True)
+    
+    def _add_task_info(self, random_state):
+        super().make_trials() # first fill in the common fields
+
+        # get `num_stims`
+        self.num_stims = int(self.num_trials / len(self.trials_info['condition_name']))
+
+        # get the stimuls dataframe
+        self._get_story()
+
+        self.stim_df['condition_name']         = self.stim_df['condition']
+        self.stim_df['story_dur']              = self.story_dur
+        self.stim_df['question_dur']           = self.question_dur
+        self.stim_df['trial_dur_correct']      = self.story_dur + self.iti_dur + self.question_dur
+        self.stim_df['display_trial_feedback'] = self.display_trial_feedback
+        
+        self.stim_df['trial_type'] = self.stim_df['response']
+
+        self.stim_df.drop({'condition', 'response'}, inplace=True, axis=1)
+
+        self._balance_design(random_state)
+
+        # randomly shuffle rows of the dataframe
+        dataframe = self.shuffle_rows(self.target_df)
+
+        return dataframe
+
+    def _make_files(self):
+        """
+        makes target file and (if exists) related task info and  saves them
+        """
+
+        # save target file
+        self.df = self._add_task_info(random_state=self.run_number)
+        self.df = self.make_trials_time(self.df)
+        self.save_target_file(self.df)
+
+class ActionObservationKnots(Target):
+    def __init__(self, study_name = 'behavioral', hand = None, trial_dur = 15,
+                 iti_dur = 0.5, run_number = 1, display_trial_feedback = False, 
+                 task_dur=30, tr = 1):
+        super(ActionObservationKnots, self).__init__(study_name = study_name, task_name = 'action_observation_knots', hand = hand, 
+                                           trial_dur = trial_dur, iti_dur = iti_dur, run_number = run_number, 
+                                           display_trial_feedback = display_trial_feedback, task_dur = task_dur, tr = tr)
+
+        self.trials_info = {'condition_name': ['knot'], 'session_list': [1,2]}
+
+    def _get_video(self):
+        """
+        get the video filenames in a dataframe
+        """
+
+        # load in stimuli
+        stim_dir = os.path.join(consts.stim_dir, self.study_name, self.task_name)
+        stim_df  = pd.read_csv(os.path.join(stim_dir, 'action_observation_knots.csv'))
+
+        # conds = [self.balance_blocks['condition_name'][key] for key in self.balance_blocks['condition_name'].keys()]  
+        conds        = self.trials_info['condition_name'] 
+        # remove all filenames where any of the videos have not been extracted
+        stims_to_remove = stim_df.query('extracted==False')["video_name_action"].to_list()
+        self.stim_df    = stim_df[~stim_df["video_name_action"].isin(stims_to_remove)]
+    
+    def _balance_design(self, random_state):
+        self.stim_df = self.stim_df.groupby([*self.trials_info], as_index=False).apply(lambda x: x.sample(n=self.num_stims, random_state=random_state, replace=self.replace)).reset_index(drop=True)
+
+        # ensure that only `num_trials` are sampled
+        self.target_df = self.stim_df.sample(n=self.num_trials, random_state=random_state, replace=False).reset_index(drop=True)
+    
+    def _add_task_info(self, random_state):
+        super().make_trials() # first fill in the common fields
+
+        # get `num_stims`
+        self.num_stims = int(self.num_trials / len(self.trials_info['condition_name']))
+
+        # get stimulus dataframe
+        self._get_video()
+
+        self.stim_df['stim_action']  = self.stim_df['video_name_action'] + '.mov'
+        self.stim_df['stim_control'] = self.stim_df['video_name_control'] + '.mov'
+
+        self.stim_df.drop({'video_name_action', 'video_name_control'}, inplace=True, axis=1)
+
+        self._balance_design(random_state)
+
+        # randomly shuffle rows of the dataframe
+        dataframe = self.shuffle_rows(self.target_df)
+
+        return dataframe
+
+    def _make_files(self):
+        """
+        makes target file and (if exists) related task info and  saves them
+        """
+
+        # save target file
+        self.df = self._add_task_info(random_state=self.run_number)
+        self.df = self.make_trials_time(self.df)
+        self.save_target_file(self.df)
+
+class Rest(Target):
+    pass
+
+class RomanceMovie(Target):
+    pass
+
 class SocialPrediction(Target):
+    pass
+
+class ActionObservation(Target):
+    pass
+
+class VerbGeneration(Target):
     pass
 
 
@@ -771,7 +894,7 @@ TASK_MAP = {
     "flexion_extension": FlexionExtension, # task_num 10
     "verb_generation": VerbGeneration, # task_num 11
     "romance_movie": RomanceMovie, #task_num 12
-    "act_obs_knots": ActionObservationKnots, #task_num 13
+    "action_observation_knots": ActionObservationKnots, #task_num 13
     "rest": Rest, # task_num?
     }
 
@@ -794,6 +917,12 @@ TASK_MAP = {
 # SP = SemanticPrediction()
 # SP._make_files()
 
-NB = NBack()
-NB._make_files()
+# NB = NBack()
+# NB._make_files()
+
+# TM = TheoryOfMind()
+# TM._make_files()
+
+AOK = ActionObservationKnots()
+AOK._make_files()
 
