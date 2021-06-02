@@ -91,15 +91,17 @@ class Target():
 
 class Run():
 
-    def __init__(self):
+    def __init__(self, task_list, run_number = 1, instruct_dur = 5, task_dur = 30, num_runs = 8, 
+                 tile_runs = False, counter_balance = True):
 
-        self.run_number
-        self.task_list
-        self.instruct_dur
-        self.task_dur
-        self.num_runs 
-        self.tile_runs
-        self.counter_balance
+        
+        self.task_list       = task_list
+        self.run_number      = run_number
+        self.instruct_dur    = instruct_dur
+        self.task_dur        = task_dur
+        self.num_runs        = num_runs
+        self.tile_runs       = tile_runs
+        self.counter_balance = counter_balance
 
     def make_run_df(self):
         """
@@ -119,7 +121,8 @@ class Run():
         """
         pass
 
-# define classes for each task target file
+# define classes for each task target file.
+# add your tasks as classes
 class FingerSequence(Target):
     def __init__(self, study_name = 'behavioral', hand = 'right', trial_dur = 3.25,
                  iti_dur = 0.5, run_number = 1, display_trial_feedback = True, 
@@ -781,8 +784,10 @@ class TheoryOfMind(Target):
 
         self._balance_design(random_state)
 
+        self.target_dataframe = pd.concat([self.target_df, self.target_dataframe], axis = 1)
+
         # randomly shuffle rows of the dataframe
-        dataframe = self.shuffle_rows(self.target_df)
+        dataframe = self.shuffle_rows(self.target_dataframe)
 
         return dataframe
 
@@ -814,9 +819,7 @@ class ActionObservationKnots(Target):
         # load in stimuli
         stim_dir = os.path.join(consts.stim_dir, self.study_name, self.task_name)
         stim_df  = pd.read_csv(os.path.join(stim_dir, 'action_observation_knots.csv'))
-
-        # conds = [self.balance_blocks['condition_name'][key] for key in self.balance_blocks['condition_name'].keys()]  
-        conds        = self.trials_info['condition_name'] 
+ 
         # remove all filenames where any of the videos have not been extracted
         stims_to_remove = stim_df.query('extracted==False')["video_name_action"].to_list()
         self.stim_df    = stim_df[~stim_df["video_name_action"].isin(stims_to_remove)]
@@ -843,8 +846,10 @@ class ActionObservationKnots(Target):
 
         self._balance_design(random_state)
 
+        self.target_dataframe = pd.concat([self.target_df, self.target_dataframe], axis = 1)
+
         # randomly shuffle rows of the dataframe
-        dataframe = self.shuffle_rows(self.target_df)
+        dataframe = self.shuffle_rows(self.target_dataframe)
 
         return dataframe
 
@@ -858,19 +863,69 @@ class ActionObservationKnots(Target):
         self.df = self.make_trials_time(self.df)
         self.save_target_file(self.df)
 
-class Rest(Target):
-    pass
-
 class RomanceMovie(Target):
-    pass
+    def __init__(self, study_name = 'behavioral', hand = None, trial_dur = 30,
+                 iti_dur = 0, run_number = 1, display_trial_feedback = False, 
+                 task_dur = 30, tr = 1):
+        super(RomanceMovie, self).__init__(study_name = study_name, task_name = 'romance_movie', hand = hand, 
+                                           trial_dur = trial_dur, iti_dur = iti_dur, run_number = run_number, 
+                                           display_trial_feedback = display_trial_feedback, task_dur = task_dur, tr = tr)
+
+        self.trials_info = {'condition_name': ['romance']}
+
+    def _get_movie(self):
+        """
+        get the movie filenames in a dataframe
+        """
+
+        # load in stimuli
+        stim_dir = os.path.join(consts.stim_dir, self.study_name, self.task_name)
+        stim_df  = pd.read_csv(os.path.join(stim_dir, 'romance_movie.csv'))
+ 
+        # remove all filenames where any of the videos have not been extracted
+        stims_to_remove = stim_df.query('extracted==False')["video_name"].to_list()
+        self.stim_df    = stim_df[~stim_df["video_name"].isin(stims_to_remove)]
+
+    def _balance_design(self, random_state):
+        # ensure that only `num_trials` are sampled
+        self.target_df = self.stim_df.sample(n=self.num_trials, random_state=random_state, replace=False).reset_index(drop=True)
+
+    def _add_task_info(self, random_state):
+        super().make_trials() # first fill in the common fields
+
+        # get movie dataframe
+        self._get_movie()
+
+        self.stim_df['stim'] = self.stim_df['video_name'] + '.mov'
+
+        self.stim_df.drop({'video_name'}, inplace=True, axis=1)
+
+        self._balance_design(random_state)
+
+        self.target_dataframe = pd.concat([self.target_df, self.target_dataframe], axis = 1)
+
+        # randomly shuffle rows of the dataframe
+        dataframe = self.shuffle_rows(self.target_dataframe)
+
+        return dataframe
+    
+    def _make_files(self):
+        """
+        makes target file and (if exists) related task info and  saves them
+        """
+
+        # save target file
+        self.df = self._add_task_info(random_state=self.run_number)
+        self.df = self.make_trials_time(self.df)
+        self.save_target_file(self.df)
 
 class SocialPrediction(Target):
     pass
 
-class ActionObservation(Target):
+class VerbGeneration(Target):
     pass
 
-class VerbGeneration(Target):
+class Rest(Target):
     pass
 
 
@@ -887,7 +942,6 @@ TASK_MAP = {
     "n_back": NBack, # task_num 3
     "social_prediction": SocialPrediction, # task_num 4
     "semantic_prediction": SemanticPrediction, # task_num 5
-    "action_observation": ActionObservation, # task_num 6 
     "finger_sequence": FingerSequence, # task_num 7
     "sternberg_order": SternbergOrder, # task_num 8
     "visuospatial_order": VisuospatialOrder, # task 9
@@ -899,30 +953,33 @@ TASK_MAP = {
     }
 
 
-# VS = VisualSearch()
-# VS._make_files()
+VS = VisualSearch()
+VS._make_files()
 
-# FS = FingerSequence()
-# FS._make_files()
+FS = FingerSequence()
+FS._make_files()
 
-# SO = SternbergOrder()
-# SO._make_files()
+SO = SternbergOrder()
+SO._make_files()
 
-# FE = FlexionExtension()
-# FE._make_files()
+FE = FlexionExtension()
+FE._make_files()
 
-# VO = VisuospatialOrder()
-# VO._make_files()
+VO = VisuospatialOrder()
+VO._make_files()
 
-# SP = SemanticPrediction()
-# SP._make_files()
+SP = SemanticPrediction()
+SP._make_files()
 
-# NB = NBack()
-# NB._make_files()
+NB = NBack()
+NB._make_files()
 
-# TM = TheoryOfMind()
-# TM._make_files()
+TM = TheoryOfMind()
+TM._make_files()
 
 AOK = ActionObservationKnots()
 AOK._make_files()
+
+RM = RomanceMovie()
+RM._make_files()
 
