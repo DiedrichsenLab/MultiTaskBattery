@@ -919,13 +919,35 @@ class RomanceMovie(Target):
         self.df = self.make_trials_time(self.df)
         self.save_target_file(self.df)
 
-class SocialPrediction(Target):
-    pass
-
 class VerbGeneration(Target):
     pass
 
 class Rest(Target):
+    def __init__(self, study_name = 'behavioral', hand = None, trial_dur = 30,
+                 iti_dur = 0, run_number = 1, display_trial_feedback = False, 
+                 task_dur = 30, tr = 1):
+        super(Rest, self).__init__(study_name = study_name, task_name = 'rest', hand = hand, 
+                                           trial_dur = trial_dur, iti_dur = iti_dur, run_number = run_number, 
+                                           display_trial_feedback = display_trial_feedback, task_dur = task_dur, tr = tr)
+
+    def _add_task_info(self):
+        super().make_trials() # first fill in the common fields
+
+        self.target_dataframe['stim'] = 'fixation'
+
+        return self.target_dataframe
+
+    def _make_files(self):
+        """
+        makes target file and (if exists) related task info and  saves them
+        """
+
+        # save target file
+        self.df = self._add_task_info()
+        self.df = self.make_trials_time(self.df)
+        self.save_target_file(self.df)
+
+class SocialPrediction(Target):
     pass
 
 
@@ -982,4 +1004,7 @@ AOK._make_files()
 
 RM = RomanceMovie()
 RM._make_files()
+
+R = Rest()
+R._make_files()
 
