@@ -6,6 +6,8 @@ import numpy as np
 import os
 import random
 
+from pandas.core.frame import DataFrame
+
 # import experiment_code.constants as consts
 import constants as consts
 
@@ -803,7 +805,7 @@ class TheoryOfMind(Target):
 
 class ActionObservationKnots(Target):
     def __init__(self, study_name = 'behavioral', hand = None, trial_dur = 15,
-                 iti_dur = 0.5, run_number = 1, display_trial_feedback = False, 
+                 iti_dur = 0, run_number = 1, display_trial_feedback = False, 
                  task_dur=30, tr = 1):
         super(ActionObservationKnots, self).__init__(study_name = study_name, task_name = 'action_observation_knots', hand = hand, 
                                            trial_dur = trial_dur, iti_dur = iti_dur, run_number = run_number, 
@@ -920,7 +922,60 @@ class RomanceMovie(Target):
         self.save_target_file(self.df)
 
 class VerbGeneration(Target):
-    pass
+    def __init__(self, study_name = 'behavioral', hand = None, trial_dur = 1.6,
+                 iti_dur = 0.5, run_number = 1, display_trial_feedback = False, 
+                 task_dur=30, tr = 1, frac = 0.3):
+        super(VerbGeneration, self).__init__(study_name = study_name, task_name = 'verb_generation', hand = hand, 
+                                                 trial_dur = trial_dur, iti_dur = iti_dur, run_number = run_number, 
+                                                 display_trial_feedback = display_trial_feedback, task_dur = task_dur, tr = tr)
+
+        self.frac        = frac
+        self.trials_info = {'session_list': ['1','2']}
+
+    def _get_stim(self):
+
+        # read in the stimulus csv file
+        stim_dir = os.path.join(consts.stim_dir, self.study_name, self.task_name)
+        stim_df  = pd.read_csv(os.path.join(stim_dir, 'verb_generation.csv'))
+
+        self.stim_df = stim_df.query(f'session_list=={self.trials_info["session_list"]}')
+        pass
+    
+    def _balance_design(self, random_state):
+        # group the dataframe according to `balance_blocks`
+        self.stim_df = self.stim_df.groupby([*self.trials_info], as_index=False).apply(lambda x: x.sample(n=self.num_stims, random_state=random_state, replace=self.replace)).reset_index(drop=True)
+
+        # ensure that only `num_trials` are sampled
+        self.target_df = self.stim_df.sample(n=self.num_trials, random_state=random_state, replace=False).reset_index(drop=True)
+    
+    def _add_task_info(self, random_state):
+        super().make_trials() # first fill in the common fields
+
+        # get `num_stims`
+        self.num_stims = int(self.num_trials / len(self.trials_info['session_list']))
+
+        # get stimulus
+        self._get_stim()
+
+        # balance design
+        self._balance_design(random_state)
+
+        self.target_dataframe = pd.concat([self.target_df, self.target_dataframe], axis = 1)
+
+        # randomly shuffle rows of the dataframe
+        dataframe = self.shuffle_rows(self.target_dataframe)
+
+        return dataframe
+
+    def _make_files(self):
+        """
+        makes target file and (if exists) related task info and  saves them
+        """
+
+        # save target file
+        self.df = self._add_task_info(random_state=self.run_number)
+        self.df = self.make_trials_time(self.df)
+        self.save_target_file(self.df)
 
 class Rest(Target):
     def __init__(self, study_name = 'behavioral', hand = None, trial_dur = 30,
@@ -1004,6 +1059,9 @@ AOK._make_files()
 
 RM = RomanceMovie()
 RM._make_files()
+
+VG = VerbGeneration()
+VG._make_files()
 
 R = Rest()
 R._make_files()
