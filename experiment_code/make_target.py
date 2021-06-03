@@ -43,7 +43,6 @@ class Target():
         # file naming stuff
         self.target_filename = f"{self.task_name}_{self.task_dur}sec_{self.run_number:02d}"
         self.target_dir      = consts.target_dir / self.study_name / self.task_name
-        consts.dircheck(self.target_dir)
 
         self.target_filedir = self.target_dir / f"{self.target_filename}.csv"
 
@@ -93,6 +92,7 @@ class Target():
         """
         save the target file in the corresponding directory
         """
+        consts.dircheck(self.target_dir)
         dataframe.to_csv(self.target_filedir)
 
 class Run():
@@ -245,7 +245,9 @@ class Run():
 
             # save run file
             run_name = 'run_' +  f'{run+1:02d}' + '.csv'
-            df_run.to_csv(os.path.join(consts.run_dir, self.study_name, run_name), index=False, header=True)
+            filepath = os.path.join(consts.run_dir, self.study_name)
+            consts.dircheck(filepath)
+            df_run.to_csv(os.path.join(filepath, run_name), index=False, header=True)
 
     def check_counter_balance(self):
 
@@ -1138,14 +1140,6 @@ class Rest(Target):
 
 class SocialPrediction(Target):
     pass
-
-
-# define functions to create target files and run files
-def make_target(task_name):
-    pass
-def make_run(task_list, num_runs):
-    pass
-
 
 TASK_MAP = {
     "visual_search": VisualSearch, # task_num 1
