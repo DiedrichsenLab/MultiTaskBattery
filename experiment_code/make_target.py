@@ -1,13 +1,16 @@
 # Create target file for different tasks
 # @ Ladan Shahshahani  - Maedbh King March 30 2021
-from numpy.core.defchararray import startswith
+# from numpy.core.defchararray import startswith
+from pathlib import Path
+from itertools import count
 import pandas as pd
 import numpy as np
 import os
 import random
 import glob
+import re
 
-from pandas.core.frame import DataFrame
+# from pandas.core.frame import DataFrame
 
 # import experiment_code.constants as consts
 import constants as consts
@@ -110,37 +113,86 @@ class Run():
         self.tile_runs       = tile_runs       #
         self.counter_balance = counter_balance # counter balance runs? default: True
 
+    def _check_task_run(self):
+        # check if task exists in dict
+        exists_in_dict = [True for key in self.target_dict.keys() if self.task_name==key]
+        if not exists_in_dict: 
+            self.target_dict.update({self.task_name: self.fpaths})
+
+        # create run dataframe
+        random.seed(self.task_num+1)
+        target_files_sample = [self.target_dict[self.task_name].pop(random.randrange(len(self.target_dict[self.task_name]))) for _ in np.arange(self.tile_runs)]
+
+        return target_files_sample
+
+    def _test_counterbalance(self):
+        filenames = sorted(glob.glob(os.path.join(consts.run_dir, self.study_name, '*run_*')))
+
+        dataframe_all = pd.DataFrame()
+        for i, file in enumerate(filenames):
+            dataframe = pd.read_csv(file)
+            dataframe['run'] = i + 1
+            dataframe['task_num_unique'] = np.arange(len(dataframe)) + 1
+            dataframe_all = pd.concat([dataframe_all, dataframe])
+
+        # create new column
+        dataframe_all['block_name_unique'] = dataframe_all['task_name'] + '_' + dataframe_all['task_iter'].astype(str)
+        # dataframe_all['task_name_unique'] = dataframe_all['task_name']
+
+        task = np.array(list(map({}.setdefault, dataframe_all['block_name_unique'], count()))) + 1
+        last_task = list(task[0:-1])
+        last_task.insert(0,0)
+        last_task = np.array(last_task)
+        last_task[dataframe_all['task_num_unique']==1] = 0
+
+        dataframe_all['last_task'] = last_task
+        dataframe_all['task']      = task
+        dataframe_all['task_num']  = task
+
+        # get pivot table
+        f = pd.pivot_table(dataframe_all, index=['task'], columns=['last_task'], values=['task_num'], aggfunc=len)
+
+        return sum([sum(f['task_num'][col]>5) for col in f['task_num'].columns]) 
+
+    def _counterbalance_runs(self):
+        while self._test_counterbalance() > 0:
+            print('not balanced ...')
+
+            # delete any run files that exist in the folder
+            files = glob.glob(os.path.join(consts.run_dir, self.study_name, '*run*.csv'))
+            for f in files:
+                os.remove(f)
+            self.make_run_files()
+        
+        print('these runs are perfectly balanced')
+    
     def make_target_files(self):
         """
         makes target files for all the tasks in task list
         """
         for self.task_name in self.task_list:
-
             # get the directory for the target file
             target_dir = os.path.join(consts.target_dir, self.study_name, self.task_name)
 
             # delete any target files that exist in the folder
-            files = glob.glob(os.path.join(target_dir, self.task_name, '*.csv'))
+            files = glob.glob(os.path.join(target_dir, '*.csv'))
             for f in files:
                 os.remove(f)
 
-            # make target files
-            TaskClass = TASK_MAP[self.task_name]
-            # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-            # need to figure out a way to input task parameters flexibly
-            # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-            Task_target = TaskClass()
-            Task_target.make_files()
-
+            for run in range(self.num_runs):
+                
+                # make target files
+                TaskClass = TASK_MAP[self.task_name]
+                # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                # need to figure out a way to input task parameters flexibly
+                # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                Task_target = TaskClass(run_number = run)
+                Task_target._make_files()
+    
     def make_run_files(self):
         """
         makes run file
         """
-        # delete any run files that exist in the folder
-        # files = glob.glob(os.path.join(Defaults.RUN_DIR, '*run*.csv'))
-        # for f in files:
-        #     os.remove(f)
-
         # create run files
         self.target_dict = {}
         for run in np.arange(self.num_runs):
@@ -150,40 +202,58 @@ class Run():
             for self.task_num, self.task_name in enumerate(self.task_list):
 
                 # get target files for `task_name`
-                self.task_target_dir = os.path.join(consts.target_dir, self.task_name)
-                self.fpaths = sorted(glob.glob(os.path.join(self.task_target_dir, f'*{self.task_name}*.csv')))
+                self.task_target_dir = os.path.join(consts.target_dir, self.study_name, self.task_name)
+                self.fpaths = sorted(glob.glob(os.path.join(self.task_target_dir, f'*{self.task_name}_{self.task_dur}sec_*.csv')))
 
                 # sample tasks
                 target_files_sample = self._check_task_run()
-
-                # get tf info
-                df = pd.read_csv(os.path.join(self.TARGET_DIR, target_files_sample[0]))
-                self.display_trial_feedback = np.unique(df['display_trial_feedback'])[0]
-                self.replace_stimuli = np.unique(df['replace_stimuli'])[0]
-                self.feedback_type = np.unique(df['feedback_type'])[0]
-                self.target_score = np.unique(df['target_score'])[0]
-
                 # create run dataframe
-                self._create_run_dataframe(target_files=target_files_sample)
+                for iter, target_file in enumerate(target_files_sample):
+                    # load target file
+                    dataframe = pd.read_csv(target_file)
+
+                    start_time = dataframe.iloc[0]['start_time'] + self.cum_time 
+                    end_time   = dataframe.iloc[-1]['start_time'] + dataframe.iloc[-1]['trial_dur'] + self.instruct_dur + self.cum_time
+
+                    target_file_name = Path(target_file).name
+                    num_sec = re.findall(r'\d+(?=sec)', target_file)[0]
+                    target_num = re.findall(r'\d+(?=.csv)', target_file)[0]
+                    num_trials = len(dataframe)
+
+                    data = {'task_name': self.task_name, 'task_iter': iter + 1, 'task_num': self.task_num + 1, # 'block_iter': iter+1
+                            'num_trials': num_trials, 'target_num': target_num, 'num_sec': num_sec,
+                            'target_file': target_file_name, 'start_time': start_time, 'end_time': end_time,
+                            'instruct_dur': self.instruct_dur}
+
+                    self.all_data.append(data)
+                    self.cum_time = end_time
 
             # shuffle order of tasks within run
             df_run = pd.DataFrame.from_dict(self.all_data)
             df_run = df_run.sample(n=len(df_run), replace=False)
 
-            # correct `block_iter`, `start_time`, `run_time`
-            df_run = self._correct_block_iter(dataframe=df_run)
+            # correct `start_time`, `run_time`
             df_run['start_time'] = sorted(df_run['start_time']) 
             df_run['end_time'] = sorted(df_run['end_time']) 
 
-            # save run file
-            run_name = self.config['run_name_prefix'] + '_' +  f'{run+1:02d}' + '.csv'
-            self._save_run_file(dataframe=df_run, run_name=run_name)
+            timestamps = (np.cumsum(df_run['num_sec'].astype(int) + df_run['instruct_dur'].astype(int))).to_list()
+            df_run['end_time'] = timestamps
+            timestamps.insert(0, 0) 
+            df_run['start_time'] = timestamps[:-1]
 
-    def test_counterbalance(self):
-        """
-        tests counterbalancing of tasks across runs
-        """
-        pass
+            df_run.drop({'num_sec'}, inplace=True, axis=1)
+
+            # save run file
+            run_name = 'run_' +  f'{run+1:02d}' + '.csv'
+            df_run.to_csv(os.path.join(consts.run_dir, self.study_name, run_name), index=False, header=True)
+
+    def check_counter_balance(self):
+
+        if self.counter_balance:
+            self._counterbalance_runs()
+        else:
+            print(f"You have chosen not to counter balance runs!")
+        
 
 # define classes for each task target file.
 # add your tasks as classes
@@ -702,8 +772,10 @@ class SemanticPrediction(Target):
         # add random word based on `self.frac`. target_dataframe is created after using this method
         self._add_random_word(random_state=random_state, columns=['condition_name']) # 'CoRT_descript'
 
+        self.target_dataframe = pd.concat([self.target_dataframe, self.target_df], axis = 1)
+
         # randomly shuffle rows of the dataframe
-        dataframe = self.shuffle_rows(self.target_df)
+        dataframe = self.shuffle_rows(self.target_dataframe)
 
         return dataframe
 
@@ -1127,4 +1199,10 @@ TASK_MAP = {
 
 # R = Rest()
 # R._make_files()
+
+
+R = Run(study_name='behavioral')
+R.make_target_files()
+R.make_run_files()
+R.check_counter_balance()
 
