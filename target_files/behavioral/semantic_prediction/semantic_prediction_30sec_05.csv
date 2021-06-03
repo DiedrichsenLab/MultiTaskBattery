@@ -1,5 +1,5 @@
-,cloze_probability,dataset,CoRT_mean,CoRT_std,CoRT_descript,target_word,random_word,word_count,cloze_descript,stim,condition_name,stem_word_dur,last_word_dur,trial_dur_correct,display_trial_feedback,trial_type,last_word,hand,iti_dur,start_time,trial_dur
-0,0.72,peele,4.5,0.5773502691896257,strong CoRT,mail,bush,9,high cloze,The postman walked up and handed the man his,easy,0.5,1.5,6.5,True,False,bush,right,0.5,0.0,7
-1,0.33,peele,4.0,0.0,strong CoRT,bang,seagull,9,low cloze,The cargo at the shipyard fell with a loud,hard,0.5,1.5,6.5,True,False,seagull,right,0.5,7.5,7
-2,0.82,peele,1.6,0.8944271909999159,strong non-CoRT,had,mouse,9,high cloze,Claire claimed motherhood was the hardest job she ever,easy,0.5,1.5,6.5,True,True,had,right,0.5,15.0,7
-3,0.35,peele,2.0,1.4142135623730951,strong non-CoRT,thyme,sweat,9,low cloze,The potatoes were seasoned with flakes of rosemary and,hard,0.5,1.5,6.5,True,True,thyme,right,0.5,22.5,7
+,hand,trial_dur,iti_dur,run_number,display_trial_feedback,cloze_probability,dataset,CoRT_mean,CoRT_std,CoRT_descript,target_word,random_word,word_count,cloze_descript,stim,condition_name,stem_word_dur,last_word_dur,trial_dur_correct,display_trial_feedback,replace_stimuli,feedback_type,trial_type,last_word,start_time,end_time
+0,right,6,0.5,5,True,0.7,peele,4.0,1.0,strong CoRT,thud,fan,9,high cloze,The heavy book hit the floor with a loud,easy,0.5,1.5,6.5,True,False,rt,True,thud,0.0,6.0
+1,right,6,0.5,5,True,0.44,peele,2.0,1.224744871391589,strong non-CoRT,push,cold,9,low cloze,His car is huge so it's too heavy to,hard,0.5,1.5,6.5,True,False,rt,False,cold,6.5,12.5
+2,right,6,0.5,5,True,0.87,peele,1.8,1.3038404810405295,strong non-CoRT,win,ran,9,high cloze,Karla had played the game and knew how to,easy,0.5,1.5,6.5,True,False,rt,False,ran,13.0,19.0
+3,right,6,0.5,5,True,0.39,peele,4.5,0.5773502691896257,strong CoRT,bruise,dress,9,low cloze,Barb pulled her sleeve back to reveal a big,hard,0.5,1.5,6.5,True,False,rt,True,bruise,19.5,25.5

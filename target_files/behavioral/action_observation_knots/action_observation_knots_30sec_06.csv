@@ -1,0 +1,3 @@
+,label,knot,session_list,condition_name,media,extracted,video_start,video_end,stim_action,stim_control,hand,trial_dur,iti_dur,run_number,display_trial_feedback,start_time,end_time
+0,movie,shilling,1,knot,video,1,0,14,knotActionShilling.mov,knotControlShilling.mov,,15,0,6,False,0,15
+1,movie,flora,2,knot,video,1,0,14,knotActionFlora.mov,knotControlFlora.mov,,15,0,6,False,15,30
