@@ -41,7 +41,7 @@ class Target():
         self.target_dataframe       = pd.DataFrame()         # an empty dataframe
 
         # file naming stuff
-        self.target_filename = f"{self.task_name}_{self.task_dur}sec_{self.run_number:02d}"
+        self.target_filename = f"{self.task_name}_{self.task_dur}sec_{self.run_number+1:02d}"
         self.target_dir      = consts.target_dir / self.study_name / self.task_name
 
         self.target_filedir = self.target_dir / f"{self.target_filename}.csv"
@@ -102,7 +102,8 @@ class Run():
                               'finger_sequence', 'theory_of_mind', 'n_back', 'semantic_prediction', 
                               'rest'], 
                  run_number = 1, instruct_dur = 5, task_dur = 30, num_runs = 8, 
-                 tile_runs = 1, counter_balance = True):
+                 tile_runs = 1, counter_balance = True, 
+                 session = 1):
 
         self.study_name      = study_name      # 'fmri' or 'behavioral'
         self.task_list       = task_list       # list of tasks. Default is the list for pontine project
@@ -112,6 +113,7 @@ class Run():
         self.num_runs        = num_runs        # number of runs
         self.tile_runs       = tile_runs       #
         self.counter_balance = counter_balance # counter balance runs? default: True
+        self.session         = session         # session number
 
     def _check_task_run(self):
         # check if task exists in dict
@@ -186,7 +188,13 @@ class Run():
                 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
                 # need to figure out a way to input task parameters flexibly
                 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-                Task_target = TaskClass(run_number = run, study_name = self.study_name)
+                # determine the hand assigned for runs of the session
+                if run < int(self.num_runs/2):
+                    hand = 'right'
+                else:
+                    hand = 'left'
+
+                Task_target = TaskClass(run_number = run, study_name = self.study_name, hand = hand)
                 Task_target._make_files()
     
     def make_run_files(self):
@@ -413,16 +421,17 @@ class SternbergOrder(Target):
         self.save_target_file(self.df)
 
 class FlexionExtension(Target):
-    def __init__(self, study_name = 'behavioral', hand = 'right', trial_dur = 14,
+    def __init__(self, study_name = 'behavioral', hand = None, trial_dur = 14,
                  iti_dur = 1, run_number = 1, display_trial_feedback = False, 
                  task_dur = 30, stim_dur = 1, tr = 1):
 
-        super(FlexionExtension, self).__init__(study_name = study_name, task_name = 'flexion_extension', hand = hand, 
+        super(FlexionExtension, self).__init__(study_name = study_name, task_name = 'flexion_extension', hand = None, 
                                                trial_dur = trial_dur, iti_dur = iti_dur, run_number = run_number, 
                                                display_trial_feedback = display_trial_feedback, task_dur = task_dur, tr = tr)
 
         self.trials_info = {"condition_name":["flexion extention"], "trial_type":[None]}
         self.stim_dur = stim_dur # time while either flexion or extension is remaining on the screen
+
 
     def _add_task_info(self, random_state):
         super().make_trials() # first fill in the common fields
@@ -943,7 +952,7 @@ class ActionObservationKnots(Target):
     def __init__(self, study_name = 'behavioral', hand = None, trial_dur = 15,
                  iti_dur = 0, run_number = 1, display_trial_feedback = False, 
                  task_dur=30, tr = 1):
-        super(ActionObservationKnots, self).__init__(study_name = study_name, task_name = 'action_observation_knots', hand = hand, 
+        super(ActionObservationKnots, self).__init__(study_name = study_name, task_name = 'action_observation_knots', hand = None, 
                                            trial_dur = trial_dur, iti_dur = iti_dur, run_number = run_number, 
                                            display_trial_feedback = display_trial_feedback, task_dur = task_dur, tr = tr)
 
@@ -1005,7 +1014,7 @@ class RomanceMovie(Target):
     def __init__(self, study_name = 'behavioral', hand = None, trial_dur = 30,
                  iti_dur = 0, run_number = 1, display_trial_feedback = False, 
                  task_dur = 30, tr = 1):
-        super(RomanceMovie, self).__init__(study_name = study_name, task_name = 'romance_movie', hand = hand, 
+        super(RomanceMovie, self).__init__(study_name = study_name, task_name = 'romance_movie', hand = None, 
                                            trial_dur = trial_dur, iti_dur = iti_dur, run_number = run_number, 
                                            display_trial_feedback = display_trial_feedback, task_dur = task_dur, tr = tr)
 
@@ -1061,7 +1070,7 @@ class VerbGeneration(Target):
     def __init__(self, study_name = 'behavioral', hand = None, trial_dur = 1.6,
                  iti_dur = 0.5, run_number = 1, display_trial_feedback = False, 
                  task_dur=30, tr = 1, frac = 0.3):
-        super(VerbGeneration, self).__init__(study_name = study_name, task_name = 'verb_generation', hand = hand, 
+        super(VerbGeneration, self).__init__(study_name = study_name, task_name = 'verb_generation', hand = None, 
                                                  trial_dur = trial_dur, iti_dur = iti_dur, run_number = run_number, 
                                                  display_trial_feedback = display_trial_feedback, task_dur = task_dur, tr = tr)
 
@@ -1195,10 +1204,10 @@ TASK_MAP = {
 # R._make_files()
 
 
-# R1 = Run(study_name='behavioral')
-# R1.make_target_files()
-# R1.make_run_files()
-# R1.check_counter_balance()
+R1 = Run(study_name='behavioral')
+R1.make_target_files()
+R1.make_run_files()
+R1.check_counter_balance()
 
 R2 = Run(study_name='fmri')
 R2.make_target_files()
