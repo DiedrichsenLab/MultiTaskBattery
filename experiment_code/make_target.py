@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 import os
 import random
+import glob
 
 from pandas.core.frame import DataFrame
 
@@ -93,29 +94,90 @@ class Target():
 
 class Run():
 
-    def __init__(self, task_list, run_number = 1, instruct_dur = 5, task_dur = 30, num_runs = 8, 
-                 tile_runs = False, counter_balance = True):
+    def __init__(self, study_name, 
+                 task_list = ['visual_search', 'action_observation_knots', 'flexion_extension', 
+                              'finger_sequence', 'theory_of_mind', 'n_back', 'semantic_prediction', 
+                              'rest'], 
+                 run_number = 1, instruct_dur = 5, task_dur = 30, num_runs = 8, 
+                 tile_runs = 1, counter_balance = True):
 
-        
-        self.task_list       = task_list
-        self.run_number      = run_number
-        self.instruct_dur    = instruct_dur
-        self.task_dur        = task_dur
-        self.num_runs        = num_runs
-        self.tile_runs       = tile_runs
-        self.counter_balance = counter_balance
+        self.study_name      = study_name      # 'fmri' or 'behavioral'
+        self.task_list       = task_list       # list of tasks. Default is the list for pontine project
+        self.run_number      = run_number      # run number
+        self.instruct_dur    = instruct_dur    # instruction period
+        self.task_dur        = task_dur        # duration of each task
+        self.num_runs        = num_runs        # number of runs
+        self.tile_runs       = tile_runs       #
+        self.counter_balance = counter_balance # counter balance runs? default: True
 
-    def make_run_df(self):
+    def make_target_files(self):
         """
-        makes run dataframe
+        makes target files for all the tasks in task list
         """
-        pass
+        for self.task_name in self.task_list:
 
-    def save_run_df(self):
+            # get the directory for the target file
+            target_dir = os.path.join(consts.target_dir, self.study_name, self.task_name)
+
+            # delete any target files that exist in the folder
+            files = glob.glob(os.path.join(target_dir, self.task_name, '*.csv'))
+            for f in files:
+                os.remove(f)
+
+            # make target files
+            TaskClass = TASK_MAP[self.task_name]
+            # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+            # need to figure out a way to input task parameters flexibly
+            # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+            Task_target = TaskClass()
+            Task_target.make_files()
+
+    def make_run_files(self):
         """
-        saves run dataframe
+        makes run file
         """
-        pass
+        # delete any run files that exist in the folder
+        # files = glob.glob(os.path.join(Defaults.RUN_DIR, '*run*.csv'))
+        # for f in files:
+        #     os.remove(f)
+
+        # create run files
+        self.target_dict = {}
+        for run in np.arange(self.num_runs):
+            self.cum_time = 0.0
+            self.all_data = []
+
+            for self.task_num, self.task_name in enumerate(self.task_list):
+
+                # get target files for `task_name`
+                self.task_target_dir = os.path.join(consts.target_dir, self.task_name)
+                self.fpaths = sorted(glob.glob(os.path.join(self.task_target_dir, f'*{self.task_name}*.csv')))
+
+                # sample tasks
+                target_files_sample = self._check_task_run()
+
+                # get tf info
+                df = pd.read_csv(os.path.join(self.TARGET_DIR, target_files_sample[0]))
+                self.display_trial_feedback = np.unique(df['display_trial_feedback'])[0]
+                self.replace_stimuli = np.unique(df['replace_stimuli'])[0]
+                self.feedback_type = np.unique(df['feedback_type'])[0]
+                self.target_score = np.unique(df['target_score'])[0]
+
+                # create run dataframe
+                self._create_run_dataframe(target_files=target_files_sample)
+
+            # shuffle order of tasks within run
+            df_run = pd.DataFrame.from_dict(self.all_data)
+            df_run = df_run.sample(n=len(df_run), replace=False)
+
+            # correct `block_iter`, `start_time`, `run_time`
+            df_run = self._correct_block_iter(dataframe=df_run)
+            df_run['start_time'] = sorted(df_run['start_time']) 
+            df_run['end_time'] = sorted(df_run['end_time']) 
+
+            # save run file
+            run_name = self.config['run_name_prefix'] + '_' +  f'{run+1:02d}' + '.csv'
+            self._save_run_file(dataframe=df_run, run_name=run_name)
 
     def test_counterbalance(self):
         """
@@ -1030,39 +1092,39 @@ TASK_MAP = {
     }
 
 
-VS = VisualSearch()
-VS._make_files()
+# VS = VisualSearch()
+# VS._make_files()
 
-FS = FingerSequence()
-FS._make_files()
+# FS = FingerSequence()
+# FS._make_files()
 
-SO = SternbergOrder()
-SO._make_files()
+# SO = SternbergOrder()
+# SO._make_files()
 
-FE = FlexionExtension()
-FE._make_files()
+# FE = FlexionExtension()
+# FE._make_files()
 
-VO = VisuospatialOrder()
-VO._make_files()
+# VO = VisuospatialOrder()
+# VO._make_files()
 
-SP = SemanticPrediction()
-SP._make_files()
+# SP = SemanticPrediction()
+# SP._make_files()
 
-NB = NBack()
-NB._make_files()
+# NB = NBack()
+# NB._make_files()
 
-TM = TheoryOfMind()
-TM._make_files()
+# TM = TheoryOfMind()
+# TM._make_files()
 
-AOK = ActionObservationKnots()
-AOK._make_files()
+# AOK = ActionObservationKnots()
+# AOK._make_files()
 
-RM = RomanceMovie()
-RM._make_files()
+# RM = RomanceMovie()
+# RM._make_files()
 
-VG = VerbGeneration()
-VG._make_files()
+# VG = VerbGeneration()
+# VG._make_files()
 
-R = Rest()
-R._make_files()
+# R = Rest()
+# R._make_files()
 
