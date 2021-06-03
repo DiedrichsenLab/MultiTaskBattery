@@ -186,7 +186,7 @@ class Run():
                 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
                 # need to figure out a way to input task parameters flexibly
                 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-                Task_target = TaskClass(run_number = run)
+                Task_target = TaskClass(run_number = run, study_name = self.study_name)
                 Task_target._make_files()
     
     def make_run_files(self):
@@ -1195,8 +1195,13 @@ TASK_MAP = {
 # R._make_files()
 
 
-R = Run(study_name='behavioral')
-R.make_target_files()
-R.make_run_files()
-R.check_counter_balance()
+# R1 = Run(study_name='behavioral')
+# R1.make_target_files()
+# R1.make_run_files()
+# R1.check_counter_balance()
+
+R2 = Run(study_name='fmri')
+R2.make_target_files()
+R2.make_run_files()
+R2.check_counter_balance()
 
