@@ -218,6 +218,7 @@ class Run():
 
                 # ----------------------------------------------------------------------------------------
                 # sample tasks
+                # 1. NEED TO MODIFY THIS IF YOU WANT TO TILE RUNS
                 # target_files_sample = self._check_task_run()
                 # create run dataframe
                 # for iter, target_file in enumerate(target_files_sample):
@@ -240,7 +241,8 @@ class Run():
 
                 #     self.all_data.append(data)
                 #     self.cum_time = end_time
-
+                # 2. NOT TILING RUNS OF THE TASK
+                #    USES TARGET FILES CREATED SPECIFICALLY FOR A RUN (NOT RANDOMLY SAMPLING FROM TARGET FILES)
                 target_file = self.fpaths[run]
                 iter = 0
                 dataframe = pd.read_csv(target_file)
