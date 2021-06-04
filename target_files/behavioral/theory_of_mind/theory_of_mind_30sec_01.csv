@@ -1,15 +1,15 @@
 ,story,question,filename,condition_name,story_dur,question_dur,trial_dur_correct,display_trial_feedback,trial_type,hand,trial_dur,iti_dur,run_number,display_trial_feedback,start_time,end_time
-0,"In her prom picture, Laura
-has braces on her teeth and long 
-blond hair. Soon after the picture 
-was taken, Laura's braces were removed","Today, Laura has straight teeth
-and long blond hair
-
-False or True?",16p,photo,10,4,14.5,True,True,right,14,0.5,0,True,0.0,14.0
-1,"A long time ago, an explorer mapped a 
+0,"A long time ago, an explorer mapped a 
 small island. Since then, the water 
 levels rose and only a tiny part of the 
 island is now left above water.","On the explorer's maps, the island 
 appears to be mostly submerged.
 
-False or True? ",6p,photo,10,4,14.5,True,False,right,14,0.5,0,True,14.5,28.5
+False or True? ",6p,photo,10,4,14.5,True,False,right,14,0.5,0,True,0.0,14.0
+1,"In her prom picture, Laura
+has braces on her teeth and long 
+blond hair. Soon after the picture 
+was taken, Laura's braces were removed","Today, Laura has straight teeth
+and long blond hair
+
+False or True?",16p,photo,10,4,14.5,True,True,right,14,0.5,0,True,14.5,28.5
