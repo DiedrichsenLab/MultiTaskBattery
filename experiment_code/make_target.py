@@ -1,6 +1,5 @@
 # Create target file for different tasks
 # @ Ladan Shahshahani  - Maedbh King March 30 2021
-# from numpy.core.defchararray import startswith
 from pathlib import Path
 from itertools import count
 import pandas as pd
@@ -10,10 +9,8 @@ import random
 import glob
 import re
 
-# from pandas.core.frame import DataFrame
-
-# import experiment_code.constants as consts
-import constants as consts
+import experiment_code.constants as consts
+# import constants as consts # for debugging comment the previous line and uncomment this line
 
 
 
