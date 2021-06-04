@@ -122,8 +122,10 @@ class Run():
             self.target_dict.update({self.task_name: self.fpaths})
 
         # create run dataframe
-        random.seed(self.task_num+1)
+        # random.seed(self.task_num+1)
         target_files_sample = [self.target_dict[self.task_name].pop(random.randrange(len(self.target_dict[self.task_name]))) for _ in np.arange(self.tile_runs)]
+        # target_files_sample = [self.target_dict[self.task_name] for _ in np.arange(self.tile_runs)]
+
 
         return target_files_sample
 
@@ -213,28 +215,53 @@ class Run():
                 self.task_target_dir = os.path.join(consts.target_dir, self.study_name, self.task_name)
                 self.fpaths = sorted(glob.glob(os.path.join(self.task_target_dir, f'*{self.task_name}_{self.task_dur}sec_*.csv')))
 
+
+                # ----------------------------------------------------------------------------------------
                 # sample tasks
-                target_files_sample = self._check_task_run()
+                # target_files_sample = self._check_task_run()
                 # create run dataframe
-                for iter, target_file in enumerate(target_files_sample):
-                    # load target file
-                    dataframe = pd.read_csv(target_file)
+                # for iter, target_file in enumerate(target_files_sample):
+                #     # load target file
+                #     # print(target_file)
+                #     dataframe = pd.read_csv(target_file)
 
-                    start_time = dataframe.iloc[0]['start_time'] + self.cum_time 
-                    end_time   = dataframe.iloc[-1]['start_time'] + dataframe.iloc[-1]['trial_dur'] + self.instruct_dur + self.cum_time
+                #     start_time = dataframe.iloc[0]['start_time'] + self.cum_time 
+                #     end_time   = dataframe.iloc[-1]['start_time'] + dataframe.iloc[-1]['trial_dur'] + self.instruct_dur + self.cum_time
 
-                    target_file_name = Path(target_file).name
-                    num_sec = re.findall(r'\d+(?=sec)', target_file)[0]
-                    target_num = re.findall(r'\d+(?=.csv)', target_file)[0]
-                    num_trials = len(dataframe)
+                #     target_file_name = Path(target_file).name
+                #     num_sec = re.findall(r'\d+(?=sec)', target_file)[0]
+                #     target_num = re.findall(r'\d+(?=.csv)', target_file)[0]
+                #     num_trials = len(dataframe)
 
-                    data = {'task_name': self.task_name, 'task_iter': iter + 1, 'task_num': self.task_num + 1, # 'block_iter': iter+1
-                            'num_trials': num_trials, 'target_num': target_num, 'num_sec': num_sec,
-                            'target_file': target_file_name, 'start_time': start_time, 'end_time': end_time,
-                            'instruct_dur': self.instruct_dur}
+                #     data = {'task_name': self.task_name, 'task_iter': iter + 1, 'task_num': self.task_num + 1, # 'block_iter': iter+1
+                #             'num_trials': num_trials, 'target_num': target_num, 'num_sec': num_sec,
+                #             'target_file': target_file_name, 'start_time': start_time, 'end_time': end_time,
+                #             'instruct_dur': self.instruct_dur}
 
-                    self.all_data.append(data)
-                    self.cum_time = end_time
+                #     self.all_data.append(data)
+                #     self.cum_time = end_time
+
+                target_file = self.fpaths[run]
+                iter = 0
+                dataframe = pd.read_csv(target_file)
+
+                start_time = dataframe.iloc[0]['start_time'] + self.cum_time 
+                end_time   = dataframe.iloc[-1]['start_time'] + dataframe.iloc[-1]['trial_dur'] + self.instruct_dur + self.cum_time
+
+                target_file_name = Path(target_file).name
+                num_sec = re.findall(r'\d+(?=sec)', target_file)[0]
+                target_num = re.findall(r'\d+(?=.csv)', target_file)[0]
+                num_trials = len(dataframe)
+
+                data = {'task_name': self.task_name, 'task_iter': iter + 1, 'task_num': self.task_num + 1, # 'block_iter': iter+1
+                        'num_trials': num_trials, 'target_num': target_num, 'num_sec': num_sec,
+                        'target_file': target_file_name, 'start_time': start_time, 'end_time': end_time,
+                        'instruct_dur': self.instruct_dur}
+
+                self.all_data.append(data)
+                self.cum_time = end_time
+
+                # ---------------------------------------------------------------------------------------
 
             # shuffle order of tasks within run
             df_run = pd.DataFrame.from_dict(self.all_data)
@@ -1205,7 +1232,7 @@ TASK_MAP = {
 
 
 R1 = Run(study_name='behavioral')
-R1.make_target_files()
+# R1.make_target_files()
 R1.make_run_files()
 R1.check_counter_balance()
 
