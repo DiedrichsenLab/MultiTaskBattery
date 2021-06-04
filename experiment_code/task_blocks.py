@@ -2248,6 +2248,6 @@ TASK_MAP = {
     "flexion_extension": FlexionExtension, # task_num 10
     "verb_generation": VerbGeneration, # task_num 11
     "romance_movie": RomanceMovie, #task_num 12
-    "act_obs_knots": ActionObservationKnots, #task_num 13
+    "action_observation_knots": ActionObservationKnots, #task_num 13
     "rest": Rest, # task_num?
     }
