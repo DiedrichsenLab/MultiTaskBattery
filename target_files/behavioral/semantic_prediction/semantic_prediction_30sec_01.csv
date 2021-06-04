@@ -1,5 +1,5 @@
 ,hand,trial_dur,iti_dur,run_number,display_trial_feedback,cloze_probability,dataset,CoRT_mean,CoRT_std,CoRT_descript,target_word,random_word,word_count,cloze_descript,stim,condition_name,stem_word_dur,last_word_dur,trial_dur_correct,display_trial_feedback,replace_stimuli,feedback_type,trial_type,last_word,start_time,end_time
-0,right,6,0.5,0,True,0.78,peele,4.0,1.2649110640673518,strong CoRT,fan,race,9,high cloze,"To cool down the room, Sami turned on the",easy,0.5,1.5,6.5,True,False,rt,False,race,0.0,6.0
-1,right,6,0.5,0,True,0.81,peele,1.25,0.5,strong non-CoRT,rent,mold,9,high cloze,The building isn't for sale but it's available to,easy,0.5,1.5,6.5,True,False,rt,True,rent,6.5,12.5
-2,right,6,0.5,0,True,0.34,peele,1.8,0.8366600265340756,strong non-CoRT,dull,night,9,low cloze,Paige thought the color of the wall was rather,hard,0.5,1.5,6.5,True,False,rt,True,dull,13.0,19.0
-3,right,6,0.5,0,True,0.39,peele,4.5,0.5773502691896257,strong CoRT,moat,god,8,low cloze,The enemies stormed the castle despite the protective,hard,0.5,1.5,6.0,True,False,rt,False,god,19.5,25.5
+0,right,6,0.5,0,True,0.34,peele,1.8,0.8366600265340756,strong non-CoRT,dull,night,9,low cloze,Paige thought the color of the wall was rather,hard,0.5,1.5,6.5,True,False,rt,True,dull,0.0,6.0
+1,right,6,0.5,0,True,0.39,peele,4.5,0.5773502691896257,strong CoRT,moat,god,8,low cloze,The enemies stormed the castle despite the protective,hard,0.5,1.5,6.0,True,False,rt,False,god,6.5,12.5
+2,right,6,0.5,0,True,0.81,peele,1.25,0.5,strong non-CoRT,rent,mold,9,high cloze,The building isn't for sale but it's available to,easy,0.5,1.5,6.5,True,False,rt,True,rent,13.0,19.0
+3,right,6,0.5,0,True,0.78,peele,4.0,1.2649110640673518,strong CoRT,fan,race,9,high cloze,"To cool down the room, Sami turned on the",easy,0.5,1.5,6.5,True,False,rt,False,race,19.5,25.5
