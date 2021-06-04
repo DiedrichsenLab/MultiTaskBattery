@@ -191,8 +191,10 @@ class Task:
             # assuming pressed_keys is sorted by timestamp; is it?
             # determine correct response based on first key press only
             if self.pressed_keys[0][0] == self.correct_key_list[0]:
+                print(f"correct response")
                 self.correct_response = True 
             elif self.pressed_keys[0][0] != self.correct_key_list[0]:
+                print(f"wrong response")
                 self.correct_response = False
     
         # 6.3 determine the key that was pressed
@@ -2059,6 +2061,7 @@ class ActionObservationKnots(Task):
         self.window.flip() 
     
     def _show_stim_action(self):
+        print(f"showing action")
         mov = visual.MovieStim3(self.window, self.path_to_video_action, flipVert=False, flipHoriz=False, loop=False)
 
         # play movie
@@ -2086,6 +2089,7 @@ class ActionObservationKnots(Task):
                     self.window.flip()
 
     def _show_stim_control(self):
+        print(f"showing control")
         mov = visual.MovieStim3(self.window, self.path_to_video_control, flipVert=False, flipHoriz=False, loop=False)
 
         # play movie
