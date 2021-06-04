@@ -95,19 +95,18 @@ class Target():
         consts.dircheck(self.target_dir)
         dataframe.to_csv(self.target_filedir)
 
-class Run():
+class Session():
 
     def __init__(self, study_name, 
                  task_list = ['visual_search', 'action_observation_knots', 'flexion_extension', 
                               'finger_sequence', 'theory_of_mind', 'n_back', 'semantic_prediction', 
                               'rest'], 
-                 run_number = 1, instruct_dur = 5, task_dur = 30, num_runs = 8, 
+                 instruct_dur = 5, task_dur = 30, num_runs = 8, 
                  tile_runs = 1, counter_balance = True, 
                  session = 1):
 
         self.study_name      = study_name      # 'fmri' or 'behavioral'
         self.task_list       = task_list       # list of tasks. Default is the list for pontine project
-        self.run_number      = run_number      # run number
         self.instruct_dur    = instruct_dur    # instruction period
         self.task_dur        = task_dur        # duration of each task
         self.num_runs        = num_runs        # number of runs
@@ -116,6 +115,9 @@ class Run():
         self.session         = session         # session number
 
     def _check_task_run(self):
+        """
+        randomly picks a target file for the current run
+        """
         # check if task exists in dict
         exists_in_dict = [True for key in self.target_dict.keys() if self.task_name==key]
         if not exists_in_dict: 
@@ -130,6 +132,9 @@ class Run():
         return target_files_sample
 
     def _test_counterbalance(self):
+        """
+        Testing whether tasks are counter balanced
+        """
         filenames = sorted(glob.glob(os.path.join(consts.run_dir, self.study_name, '*run_*')))
 
         dataframe_all = pd.DataFrame()
@@ -159,6 +164,9 @@ class Run():
         return sum([sum(f['task_num'][col]>5) for col in f['task_num'].columns]) 
 
     def _counterbalance_runs(self):
+        """
+        checks if the tasks are counter balanced. If not, creates new run file
+        """
         while self._test_counterbalance() > 0:
             print('not balanced ...')
 
@@ -215,7 +223,6 @@ class Run():
                 self.task_target_dir = os.path.join(consts.target_dir, self.study_name, self.task_name)
                 self.fpaths = sorted(glob.glob(os.path.join(self.task_target_dir, f'*{self.task_name}_{self.task_dur}sec_*.csv')))
 
-
                 # ----------------------------------------------------------------------------------------
                 # sample tasks
                 # 1. NEED TO MODIFY THIS IF YOU WANT TO TILE RUNS
@@ -262,7 +269,6 @@ class Run():
 
                 self.all_data.append(data)
                 self.cum_time = end_time
-
                 # ---------------------------------------------------------------------------------------
 
             # shuffle order of tasks within run
@@ -1196,50 +1202,42 @@ TASK_MAP = {
     }
 
 
-# VS = VisualSearch()
-# VS._make_files()
+# Functions to do the job
+def make_task_target(task_name = 'visual_search', study_name = 'behavioral', hand = 'right'):
+    """
+    creates target file for a specific task.
+    can be used for runs of individual tasks and also for testing one task
+    Args:
+        task_name - name of the task
+        study_name - either 'behavioral' or 'fmri'
+        hand - hand used for the task
+    """
 
-# FS = FingerSequence()
-# FS._make_files()
+    # get the task class
+    TaskClass = TASK_MAP[task_name]
 
-# SO = SternbergOrder()
-# SO._make_files()
+    # make target file
+    Task_target = TaskClass(run_number = 1, study_name = study_name, hand = hand)
+    Task_target._make_files()
 
-# FE = FlexionExtension()
-# FE._make_files()
+    return
+def make_files(study_name = 'behavioral', num_runs = 8):
+    """
+    make target files and run files
+    Args:
+        study_name - either 'fmri' or 'behavioral'
+        num_runs   - number of runs that you want to create
+    """
+    Sess = Session(study_name=study_name, num_runs = num_runs)
+    Sess.make_target_files()
+    Sess.make_run_files()
+    Sess.check_counter_balance()
+    
+    return
 
-# VO = VisuospatialOrder()
-# VO._make_files()
-
-# SP = SemanticPrediction()
-# SP._make_files()
-
-# NB = NBack()
-# NB._make_files()
-
-# TM = TheoryOfMind()
-# TM._make_files()
-
-# AOK = ActionObservationKnots()
-# AOK._make_files()
-
-# RM = RomanceMovie()
-# RM._make_files()
-
-# VG = VerbGeneration()
-# VG._make_files()
-
-# R = Rest()
-# R._make_files()
-
-
-R1 = Run(study_name='behavioral')
-# R1.make_target_files()
-R1.make_run_files()
-R1.check_counter_balance()
-
-R2 = Run(study_name='fmri')
-R2.make_target_files()
-R2.make_run_files()
-R2.check_counter_balance()
+# Example code 
+## behavioral
+# make_files(study_name='behavioral', num_runs=8)
+## fmri
+# make_files(study_name='fmri', num_runs=8)
 
