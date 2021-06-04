@@ -982,7 +982,7 @@ class TheoryOfMind(Target):
 
 class ActionObservationKnots(Target):
     def __init__(self, study_name = 'behavioral', hand = None, trial_dur = 15,
-                 iti_dur = 0, run_number = 1, display_trial_feedback = False, 
+                 iti_dur = 0.5, run_number = 1, display_trial_feedback = False, 
                  task_dur=30, tr = 1):
         super(ActionObservationKnots, self).__init__(study_name = study_name, task_name = 'action_observation_knots', hand = None, 
                                            trial_dur = trial_dur, iti_dur = iti_dur, run_number = run_number, 
