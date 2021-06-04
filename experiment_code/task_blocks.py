@@ -1049,7 +1049,7 @@ class FingerSequence(Task):
         """
         super().get_trial_info(self.trial)
         self.sequence_text = str(self.target_file['sequence'][self.trial])
-        self.announce_time = self.target_file['announce_time'][self.trial]
+        # self.announce_time = self.target_file['announce_time'][self.trial]
         
         # create a list of digits that are to be pressed
         self.digits_seq = self.sequence_text.split(" ")
@@ -1100,7 +1100,10 @@ class FingerSequence(Task):
         map_k2d = self.key_digit[self.hand]
 
         # map the pressed keys to pressed digits
-        digit_press = map_k2d[press]
+        if press in map_k2d:
+            digit_press = map_k2d[press]
+        else:
+            digit_press = None
 
         return digit_press
 
@@ -1223,10 +1226,10 @@ class FingerSequence(Task):
             self.get_time_before_disp()
 
             # 2.collect responses and draw green rectangle (as a go signal)
-            wait_time = self.trial_dur - self.announce_time
+            wait_time = self.trial_dur
             self.trial_response = self._get_trial_response(wait_time = wait_time,
                                                            trial_index = self.trial, 
-                                                           start_time = self.t0 + self.announce_time, 
+                                                           start_time = self.t0 , 
                                                            start_time_rt = self.t2)
 
             # update trial response
