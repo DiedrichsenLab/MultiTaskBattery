@@ -1,3 +1,0 @@
-,label,knot,session_list,condition_name,media,extracted,video_start,video_end,stim_action,stim_control,hand,trial_dur,iti_dur,run_number,display_trial_feedback,start_time,end_time
-0,movie,wampum,2,knot,video,1,0,14,knotActionWampum.mov,knotControlWampum.mov,,15,0,0,False,0,15
-1,movie,adage,2,knot,video,1,0,14,knotActionAdage.mov,knotControlAdage.mov,,15,0,0,False,15,30

@@ -1,2 +1,2 @@
 ,hand,trial_dur,iti_dur,run_number,display_trial_feedback,stim,start_time,end_time
-0,,30,0,2,False,fixation,0,30
+0,right,30,0,1,False,fixation,0,30
