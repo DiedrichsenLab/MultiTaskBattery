@@ -1,7 +1,0 @@
-task_name,task_num,num_trials,target_num,num_sec,target_file,start_time,end_time,instruct_dur
-finger_sequence,8,6,1,30,finger_sequence_30sec_01.csv,0,35,5
-rest,7,1,,10,rest_10sec.csv,35,45,0
-n_back,3,15,5,30,n_back_30sec_05.csv,45,80,5
-rest,7,1,,10,rest_10sec.csv,80,90,0
-semantic_prediction,5,4,5,30,semantic_prediction_30sec_05.csv,90,125,5
-rest,7,1,,10,rest_10sec.csv,125,135,0
