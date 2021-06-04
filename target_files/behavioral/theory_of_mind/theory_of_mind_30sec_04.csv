@@ -1,19 +1,14 @@
 ,story,question,filename,condition_name,story_dur,question_dur,trial_dur_correct,display_trial_feedback,trial_type,hand,trial_dur,iti_dur,run_number,display_trial_feedback,start_time,end_time
-0,"The national geographic included
-a photograph of the mountaineer 
-John Edwards at the base camp of
-Mount Everest in 1985. Ten years 
-after the piece was published,
-John Edwards reached the summit.","In the national geographic, 
-John Edwards is photographed
-at the base camp of Mount Everest
+0,"Maria wakes up early to study
+at the library. Her housemates
+notice that she is not at breakfast
+and presume that she is sleeping","In fact, Maria is studying in the library
 
-False or True?",25b,belief,10,4,14.5,True,True,right,14,0.5,4,True,0.0,14.0
-1,"Sally and Greg called ahead of time to make 
-a reservation for the back-country cabin. 
-The park ranger forgot to write down the 
-reservation and two other hikers got to the 
-cabin first.","When the hikers arrive they see no 
-one in their cabin.
+False or True?",15b,belief,10,4,14.5,True,True,right,14,0.5,3,True,0.0,14.0
+1,"In her prom picture, Laura
+has braces on her teeth and long 
+blond hair. Soon after the picture 
+was taken, Laura's braces were removed","Today, Laura has straight teeth
+and long blond hair
 
-False or True? ",7b,belief,10,4,14.5,True,False,right,14,0.5,4,True,14.5,28.5
+False or True?",16p,photo,10,4,14.5,True,True,right,14,0.5,3,True,14.5,28.5
