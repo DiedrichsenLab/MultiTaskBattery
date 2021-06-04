@@ -1,3 +1,0 @@
-,stim,stim_dur,trial_dur,iti_dur,start_time,end_time,trial_type,hand,display_trial_feedback
-0,flexion extension,1,14,1,0,14,None,None,False
-1,flexion extension,1,14,1,15,29,None,None,False
