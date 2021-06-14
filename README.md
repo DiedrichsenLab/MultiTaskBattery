@@ -7,7 +7,7 @@ the functional sub-regions of the human cerebellum
 The tasks are Visual Search, Action Observation, N Back,
 Social Prediction, and Semantic Prediction
 
-#### Authors: Maedbh King
+#### Authors: Maedbh King, Ladan Shahshahani
 
 ## Installation
 
@@ -68,26 +68,51 @@ First, activate the virtual environment:
 
 Next, retrieve stimulus files:
 
-    $ Download the folders: stimuli, target_files and run_files from the shared folder on google drive and save in top-level directory of the mdtb_reduced folder
-    $ Eventually these folders will be available on AWS
+    $ Download the folders: stimuli from the server
+    
+### Installing psychopy
+Alternatively, you can follow the isntructions on https://www.psychopy.org/download.html#conda to create a virtual environment for psychopy. If you choose to do so, each time before running the experiment, you need to use conda to activate the psychopy virtual environment by typing:
 
-To start a new experiment, execute:
+    $ conda activate psychopy
+    
+## before you start:
+1. go to experiment_code/constants and change experiment_name and base_dir. For the pontine project, experiment_name = 'pontine_7T' and base_dir = Path('where my base directory is').absolute() 
+2. make sure 'stimuli' folder is located under your base_dir
+3. run constants.dirtree() to make sure you have all the folders
 
-Start a python prompt 
-import experiment_code.run_experiment as e
-e.run()
+## coding your experiment
+use pontine_7T.py as an example and build the code for your experiment.
+### debugging the code
+Take pontine_7T.py as an example. run routine in this module has an input called 'debug'. The default value of this input is set to True. For debugging your code, make sure you debug is set to True. And for running the code during training and scan, make sure that debug is set to False. 
 
-After running the above command, a GUI will open with the following inputs: 
+## running an experiment
+Start a python prompt
 
-1. subject_id: example: `s01` 
-2. study_name: example: `fmri` or `behavioral`
-3. run_name:   example: `run_01`
+    $ import python_7T.python_7T as e
+    
+if you haven't created target files
 
-To generate target and run files, execute:
+    $ e.create_target()
+    
+    * you can play around with the task_list variable. Choose tasks that are already defined in task_block.py
+    * strings representing task names in the list should exist in the TASK_MAP variable in task_block.py
+run the experiment code:
+### for debugging:
 
-    $ makefiles-fmri or makefiles-behavioral
+    $ e.run(debug = True)
+    
+    * you will be prompted to enter the run number in the terminal. Enter the number for the run you want to test
+    * you may change 'behav_training' and 'ttl_flag' as well.
+### once you have debugged the code:
 
-All parameters are set in the __init__ methods of the target and run cases in `make_target_run.py`
+    $ e.run(debug = False)
+    * a dialogue box will pop up asking you for experiment parameters
+### to run or test the code for fmri, you can write a 'fmri_simulator.py' and do:
+
+    $ import python_7T.fmri_simulator
+    * a dialogue box will pop up asking for scanning parameters. This code will simulate ttl pulses and can be used for checking ttl syncing.
+    * While running the code, always check the output printed in the terminal
+
 
 Project Organization
 ------------
@@ -109,12 +134,19 @@ Project Organization
     │   │
     │   ├──                <- Scripts to run both behavioral and fmri experiments and make target and run files
     │   │   │── constants.py
-    │   │   │── task_blocks
+    │   │   │── task_blocks.py
     │   │   │── screen.py       
-    │   │   ├── make_target_run.py
-    │   │   └── run_experiment.py
+    │   │   ├── make_target.py
+    │   │   └── experiment_block.py
     │   │   ├── ttl.py
     │   │
+    ├── <experiment_name>    <- a folder with the name you have chosen for the experiment. Example: pontine_7T
+    │   │
+    │   ├──                
+    │   │   │── <expperiment_name>.py   <- Scripts to create files and run the experiment. Example: pontine_7T.py
+    │   │   ├── fmri_simulator.py       <- Script to run/test the code for scanner
+    │   │   ├── run_files               <- folder containing run files for your experiment
+    │   │   ├── target_files            <- folder containing target files for the tasks in your experiment
     └── tox.ini            <- tox file with settings for running tox; see tox.readthedocs.io
 
 
