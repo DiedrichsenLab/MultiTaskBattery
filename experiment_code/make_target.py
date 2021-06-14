@@ -1218,14 +1218,14 @@ def make_task_target(task_name = 'visual_search', study_name = 'behavioral', han
     Task_target._make_files()
 
     return
-def make_files(study_name = 'behavioral', num_runs = 8):
+def make_files(task_list, study_name = 'behavioral', num_runs = 8):
     """
     make target files and run files
     Args:
         study_name - either 'fmri' or 'behavioral'
         num_runs   - number of runs that you want to create
     """
-    Sess = Session(study_name=study_name, num_runs = num_runs)
+    Sess = Session(task_list = task_list, study_name = study_name, num_runs = num_runs)
     Sess.make_target_files()
     Sess.make_run_files()
     Sess.check_counter_balance()
