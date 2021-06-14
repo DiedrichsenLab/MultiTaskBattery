@@ -72,12 +72,13 @@ Next, retrieve stimulus files:
     
 ### Installing psychopy
 Alternatively, you can follow the isntructions on https://www.psychopy.org/download.html#conda to create a virtual environment for psychopy. If you choose to do so, each time before running the experiment, you need to use conda to activate the psychopy virtual environment by typing:
+
     $ conda activate psychopy
     
 ## before you start:
 1. go to experiment_code/constants and change experiment_name and base_dir. For the pontine project, experiment_name = 'pontine_7T' and base_dir = Path('where my base directory is').absolute() 
 2. make sure 'stimuli' folder is located under your base_dir
-3. run dirtree() under constants to make sure you have all the folders
+3. run constants.dirtree() to make sure you have all the folders
 
 ## coding your experiment
 use pontine_7T.py as an example and build the code for your experiment.
@@ -86,20 +87,28 @@ Take pontine_7T.py as an example. run routine in this module has an input called
 
 ## running an experiment
 Start a python prompt
+
     $ import python_7T.python_7T as e
+    
 if you haven't created target files
+
     $ e.create_target()
+    
     * you can play around with the task_list variable. Choose tasks that are already defined in task_block.py
     * strings representing task names in the list should exist in the TASK_MAP variable in task_block.py
 run the experiment code:
-* for debugging:
+### for debugging:
+
     $ e.run(debug = True)
+    
     * you will be prompted to enter the run number in the terminal. Enter the number for the run you want to test
     * you may change 'behav_training' and 'ttl_flag' as well.
-* once you have debugged the code:
+### once you have debugged the code:
+
     $ e.run(debug = False)
     * a dialogue box will pop up asking you for experiment parameters
-* to run or test the code for fmri, you can write a 'fmri_simulator.py' and do:
+### to run or test the code for fmri, you can write a 'fmri_simulator.py' and do:
+
     $ import python_7T.fmri_simulator
     * a dialogue box will pop up asking for scanning parameters. This code will simulate ttl pulses and can be used for checking ttl syncing.
     * While running the code, always check the output printed in the terminal
