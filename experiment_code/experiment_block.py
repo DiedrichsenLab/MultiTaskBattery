@@ -10,12 +10,9 @@ import glob
 
 from psychopy import visual, core, event, gui # data, logging
 
-
 import experiment_code.constants as consts
 from experiment_code.task_blocks import TASK_MAP
 from experiment_code.ttl import ttl
-
-from ast import literal_eval
 
 class Experiment:
     """
