@@ -214,8 +214,8 @@ def get_experiment_info(debug = True):
         # uses a toy example with toy input 
         ### Values can be changed manually here
         experiment_info = {}
-        experiment_info['exp_name']       = str(input("enter the name for the experiment: "))
-        experiment_info['subj_id']        = str(input("enter an id for the subject: "))
+        experiment_info['exp_name']       = 'test'
+        experiment_info['subj_id']        = 'test'
         experiment_info['run_number']     = int(input("enter the run number: ")) # change this to check other runs
         experiment_info['behav_training'] = True # change this to False to check scanning files
         experiment_info['ttl_flag']       = True # initially set this to False to check the code without ttl pulse syncing
