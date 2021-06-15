@@ -1,5 +1,5 @@
 ,hand,trial_dur,iti_dur,run_number,display_trial_feedback,cloze_probability,dataset,CoRT_mean,CoRT_std,CoRT_descript,target_word,random_word,word_count,cloze_descript,stim,condition_name,stem_word_dur,last_word_dur,trial_dur_correct,display_trial_feedback,replace_stimuli,feedback_type,trial_type,last_word,start_time,end_time
-0,right,6,0.5,1,True,0.89,peele,2.8,1.6431676725154984,ambiguous,mud,fortune,9,high cloze,The hiker's new boots were stuck in the deep,easy,0.5,1.5,6.5,True,False,rt,True,mud,0.0,6.0
-1,right,6,0.5,1,True,0.45,peele,4.4,0.8944271909999157,strong CoRT,hose,bear,7,low cloze,Andrea watered her garden with a small,hard,0.5,1.5,5.5,True,False,rt,False,bear,6.5,12.5
+0,right,6,0.5,1,True,0.83,peele,4.2,1.3038404810405295,strong CoRT,number,pull,9,high cloze,Hank won the dice game by rolling a specific,easy,0.5,1.5,6.5,True,False,rt,False,pull,0.0,6.0
+1,right,6,0.5,1,True,0.89,peele,2.8,1.6431676725154984,ambiguous,mud,fortune,9,high cloze,The hiker's new boots were stuck in the deep,easy,0.5,1.5,6.5,True,False,rt,True,mud,6.5,12.5
 2,right,6,0.5,1,True,0.5,peele,2.6,1.8165902124584952,ambiguous,sweat,bad,7,low cloze,"Melanie loved working out, but hated the",hard,0.5,1.5,5.5,True,False,rt,True,sweat,13.0,19.0
-3,right,6,0.5,1,True,0.83,peele,4.2,1.3038404810405295,strong CoRT,number,pull,9,high cloze,Hank won the dice game by rolling a specific,easy,0.5,1.5,6.5,True,False,rt,False,pull,19.5,25.5
+3,right,6,0.5,1,True,0.45,peele,4.4,0.8944271909999157,strong CoRT,hose,bear,7,low cloze,Andrea watered her garden with a small,hard,0.5,1.5,5.5,True,False,rt,False,bear,19.5,25.5
