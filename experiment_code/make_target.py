@@ -753,7 +753,8 @@ class SemanticPrediction(Target):
         get stimulus dataframe
         """
         # read in the stimulus csv file
-        stim_dir = os.path.join(consts.stim_dir, self.study_name, self.task_name)
+        # stim_dir = os.path.join(consts.stim_dir, self.study_name, self.task_name)
+        stim_dir = os.path.join(consts.stim_dir, self.task_name)
         stim_df  = pd.read_csv(os.path.join(stim_dir, 'sentence_validation.csv'))
 
         # conds = [self.balance_blocks['condition_name'][key] for key in self.balance_blocks['condition_name'].keys()]  
@@ -850,7 +851,8 @@ class NBack(Target):
         get the stimulus file
         """
         # load in stimuli
-        stim_dir   = os.path.join(consts.stim_dir, self.study_name, self.task_name)
+        # stim_dir   = os.path.join(consts.stim_dir, self.study_name, self.task_name)
+        stim_dir   = os.path.join(consts.stim_dir, self.task_name)
         stim_files = [f for f in os.listdir(str(stim_dir)) if ((f.endswith('g')) and not(f.startswith('.')))]
 
         # first two images are always random (and false)
@@ -923,7 +925,8 @@ class TheoryOfMind(Target):
         get stories dataframe
         """
         # read in the stimulus csv file
-        stim_dir = os.path.join(consts.stim_dir, self.study_name, self.task_name)
+        # stim_dir = os.path.join(consts.stim_dir, self.study_name, self.task_name)
+        stim_dir = os.path.join(consts.stim_dir, self.task_name)
         stim_df  = pd.read_csv(os.path.join(stim_dir, 'theory_of_mind.csv'))
 
         # conds = [self.balance_blocks['condition_name'][key] for key in self.balance_blocks['condition_name'].keys()]  
@@ -996,7 +999,8 @@ class ActionObservationKnots(Target):
         """
 
         # load in stimuli
-        stim_dir = os.path.join(consts.stim_dir, self.study_name, self.task_name)
+        # stim_dir = os.path.join(consts.stim_dir, self.study_name, self.task_name)
+        stim_dir = os.path.join(consts.stim_dir, self.task_name)
         stim_df  = pd.read_csv(os.path.join(stim_dir, 'action_observation_knots.csv'))
  
         # remove all filenames where any of the videos have not been extracted
@@ -1058,7 +1062,8 @@ class RomanceMovie(Target):
         """
 
         # load in stimuli
-        stim_dir = os.path.join(consts.stim_dir, self.study_name, self.task_name)
+        # stim_dir = os.path.join(consts.stim_dir, self.study_name, self.task_name)
+        stim_dir = os.path.join(consts.stim_dir, self.task_name)
         stim_df  = pd.read_csv(os.path.join(stim_dir, 'romance_movie.csv'))
  
         # remove all filenames where any of the videos have not been extracted
@@ -1112,7 +1117,8 @@ class VerbGeneration(Target):
     def _get_stim(self):
 
         # read in the stimulus csv file
-        stim_dir = os.path.join(consts.stim_dir, self.study_name, self.task_name)
+        # stim_dir = os.path.join(consts.stim_dir, self.study_name, self.task_name)
+        stim_dir = os.path.join(consts.stim_dir, self.task_name)
         stim_df  = pd.read_csv(os.path.join(stim_dir, 'verb_generation.csv'))
 
         self.stim_df = stim_df.query(f'session_list=={self.trials_info["session_list"]}')

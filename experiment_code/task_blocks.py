@@ -222,9 +222,11 @@ class Task:
             correct_response - a boolean variable. True if the response was correct, False otherwise
         """
         if correct_response:
-            feedback = os.path.join(consts.stim_dir, self.study_name ,'correct.png')
+            # feedback = os.path.join(consts.stim_dir, self.study_name ,'correct.png')
+            feedback = os.path.join(consts.stim_dir,'correct.png')
         elif not correct_response:
-            feedback = os.path.join(consts.stim_dir, self.study_name, 'incorrect.png')
+            # feedback = os.path.join(consts.stim_dir, self.study_name, 'incorrect.png')
+            feedback = os.path.join(consts.stim_dir, 'incorrect.png')
 
         # display feedback on screen
         feedback = visual.ImageStim(self.window, feedback, pos=(0, 0)) # pos=pos
@@ -382,7 +384,8 @@ class VisualSearch(Task):
     
     def _get_stims(self):
         # load target and distractor stimuli
-        self.stims = [consts.stim_dir/ self.study_name / self.task_name/ f"{d}.png" for d in self.orientations]
+        # self.stims = [consts.stim_dir/ self.study_name / self.task_name/ f"{d}.png" for d in self.orientations]
+        self.stims = [consts.stim_dir/ self.task_name/ f"{d}.png" for d in self.orientations]
         
         path_to_display = glob.glob(os.path.join(consts.target_dir, self.study_name, self.task_name, f'*display_pos_*_{self.target_num}*'))
         self.tf_display = pd.read_csv(path_to_display[0])
@@ -479,7 +482,8 @@ class NBack(Task):
 
     def _get_trial_info(self):
         super().get_trial_info(self.trial)
-        stim_path = consts.stim_dir / self.study_name / self.task_name / self.target_file['stim'][self.trial]
+        # stim_path = consts.stim_dir / self.study_name / self.task_name / self.target_file['stim'][self.trial]
+        stim_path = consts.stim_dir / self.task_name / self.target_file['stim'][self.trial]
         self.stim = visual.ImageStim(self.window, str(stim_path))
     
     def _show_stim(self):
@@ -557,7 +561,8 @@ class SocialPrediction(Task):
     def _get_trial_info(self):
         super().get_trial_info(self.trial)
         video_file = self.target_file['stim'][self.trial]
-        self.path_to_video = os.path.join(consts.stim_dir, self.study_name, self.task_name, "modified_clips", video_file)       
+        # self.path_to_video = os.path.join(consts.stim_dir, self.study_name, self.task_name, "modified_clips", video_file) 
+        self.path_to_video = os.path.join(consts.stim_dir, self.task_name, "modified_clips", video_file)       
    
     def _get_first_response(self):
         # display trial feedback
@@ -818,6 +823,7 @@ class ActionObservation(Task):
     def _get_trial_info(self):
         super().get_trial_info(self.trial)
         video_file = self.target_file['stim'][self.trial]
+        # self.path_to_video = os.path.join(consts.stim_dir, self.study_name, self.task_name, "modified_clips", video_file)
         self.path_to_video = os.path.join(consts.stim_dir, self.study_name, self.task_name, "modified_clips", video_file)
     
     def _show_stim(self):
@@ -1973,7 +1979,8 @@ class RomanceMovie(Task):
         self.iti_dur = self.target_file['iti_dur'][self.trial]
         self.trial_dur = self.target_file['trial_dur'][self.trial]
         self.start_time = self.target_file['start_time'][self.trial]
-        self.path_to_video = os.path.join(consts.stim_dir, self.study_name, self.task_name, 'clips', video_file)
+        # self.path_to_video = os.path.join(consts.stim_dir, self.study_name, self.task_name, 'clips', video_file)
+        self.path_to_video = os.path.join(consts.stim_dir, self.task_name, 'clips', video_file)
     
     def display_instructions(self): # overriding the display instruction from the parent class
         self.instruction_text = f"{self.task_name} task \n\n Please keep your head still while watching the movie clip."
@@ -2070,8 +2077,10 @@ class ActionObservationKnots(Task):
         self.iti_dur = self.target_file['iti_dur'][self.trial]
         self.trial_dur = self.target_file['trial_dur'][self.trial]
         self.start_time = self.target_file['start_time'][self.trial]
-        self.path_to_video_action = os.path.join(consts.stim_dir, self.study_name, self.task_name, 'clips', video_file_action)
-        self.path_to_video_control = os.path.join(consts.stim_dir, self.study_name, self.task_name, 'clips', video_file_control)
+        # self.path_to_video_action = os.path.join(consts.stim_dir, self.study_name, self.task_name, 'clips', video_file_action)
+        # self.path_to_video_control = os.path.join(consts.stim_dir, self.study_name, self.task_name, 'clips', video_file_control)
+        self.path_to_video_action = os.path.join(consts.stim_dir, self.task_name, 'clips', video_file_action)
+        self.path_to_video_control = os.path.join(consts.stim_dir, self.task_name, 'clips', video_file_control)
     
     def display_instructions(self): # overriding the display instruction from the parent class
 
