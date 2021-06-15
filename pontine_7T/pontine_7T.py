@@ -25,7 +25,7 @@ from experiment_code.ttl import ttl
 # 4. create target files first (if already not done)
 def create_target(task_list = ['visual_search', 'action_observation_knots', 'flexion_extension', 
                               'finger_sequence', 'theory_of_mind', 'n_back', 'semantic_prediction', 
-                              'rest'], 
+                              'rest', 'romance_movie'], 
                   num_runs = 8):
 
     """
@@ -44,7 +44,7 @@ def create_target(task_list = ['visual_search', 'action_observation_knots', 'fle
 def run(debug = True):
 
     # 1. get experiment information
-    exp_info = exp_block.get_experiment_info(debug = debug)
+    exp_info = exp_block.set_experiment_info(debug = debug)
 
     ### printing some info to the screen for developer
     print(f"***** you are in debug mode {debug}")
@@ -166,7 +166,7 @@ def run(debug = True):
     df_run_results = Custom_Exp.set_runfile_results(all_run_response, save = True)
 
     # 10. present feedback from all tasks on screen 
-    exp_block.show_scoreboard(subj_dir, taskObj_list, exp_screen)
+    Custom_Exp.show_scoreboard(taskObj_list, exp_screen)
 
     # 11. end experiment
     # end_exper_text = f"End of run {self.run_num}\n\nTake a break!"
