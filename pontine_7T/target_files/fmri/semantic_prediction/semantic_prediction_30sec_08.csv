@@ -1,5 +1,5 @@
 ,hand,trial_dur,iti_dur,run_number,display_trial_feedback,cloze_probability,dataset,CoRT_mean,CoRT_std,CoRT_descript,target_word,random_word,word_count,cloze_descript,stim,condition_name,stem_word_dur,last_word_dur,trial_dur_correct,display_trial_feedback,replace_stimuli,feedback_type,trial_type,last_word,start_time,end_time
-0,left,6,0.5,7,True,0.81,peele,4.2,0.8366600265340756,strong CoRT,bee,cheer,9,high cloze,The boy screamed after he was stung by a,easy,0.5,1.5,6.5,True,False,rt,False,cheer,0.0,6.0
+0,left,6,0.5,7,True,0.82,block_baldwin,1.5714285714285714,0.7867957924694431,strong non-CoRT,art,drink,7,high cloze,Jenny was creative and loved to study,easy,0.5,1.5,5.5,True,False,rt,True,art,0.0,6.0
 1,left,6,0.5,7,True,0.31,peele,4.4,0.8944271909999159,strong CoRT,glare,udder,9,low cloze,The evil witch eyed the young princess with a,hard,0.5,1.5,6.5,True,False,rt,False,udder,6.5,12.5
-2,left,6,0.5,7,True,0.36,peele,1.6666666666666667,0.8164965809277259,strong non-CoRT,door,shirt,8,low cloze,Katherine can't enter without the code for the,hard,0.5,1.5,6.0,True,False,rt,True,door,13.0,19.0
-3,left,6,0.5,7,True,0.82,block_baldwin,1.5714285714285714,0.7867957924694431,strong non-CoRT,art,drink,7,high cloze,Jenny was creative and loved to study,easy,0.5,1.5,5.5,True,False,rt,True,art,19.5,25.5
+2,left,6,0.5,7,True,0.81,peele,4.2,0.8366600265340756,strong CoRT,bee,cheer,9,high cloze,The boy screamed after he was stung by a,easy,0.5,1.5,6.5,True,False,rt,False,cheer,13.0,19.0
+3,left,6,0.5,7,True,0.36,peele,1.6666666666666667,0.8164965809277259,strong non-CoRT,door,shirt,8,low cloze,Katherine can't enter without the code for the,hard,0.5,1.5,6.0,True,False,rt,True,door,19.5,25.5
