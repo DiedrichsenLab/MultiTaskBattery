@@ -2069,7 +2069,7 @@ class ActionObservationKnots(Task):
     def __init__(self, screen, target_file, run_end, task_name, study_name, target_num, ttl_flag, save = True):
         super(ActionObservationKnots, self).__init__(screen, target_file, run_end, task_name, study_name, target_num, ttl_flag, save_response = save)
         self.feedback_type = 'None' # no feedback
-        self.name          = 'act_obs_knots'
+        self.name          = 'action_observation_knots'
 
     def _get_trial_info(self):
         video_file_action = self.target_file['stim_action'][self.trial]
