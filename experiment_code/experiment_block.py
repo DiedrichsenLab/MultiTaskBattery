@@ -173,10 +173,55 @@ class Experiment:
 
         return self.run_file_results
 
+    def show_scoreboard(self, taskObjs, screen):
+        """
+        Presents a score board in the end of the run
+        Args:
+            taskObjs(list)        -   a list containing task objects
+            screen                -   screen object for display
+        """
 
-def get_experiment_info(debug = True):
+        subj_dir = consts.raw_dir/ self.study_name / 'raw' / self.subj_id
+        # loop over task objects and get the feedback
+        feedback_all = []
+        for obj in taskObjs:
+
+            # get the task name
+            t_name = obj.name
+            
+            # discard rest. There are no specific feedback for rest and it can be excluded from the final scoreboard
+            #if t_name != 'rest':
+            if t_name not in ['rest', 'verb_generation', 'romance_movie', 'act_obs_knots']:
+
+                # get the response dataframe saved for the task
+                dataframe = pd.read_csv(glob.glob(os.path.join(subj_dir , f'*{t_name}*'))[0])
+
+                # get the feedback dictionary for the task
+                feedback = obj.get_task_feedback(dataframe, obj.feedback_type)
+
+                # get the corresponding text for the feedback and append it to the overal list 
+                feedback_text = f'{t_name}\n\nCurrent score: {feedback["curr"]} {feedback["measure"]}\n\nPrevious score: {feedback["prev"]} {feedback["measure"]}'
+                feedback_all.append(feedback_text)
+
+        # display feedback table at the end of the run
+        ## position where the feedback for each task will be shown
+
+        positions = [(-9, -6), (0, -6), (9, -6),
+                    (-9, 0), (0, 0), (9, 0), 
+                    (-9, 6), (0, 6), (9, 6)]
+        for position, feedback in zip(positions, feedback_all):
+            scoreboard = visual.TextStim(screen.window, text = feedback, color = [-1, -1, -1], pos = position, height = 0.5)
+            scoreboard.draw()
+
+        screen.window.flip()
+
+        event.waitKeys()
+
+        return
+
+def set_experiment_info(debug = True):
     """
-    Gets the experiment information.
+    Sets the experiment information.
     Info entered here will be used to create experiment
     Args:
     debug (bool)    -   if True, uses default names and info for testing, else, a dialogue box will pop up 
@@ -214,53 +259,55 @@ def get_experiment_info(debug = True):
         experiment_info['exp_name']       = 'test'
         experiment_info['subj_id']        = 'test'
         experiment_info['run_number']     = int(input("enter the run number: ")) # change this to check other runs
-        experiment_info['behav_training'] = True # change this to False to check scanning files
-        experiment_info['ttl_flag']       = True # initially set this to False to check the code without ttl pulse syncing
+        experiment_info['behav_training'] = bool(input("behavioral training (outside scanner)? Y if yes, press ENTER otherwise: ")) # change this to False to check scanning files
+        experiment_info['ttl_flag']       = bool(input("wait for ttl pulse? Y if yes, press ENTER otherwise: ")) # initially set this to False to check the code without ttl pulse syncing
 
 
     return experiment_info
 
-def show_scoreboard(subj_dir, taskObjs, screen):
-    """
-    Presents a score board in the end of the run
-    Args:
-        subj_dir(str:path)    -   directory where run results of a subject is stored
-        taskObjs(list)        -   a list containing task objects
-        screen                -   screen object for display
-    """
-    # loop over task objects and get the feedback
-    feedback_all = []
-    for obj in taskObjs:
+# def show_scoreboard(subj_dir, taskObjs, screen):
+#     """
+#     Presents a score board in the end of the run
+#     Args:
+#         subj_dir(str:path)    -   directory where run results of a subject is stored
+#         taskObjs(list)        -   a list containing task objects
+#         screen                -   screen object for display
+#     """
+#     # loop over task objects and get the feedback
+#     feedback_all = []
+#     for obj in taskObjs:
 
-        # get the task name
-        t_name = obj.name
+#         # get the task name
+#         t_name = obj.name
         
-        # discard rest. There are no specific feedback for rest and it can be excluded from the final scoreboard
-        #if t_name != 'rest':
-        if t_name not in ['rest', 'verb_generation', 'romance_movie', 'act_obs_knots']:
+#         # discard rest. There are no specific feedback for rest and it can be excluded from the final scoreboard
+#         #if t_name != 'rest':
+#         if t_name not in ['rest', 'verb_generation', 'romance_movie', 'act_obs_knots']:
 
-            # get the response dataframe saved for the task
-            dataframe = pd.read_csv(glob.glob(os.path.join(subj_dir , f'*{t_name}*'))[0])
+#             # get the response dataframe saved for the task
+#             dataframe = pd.read_csv(glob.glob(os.path.join(subj_dir , f'*{t_name}*'))[0])
 
-            # get the feedback dictionary for the task
-            feedback = obj.get_task_feedback(dataframe, obj.feedback_type)
+#             # get the feedback dictionary for the task
+#             feedback = obj.get_task_feedback(dataframe, obj.feedback_type)
 
-            # get the corresponding text for the feedback and append it to the overal list 
-            feedback_text = f'{t_name}\n\nCurrent score: {feedback["curr"]} {feedback["measure"]}\n\nPrevious score: {feedback["prev"]} {feedback["measure"]}'
-            feedback_all.append(feedback_text)
+#             # get the corresponding text for the feedback and append it to the overal list 
+#             feedback_text = f'{t_name}\n\nCurrent score: {feedback["curr"]} {feedback["measure"]}\n\nPrevious score: {feedback["prev"]} {feedback["measure"]}'
+#             feedback_all.append(feedback_text)
 
-    # display feedback table at the end of the run
-    ## position where the feedback for each task will be shown
-    positions = [(-9, -6), (0, -6), (9, -6),
-                (-9, 3), (0, 3), (9, 3)]
-    for position, feedback in zip(positions, feedback_all):
-        scoreboard = visual.TextStim(screen.window, text = feedback, color = [-1, -1, -1], pos = position, height = 0.5)
-        scoreboard.draw()
+#     # display feedback table at the end of the run
+#     ## position where the feedback for each task will be shown
 
-    screen.window.flip()
+#     positions = [(-9, -6), (0, -6), (9, -6),
+#                  (-9, 0), (0, 0), (9, 0), 
+#                  (-9, 6), (0, 6), (9, 6)]
+#     for position, feedback in zip(positions, feedback_all):
+#         scoreboard = visual.TextStim(screen.window, text = feedback, color = [-1, -1, -1], pos = position, height = 0.5)
+#         scoreboard.draw()
 
-    event.waitKeys()
+#     screen.window.flip()
 
-    return
+#     event.waitKeys()
+
+#     return
 
     
