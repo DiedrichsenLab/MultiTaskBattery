@@ -1,5 +1,7 @@
-# import libraries
+# Defines the Experiment as a class
+# @ Ladan Shahshahani  - Maedbh King June 2021
 
+# import libraries
 from psychopy import visual, core, event, gui # data, logging
 
 
@@ -42,6 +44,7 @@ def create_target(task_list = ['visual_search', 'action_observation_knots', 'fle
 # 5. run the experiment.
 ## change debug to False once you are sure everything is debugged 
 def run(debug = True):
+    
 
     # 1. get experiment information
     exp_info = exp_block.set_experiment_info(debug = debug)
@@ -59,7 +62,7 @@ def run(debug = True):
     # 2. create a class for the experiment
     Custom_Exp = exp_block.Experiment(exp_info['exp_name'], exp_info['behav_training'], 
                                       exp_info['run_number'], exp_info['subj_id'], 
-                                      exp_info['ttl_flag'])
+                                      exp_info['ttl_flag'], exp_info['eyetrack_flag'])
 
 
     # 3. get the run file info: creates self.run_info
