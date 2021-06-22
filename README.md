@@ -107,7 +107,7 @@ run the experiment code:
 
     $ e.run(debug = False)
     * a dialogue box will pop up asking you for experiment parameters
-### to run or test the code for fmri, you can write a 'fmri_simulator.py' and do:
+### to test the code for fmri (Checkin how TTL pulses are counted, etc.), you can write a 'fmri_simulator.py' and do:
 
     $ import python_7T.fmri_simulator
     * a dialogue box will pop up asking for scanning parameters. This code will simulate ttl pulses and can be used for checking ttl syncing.
