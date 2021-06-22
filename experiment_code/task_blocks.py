@@ -1,3 +1,6 @@
+# Create target file for different tasks
+# @ Ladan Shahshahani  - Maedbh King - Suzanne Witt March 2021
+
 # import libraries
 from pathlib import Path
 import os
@@ -258,6 +261,7 @@ class Task:
             unit_str  = 'ms' # string representing the unit measure
         
         elif feedback_type == 'acc':
+            # print(dataframe['corr_resp'])
             fb = dataframe.groupby(['run_name', 'run_iter'])['corr_resp'].agg('mean')
 
             unit_mult = 100 # multiplied by the calculated measure
@@ -1065,10 +1069,13 @@ class FingerSequence(Task):
         super(FingerSequence, self).__init__(screen, target_file, run_end, task_name, study_name, target_num, ttl_flag, save_response = save)
         self.feedback_type = 'acc' # reaction
         self.name          = 'finger_sequence'
-        self.key_digit     = {
-            'right':{'h':'1', 'j':'2', 'k':'3', 'l':'4'},
-            'left' :{'a':'1', 's':'2', 'd':'3', 'f':'4'}
-        }
+
+        # create a dictionary to map keys to digits
+        response_left  = consts.response_keys[0:4]
+        response_right = consts.response_keys[4:8]
+        map_right      = dict(zip(response_right, ('1', '2', '3', '4')))
+        map_left       = dict(zip(response_left, ('1', '2', '3', '4')))
+        self.key_digit = dict(zip(('right', 'left'), (map_right, map_left)))
 
     def _get_trial_info(self):
         """
@@ -1126,6 +1133,8 @@ class FingerSequence(Task):
         """
         # get the mapping from keys to digits
         map_k2d = self.key_digit[self.hand]
+
+        # print(map_k2d)
 
         # map the pressed keys to pressed digits
         if press in map_k2d:
@@ -1211,7 +1220,7 @@ class FingerSequence(Task):
         if (self.number_press == len(self.digits_seq)) and (self.number_correct == len(self.digits_seq)):
             # self.correct_trial +=1
             self.correct_response = True
-        elif self.number_press > len(self.digits_seq):
+        else:
             # self.error_trial +=1
             self.correct_response = False
 
@@ -1278,7 +1287,6 @@ class FingerSequence(Task):
 
         # get the response dataframe
         rDf = self.get_task_response(all_trial_response=self.all_trial_response)
-
         return rDf
 
 class SternbergOrder(Task):

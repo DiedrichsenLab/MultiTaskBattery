@@ -19,6 +19,11 @@ positions = [(-9, -6), (0, -6), (9, -6),
 #                 (-1, 0), (0, 0), (1, 0), 
 #                 (-1, 6), (0, 6), (1, 6)]
 feedback_all = ['1', '2' ,'3', '4', '5', '6' ,'7', '8', '9']
+n_tasks = len(feedback_all)
+n_rows = n_tasks/3
+n_rows = n_rows + (n_tasks%3)
+n_cols = n_tasks/3
+
 for position, feedback in zip(positions, feedback_all):
     print(position)
     print(feedback)

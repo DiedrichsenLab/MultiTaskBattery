@@ -1,3 +1,6 @@
+# Defines the Experiment as a class
+# @ Ladan Shahshahani  - Maedbh King June 2021
+
 # import libraries
 import os
 import pandas as pd
@@ -8,6 +11,9 @@ import sys
 
 from psychopy import visual, core, event, gui # data, logging
 
+from pylink import *
+import gc
+
 import experiment_code.constants as consts
 from experiment_code.task_blocks import TASK_MAP
 from experiment_code.ttl import ttl
@@ -17,7 +23,7 @@ class Experiment:
     A general class with attributes common to experiments
     """
 
-    def __init__(self, exp_name, behav_trianing, run_number, subj_id, ttl_flag):
+    def __init__(self, exp_name, behav_trianing, run_number, subj_id, ttl_flag, eyetrack_flag):
         """
         exp_name        -   name of the experiment. Examples: 'mdtb_localizer', 'pontine_7T'
         run_number      -   run number
@@ -29,7 +35,8 @@ class Experiment:
         self.exp_name   = exp_name   
         self.run_number = run_number 
         self.subj_id    = subj_id    
-        self.ttl_flag   = ttl_flag   
+        self.ttl_flag   = ttl_flag
+        self.eyetrack   = eyetrack_flag   
 
         # determine the name of the run file to be used
         self.run_name = f"run_{self.run_number:02}.csv"
@@ -174,6 +181,26 @@ class Experiment:
 
         return self.run_file_results
 
+    def eyetrack(self):
+        """
+        If the user selects to track eye movement, this routine is used to:
+        1. initialize connection to the tracker
+        2. initialize display-side graphics?
+        3. initialize data file
+        4. setting up tracking, recording, and calibration? options
+
+        """
+
+        if self.eyetrack:
+            print(f"initialize eyetracker")
+
+        else:
+            pass
+
+        
+
+        pass
+
     def show_scoreboard(self, taskObjs, screen):
         """
         Presents a score board in the end of the run
@@ -197,7 +224,10 @@ class Experiment:
             feedback = obj.get_task_feedback(dataframe, obj.feedback_type)
 
             # get the corresponding text for the feedback and append it to the overal list 
-            feedback_text = f'{t_name}\n\nCurrent score: {feedback["curr"]} {feedback["measure"]}\n\nPrevious score: {feedback["prev"]} {feedback["measure"]}'
+            # feedback_text = f'{t_name}\n\nCurrent score: {feedback["curr"]} {feedback["measure"]}\n\nPrevious score: {feedback["prev"]} {feedback["measure"]}'
+            # feedback_all.append(feedback_text)
+
+            feedback_text = f'{t_name}\n\nCurrent score: {feedback["curr"]} {feedback["measure"]}'
             feedback_all.append(feedback_text)
 
         # display feedback table at the end of the run
@@ -233,6 +263,7 @@ def set_experiment_info(debug = True):
         inputDlg.addField('Enter Run Number (int):')      # run number (int)
         inputDlg.addField('Is it a training session?', initial = True) 
         inputDlg.addField('Wait for TTL pulse?', initial = False) # a checkbox 
+        inputDlg.addField('Track eye movements?', initial = False) # a checkbox 
 
         inputDlg.show()
 
@@ -241,11 +272,13 @@ def set_experiment_info(debug = True):
         if gui.OK:
             experiment_info['exp_name']       = inputDlg.data[0]
             experiment_info['subj_id']        = inputDlg.data[1]
-            experiment_info['run_number']     = inputDlg.data[2]
-            experiment_info['behav_training'] = inputDlg.data[3]
+            experiment_info['run_number']     = int(inputDlg.data[2])
+            experiment_info['behav_training'] = bool(inputDlg.data[3])
 
             # ttl flag that will be used to determine whether the program waits for ttl pulse or not
-            experiment_info['ttl_flag'] = inputDlg.data[4]
+            experiment_info['ttl_flag'] = bool(inputDlg.data[4])
+
+            experiment_info['eyetrack_flag'] = bool(inputDlg.data[5])
         else:
             sys.exit()
 
@@ -258,6 +291,6 @@ def set_experiment_info(debug = True):
         experiment_info['run_number']     = int(input("enter the run number: ")) # change this to check other runs
         experiment_info['behav_training'] = bool(input("behavioral training (outside scanner)? Y if yes, press ENTER otherwise: ")) # change this to False to check scanning files
         experiment_info['ttl_flag']       = bool(input("wait for ttl pulse? Y if yes, press ENTER otherwise: ").lower()) # initially set this to False to check the code without ttl pulse syncing
-
+        experiment_info['eyetrack_flag']  = bool(input("track eye movements? Y if yes, press ENTER otherwise: ").lower())
 
     return experiment_info

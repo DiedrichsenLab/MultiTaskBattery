@@ -3,7 +3,9 @@ from pathlib import Path
 import os
 
 # default response keys and the corresponding fingers. Can be modified
-response_keys    = ['a', 's', 'd', 'f', 'h', 'j', 'k', 'l']
+## first enter the keys for the right hand and then the keys for the left hand
+# response_keys    = ['a', 's', 'd', 'f', 'h', 'j', 'k', 'l']
+response_keys    = ['1', '2', '3', '4', '5', '6', '7', '8']
 response_fingers = ['Pinky', 'Ring', 'Middle', 'Index', 'Index', 'Middle', 'Ring', 'Pinky']
 
 # change experiment name to a name you've chosen for your own experiment
