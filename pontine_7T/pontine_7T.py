@@ -45,24 +45,23 @@ def create_target(task_list = ['visual_search', 'action_observation_knots', 'fle
 ## change debug to False once you are sure everything is debugged 
 def run(debug = True):
     
+    # 1. create a class for the experiment
+    Custom_Exp = exp_block.Experiment(exp_name="pontine_7T")
+    # Custom_Exp = exp_block.Experiment(exp_info['exp_name'], exp_info['behav_training'], 
+    #                                   exp_info['run_number'], exp_info['subj_id'], 
+    #                                   exp_info['ttl_flag'], exp_info['eyetrack_flag'])
 
-    # 1. get experiment information
-    exp_info = exp_block.set_experiment_info(debug = debug)
+    # 2. get experiment information
+    exp_info = Custom_Exp.set_info(debug = debug)
 
     ### printing some info to the screen for developer
     print(f"***** you are in debug mode {debug}")
-    print(f"***** experiment name: {exp_info['exp_name']}")
     print(f"***** subject id: {exp_info['subj_id']}")
     print(f"***** run number: {exp_info['run_number']}")
     print(f"    * if in debugging and want to check another run, go back to experiment_block.get_experiment_info and change the run number manually")
     
     if exp_info['ttl_flag']:
         print(f"***** waiting for the TTL pulse! press '5'")
-
-    # 2. create a class for the experiment
-    Custom_Exp = exp_block.Experiment(exp_info['exp_name'], exp_info['behav_training'], 
-                                      exp_info['run_number'], exp_info['subj_id'], 
-                                      exp_info['ttl_flag'], exp_info['eyetrack_flag'])
 
 
     # 3. get the run file info: creates self.run_info
@@ -76,6 +75,8 @@ def run(debug = True):
 
     # 5. open screen and display fixation cross
     exp_screen = Screen()
+    ## opening a screen to show experiment info to the experimenter
+    
 
     # 6. timer stuff!
     ## start the timer. Needs to know whether the experimenter has chosen to wait for ttl pulse 
