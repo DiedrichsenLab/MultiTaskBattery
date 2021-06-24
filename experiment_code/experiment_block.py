@@ -23,7 +23,7 @@ class Experiment:
     A general class with attributes common to experiments
     """
 
-    def __init__(self, exp_name, behav_trianing, run_number, subj_id, ttl_flag, eyetrack_flag):
+    def __init__(self, exp_name, behav_trianing = None, run_number = None, subj_id = None, ttl_flag = None):
         """
         exp_name        -   name of the experiment. Examples: 'mdtb_localizer', 'pontine_7T'
         run_number      -   run number
@@ -33,20 +33,73 @@ class Experiment:
         """
 
         self.exp_name   = exp_name   
-        self.run_number = run_number 
-        self.subj_id    = subj_id    
-        self.ttl_flag   = ttl_flag
-        self.eyetrack   = eyetrack_flag   
+        
+    
+    def set_info(self, debug = True):
+        """
+        setting the info for the experiment:
+
+        Is it behavioral training?
+        what is the run number?
+        what is the subject_id?
+        does it need to wait for ttl pulse? (for fmri it does)
+
+        Args:
+        debug (bool)    -   if True, uses default names and info for testing, else, a dialogue box will pop up
+        ** When debugging, most things are hard-coded. So you will need to change them here if you want to see how the code works
+           for different values of these variables
+        """
+        if not debug:
+            # a dialog box pops up so you can enter info
+            #Set up input box
+            inputDlg = gui.Dlg(title = self.exp_name)
+            
+            inputDlg.addField('Enter Subject ID:')      # id assigned to the subject
+            inputDlg.addField('Enter Run Number (int):')      # run number (int)
+            inputDlg.addField('Is it a training session?', initial = True) 
+            inputDlg.addField('Wait for TTL pulse?', initial = False) # a checkbox 
+
+            inputDlg.show()
+
+            # # record input variables
+            experiment_info = {}
+            if gui.OK:
+                experiment_info['subj_id']        = inputDlg.data[0]
+                experiment_info['run_number']     = int(inputDlg.data[1])
+                experiment_info['behav_training'] = bool(inputDlg.data[2])
+
+                # ttl flag that will be used to determine whether the program waits for ttl pulse or not
+                experiment_info['ttl_flag'] = bool(inputDlg.data[3])
+
+            else:
+                sys.exit()
+
+        else: 
+            # uses a toy example with toy input 
+            ### Values can be changed manually here
+            experiment_info = {}
+            experiment_info['subj_id']        = 'test'
+            experiment_info['run_number']     = 10 #int(input("enter the run number: ")) # change this to check other runs
+            experiment_info['behav_training'] = False #bool(input("behavioral training (outside scanner)? Y if yes, press ENTER otherwise: ")) # change this to False to check scanning files
+            experiment_info['ttl_flag']       = True #bool(input("wait for ttl pulse? Y if yes, press ENTER otherwise: ").lower()) # initially set this to False to check the code without ttl pulse syncing
+        
+
+        # setting experiment information
+        self.run_number = experiment_info['run_number'] 
+        self.subj_id    = experiment_info['subj_id']   
+        self.ttl_flag   = experiment_info['ttl_flag']
 
         # determine the name of the run file to be used
         self.run_name = f"run_{self.run_number:02}.csv"
 
         # if it's behavioral training then use the files under behavioral
-        if behav_trianing:
+        if experiment_info['behav_training']:
             self.study_name = 'behavioral'
         else:
             self.study_name = 'fmri'
-    
+
+        return experiment_info
+
     def get_runfile_info(self):
         #
         """
@@ -263,7 +316,6 @@ def set_experiment_info(debug = True):
         inputDlg.addField('Enter Run Number (int):')      # run number (int)
         inputDlg.addField('Is it a training session?', initial = True) 
         inputDlg.addField('Wait for TTL pulse?', initial = False) # a checkbox 
-        inputDlg.addField('Track eye movements?', initial = False) # a checkbox 
 
         inputDlg.show()
 
@@ -278,7 +330,6 @@ def set_experiment_info(debug = True):
             # ttl flag that will be used to determine whether the program waits for ttl pulse or not
             experiment_info['ttl_flag'] = bool(inputDlg.data[4])
 
-            experiment_info['eyetrack_flag'] = bool(inputDlg.data[5])
         else:
             sys.exit()
 
