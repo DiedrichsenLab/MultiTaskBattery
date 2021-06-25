@@ -195,10 +195,8 @@ class Task:
             # assuming pressed_keys is sorted by timestamp; is it?
             # determine correct response based on first key press only
             if self.pressed_keys[0][0] == self.correct_key_list[0]:
-                print(f"correct response")
                 self.correct_response = True 
             elif self.pressed_keys[0][0] != self.correct_key_list[0]:
-                print(f"wrong response")
                 self.correct_response = False
     
         # 6.3 determine the key that was pressed
@@ -238,13 +236,11 @@ class Task:
     # 8. Update the trial response (append the response to the list)
     def update_trial_response(self):
         # add additional variables to dict
-        print(self.all_trial_response)
         self.trial_response.update({'real_start_time': self.real_start_time, 
                                     'ttl_counter': self.ttl_count, 
                                     'ttl_time': self.ttl_time})
 
         self.all_trial_response.append(self.trial_response)
-        print(self.all_trial_response)
     # 9. Get the feedback for the task (the type of feedback is different across tasks)
     def get_task_feedback(self, dataframe, feedback_type):
         """
@@ -263,7 +259,6 @@ class Task:
             unit_str  = 'ms' # string representing the unit measure
         
         elif feedback_type == 'acc':
-            # print(dataframe['corr_resp'])
             fb = dataframe.groupby(['run_name', 'run_iter'])['corr_resp'].agg('mean')
 
             unit_mult = 100 # multiplied by the calculated measure
@@ -816,12 +811,8 @@ class ActionObservation(Task):
     def _show_stim(self):
         mov = visual.MovieStim3(self.window, self.path_to_video, flipVert=False, flipHoriz=False, loop=False)
 
-        print(mov.duration)
-
         # play movie
-        frames = []
         self.trial_response_all = []
-        image = []
         wait_time = self.trial_dur
 
         while mov.status != visual.FINISHED:
@@ -1144,8 +1135,6 @@ class FingerSequence(Task):
         """
         # get the mapping from keys to digits
         map_k2d = self.key_digit[self.hand]
-
-        # print(map_k2d)
 
         # map the pressed keys to pressed digits
         if press in map_k2d:
@@ -1655,15 +1644,6 @@ class VisuospatialOrderV2(Task):
 
                 dot_stim.draw()
                 self.window.flip()
-                # self.dot_start = self.get_current_trial_time()                     
-            # # each word will remain on the screen for a certain amount of time (self.stem_word_dur)
-            # if self.ttl_flag: # wait for ttl pulse
-            #     while ttl.clock.getTime()-self.dot_start <= 0.001:
-            #         ttl.check()
-            # else: # do not wait for ttl pulse
-            #     print(self.clock.getTime()-self.dot_start)
-            #     while self.clock.getTime()-self.dot_start <= 0.001:
-            #         pass
 
     def _show_prob(self):
         # display the prob on the screen (the probe comes after a delay period)
