@@ -238,11 +238,13 @@ class Task:
     # 8. Update the trial response (append the response to the list)
     def update_trial_response(self):
         # add additional variables to dict
+        print(self.all_trial_response)
         self.trial_response.update({'real_start_time': self.real_start_time, 
                                     'ttl_counter': self.ttl_count, 
                                     'ttl_time': self.ttl_time})
 
         self.all_trial_response.append(self.trial_response)
+        print(self.all_trial_response)
     # 9. Get the feedback for the task (the type of feedback is different across tasks)
     def get_task_feedback(self, dataframe, feedback_type):
         """
@@ -2031,7 +2033,6 @@ class RomanceMovie(Task):
                     mov.draw()
                     self.window.flip()
 
-
     def run(self):
         # run the task
 
@@ -2093,15 +2094,11 @@ class ActionObservationKnots(Task):
         self.name          = 'action_observation_knots'
 
     def _get_trial_info(self):
-        video_file_action = self.target_file['stim_action'][self.trial]
-        video_file_control = self.target_file['stim_control'][self.trial]
+        video_file = self.target_file['stim'][self.trial]
         self.iti_dur = self.target_file['iti_dur'][self.trial]
         self.trial_dur = self.target_file['trial_dur'][self.trial]
         self.start_time = self.target_file['start_time'][self.trial]
-        # self.path_to_video_action = os.path.join(consts.stim_dir, self.study_name, self.task_name, 'clips', video_file_action)
-        # self.path_to_video_control = os.path.join(consts.stim_dir, self.study_name, self.task_name, 'clips', video_file_control)
-        self.path_to_video_action = os.path.join(consts.stim_dir, self.task_name, 'clips', video_file_action)
-        self.path_to_video_control = os.path.join(consts.stim_dir, self.task_name, 'clips', video_file_control)
+        self.path_to_video = os.path.join(consts.stim_dir, self.task_name, 'clips', video_file)
     
     def display_instructions(self): # overriding the display instruction from the parent class
 
@@ -2141,8 +2138,9 @@ class ActionObservationKnots(Task):
 
         # loop over trials
         self.all_trial_response = [] # pre-allocate 
-
         for self.trial in self.target_file.index: 
+
+            self.trial_response = {}
 
             # get stims
             self._get_trial_info()
@@ -2157,49 +2155,18 @@ class ActionObservationKnots(Task):
             # collect real_start_time for each block (self.real_start_time)
             self.get_real_start_time(self.t0)
 
-            ## 3.2 get the time before collecting responses (self.t2)
+            ## get the time before collecting responses (self.t2)
             self.get_time_before_disp()
 
-            # 1. show actions
-            self._show_stim_movie(self.path_to_video_action)
+            self._show_stim_movie(self.path_to_video)
 
-            # 2. display fixation for the duration of the iti
-            ## 2.1 get the current time
-            t_action_end = self.get_current_trial_time()
-            ## 2.2 get the iti duration
-            self.screen.fixation_cross()
-            self.show_fixation(t_action_end, self.iti_dur)
-
-            # get current time (self.t0)
-            self.t0 = self.get_current_trial_time()
-
-            # show the fixation for the duration of iti
-            # wait here till the startTime 
-            # self.show_fixation(self.t0, self.start_time - self.t0)
-
-            # collect real_start_time for each block (self.real_start_time)
-            self.get_real_start_time(self.t0)
-
-            ## 3.2 get the time before collecting responses (self.t2)
-            self.get_time_before_disp()
-
-            ## 3.1 display control video
-            self._show_stim_movie(self.path_to_video_control)
-
-            # 4. display trial feedback
+            self.update_trial_response()
+            # display trial feedback
             if self.target_file['display_trial_feedback'][self.trial] and self.response_made:
                 self.display_trial_feedback(correct_response = self.correct_response) 
             else:
                 self.screen.fixation_cross()
             
-            # 5 show fixation for the duration of the iti
-            ## 5.1 get current time
-            t_start_iti = self.get_current_trial_time()
-            self.show_fixation(t_start_iti, self.iti_dur)
-
-            self.update_trial_response()
-
-            # 6.
             self.screen_quit()
 
         # get the response dataframe
