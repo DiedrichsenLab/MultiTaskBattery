@@ -11,31 +11,27 @@ import sys
 
 from psychopy import visual, core, event, gui # data, logging
 
-from pylink import *
-import gc
-
 import experiment_code.constants as consts
 from experiment_code.task_blocks import TASK_MAP
 from experiment_code.ttl import ttl
+from experiment_code.screen import Screen
+from psychopy.hardware.emulator import launchScan
+
 
 class Experiment:
     """
     A general class with attributes common to experiments
     """
 
-    def __init__(self, exp_name, behav_trianing = None, run_number = None, subj_id = None, ttl_flag = None):
+    def __init__(self, exp_name, **kwargs):
         """
-        exp_name        -   name of the experiment. Examples: 'mdtb_localizer', 'pontine_7T'
-        run_number      -   run number
-        subj_id         -   id assigned to the subject
-        ttl_flag        -   flag determining whether to wait for ttl pulse or not
-        behav_training  -   flag determining whether the study is done outside of the scanner or not
+        exp_name  -   name of the experiment. Examples: 'mdtb_localizer', 'pontine_7T'
         """
 
-        self.exp_name   = exp_name   
-        
+        self.exp_name   = exp_name
+        self.__dict__.update(kwargs)
     
-    def set_info(self, debug = True):
+    def set_info(self, **kwargs):
         """
         setting the info for the experiment:
 
@@ -44,61 +40,53 @@ class Experiment:
         what is the subject_id?
         does it need to wait for ttl pulse? (for fmri it does)
 
+        The following parameters will be set:
+        behav_trianing  - is it behavioral training or scanning?
+            ** behavioral training target/run files are always stored under behavioral and scanning files are under fmri  
+        run_number      - run number 
+        subj_id         - id assigned to the subject
+        ttl_flag        - should the program wait for the ttl pulse or not? For scanning THIS FLAG HAS TO BE SET TO TRUE
+
         Args:
-        debug (bool)    -   if True, uses default names and info for testing, else, a dialogue box will pop up
+        debug (bool)    -   if True, uses default names and info for testing, otherwise, a dialogue box will pop up
         ** When debugging, most things are hard-coded. So you will need to change them here if you want to see how the code works
            for different values of these variables
         """
-        if not debug:
+        if not kwargs['debug']:
             # a dialog box pops up so you can enter info
             #Set up input box
-            inputDlg = gui.Dlg(title = self.exp_name)
-            
+            inputDlg = gui.Dlg(title = f"{self.exp_name}")
+
             inputDlg.addField('Enter Subject ID:')      # id assigned to the subject
             inputDlg.addField('Enter Run Number (int):')      # run number (int)
             inputDlg.addField('Is it a training session?', initial = True) 
-            inputDlg.addField('Wait for TTL pulse?', initial = False) # a checkbox 
+            inputDlg.addField('Wait for TTL pulse?', initial = True) # a checkbox 
 
             inputDlg.show()
 
             # # record input variables
-            experiment_info = {}
+            self.experiment_info = {}
             if gui.OK:
-                experiment_info['subj_id']        = inputDlg.data[0]
-                experiment_info['run_number']     = int(inputDlg.data[1])
-                experiment_info['behav_training'] = bool(inputDlg.data[2])
+                self.experiment_info['subj_id']        = str(inputDlg.data[0])
+                self.experiment_info['run_number']     = int(inputDlg.data[1])
+                self.experiment_info['behav_training'] = bool(inputDlg.data[2])
 
                 # ttl flag that will be used to determine whether the program waits for ttl pulse or not
-                experiment_info['ttl_flag'] = bool(inputDlg.data[3])
+                self.experiment_info['ttl_flag'] = bool(inputDlg.data[3])
 
             else:
                 sys.exit()
 
         else: 
-            # uses a toy example with toy input 
-            ### Values can be changed manually here
-            experiment_info = {}
-            experiment_info['subj_id']        = 'test'
-            experiment_info['run_number']     = 10 #int(input("enter the run number: ")) # change this to check other runs
-            experiment_info['behav_training'] = False #bool(input("behavioral training (outside scanner)? Y if yes, press ENTER otherwise: ")) # change this to False to check scanning files
-            experiment_info['ttl_flag']       = True #bool(input("wait for ttl pulse? Y if yes, press ENTER otherwise: ").lower()) # initially set this to False to check the code without ttl pulse syncing
-        
-
-        # setting experiment information
-        self.run_number = experiment_info['run_number'] 
-        self.subj_id    = experiment_info['subj_id']   
-        self.ttl_flag   = experiment_info['ttl_flag']
-
-        # determine the name of the run file to be used
-        self.run_name = f"run_{self.run_number:02}.csv"
-
-        # if it's behavioral training then use the files under behavioral
-        if experiment_info['behav_training']:
-            self.study_name = 'behavioral'
-        else:
-            self.study_name = 'fmri'
-
-        return experiment_info
+            # pass on the values for your debugging with the following keywords
+            self.experiment_info = {
+                'subj_id': 'test00',
+                'run_number': 1,
+                'behav_training': False,
+                'ttl_flag': True
+            }
+            self.experiment_info.update(**kwargs)
+        return self.experiment_info
 
     def get_runfile_info(self):
         #
@@ -113,7 +101,7 @@ class Experiment:
         self.run_info = {} # a dictionary with all the info for the run 
         # load run file
         self.run_file_path = consts.run_dir / self.study_name / self.run_name
-        self.run_info['run_file'] = pd.read_csv(consts.run_dir / self.study_name / self.run_name)
+        self.run_info['run_file'] = pd.read_csv(consts.run_dir / self.study_name / self.run_name) # the csv file is read into a dataframe
 
         # get run num
         self.run_info['run_num'] = self.run_number
@@ -136,10 +124,18 @@ class Experiment:
 
         # wait for ttl pulse or not?
         if self.ttl_flag: # if true then wait
-            print(f"waiting for the TTL pulse")
+            
             ttl.reset()
             while ttl.count <= 0:
+                # print out the text to the screen
+                ttl_wait_text = f"Waiting for the scanner"
+                ttl_wait_ = visual.TextStim(self.stimuli_screen.window, text=ttl_wait_text, 
+                                                pos=(0.0,0.0), color=self.stimuli_screen.window.rgb + 0.5, units='deg')
                 ttl.check()
+            
+                ttl_wait_.draw()
+                self.stimuli_screen.window.flip()
+
             print(f"Received TTL pulse")
             # get the ttl clock
             self.timer_info['global_clock'] = ttl.clock
@@ -148,9 +144,9 @@ class Experiment:
         
         self.timer_info['t0'] = self.timer_info['global_clock'].getTime()
 
-        return self.timer_info
+        return
 
-    def get_targetfile_info(self, b):
+    def get_taskfile_info(self, task_name):
         """
         gets the target file information of the task b
         Args:
@@ -164,28 +160,29 @@ class Experiment:
                 task_startTime : start time of the task run
                 instruct_dur  : duration of instruction for the task
         """
-        target_binfo = {}
-        # what's the task in this target file?
-        target_binfo['task_name'] = self.run_info['run_file']['task_name'][b]
+        self.task_file_info = {}
+        self.task_file_info['task_name'] = task_name # fill in the task name
+        # getting the row of the dataframe that corresponds to the current task
+        task_info = self.run_info['run_file'].loc[self.run_info['run_file']['task_name'] == task_name]
 
         # what number is this target file?
-        target_binfo['target_num'] = self.run_info['run_file']['target_num'][b]
-        if not math.isnan(target_binfo['target_num']):
-            target_binfo['target_num'] = (f"{int(target_binfo['target_num']):02d}")
+        self.task_file_info['target_num'] = task_info['target_num']
+        if not math.isnan(self.task_file_info['target_num']):
+            self.task_file_info['target_num'] = (f"{int(self.task_file_info['target_num']):02d}")
 
         # load target file
-        target_binfo['target_file'] = pd.read_csv(consts.target_dir / self.study_name / target_binfo['task_name'] / self.run_info['run_file']['target_file'][b])
+        self.task_file_info['task_file'] = pd.read_csv(consts.target_dir / self.study_name / task_name / task_info['target_file'].values[0])
 
         # get end time of task
-        target_binfo['task_endTime'] = self.run_info['run_file']['end_time'][b]
+        self.task_file_info['task_endTime'] = task_info['end_time']
 
         # get start time of task
-        target_binfo['task_startTime'] = self.run_info['run_file']['start_time'][b]
+        self.task_file_info['task_startTime'] = task_info['start_time']
 
         # get instruct dur
-        target_binfo['instruct_dur'] = self.run_info['run_file']['instruct_dur'][b]
+        self.task_file_info['instruct_dur'] = task_info['instruct_dur']
 
-        return target_binfo
+        return self.task_file_info
 
     def check_runfile_results(self):
         """
@@ -232,27 +229,7 @@ class Experiment:
         if save:
             self.run_file_results.to_csv(self.run_dir, index=None, header=True)
 
-        return self.run_file_results
-
-    def eyetrack(self):
-        """
-        If the user selects to track eye movement, this routine is used to:
-        1. initialize connection to the tracker
-        2. initialize display-side graphics?
-        3. initialize data file
-        4. setting up tracking, recording, and calibration? options
-
-        """
-
-        if self.eyetrack:
-            print(f"initialize eyetracker")
-
-        else:
-            pass
-
-        
-
-        pass
+        return
 
     def show_scoreboard(self, taskObjs, screen):
         """
@@ -299,49 +276,204 @@ class Experiment:
 
         return
 
-def set_experiment_info(debug = True):
-    """
-    Sets the experiment information.
-    Info entered here will be used to create experiment
-    Args:
-    debug (bool)    -   if True, uses default names and info for testing, else, a dialogue box will pop up 
-    """
-    if not debug:
-        # a dialog box pops up so you can enter info
-        #Set up input box
-        inputDlg = gui.Dlg(title = "Run Experiment")
-        
-        inputDlg.addField('Enter Experiment name:') # name of the experiment
-        inputDlg.addField('Enter Subject ID:')      # id assigned to the subject
-        inputDlg.addField('Enter Run Number (int):')      # run number (int)
-        inputDlg.addField('Is it a training session?', initial = True) 
-        inputDlg.addField('Wait for TTL pulse?', initial = False) # a checkbox 
+    def init_run(self):
+        """
+        initializing the run:
+        making sure a directory is created for the behavioral results
+        getting run file
+        opening a screen to show the stimulus
+        starting the timer
+        """
 
-        inputDlg.show()
+        # defining new variables corresponding to experiment info (easier for coding)
+        self.run_number = self.experiment_info['run_number'] 
+        self.subj_id    = self.experiment_info['subj_id']   
+        self.ttl_flag   = self.experiment_info['ttl_flag']
 
-        # # record input variables
-        experiment_info = {}
-        if gui.OK:
-            experiment_info['exp_name']       = inputDlg.data[0]
-            experiment_info['subj_id']        = inputDlg.data[1]
-            experiment_info['run_number']     = int(inputDlg.data[2])
-            experiment_info['behav_training'] = bool(inputDlg.data[3])
+        # determine the name of the run file to be used
+        self.run_name = f"run_{self.run_number:02}.csv"
 
-            # ttl flag that will be used to determine whether the program waits for ttl pulse or not
-            experiment_info['ttl_flag'] = bool(inputDlg.data[4])
-
+        # if it's behavioral training then use the files under behavioral
+        if self.experiment_info['behav_training']:
+            self.study_name = 'behavioral'
         else:
-            sys.exit()
+            self.study_name = 'fmri'
 
-    else: 
-        # uses a toy example with toy input 
-        ### Values can be changed manually here
-        experiment_info = {}
-        experiment_info['exp_name']       = 'test'
-        experiment_info['subj_id']        = 'test'
-        experiment_info['run_number']     = int(input("enter the run number: ")) # change this to check other runs
-        experiment_info['behav_training'] = bool(input("behavioral training (outside scanner)? Y if yes, press ENTER otherwise: ")) # change this to False to check scanning files
-        experiment_info['ttl_flag']       = bool(input("wait for ttl pulse? Y if yes, press ENTER otherwise: ").lower()) # initially set this to False to check the code without ttl pulse syncing
-        experiment_info['eyetrack_flag']  = bool(input("track eye movements? Y if yes, press ENTER otherwise: ").lower())
+        # 1. get the run file info: creates self.run_info
+        self.get_runfile_info()
 
-    return experiment_info
+        # 2. make subject folder in data/raw/<subj_id>
+        subj_dir = consts.raw_dir/ self.study_name / 'raw' / self.subj_id
+        consts.dircheck(subj_dir) # making sure the directory is created!
+
+        # 3. check if a file for the result of the run already exists
+        self.check_runfile_results()
+
+        # 4. open screen and display fixation cross
+        self.stimuli_screen = Screen()
+        ## opening a screen to show experiment info to the experimenter
+
+        # 5. timer stuff!
+        ## start the timer. Needs to know whether the experimenter has chosen to wait for ttl pulse 
+        ## creates self.timer_info
+        self.start_timer()
+
+        # 6. initialize a list for responses
+        self.all_run_response = []
+    
+    def wait_dur(self, wait_time):
+        """
+        waits for a certain amount of time specified in wait_time
+        """
+        while (self.timer_info['global_clock'].getTime() - self.timer_info['t0']) <= wait_time:
+            if self.ttl_flag:
+                ttl.check()
+            else:
+                pass
+
+    def end_run(self):
+        """
+        finishes the run.
+        converting the log of all responses to a dataframe and saving it
+        showing a scoreboard with results from all the tasks
+        showing a final text and waiting for key to close the stimuli screen
+        """
+
+        self.set_runfile_results(self.all_run_response, save = True)
+
+        # present feedback from all tasks on screen 
+        self.show_scoreboard(self.task_obj_list, self.stimuli_screen)
+
+        # end experiment
+        end_exper_text = f"End of run\n\nTake a break!"
+        end_experiment = visual.TextStim(self.stimuli_screen.window, text=end_exper_text, color=[-1, -1, -1])
+        end_experiment.draw()
+        self.stimuli_screen.window.flip()
+
+        # waits for a key press to end the experiment
+        event.waitKeys()
+        # quit screen and exit
+        self.stimuli_screen.window.close()
+        core.quit()
+
+    def run(self):
+        """
+        run a run of the experiment
+        """
+
+        # 1. initialize the run: timer, responses, run file, etc.
+        self.init_run()
+
+        # 2. looping over tasks in the run file
+        ## 2.1 get the list of tasks
+        self.task_list = self.run_info['run_file']['task_name'].tolist()
+
+        self.task_obj_list = [] # a list containing task objects in the run
+        for t, self.task_name in enumerate(self.task_list):
+            # get the task_file_info. running this will create self.task_file_info
+            self.get_taskfile_info(self.task_name)
+
+            # get the real strat time for each task 
+            ## for debugging make sure that this is at about the start_time specified in the run file
+            real_start_time = self.timer_info['global_clock'].getTime() - self.timer_info['t0']
+            print(f"real_start_time:{real_start_time} == start_time: {self.task_file_info['task_startTime'].values[0]}????") # for debugging purposes!
+
+            # create a task object for the current task and append it to the list
+            TaskName = TASK_MAP[self.task_name]
+
+            Task_obj  = TaskName(screen = self.stimuli_screen, 
+                                   target_file = self.task_file_info['task_file'], 
+                                   run_end  = self.task_file_info['task_endTime'], task_name = self.task_name,  
+                                   study_name = self.study_name, target_num = self.task_file_info['target_num'], 
+                                   ttl_flag = self.ttl_flag)
+
+            self.task_obj_list.append(Task_obj)
+
+            # wait till it's time to start the task
+            self.wait_dur(self.task_file_info['task_startTime'].values[0])
+
+            # display the instruction text for the task. (instructions are task specific)
+            Task_obj.display_instructions()
+
+            # wait for a time period equal to instruction duration
+            self.wait_dur(self.task_file_info['task_startTime'].values[0] + self.task_file_info['instruct_dur'].values[0])
+
+            # show the stimuli for the task and collect responses
+            task_response_df = Task_obj.run()
+
+            # adding run information to response dataframe
+            task_response_df['run_name'] = self.run_name
+            task_response_df['run_iter'] = self.run_iter
+            task_response_df['run_num']  = self.run_number
+            # 8.7.3 get the response dataframe and save it
+            fpath = consts.raw_dir / self.study_name/ 'raw' / self.subj_id / f"{self.study_name}_{self.subj_id}_{self.task_name}.csv"
+            Task_obj.save_task_response(task_response_df, fpath)
+            # save_response(task_response_df, self.study_name, self.subj_id, self.task_name)
+
+            # log results
+            # collect real_end_time for each task
+            self.all_run_response.append({
+                                            'real_start_time': real_start_time,
+                                            'real_end_time': (self.timer_info['global_clock'].getTime() - self.timer_info['t0']),
+                                            'run_name': self.run_name,
+                                            'task_idx': t+1,
+                                            'run_iter': self.run_iter,
+                                            'run_num': self.run_info['run_num'],
+            })
+
+            # wait till it's time to end the task
+            self.wait_dur(self.task_file_info['task_endTime'].values[0])
+
+        # 3. ending the run
+        self.end_run()
+
+    def simulate_fmri(self, **kwargs):
+        """
+        mostly borrowed from fMRI_launchScan.py: 
+        https://github.com/psychopy/psychopy/blob/release/psychopy/demos/coder/experiment%20control/fMRI_launchScan.py)
+        emulates sync (ttl) pulses. Emulation is to allow debugging script timing
+        offline, without requiring a scanner (or a hardware sync pulse generator).
+        """
+        # settings for launchScan:
+        MR_settings = {
+            'TR': 1.000,       # duration (sec) per whole-brain volume
+            'volumes': 500,    # number of whole-brain 3D volumes per scanning run
+            'sync': '5',       # character to use as the sync timing event; assumed to come at start of a volume
+            'skip': 5,         # number of volumes lacking a sync pulse at start of scan (for T1 stabilization)
+            }
+        MR_settings.update(**kwargs)
+
+        # settings for the experiment
+        self.set_info(debug = True, **kwargs)
+
+        win = visual.Window(fullscr=False)
+        globalClock = core.Clock() 
+
+        # summary of run timing, for each key press:
+        output = u'vol    onset key\n'
+        for i in range(-1 * MR_settings['skip'], 0):
+            output += u'%d prescan skip (no sync)\n' % i 
+
+        vol = launchScan(win, MR_settings, globalClock=globalClock)
+
+        duration = MR_settings['volumes'] * MR_settings['TR']
+        # note: globalClock has been reset to 0.0 by launchScan()
+        while globalClock.getTime() < duration:
+            allKeys = event.getKeys()
+            for key in allKeys:
+                if key == MR_settings['sync']:
+                    # do your experiment code at this point if you want it sync'd to the TR
+                    self.run()
+                    
+                else:
+                    # handle keys (many fiber-optic buttons become key-board key-presses)
+                    output += u"%3d  %7.3f %s\n" % (vol-1, globalClock.getTime(), str(key))
+                    if key == 'escape':
+                        output += u'user cancel, '
+                        break
+        
+            # # waits for a key press to end the experiment
+            # event.waitKeys()
+            # # quit screen and exit
+            # win.close()
+            # core.quit()
