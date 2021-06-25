@@ -99,19 +99,36 @@ if you haven't created target files
 run the experiment code:
 ### for debugging:
 
-    $ e.run(debug = True)
+    $ e.main(debug = True)
     
-    * you will be prompted to enter the run number in the terminal. Enter the number for the run you want to test
-    * you may change 'behav_training' and 'ttl_flag' as well.
+    * Read the comments.
+    * To debug different runs, type in the run number you want.
+        
+        $ e.main(debug = True, run_number = 3)
+        
+    * You can assign different ids to the subject while you are debugging
+    
+        $ e.main(debug = True, subj_id = 's00')
+        
+    * To make the code wait for the first ttl pulse
+    
+        e.main(debug = True, ttl_flag = True)
 ### once you have debugged the code:
 
     $ e.run(debug = False)
     * a dialogue box will pop up asking you for experiment parameters
-### to test the code for fmri (Checkin how TTL pulses are counted, etc.), you can write a 'fmri_simulator.py' and do:
+### to test the code for fmri (Checkin how TTL pulses are counted, etc.) use the fmri_simulator method in Experiment class and write a function for your own experiment. Check out simulate routine in pontine_7T.py. To launch the simulator:
 
-    $ import python_7T.fmri_simulator
-    * a dialogue box will pop up asking for scanning parameters. This code will simulate ttl pulses and can be used for checking ttl syncing.
-    * While running the code, always check the output printed in the terminal
+    $ e.simulate()
+    
+    * you can change the scanning parameters:
+    
+        $ e.simulate(TR = 1)
+        $ e.simulate(sync = 't') # to use t instead of 5 as ttl pulse trigger
+        
+    * you can also check different runs:
+    
+        $ e.simulate(run_number = 4)
 
 
 Project Organization
@@ -120,7 +137,6 @@ Project Organization
     ├── LICENSE
     ├── README.md          <- The top-level README for developers using this project.
     ├── data
-    │   ├── <experiment_name>  <- Data from third party sources.
     │
     ├── docs               <- A default Sphinx project; see sphinx-doc.org for details
     │
@@ -144,9 +160,13 @@ Project Organization
     │   │
     │   ├──                
     │   │   │── <expperiment_name>.py   <- Scripts to create files and run the experiment. Example: pontine_7T.py
-    │   │   ├── fmri_simulator.py       <- Script to run/test the code for scanner
     │   │   ├── run_files               <- folder containing run files for your experiment
     │   │   ├── target_files            <- folder containing target files for the tasks in your experiment
+    |   |   ├── data
+    |   |       │── behavioral
+    |   |           ├── raw
+    │   │       │── fmri
+    |   |           ├── raw
     └── tox.ini            <- tox file with settings for running tox; see tox.readthedocs.io
 
 
