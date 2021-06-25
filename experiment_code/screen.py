@@ -24,7 +24,7 @@ class Screen:
     def _create_monitor(self):
         # set up monitor
         monitor = monitors.Monitor(
-       "maedbh_laptop",
+       "stimulus",
         distance = self.distance,
         width = self.width,
         )
@@ -43,6 +43,3 @@ class Screen:
         )
         fixation.draw()
         self.window.flip()
-
-
-# Myscreen = Screen()
