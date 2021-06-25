@@ -7,7 +7,7 @@ the functional sub-regions of the human cerebellum
 The tasks are Visual Search, Action Observation, N Back,
 Social Prediction, and Semantic Prediction
 
-#### Authors: Maedbh King, Ladan Shahshahani
+#### Authors: Maedbh King, Ladan Shahshahani, Suzanne Witt
 
 ## Installation
 
