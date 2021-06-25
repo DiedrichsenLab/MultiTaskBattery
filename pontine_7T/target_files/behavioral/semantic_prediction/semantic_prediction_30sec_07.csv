@@ -1,5 +1,5 @@
 ,hand,trial_dur,iti_dur,run_number,display_trial_feedback,cloze_probability,dataset,CoRT_mean,CoRT_std,CoRT_descript,target_word,random_word,word_count,cloze_descript,stim,condition_name,stem_word_dur,last_word_dur,trial_dur_correct,display_trial_feedback,replace_stimuli,feedback_type,trial_type,last_word,start_time,end_time
-0,left,6,0.5,6,True,0.95,block_baldwin,1.5714285714285714,0.7867957924694432,strong non-CoRT,class,shelf,7,high cloze,She graduated at the top of her,easy,0.5,1.5,5.5,True,False,rt,False,shelf,0.0,6.0
-1,left,6,0.5,6,True,0.36,peele,1.0,0.0,strong non-CoRT,country,mate,9,low cloze,The British businessman was the wealthiest in the whole,hard,0.5,1.5,6.5,True,False,rt,True,country,6.5,12.5
-2,left,6,0.5,6,True,0.36,peele,2.0,1.2649110640673518,strong non-CoRT,room,try,9,low cloze,The family's couch and TV were both in the,hard,0.5,1.5,6.5,True,False,rt,False,try,13.0,19.0
-3,left,6,0.5,6,True,0.73,peele,1.4,0.5477225575051662,strong non-CoRT,price,clean,8,high cloze,The couple needed an apartment at a good,easy,0.5,1.5,6.0,True,False,rt,True,price,19.5,25.5
+0,left,6,0.5,6,True,0.36,peele,1.0,0.0,strong non-CoRT,country,mate,9,low cloze,The British businessman was the wealthiest in the whole,hard,0.5,1.5,6.5,True,False,rt,True,country,0.0,6.0
+1,left,6,0.5,6,True,0.95,block_baldwin,1.5714285714285714,0.7867957924694432,strong non-CoRT,class,shelf,7,high cloze,She graduated at the top of her,easy,0.5,1.5,5.5,True,False,rt,False,shelf,6.5,12.5
+2,left,6,0.5,6,True,0.73,peele,1.4,0.5477225575051662,strong non-CoRT,price,clean,8,high cloze,The couple needed an apartment at a good,easy,0.5,1.5,6.0,True,False,rt,True,price,13.0,19.0
+3,left,6,0.5,6,True,0.36,peele,2.0,1.2649110640673518,strong non-CoRT,room,try,9,low cloze,The family's couch and TV were both in the,hard,0.5,1.5,6.5,True,False,rt,False,try,19.5,25.5
