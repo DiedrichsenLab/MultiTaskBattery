@@ -1,0 +1,4 @@
+task_name,task_iter,task_num,num_trials,target_num,target_file,start_time,end_time,instruct_dur
+finger_sequence,1,5,2,3,finger_sequence_30sec_03.csv,0,35,5
+romance_movie,1,9,1,2,romance_movie_30sec_02.csv,35,70,5
+action_observation_knots,1,2,1,2,action_observation_knots_30sec_02.csv,70,105,5
