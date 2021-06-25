@@ -10,6 +10,7 @@ import glob
 import re
 
 import experiment_code.constants as consts
+# import constants as consts
 # import constants as consts # for debugging comment the previous line and uncomment this line
 
 
@@ -463,7 +464,6 @@ class FlexionExtension(Target):
 
         self.trials_info = {"condition_name":["flexion extention"], "trial_type":[None]}
         self.stim_dur = stim_dur # time while either flexion or extension is remaining on the screen
-
 
     def _add_task_info(self, random_state):
         super().make_trials() # first fill in the common fields
@@ -984,8 +984,8 @@ class TheoryOfMind(Target):
         self.save_target_file(self.df)
 
 class ActionObservationKnots(Target):
-    def __init__(self, study_name = 'behavioral', hand = None, trial_dur = 15,
-                 iti_dur = 0.5, run_number = 1, display_trial_feedback = False, 
+    def __init__(self, study_name = 'behavioral', hand = None, trial_dur = 14,
+                 iti_dur = 1, run_number = 1, display_trial_feedback = False, 
                  task_dur=30, tr = 1):
         super(ActionObservationKnots, self).__init__(study_name = study_name, task_name = 'action_observation_knots', hand = None, 
                                            trial_dur = trial_dur, iti_dur = iti_dur, run_number = run_number, 
@@ -1009,10 +1009,9 @@ class ActionObservationKnots(Target):
     
     def _balance_design(self, random_state):
         self.stim_df = self.stim_df.groupby([*self.trials_info], as_index=False).apply(lambda x: x.sample(n=self.num_stims, random_state=random_state, replace=self.replace)).reset_index(drop=True)
-
         # ensure that only `num_trials` are sampled
-        self.target_df = self.stim_df.sample(n=self.num_trials, random_state=random_state, replace=False).reset_index(drop=True)
-    
+        self.stim_df = self.stim_df.sample(n=int(self.num_trials/2), random_state=random_state, replace=False).reset_index(drop=True)
+
     def _add_task_info(self, random_state):
         super().make_trials() # first fill in the common fields
 
@@ -1022,19 +1021,26 @@ class ActionObservationKnots(Target):
         # get stimulus dataframe
         self._get_video()
 
+        types = ['action', 'control']
+        self.target_dataframe['trial_type'] = types *int(self.num_trials/2) # there are no true of false responses
+        self.target_dataframe['hand']       = ['None' for i in range(self.num_trials)] # hand is not used
+
         self.stim_df['stim_action']  = self.stim_df['video_name_action'] + '.mov'
         self.stim_df['stim_control'] = self.stim_df['video_name_control'] + '.mov'
 
         self.stim_df.drop({'video_name_action', 'video_name_control'}, inplace=True, axis=1)
 
         self._balance_design(random_state)
+        # make target dataframe
+        stim_action = self.stim_df['stim_action'].values[0]
+        stim_control = self.stim_df['stim_control'].values[0]
+        self.stim_df.drop({'stim_action', 'stim_control'}, inplace=True, axis=1)
+        self.target_dataframe['stim'] = [stim_action, stim_control]
 
-        self.target_dataframe = pd.concat([self.target_df, self.target_dataframe], axis = 1)
+        # randomly shuffle rows of the dataframe/ no need to shuffle rows. Action always first, control second
+        # dataframe = self.shuffle_rows(self.target_dataframe)
 
-        # randomly shuffle rows of the dataframe
-        dataframe = self.shuffle_rows(self.target_dataframe)
-
-        return dataframe
+        return self.target_dataframe
 
     def _make_files(self):
         """
@@ -1244,3 +1250,5 @@ def make_files(task_list, study_name = 'behavioral', num_runs = 8):
 ## fmri
 # make_files(study_name='fmri', num_runs=8)
 
+# AO = ActionObservationKnots()
+# AO._make_files()
