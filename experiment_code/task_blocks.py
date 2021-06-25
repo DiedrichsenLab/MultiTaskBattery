@@ -55,10 +55,30 @@ class Task:
         # assign keys to hands
         ## from const, the response keys are imported first
         self.response_keys    = consts.response_keys
+        self.response_fingers = consts.response_fingers
           
+        self.key_hand_fingers = {
+            'right': {    # right hand
+                'True':  [self.response_fingers[4]],  # index finger
+                'False': [self.response_fingers[5]],  # middle finger
+                'None' : [self.response_fingers[4], 
+                          self.response_fingers[5], 
+                          self.response_fingers[6], 
+                          self.response_fingers[7]] # four fingers from right hand
+                },
+            'left': {   # left hand
+                'True':  [self.response_fingers[3]],   # index finger
+                'False': [self.response_fingers[2]],   # middle finger
+                'None' : [self.response_fingers[3], 
+                          self.response_fingers[3], 
+                          self.response_fingers[1], 
+                          self.response_fingers[0]] # four fingers from left hand
+                },
+            }
+
         self.key_hand_dict = {
             'right': {    # right hand
-                'True':  [self.response_keys[4]], # index finger
+                'True':  [self.response_keys[4]],  # index finger
                 'False': [self.response_keys[5]],  # middle finger
                 'None' : [self.response_keys[4], 
                           self.response_keys[5], 
@@ -66,12 +86,12 @@ class Task:
                           self.response_keys[7]] # four fingers from right hand
                 },
             'left': {   # left hand
-                'True':  [self.response_keys[2]], # Middle finger
-                'False': [self.response_keys[3]],  # Index finger
-                'None' : [self.response_keys[0], 
+                'True':  [self.response_keys[3]],   # index finger
+                'False': [self.response_keys[2]],   # middle finger
+                'None' : [self.response_keys[3], 
+                          self.response_keys[3], 
                           self.response_keys[1], 
-                          self.response_keys[2], 
-                          self.response_keys[3]] # four fingers from right hand
+                          self.response_keys[0]] # four fingers from left hand
                 },
             }
 
@@ -110,21 +130,16 @@ class Task:
         ## a dictionary called self.response_fingerMap is created!
         self.response_fingerMap = self.get_response_finger_map()
         hand = self.target_file['hand'][0]
-        trueStr  = f"press {self.key_hand_dict[hand]['True'][0]} with {self.response_fingerMap[self.key_hand_dict[hand]['True'][0]]}"
-        falseStr = f"press {self.key_hand_dict[hand]['False'][0]} with {self.response_fingerMap[self.key_hand_dict[hand]['False'][0]]}" 
+        true_str = f"if True press {self.key_hand_fingers[hand]['True'][0]} ({self.key_hand_dict[hand]['True'][0]})"
+        false_str = f"if False press {self.key_hand_fingers[hand]['False'][0]} ({self.key_hand_dict[hand]['False'][0]})"
  
-        self.instruction_text = f"{self.task_name} task\n\nUse your {hand} hand\n\nIf true, {trueStr}\nIf false, {falseStr}"
+        self.instruction_text = f"{self.task_name} task\n\n {true_str} \n {false_str}"
 
         # 3.2 display the instruction text        
         instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
         # instr.size = 0.8
         instr_visual.draw()
         self.window.flip()
-    
-    # 4. show task stimuli
-    # After displaying the instructions, the stimuli will be shown. 
-    # As the stimuli for most of the tasks are different, the show_stim routing was added
-    # as an attribute of each specific task 
 
     # 5. get the trial response  
     def get_trial_response(self, wait_time, start_time, start_time_rt, **kwargs):
@@ -1096,8 +1111,10 @@ class FingerSequence(Task):
         ## a dictionary called self.response_fingerMap is created!
         hand = self.target_file['hand'][0]
         self.response_fingerMap = self.get_response_finger_map()
+        # For 1 press the index finger ()
 
-        mapStr   = [f"press {item} with {self.response_fingerMap[item]}\n" for item in self.key_hand_dict[hand]['None']]
+
+        mapStr   = [f"for {item} press {self.response_fingerMap[item]}\n" for item in self.key_hand_dict[hand]['None']]
         temp_str = ''.join(mapStr)
 
         self.instruction_text = f"{self.task_name} task\n\nUse your {hand} hand:\n" + temp_str
