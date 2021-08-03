@@ -88,7 +88,7 @@ Take pontine_7T.py as an example. run routine in this module has an input called
 ## running an experiment
 Start a python prompt
 
-    $ import python_7T.python_7T as e
+    $ import pontine_7T.pontine_7T as e
     
 if you haven't created target files
 
