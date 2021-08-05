@@ -70,7 +70,7 @@ class Task:
                 'True':  [self.response_fingers[3]],   # index finger
                 'False': [self.response_fingers[2]],   # middle finger
                 'None' : [self.response_fingers[3], 
-                          self.response_fingers[3], 
+                          self.response_fingers[2], 
                           self.response_fingers[1], 
                           self.response_fingers[0]] # four fingers from left hand
                 },
@@ -89,7 +89,7 @@ class Task:
                 'True':  [self.response_keys[3]],   # index finger
                 'False': [self.response_keys[2]],   # middle finger
                 'None' : [self.response_keys[3], 
-                          self.response_keys[3], 
+                          self.response_keys[2], 
                           self.response_keys[1], 
                           self.response_keys[0]] # four fingers from left hand
                 },
