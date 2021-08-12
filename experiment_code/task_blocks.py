@@ -13,6 +13,7 @@ import glob
 
 from psychopy import visual, core, event, gui # data, logging
 from psychopy.visual import ShapeStim
+import pylink as pl
 
 import experiment_code.constants as consts
 from experiment_code.screen import Screen
@@ -33,7 +34,9 @@ class Task:
     (VisualSearch, SemanticPrediction, NBack, SocialPrediction, ActionObservation).
     """
 
-    def __init__(self, screen, target_file, run_end, task_name, study_name, target_num, ttl_flag, save_response = True):
+    def __init__(self, screen, target_file, run_end, task_name, task_num, 
+                 study_name, target_num, ttl_flag, save_response = True):
+
         self.screen  = screen
         self.window  = screen.window
         self.monitor = screen.monitor
@@ -47,6 +50,7 @@ class Task:
         
         self.study_name  = study_name
         self.task_name   = task_name
+        self.task_num    = task_num
         self.target_num  = target_num
         
         self.trial_response     = {} # an empty dictionary which will be filled with trial responses
@@ -139,9 +143,8 @@ class Task:
         instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
         # instr.size = 0.8
         instr_visual.draw()
-        self.window.flip()
-
-    # 5. get the trial response  
+        self.window.flip()    
+    # 4. get the trial response  
     def get_trial_response(self, wait_time, start_time, start_time_rt, **kwargs):
         """ 
         get the trial response. the ttl flag determines the timing 
@@ -178,7 +181,7 @@ class Task:
                 if self.pressed_keys and not self.response_made: # if at least one press is made
                     self.response_made = True
                     self.rt = self.clock.getTime() - start_time_rt
-    # 6. check the trial response
+    # 5. check the trial response
     def check_trial_response(self, wait_time, trial_index, start_time, start_time_rt, **kwargs):
         """
         Checks whether the response made in the trial is correct
@@ -230,7 +233,7 @@ class Task:
             "rt": self.rt
         }
         return response_event
-    # 7. display the feedback for the current trial
+    # 6. display the feedback for the current trial
     def display_trial_feedback(self, correct_response):
         """
         display the feedback for the current trial (correct response or not?)  
@@ -248,7 +251,7 @@ class Task:
         feedback = visual.ImageStim(self.window, feedback, pos=(0, 0)) # pos=pos
         feedback.draw()
         self.window.flip()
-    # 8. Update the trial response (append the response to the list)
+    # 7. Update the trial response (append the response to the list)
     def update_trial_response(self):
         # add additional variables to dict
         self.trial_response.update({'real_start_time': self.real_start_time, 
@@ -256,7 +259,7 @@ class Task:
                                     'ttl_time': self.ttl_time})
 
         self.all_trial_response.append(self.trial_response)
-    # 9. Get the feedback for the task (the type of feedback is different across tasks)
+    # 8. Get the feedback for the task (the type of feedback is different across tasks)
     def get_task_feedback(self, dataframe, feedback_type):
         """
         gets overall feedback of the task based on the feedback type
@@ -295,7 +298,7 @@ class Task:
         feedback = {'curr': fb_curr, 'prev': fb_prev, 'measure': unit_str} 
 
         return feedback 
-    # 10. Get task response dataframe
+    # 9. Get task response dataframe
     def get_task_response(self, all_trial_response):
         """
         get the responses made for the task and convert it to a dataframe
@@ -307,6 +310,44 @@ class Task:
         # df for current data
         response_df = pd.concat([self.target_file, pd.DataFrame.from_records(all_trial_response)], axis=1)
         return response_df
+    
+    # Handling eyetracking during the task
+    ## initialize and start the eyetracker
+    def start_eyetracker(self):
+        """
+        sets up a connection with the eyetracker and start recording eye position
+        """
+        # create an Eyelink class
+        ## the default ip address is 100.1.1.1.
+        ## in the ethernet settings of the laptop, 
+        ## set the ip address of the EyeLink ethernet connection 
+        ## to 100.1.1.2 and the subnet mask to 255.255.255.0
+        self.tk = pl.EyeLink('100.1.1.1')
+        # opening an edf file to store eye recordings
+        ## the file name should not have too many characters (<=8?)
+        self.tk_filename = f"r{self.target_file.run_number}t{self.task_num}.edf"
+        self.tk.openDataFile(self.tk_filename)
+        # set the sampling rate for the eyetracker
+        ## you can set it to 500 or 250 
+        self.tk.sendCommand("sample_rate 500")
+        # start eyetracking and send a text message to tag the start of the file
+        self.tk.startRecording(1, 1, 1, 1)
+        pl.sendMessageToFile(f"task_name: {self.task_name} start_track: {pl.currentUsec()}")
+        return
+    # stop eyetracker    
+    def stop_eyetracker(self):
+        """
+        stop recording
+        close edf file
+        receive edf file?
+            - receiving the edf file takes time and might be problematic during scanning
+            maybe it would be better to take the edf files from eyelink host computer afterwards
+        """
+        self.tk.stopRecording()
+        self.tk.closeDataFile()
+        # self.tk.receiveDataFile(self.tk_filename, self.tk_filename)
+        self.tk.close()
+        return
     
     ## get the current time in the trial
     def get_current_trial_time(self):
@@ -389,8 +430,8 @@ class VisualSearch(Task):
     # def instruction_text(self):
     #     return response dataframe
 
-    def __init__(self, screen, target_file, run_end, task_name, study_name, target_num, ttl_flag, save = True):
-        super(VisualSearch, self).__init__(screen, target_file, run_end, task_name, study_name, target_num, ttl_flag, save_response = save)
+    def __init__(self, screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save = True):
+        super(VisualSearch, self).__init__(screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save_response = save)
         self.feedback_type = 'rt' # reaction
         self.name          = 'visual_search'
     
@@ -487,8 +528,8 @@ class NBack(Task):
     # def instruction_text(self):
     #     return response dataframe
 
-    def __init__(self, screen, target_file, run_end, task_name, study_name, target_num, ttl_flag, save = True):
-        super(NBack, self).__init__(screen, target_file, run_end, task_name, study_name, target_num, ttl_flag, save_response = save)
+    def __init__(self, screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save = True):
+        super(NBack, self).__init__(screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save_response = save)
         self.feedback_type = 'rt' # reaction
         self.name          = 'n_back'
 
@@ -565,8 +606,8 @@ class SocialPrediction(Task):
     # def instruction_text(self):
     #     return "Social Prediction Task\n\nYou have the following options\n\nHandShake = 1\nHug = 2\nHighFive = 3\nKiss = 4\n\nGo as fast as you can while being accurate"
     
-    def __init__(self, screen, target_file, run_end, task_name, study_name, target_num, ttl_flag, save = True):
-        super(SocialPrediction, self).__init__(screen, target_file, run_end, task_name, study_name, target_num, ttl_flag, save_response = save)
+    def __init__(self, screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save = True):
+        super(SocialPrediction, self).__init__(screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save_response = save)
         self.feedback_type = 'acc' # reaction
         self.name          = 'social_prediction'
 
@@ -675,8 +716,8 @@ class SemanticPrediction(Task):
     # def instruction_text(self):
     #     return "Language Prediction Task\n\nYou will read a sentence and decide if the final word of the sentence makes sense\n\nIf the word makes sense, press 3\n\nIf the word does not make sense, press 4\n\nAnswer as quickly and as accurately as possible"
     
-    def __init__(self, screen, target_file, run_end, task_name, study_name, target_num, ttl_flag, save = True):
-        super(SemanticPrediction, self).__init__(screen, target_file, run_end, task_name, study_name, target_num, ttl_flag, save_response = save)
+    def __init__(self, screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save = True):
+        super(SemanticPrediction, self).__init__(screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save_response = save)
         self.feedback_type = 'rt' # reaction
         self.name          = 'semantic_prediction'
 
@@ -812,8 +853,8 @@ class ActionObservation(Task):
     # def instruction_text(self):
     #     return "Action Observation Task\n\nYou have to decide whether the soccer player scores a goal\n\nYou will get feedback on every trial\n\nPress TRUE for goal\n\nPress FALSE for miss"
     
-    def __init__(self, screen, target_file, run_end, task_name, study_name, target_num, ttl_flag, save = True):
-        super(ActionObservation, self).__init__(screen, target_file, run_end, task_name, study_name, target_num, ttl_flag, save_response = save)
+    def __init__(self, screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save = True):
+        super(ActionObservation, self).__init__(screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save_response = save)
         self.feedback_type = 'acc' # reaction
         self.name          = 'action_observation' 
 
@@ -940,8 +981,8 @@ class TheoryOfMind(Task):
     # def instruction_text(self):
     #     return "Theory of Mind Task\n\nYou will read a story and decide if the answer to the question is True or False.\n\nIf the answer is True, press 3\n\nIf the answers is False, press 4\n\nAnswer as quickly and as accurately as possible"
     
-    def __init__(self, screen, target_file, run_end, task_name, study_name, target_num, ttl_flag, save = True):
-        super(TheoryOfMind, self).__init__(screen, target_file, run_end, task_name, study_name, target_num, ttl_flag, save_response = save)
+    def __init__(self, screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save = True):
+        super(TheoryOfMind, self).__init__(screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save_response = save)
         self.feedback_type = 'acc' # reaction
         self.name          = 'theory_of_mind'
     
@@ -1082,8 +1123,8 @@ class FingerSequence(Task):
         the digit turns red if the incorrect key was pressed
     """
 
-    def __init__(self, screen, target_file, run_end, task_name, study_name, target_num, ttl_flag, save = True):
-        super(FingerSequence, self).__init__(screen, target_file, run_end, task_name, study_name, target_num, ttl_flag, save_response = save)
+    def __init__(self, screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save = True):
+        super(FingerSequence, self).__init__(screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save_response = save)
         self.feedback_type = 'acc' # reaction
         self.name          = 'finger_sequence'
 
@@ -1324,8 +1365,8 @@ class SternbergOrder(Task):
     5. show fixation (iti_dur)
     """
 
-    def __init__(self, screen, target_file, run_end, task_name, study_name, target_num, ttl_flag, save = True):
-        super(SternbergOrder, self).__init__(screen, target_file, run_end, task_name, study_name, target_num, ttl_flag, save_response = save)
+    def __init__(self, screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save = True):
+        super(SternbergOrder, self).__init__(screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save_response = save)
         self.feedback_type = 'acc' # reaction
         self.name          = 'sternberg_order'
     
@@ -1451,8 +1492,8 @@ class SternbergOrder(Task):
 
 class VisuospatialOrder(Task):
 
-    def __init__(self, screen, target_file, run_end, task_name, study_name, target_num, ttl_flag, save = True):
-        super(VisuospatialOrder, self).__init__(screen, target_file, run_end, task_name, study_name, target_num, ttl_flag, save_response = save)
+    def __init__(self, screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save = True):
+        super(VisuospatialOrder, self).__init__(screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save_response = save)
         self.feedback_type = 'acc' # reaction
         self.name          = 'visuospatial_order'
 
@@ -1608,8 +1649,8 @@ class VisuospatialOrder(Task):
 
 class VisuospatialOrderV2(Task):
 
-    def __init__(self, screen, target_file, run_end, task_name, study_name, target_num, ttl_flag, save = True):
-        super(VisuospatialOrderV2, self).__init__(screen, target_file, run_end, task_name, study_name, target_num, ttl_flag, save_response = save)
+    def __init__(self, screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save = True):
+        super(VisuospatialOrderV2, self).__init__(screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save_response = save)
         self.feedback_type = 'acc' # reaction
         self.name          = 'visuospatial_order'
 
@@ -1755,8 +1796,8 @@ class FlexionExtension(Task):
     """
     flexion extension of toes! No particular feedback
     """
-    def __init__(self, screen, target_file, run_end, task_name, study_name, target_num, ttl_flag, save = True):
-        super(FlexionExtension, self).__init__(screen, target_file, run_end, task_name, study_name, target_num, ttl_flag, save_response = save)
+    def __init__(self, screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save = True):
+        super(FlexionExtension, self).__init__(screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save_response = save)
         self.feedback_type = 'None' # reaction
         self.name          = 'flexion_extension'
 
@@ -1863,8 +1904,8 @@ class VerbGeneration(Task):
     # def instruction_text(self):
     #     return "Verb Generation Task\n\nYou will read a series of nouns. For some nouns you will be asked to silently generate a verb.\n\nAnswer as quickly and as accurately as possible"
     
-    def __init__(self, screen, target_file, run_end, task_name, study_name, target_num, ttl_flag, save = True):
-        super(VerbGeneration, self).__init__(screen, target_file, run_end, task_name, study_name, target_num, ttl_flag, save_response = save)
+    def __init__(self, screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save = True):
+        super(VerbGeneration, self).__init__(screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save_response = save)
         self.feedback_type = 'None' # no feedback
         self.name          = 'verb_generation'
     
@@ -1985,8 +2026,8 @@ class RomanceMovie(Task):
     # def instruction_text(self):
     #     return "Romance Movie Task\n\nYou will passively watch a 30-second clip from a movie.  Please keep your head as still as possible."
     
-    def __init__(self, screen, target_file, run_end, task_name, study_name, target_num, ttl_flag, save = True):
-        super(RomanceMovie, self).__init__(screen, target_file, run_end, task_name, study_name, target_num, ttl_flag, save_response = save)
+    def __init__(self, screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save = True):
+        super(RomanceMovie, self).__init__(screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save_response = save)
         self.feedback_type = 'None' # no feedback
         self.name          = 'romance_movie'
 
@@ -2085,8 +2126,8 @@ class ActionObservationKnots(Task):
     # def instruction_text(self):
     #     return "Action Observation Task\n\nYou will passively watch two 15-second clips.  Please keep your head as still as possible."
     
-    def __init__(self, screen, target_file, run_end, task_name, study_name, target_num, ttl_flag, save = True):
-        super(ActionObservationKnots, self).__init__(screen, target_file, run_end, task_name, study_name, target_num, ttl_flag, save_response = save)
+    def __init__(self, screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save = True):
+        super(ActionObservationKnots, self).__init__(screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save_response = save)
         self.feedback_type = 'None' # no feedback
         self.name          = 'action_observation_knots'
 
@@ -2175,8 +2216,8 @@ class Rest(Task):
 
     # @property
 
-    def __init__(self, screen, target_file, run_end, task_name, study_name, target_num, ttl_flag, save = False):
-        super(Rest, self).__init__(screen, target_file, run_end, task_name, study_name, target_num, ttl_flag, save_response = save)
+    def __init__(self, screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save = False):
+        super(Rest, self).__init__(screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save_response = save)
         self.feedback_type = 'none' # reaction
         self.name          = 'rest'
     
