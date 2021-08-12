@@ -46,6 +46,7 @@ class Experiment:
         run_number      - run number 
         subj_id         - id assigned to the subject
         ttl_flag        - should the program wait for the ttl pulse or not? For scanning THIS FLAG HAS TO BE SET TO TRUE
+        eye_flag        - Do you want to record eye movements? if yes, then check the box
 
         Args:
         debug (bool)    -   if True, uses default names and info for testing, otherwise, a dialogue box will pop up
@@ -59,8 +60,9 @@ class Experiment:
 
             inputDlg.addField('Enter Subject ID:')      # id assigned to the subject
             inputDlg.addField('Enter Run Number (int):')      # run number (int)
-            inputDlg.addField('Is it a training session?', initial = True) 
-            inputDlg.addField('Wait for TTL pulse?', initial = True) # a checkbox 
+            inputDlg.addField('Is it a training session?', initial = True) # true for behavioral and False for fmri
+            inputDlg.addField('Wait for TTL pulse?', initial = True) # a checkbox for ttl pulse (set it true for scanning)
+            inputDlg.addField('Do Eyetracking?', initial = False) # a check box for eyetracking (set it to true if you want eyetracking)
 
             inputDlg.show()
 
@@ -73,6 +75,7 @@ class Experiment:
 
                 # ttl flag that will be used to determine whether the program waits for ttl pulse or not
                 self.experiment_info['ttl_flag'] = bool(inputDlg.data[3])
+                self.experiment_info['eye_flag'] = bool(inputDlg.data[4])
 
             else:
                 sys.exit()
@@ -83,7 +86,8 @@ class Experiment:
                 'subj_id': 'test00',
                 'run_number': 1,
                 'behav_training': False,
-                'ttl_flag': True
+                'ttl_flag': True, 
+                'eye_flag': False
             }
             self.experiment_info.update(**kwargs)
         return self.experiment_info
@@ -289,6 +293,7 @@ class Experiment:
         self.run_number = self.experiment_info['run_number'] 
         self.subj_id    = self.experiment_info['subj_id']   
         self.ttl_flag   = self.experiment_info['ttl_flag']
+        self.eye_flag   = self.experiment_info['eye_flag']
 
         # determine the name of the run file to be used
         self.run_name = f"run_{self.run_number:02}.csv"
@@ -369,7 +374,7 @@ class Experiment:
         self.task_list = self.run_info['run_file']['task_name'].tolist()
 
         self.task_obj_list = [] # a list containing task objects in the run
-        for t, self.task_name in enumerate(self.task_list):
+        for t_num, self.task_name in enumerate(self.task_list):
             # get the task_file_info. running this will create self.task_file_info
             self.get_taskfile_info(self.task_name)
 
@@ -383,7 +388,7 @@ class Experiment:
 
             Task_obj  = TaskName(screen = self.stimuli_screen, 
                                    target_file = self.task_file_info['task_file'], 
-                                   run_end  = self.task_file_info['task_endTime'], task_name = self.task_name,  
+                                   run_end  = self.task_file_info['task_endTime'], task_name = self.task_name, task_num = t_num+1,   
                                    study_name = self.study_name, target_num = self.task_file_info['target_num'], 
                                    ttl_flag = self.ttl_flag)
 
@@ -395,11 +400,19 @@ class Experiment:
             # display the instruction text for the task. (instructions are task specific)
             Task_obj.display_instructions()
 
+            # start the eyetracker
+            if self.eye_flag:
+                Task_obj.start_eyetracker()
+
             # wait for a time period equal to instruction duration
             self.wait_dur(self.task_file_info['task_startTime'].values[0] + self.task_file_info['instruct_dur'].values[0])
 
             # show the stimuli for the task and collect responses
             task_response_df = Task_obj.run()
+
+            # stop the eyetracker if you've started it
+            if self.eye_flag:
+                Task_obj.stop_eyetracker()
 
             # adding run information to response dataframe
             task_response_df['run_name'] = self.run_name
@@ -416,7 +429,7 @@ class Experiment:
                                             'real_start_time': real_start_time,
                                             'real_end_time': (self.timer_info['global_clock'].getTime() - self.timer_info['t0']),
                                             'run_name': self.run_name,
-                                            'task_idx': t+1,
+                                            'task_idx': t_num+1,
                                             'run_iter': self.run_iter,
                                             'run_num': self.run_info['run_num'],
             })
