@@ -2,19 +2,21 @@ from psychopy import visual, core, logging, event, data, monitors
 
 class Screen: 
 
-    def __init__(self):
-        self.fullscr  = False
+    def __init__(self, res = [1920, 1080], fullscr = True, screen_number = 0):
+        self.fullscr  = fullscr
         self.units    = 'deg'
         self.color    = '#808080'
-        self.size     = [1440, 900] #[800, 800] #[1440, 900]
+        self.size     = res #[800, 800] #[1440, 900]
         self.distance = 57.0
         self.width    = 30.0
-        self.allowGUI = True,
+        self.allowGUI = True
+        self.screen_number = screen_number
         self.window   = self._create_window()
         self.monitor  = self._create_monitor()
-
+        
     def _create_window(self): 
         return visual.Window(size = self.size, 
+                            screen = self.screen_number,
                             monitor = self._create_monitor(),
                             fullscr = self.fullscr,
                             units = self.units,
