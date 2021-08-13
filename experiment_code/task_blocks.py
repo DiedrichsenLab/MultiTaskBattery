@@ -13,7 +13,7 @@ import glob
 
 from psychopy import visual, core, event, gui # data, logging
 from psychopy.visual import ShapeStim
-import pylink as pl
+import pylink as pl # to connect to eyelink
 
 import experiment_code.constants as consts
 from experiment_code.screen import Screen
