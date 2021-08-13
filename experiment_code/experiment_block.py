@@ -23,15 +23,16 @@ class Experiment:
     A general class with attributes common to experiments
     """
 
-    def __init__(self, exp_name, **kwargs):
+    def __init__(self, exp_name, subj_id, **kwargs):
         """
         exp_name  -   name of the experiment. Examples: 'mdtb_localizer', 'pontine_7T'
         """
 
         self.exp_name   = exp_name
+        self.subj_id    = subj_id
         self.__dict__.update(kwargs)
     
-    def set_info(self, **kwargs):
+    def set_info(self, screen_res, screen_number, **kwargs):
         """
         setting the info for the experiment:
 
@@ -58,7 +59,8 @@ class Experiment:
             #Set up input box
             inputDlg = gui.Dlg(title = f"{self.exp_name}")
 
-            inputDlg.addField('Enter Subject ID:')      # id assigned to the subject
+            inputDlg.addFixedField(f'Subject ID: {self.subj_id}')
+            # inputDlg.addField('Enter Subject ID:')      # id assigned to the subject
             inputDlg.addField('Enter Run Number (int):')      # run number (int)
             inputDlg.addField('Is it a training session?', initial = True) # true for behavioral and False for fmri
             inputDlg.addField('Wait for TTL pulse?', initial = True) # a checkbox for ttl pulse (set it true for scanning)
@@ -69,7 +71,8 @@ class Experiment:
             # # record input variables
             self.experiment_info = {}
             if gui.OK:
-                self.experiment_info['subj_id']        = str(inputDlg.data[0])
+                self.experiment_info['subj_id']        = self.subj_id
+                # self.experiment_info['subj_id']        = str(inputDlg.data[0])
                 self.experiment_info['run_number']     = int(inputDlg.data[1])
                 self.experiment_info['behav_training'] = bool(inputDlg.data[2])
 
@@ -77,10 +80,14 @@ class Experiment:
                 self.experiment_info['ttl_flag'] = bool(inputDlg.data[3])
                 self.experiment_info['eye_flag'] = bool(inputDlg.data[4])
 
+                self.stimuli_screen_res = screen_res # resolution of the monitor you are using for stimulus presentation
+                self.screen_number = screen_number # when dual screens are present, set this to 1 to display on second screen
+
             else:
                 sys.exit()
 
         else: 
+            print("running in debug mode")
             # pass on the values for your debugging with the following keywords
             self.experiment_info = {
                 'subj_id': 'test00',
@@ -89,6 +96,8 @@ class Experiment:
                 'ttl_flag': True, 
                 'eye_flag': False
             }
+            self.stimuli_screen_res = [1920, 1080]
+            self.screen_number = 0
             self.experiment_info.update(**kwargs)
         return self.experiment_info
 
@@ -315,8 +324,8 @@ class Experiment:
         self.check_runfile_results()
 
         # 4. open screen and display fixation cross
-        self.stimuli_screen = Screen()
-        ## opening a screen to show experiment info to the experimenter
+        ### set the resolution of the subject screen here: 
+        self.stimuli_screen = Screen(res = self.stimuli_screen_res, screen_number=1)
 
         # 5. timer stuff!
         ## start the timer. Needs to know whether the experimenter has chosen to wait for ttl pulse 
@@ -459,7 +468,7 @@ class Experiment:
         # settings for the experiment
         self.set_info(debug = True, **kwargs)
 
-        win = visual.Window(fullscr=False)
+        win = visual.Window(fullscr=False, screen = 0)
         globalClock = core.Clock() 
 
         # summary of run timing, for each key press:
