@@ -32,7 +32,7 @@ class Experiment:
         self.subj_id    = subj_id
         self.__dict__.update(kwargs)
     
-    def set_info(self, screen_res, screen_number, **kwargs):
+    def set_info(self, screen_res =[1920, 1080], screen_number=0, **kwargs):
         """
         setting the info for the experiment:
 
@@ -96,8 +96,8 @@ class Experiment:
                 'ttl_flag': True, 
                 'eye_flag': False
             }
-            self.stimuli_screen_res = [1920, 1080]
-            self.screen_number = 0
+            self.stimuli_screen_res = screen_res
+            self.screen_number = screen_number
             self.experiment_info.update(**kwargs)
         return self.experiment_info
 
