@@ -11,7 +11,7 @@ import time
 import math
 import glob
 
-from psychopy import visual, core, event, gui # data, logging
+from psychopy import visual, core, event, constants, gui # data, logging
 from psychopy.visual import ShapeStim
 import pylink as pl # to connect to eyelink
 
@@ -849,9 +849,6 @@ class SemanticPrediction(Task):
         return rDf
 
 class ActionObservation(Task):
-    # @property
-    # def instruction_text(self):
-    #     return "Action Observation Task\n\nYou have to decide whether the soccer player scores a goal\n\nYou will get feedback on every trial\n\nPress TRUE for goal\n\nPress FALSE for miss"
     
     def __init__(self, screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save = True):
         super(ActionObservation, self).__init__(screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save_response = save)
@@ -870,8 +867,11 @@ class ActionObservation(Task):
         # play movie
         self.trial_response_all = []
         wait_time = self.trial_dur
+        print(f"mov status : {mov.status}")
 
-        while mov.status != visual.FINISHED:
+        # while mov.status != visual.FINISHED:
+        while mov.status != constants.FINISHED:
+            
             if self.ttl_flag:
                 while (ttl.clock.getTime() - self.t0 <= wait_time):
                     ttl.check()
@@ -2047,7 +2047,6 @@ class RomanceMovie(Task):
     
     def _show_stim(self):
         mov = visual.MovieStim3(self.window, self.path_to_video, flipVert=False, flipHoriz=False, loop=False)
-
         # play movie
         self.trial_response_all = []
         wait_time = self.trial_dur
@@ -2055,21 +2054,21 @@ class RomanceMovie(Task):
         if self.ttl_flag: # if the user chooses to wait for the ttl pulse
             while (ttl.clock.getTime() - self.t0 <= wait_time): # and not resp_made:
                 # play movie
-                while mov.status != visual.FINISHED:
-                    ttl.check()
-                    
-                    # draw frame to screen
-                    mov.draw()
-                    self.window.flip()
+                # while mov.status != visual.FINISHED:
+                ttl.check()
+                # draw frame to screen
+                mov.draw()
+                self.window.flip()
 
         else: 
             while (self.clock.getTime() - self.t0 <= wait_time): # and not resp_made:
                 # play movie
-                while mov.status != visual.FINISHED:
-                    
-                    # draw frame to screen
-                    mov.draw()
-                    self.window.flip()
+                # while mov.status != visual.FINISHED:
+                # draw frame to screen
+                mov.draw()
+                self.window.flip()
+
+        # mov.stop()
 
     def run(self):
         # run the task
@@ -2136,7 +2135,9 @@ class ActionObservationKnots(Task):
         self.iti_dur = self.target_file['iti_dur'][self.trial]
         self.trial_dur = self.target_file['trial_dur'][self.trial]
         self.start_time = self.target_file['start_time'][self.trial]
+        self.end_time = self.target_file['end_time'][self.trial]
         self.path_to_video = os.path.join(consts.stim_dir, self.task_name, 'clips', video_file)
+        # self.mov = visual.MovieStim3(self.window, self.path_to_video, flipVert=False, flipHoriz=False, loop=False)
     
     def display_instructions(self): # overriding the display instruction from the parent class
 
@@ -2146,30 +2147,30 @@ class ActionObservationKnots(Task):
         self.window.flip() 
     
     def _show_stim_movie(self, path_to_movie):
+        
         mov = visual.MovieStim3(self.window, path_to_movie, flipVert=False, flipHoriz=False, loop=False)
-
         # play movie
         self.trial_response_all = []
-        wait_time = self.trial_dur
+        wait_time = self.trial_dur        
 
         if self.ttl_flag: # if the user chooses to wait for the ttl pulse
             while (ttl.clock.getTime() - self.t0 <= wait_time): # and not resp_made:
                 # play movie
-                while mov.status != visual.FINISHED:
-                    ttl.check()
-                    
-                    # draw frame to screen
-                    mov.draw()
-                    self.window.flip()
+                # while self.mov.status != constants.FINISHED:
+                ttl.check()
+                # draw frame to screen
+                mov.draw()
+                self.window.flip()
 
         else: 
             while (self.clock.getTime() - self.t0 <= wait_time): # and not resp_made:
                 # play movie
-                while mov.status != visual.FINISHED:
-                    
-                    # draw frame to screen
-                    mov.draw()
-                    self.window.flip()
+                # while self.mov.status != constants.FINISHED:
+                # draw frame to screen
+                mov.draw()
+                self.window.flip()
+
+        # mov.stop()
     
     def run(self):
         # run the task
