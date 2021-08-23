@@ -1,2 +1,2 @@
 ,label,condition_name,media,extracted,video_start,video_end,stim,hand,trial_dur,iti_dur,run_number,display_trial_feedback,start_time,end_time
-0,movie,romance,video,1,0,30,6_romance.mov,,30,0,3,False,0,30
+0,movie,romance,video,1,0,30,6_romance.mov,,28,0,3,False,0,28
