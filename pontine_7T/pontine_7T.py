@@ -38,7 +38,7 @@ def create_target(task_list = ['visual_search', 'action_observation_knots', 'fle
     make_target.make_files(task_list = task_list, study_name='fmri', num_runs = num_runs)
 
 def simulate(**kwargs):
-    Custom_Exp = exp_block.Experiment(exp_name="pontine_7T")
+    Custom_Exp = exp_block.Experiment(exp_name="pontine_7T", subj_id='fmri_sim')
     Custom_Exp.simulate_fmri(**kwargs)
 
 # 5. run the experiment.
