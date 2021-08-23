@@ -985,7 +985,7 @@ class TheoryOfMind(Target):
 
 class ActionObservationKnots(Target):
     def __init__(self, study_name = 'behavioral', hand = None, trial_dur = 14,
-                 iti_dur = 1, run_number = 1, display_trial_feedback = False, 
+                 iti_dur = 0.5, run_number = 1, display_trial_feedback = False, 
                  task_dur=30, tr = 1):
         super(ActionObservationKnots, self).__init__(study_name = study_name, task_name = 'action_observation_knots', hand = None, 
                                            trial_dur = trial_dur, iti_dur = iti_dur, run_number = run_number, 
@@ -1053,7 +1053,7 @@ class ActionObservationKnots(Target):
         self.save_target_file(self.df)
 
 class RomanceMovie(Target):
-    def __init__(self, study_name = 'behavioral', hand = None, trial_dur = 30,
+    def __init__(self, study_name = 'behavioral', hand = None, trial_dur = 28,
                  iti_dur = 0, run_number = 1, display_trial_feedback = False, 
                  task_dur = 30, tr = 1):
         super(RomanceMovie, self).__init__(study_name = study_name, task_name = 'romance_movie', hand = None, 
