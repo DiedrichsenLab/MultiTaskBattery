@@ -325,7 +325,9 @@ class Task:
         self.tk = pl.EyeLink('100.1.1.1')
         # opening an edf file to store eye recordings
         ## the file name should not have too many characters (<=8?)
-        self.tk_filename = f"r{self.target_file.run_number}t{self.task_num}.edf"
+        ### get the run number
+        run_number = np.unique(self.target_file.run_number.values)[0]
+        self.tk_filename = f"r{run_number}_t{self.task_num}.edf"
         self.tk.openDataFile(self.tk_filename)
         # set the sampling rate for the eyetracker
         ## you can set it to 500 or 250 
