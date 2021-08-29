@@ -214,8 +214,7 @@ class Task:
             if self.pressed_keys[0][0] == self.correct_key_list[0]:
                 self.correct_response = True 
             elif self.pressed_keys[0][0] != self.correct_key_list[0]:
-                self.correct_response = False
-    
+                self.correct_response = False    
         # 6.3 determine the key that was pressed
         # the pressed key will be recorded even if it's the wrong key
         if not self.pressed_keys:
@@ -223,7 +222,6 @@ class Task:
             resp_key = None
         else:
             resp_key = self.pressed_keys[0][0]
-
         response_event = {
             "corr_key": self.correct_key_list[0],
             "pressed_key": resp_key,
@@ -329,20 +327,18 @@ class Task:
         If the user has chosen not to use the ttl pulse. 
         ttl_time is set to 0.
         Args:
-            t0 - ?????????
+            t0 -
         """
         if self.ttl_flag:
             self.real_start_time = ttl.clock.getTime()
             self.ttl_time = t0 - ttl.time
             self.ttl_count = ttl.count
-
-
         else:
             # self.real_start_time = self.clock.getTime() - t0
             self.real_start_time = self.clock.getTime()
             self.ttl_time = 0
             self.ttl_count = 0
-    ##????????????????????????????????????
+
     def get_time_before_disp(self):
         # start timer before display
         if self.ttl_flag:
