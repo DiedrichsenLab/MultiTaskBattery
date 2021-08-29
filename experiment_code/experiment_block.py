@@ -35,6 +35,10 @@ class Experiment:
         self.eye_flag   = eye_flag
         self.__dict__.update(kwargs)
 
+        # open screen and display fixation cross
+        ### set the resolution of the subject screen here: 
+        self.stimuli_screen = Screen(screen_number=1)
+
         # connect to the eyetracker already
         if self.eye_flag:
             # create an Eyelink class
@@ -44,7 +48,7 @@ class Experiment:
             ## to 100.1.1.2 and the subnet mask to 255.255.255.0
             self.tk = pl.EyeLink('100.1.1.1')
     
-    def set_info(self, screen_res =[1920, 1080], screen_number=0, **kwargs):
+    def set_info(self, **kwargs):
         """
         setting the info for the experiment:
 
@@ -68,10 +72,7 @@ class Experiment:
         if not kwargs['debug']:
             # a dialog box pops up so you can enter info
             #Set up input box
-            inputDlg = gui.Dlg(title = f"{self.exp_name}")
-
-            inputDlg.addFixedField(f'Subject ID: {self.subj_id}')
-            # inputDlg.addField('Enter Subject ID:')      # id assigned to the subject
+            inputDlg = gui.Dlg(title = f"{self.exp_name} - {self.subj_id}")
             inputDlg.addField('Enter Run Number (int):')      # run number (int)
             inputDlg.addField('Is it a training session?', initial = True) # true for behavioral and False for fmri
             inputDlg.addField('Wait for TTL pulse?', initial = True) # a checkbox for ttl pulse (set it true for scanning)
@@ -82,12 +83,11 @@ class Experiment:
             self.experiment_info = {}
             if gui.OK:
                 self.experiment_info['subj_id']        = self.subj_id
-                # self.experiment_info['subj_id']        = str(inputDlg.data[0])
-                self.experiment_info['run_number']     = int(inputDlg.data[1])
-                self.experiment_info['behav_training'] = bool(inputDlg.data[2])
+                self.experiment_info['run_number']     = int(inputDlg.data[0])
+                self.experiment_info['behav_training'] = bool(inputDlg.data[1])
 
                 # ttl flag that will be used to determine whether the program waits for ttl pulse or not
-                self.experiment_info['ttl_flag'] = bool(inputDlg.data[3])
+                self.experiment_info['ttl_flag'] = bool(inputDlg.data[2])
                 self.experiment_info['eye_flag'] = self.eye_flag
 
             else:
@@ -146,7 +146,7 @@ class Experiment:
             ttl.reset()
             while ttl.count <= 0:
                 # print out the text to the screen
-                ttl_wait_text = f"Waiting for the scanner"
+                ttl_wait_text = f"Waiting for the scanner\n"
                 ttl_wait_ = visual.TextStim(self.stimuli_screen.window, text=ttl_wait_text, 
                                                 pos=(0.0,0.0), color=self.stimuli_screen.window.rgb + 0.5, units='deg')
                 ttl.check()
@@ -154,7 +154,7 @@ class Experiment:
                 ttl_wait_.draw()
                 self.stimuli_screen.window.flip()
 
-            print(f"Received TTL pulse")
+            # print(f"Received TTL pulse")
             # get the ttl clock
             self.timer_info['global_clock'] = ttl.clock
         else:
@@ -360,10 +360,6 @@ class Experiment:
         # 3. check if a file for the result of the run already exists
         self.check_runfile_results()
 
-        # 4. open screen and display fixation cross
-        ### set the resolution of the subject screen here: 
-        self.stimuli_screen = Screen(screen_number=1)
-
         # 5. start the eyetracker if eyeflag = True
         if self.eye_flag:
             self.start_eyetracker()
@@ -431,12 +427,13 @@ class Experiment:
         for t_num, self.task_name in enumerate(self.task_list):
             # get the task_file_info. running this will create self.task_file_info
             self.get_taskfile_info(self.task_name)
-
             # get the real strat time for each task 
             ## for debugging make sure that this is at about the start_time specified in the run file
             real_start_time = self.timer_info['global_clock'].getTime() - self.timer_info['t0']
-            print(f"real_start_time:{real_start_time} == start_time: {self.task_file_info['task_startTime'].values[0]}????") # for debugging purposes!
-
+            start_time = self.task_file_info['task_startTime'].values[0]
+            print(f"\n{self.task_name}")
+            print(f"real_start_time {real_start_time} - start_time {start_time}")
+            
             # if you are doing eyetracking (eye_flag = True)
             ## sending a message to the edf file specifying task name
             if self.eye_flag:
@@ -514,7 +511,7 @@ class Experiment:
         # settings for the experiment
         self.set_info(debug = True, **kwargs)
 
-        win = visual.Window(fullscr=False, screen = 0)
+        # win = visual.Window(fullscr=False, screen = 0)
         globalClock = core.Clock() 
 
         # summary of run timing, for each key press:
@@ -522,7 +519,8 @@ class Experiment:
         for i in range(-1 * MR_settings['skip'], 0):
             output += u'%d prescan skip (no sync)\n' % i 
 
-        vol = launchScan(win, MR_settings, globalClock=globalClock)
+        vol = launchScan(self.stimuli_screen.window, settings = MR_settings, 
+                        globalClock=globalClock, mode = 'Test')
 
         duration = MR_settings['volumes'] * MR_settings['TR']
         # note: globalClock has been reset to 0.0 by launchScan()
@@ -540,8 +538,8 @@ class Experiment:
                         output += u'user cancel, '
                         break
         
-            # # waits for a key press to end the experiment
+            # waits for a key press to end the experiment
             # event.waitKeys()
-            # # quit screen and exit
+            # quit screen and exit
             # win.close()
             # core.quit()
