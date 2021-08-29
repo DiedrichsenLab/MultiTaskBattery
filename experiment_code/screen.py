@@ -2,11 +2,11 @@ from psychopy import visual, core, logging, event, data, monitors
 
 class Screen: 
 
-    def __init__(self, res = [1920, 1080], fullscr = True, screen_number = 0):
+    def __init__(self, fullscr = True, screen_number = 0):
         self.fullscr  = fullscr
         self.units    = 'deg'
         self.color    = '#808080'
-        self.size     = res #[800, 800] #[1440, 900]
+        self.size     = [1280, 1024] #[800, 800] #[1440, 900]
         self.distance = 57.0
         self.width    = 30.0
         self.allowGUI = True
