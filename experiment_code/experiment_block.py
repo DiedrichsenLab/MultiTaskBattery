@@ -16,6 +16,8 @@ from experiment_code.task_blocks import TASK_MAP
 from experiment_code.ttl import ttl
 from experiment_code.screen import Screen
 from psychopy.hardware.emulator import launchScan
+import pylink as pl # to connect to eyelink
+
 
 
 class Experiment:
@@ -23,14 +25,24 @@ class Experiment:
     A general class with attributes common to experiments
     """
 
-    def __init__(self, exp_name, subj_id, **kwargs):
+    def __init__(self, exp_name, subj_id, eye_flag = False, **kwargs):
         """
         exp_name  -   name of the experiment. Examples: 'mdtb_localizer', 'pontine_7T'
         """
 
         self.exp_name   = exp_name
         self.subj_id    = subj_id
+        self.eye_flag   = eye_flag
         self.__dict__.update(kwargs)
+
+        # connect to the eyetracker already
+        if self.eye_flag:
+            # create an Eyelink class
+            ## the default ip address is 100.1.1.1.
+            ## in the ethernet settings of the laptop, 
+            ## set the ip address of the EyeLink ethernet connection 
+            ## to 100.1.1.2 and the subnet mask to 255.255.255.0
+            self.tk = pl.EyeLink('100.1.1.1')
     
     def set_info(self, screen_res =[1920, 1080], screen_number=0, **kwargs):
         """
@@ -47,7 +59,6 @@ class Experiment:
         run_number      - run number 
         subj_id         - id assigned to the subject
         ttl_flag        - should the program wait for the ttl pulse or not? For scanning THIS FLAG HAS TO BE SET TO TRUE
-        eye_flag        - Do you want to record eye movements? if yes, then check the box
 
         Args:
         debug (bool)    -   if True, uses default names and info for testing, otherwise, a dialogue box will pop up
@@ -64,7 +75,6 @@ class Experiment:
             inputDlg.addField('Enter Run Number (int):')      # run number (int)
             inputDlg.addField('Is it a training session?', initial = True) # true for behavioral and False for fmri
             inputDlg.addField('Wait for TTL pulse?', initial = True) # a checkbox for ttl pulse (set it true for scanning)
-            inputDlg.addField('Do Eyetracking?', initial = False) # a check box for eyetracking (set it to true if you want eyetracking)
 
             inputDlg.show()
 
@@ -78,10 +88,7 @@ class Experiment:
 
                 # ttl flag that will be used to determine whether the program waits for ttl pulse or not
                 self.experiment_info['ttl_flag'] = bool(inputDlg.data[3])
-                self.experiment_info['eye_flag'] = bool(inputDlg.data[4])
-
-                self.stimuli_screen_res = screen_res # resolution of the monitor you are using for stimulus presentation
-                self.screen_number = screen_number # when dual screens are present, set this to 1 to display on second screen
+                self.experiment_info['eye_flag'] = self.eye_flag
 
             else:
                 sys.exit()
@@ -96,8 +103,6 @@ class Experiment:
                 'ttl_flag': True, 
                 'eye_flag': False
             }
-            self.stimuli_screen_res = screen_res
-            self.screen_number = screen_number
             self.experiment_info.update(**kwargs)
         return self.experiment_info
 
@@ -157,6 +162,38 @@ class Experiment:
         
         self.timer_info['t0'] = self.timer_info['global_clock'].getTime()
 
+        return
+
+    def start_eyetracker(self):
+        """
+        sets up a connection with the eyetracker and start recording eye position
+        """
+        
+        # opening an edf file to store eye recordings
+        ## the file name should not have too many characters (<=8?)
+        ### get the run number
+        self.tk_filename = f"{self.subj_id}_r{self.run_number}.edf"
+        self.tk.openDataFile(self.tk_filename)
+        # set the sampling rate for the eyetracker
+        ## you can set it to 500 or 250 
+        self.tk.sendCommand("sample_rate  500")
+        # start eyetracking and send a text message to tag the start of the file
+        self.tk.startRecording(1, 1, 1, 1)
+        # pl.sendMessageToFile(f"task_name: {self.task_name} start_track: {pl.currentUsec()}")
+        return
+
+    def stop_eyetracker(self):
+        """
+        stop recording
+        close edf file
+        receive edf file?
+            - receiving the edf file takes time and might be problematic during scanning
+            maybe it would be better to take the edf files from eyelink host computer afterwards
+        """
+        self.tk.stopRecording()
+        self.tk.closeDataFile()
+        # self.tk.receiveDataFile(self.tk_filename, self.tk_filename)
+        self.tk.close()
         return
 
     def get_taskfile_info(self, task_name):
@@ -325,7 +362,11 @@ class Experiment:
 
         # 4. open screen and display fixation cross
         ### set the resolution of the subject screen here: 
-        self.stimuli_screen = Screen(res = self.stimuli_screen_res, screen_number=1)
+        self.stimuli_screen = Screen(screen_number=1)
+
+        # 5. start the eyetracker if eyeflag = True
+        if self.eye_flag:
+            self.start_eyetracker()
 
         # 5. timer stuff!
         ## start the timer. Needs to know whether the experimenter has chosen to wait for ttl pulse 
@@ -357,6 +398,10 @@ class Experiment:
 
         # present feedback from all tasks on screen 
         self.show_scoreboard(self.task_obj_list, self.stimuli_screen)
+
+        # stop the eyetracker
+        if self.eye_flag:
+            self.stop_eyetracker()
 
         # end experiment
         end_exper_text = f"End of run\n\nTake a break!"
@@ -392,6 +437,11 @@ class Experiment:
             real_start_time = self.timer_info['global_clock'].getTime() - self.timer_info['t0']
             print(f"real_start_time:{real_start_time} == start_time: {self.task_file_info['task_startTime'].values[0]}????") # for debugging purposes!
 
+            # if you are doing eyetracking (eye_flag = True)
+            ## sending a message to the edf file specifying task name
+            if self.eye_flag:
+                pl.sendMessageToFile(f"task_name: {self.task_name} start_track: {pl.currentUsec()} real start time {real_start_time} TR count {ttl.count}")
+            
             # create a task object for the current task and append it to the list
             TaskName = TASK_MAP[self.task_name]
 
@@ -408,10 +458,6 @@ class Experiment:
 
             # display the instruction text for the task. (instructions are task specific)
             Task_obj.display_instructions()
-
-            # start the eyetracker
-            if self.eye_flag:
-                Task_obj.start_eyetracker()
 
             # wait for a time period equal to instruction duration
             self.wait_dur(self.task_file_info['task_startTime'].values[0] + self.task_file_info['instruct_dur'].values[0])
