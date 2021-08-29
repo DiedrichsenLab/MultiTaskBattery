@@ -45,9 +45,9 @@ def simulate(**kwargs):
 ## change debug to False once you are sure everything is debugged 
 ## make sure that you have changed the screen_res to the res for the subject screen
 ## display mode should also be in extend!
-def main(subj_id, exp_name = "pontine_7T", debug = True, eye_flag = False):
+def main(subj_id, debug = True, eye_flag = False):
     # 1. create a class for the experiment
-    Custom_Exp = exp_block.Experiment(exp_name=exp_name, subj_id=subj_id, eye_flag=eye_flag)
+    Custom_Exp = exp_block.Experiment(exp_name="pontine_7T", subj_id=subj_id, eye_flag=eye_flag)
 
     # 2. get experiment information
     exp_info = Custom_Exp.set_info(debug = debug)
