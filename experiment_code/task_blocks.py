@@ -13,7 +13,6 @@ import glob
 
 from psychopy import visual, core, event, constants, gui # data, logging
 from psychopy.visual import ShapeStim
-import pylink as pl # to connect to eyelink
 
 import experiment_code.constants as consts
 from experiment_code.screen import Screen
@@ -310,46 +309,6 @@ class Task:
         # df for current data
         response_df = pd.concat([self.target_file, pd.DataFrame.from_records(all_trial_response)], axis=1)
         return response_df
-    
-    # Handling eyetracking during the task
-    ## initialize and start the eyetracker
-    def start_eyetracker(self):
-        """
-        sets up a connection with the eyetracker and start recording eye position
-        """
-        # create an Eyelink class
-        ## the default ip address is 100.1.1.1.
-        ## in the ethernet settings of the laptop, 
-        ## set the ip address of the EyeLink ethernet connection 
-        ## to 100.1.1.2 and the subnet mask to 255.255.255.0
-        self.tk = pl.EyeLink('100.1.1.1')
-        # opening an edf file to store eye recordings
-        ## the file name should not have too many characters (<=8?)
-        ### get the run number
-        run_number = np.unique(self.target_file.run_number.values)[0]
-        self.tk_filename = f"r{run_number}_t{self.task_num}.edf"
-        self.tk.openDataFile(self.tk_filename)
-        # set the sampling rate for the eyetracker
-        ## you can set it to 500 or 250 
-        self.tk.sendCommand("sample_rate 500")
-        # start eyetracking and send a text message to tag the start of the file
-        self.tk.startRecording(1, 1, 1, 1)
-        pl.sendMessageToFile(f"task_name: {self.task_name} start_track: {pl.currentUsec()}")
-        return
-    # stop eyetracker    
-    def stop_eyetracker(self):
-        """
-        stop recording
-        close edf file
-        receive edf file?
-            - receiving the edf file takes time and might be problematic during scanning
-            maybe it would be better to take the edf files from eyelink host computer afterwards
-        """
-        self.tk.stopRecording()
-        self.tk.closeDataFile()
-        # self.tk.receiveDataFile(self.tk_filename, self.tk_filename)
-        self.tk.close()
-        return
     
     ## get the current time in the trial
     def get_current_trial_time(self):
