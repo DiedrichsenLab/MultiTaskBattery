@@ -26,6 +26,5 @@ class TTL:
         if keys and keys[0][0] == self.ttl_button and (keys[0][1] - self.time) > 0.3:
             self.count += 1 # each time a ttl button is pressed, ttl count increases
             self.time = keys[0][1] # the time when the ttl button has been pressed
-            print(f"new TR: {self.count}")
-
+            print(f"TR count: {self.count} -    TR time: {self.time}", end = "\r")
 ttl = TTL()
