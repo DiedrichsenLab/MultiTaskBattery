@@ -462,10 +462,6 @@ class Experiment:
             # show the stimuli for the task and collect responses
             task_response_df = Task_obj.run()
 
-            # stop the eyetracker if you've started it
-            if self.eye_flag:
-                Task_obj.stop_eyetracker()
-
             # adding run information to response dataframe
             task_response_df['run_name'] = self.run_name
             task_response_df['run_iter'] = self.run_iter
