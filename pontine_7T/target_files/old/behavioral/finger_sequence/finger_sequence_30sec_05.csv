@@ -1,9 +1,0 @@
-,hand,trial_dur,iti_dur,run_number,display_trial_feedback,trial_type,condition_name,sequence,feedback_type,start_time,end_time
-0,left,3.25,0.5,4,True,None,simple,2 2 2 2 2 2,acc,0.0,3.25
-1,left,3.25,0.5,4,True,None,complex,2 1 3 4 3 1,acc,3.75,7.0
-2,left,3.25,0.5,4,True,None,complex,4 1 2 3 4 1,acc,7.5,10.75
-3,left,3.25,0.5,4,True,None,simple,4 4 4 4 4 4,acc,11.25,14.5
-4,left,3.25,0.5,4,True,None,complex,3 2 4 1 4 2,acc,15.0,18.25
-5,left,3.25,0.5,4,True,None,complex,1 3 2 4 3 2,acc,18.75,22.0
-6,left,3.25,0.5,4,True,None,simple,1 1 1 1 1 1,acc,22.5,25.75
-7,left,3.25,0.5,4,True,None,simple,3 3 3 3 3 3,acc,26.25,29.5
