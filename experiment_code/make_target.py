@@ -854,16 +854,19 @@ class NBack(Target):
         # stim_dir   = os.path.join(consts.stim_dir, self.study_name, self.task_name)
         stim_dir   = os.path.join(consts.stim_dir, self.task_name)
         stim_files = [f for f in os.listdir(str(stim_dir)) if ((f.endswith('g')) and not(f.startswith('.')))]
-
         # first two images are always random (and false)
         # all other images are either match or not a match
         stim_list = random.sample(stim_files, k=self.n_back)
+        # stim_list = stim_files
         for tt in self.target_dataframe['trial_type'][self.n_back:]: # loop over n+self.n_back
+
             match_img     = stim_list[-self.n_back]
+            # print(f"match image:{match_img}")
             no_match_imgs = [stim for stim in stim_files if stim != match_img] # was match_img[0]
+            print(f"no match image {no_match_imgs}")
             if tt == False: # not a match
                 # random.seed(self.random_state)
-                stim_list.append(random.sample(no_match_imgs, k=self.n_back-1))
+                stim_list.append(random.sample(no_match_imgs, k=self.n_back-1)[0])
             else:           # match
                 stim_list.append(match_img)
 
@@ -876,7 +879,7 @@ class NBack(Target):
         self.num_stims = int(self.num_trials / len(self.trials_info['condition_name']))
 
         self.target_dataframe['trial_type'] = self.num_stims*(True, False)
-        # self.target_dataframe = self.target_dataframe.sample(n=self.num_trials, random_state=self.random_state, replace=False).reset_index(drop=True) 
+        self.target_dataframe = self.target_dataframe.sample(n=self.num_trials, replace=False).reset_index(drop=True) 
         self.target_dataframe['trial_type'][:self.n_back] = False # first n+cond_type trials (depending on cond_type) have to be False
 
         # make `n_back` and `condition_name` cols
@@ -894,10 +897,10 @@ class NBack(Target):
         # get the stimulus based on trial_type
         self._get_stim()
 
-        # randomly shuffle rows of the dataframe
-        dataframe = self.shuffle_rows(self.target_dataframe)
+        # # randomly shuffle rows of the dataframe
+        # dataframe = self.shuffle_rows(self.target_dataframe)
 
-        return dataframe
+        return self.target_dataframe
     
     def _make_files(self):
         # save target file
