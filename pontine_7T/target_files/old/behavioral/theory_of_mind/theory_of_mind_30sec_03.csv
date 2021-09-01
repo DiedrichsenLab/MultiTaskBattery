@@ -1,0 +1,16 @@
+,story,question,filename,condition_name,story_dur,question_dur,trial_dur_correct,display_trial_feedback,trial_type,hand,trial_dur,iti_dur,run_number,display_trial_feedback,start_time,end_time
+0,"A volcano erupted on a Carribean island 
+three months ago. Barren lava rock is 
+all that remains today. Satellite photographs 
+show the island as it was before the eruption. ","Today, the island is covered in 
+lava rock.
+
+False or True? ",8p,photo,10,4,14.5,True,True,right,14,0.5,2,True,0.0,14.0
+1,"The Nelson Pillar was a granite pillar
+that was erected by the British in Dublin.
+In 1966 it was destroyed by the Irish
+republicans. Today the Spire of Dublin
+stands on its former ground.","Today, the Nelson Pillar
+stands tall in Dublin
+
+False or True?",23p,photo,10,4,14.5,True,False,right,14,0.5,2,True,14.5,28.5

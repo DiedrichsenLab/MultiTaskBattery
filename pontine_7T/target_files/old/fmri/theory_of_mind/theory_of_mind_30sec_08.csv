@@ -1,0 +1,15 @@
+,story,question,filename,condition_name,story_dur,question_dur,trial_dur_correct,display_trial_feedback,trial_type,hand,trial_dur,iti_dur,run_number,display_trial_feedback,start_time,end_time
+0,"The autobiography of the actor
+depicts a prosperous and extravagant 
+lifestyle. Soon after the book is 
+written the actor loses his fortune. ","In the autobiography, the actor is 
+depicted as destitute and broke
+
+False or True?",15p,photo,10,4,14.5,True,False,left,14,0.5,7,True,0.0,14.0
+1,"Sarah texts Paul to let him
+know that she will miss dinner 
+because she is working late. Paul 
+has lost his phone and does not
+get her message. ","Paul expects Sarah to be home for dinner
+
+False or True?",16b,belief,10,4,14.5,True,True,left,14,0.5,7,True,14.5,28.5
