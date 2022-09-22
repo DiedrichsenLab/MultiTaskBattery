@@ -2100,7 +2100,7 @@ class ActionObservationKnots(Task):
     
     def display_instructions(self): # overriding the display instruction from the parent class
 
-        self.instruction_text = f"{self.task_name} task \n\n Keep your head still while watching to two clips. \n\n Try and remember the knot shown."
+        self.instruction_text = f"{self.task_name} task \n\n Keep your head still while watching the two clips. \n\n Try and remember the knot shown."
         instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
         instr_visual.draw()
         self.window.flip() 
