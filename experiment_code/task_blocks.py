@@ -70,12 +70,12 @@ class Task:
                           self.response_fingers[7]] # four fingers from right hand
                 },
             'left': {   # left hand
-                'True':  [self.response_fingers[3]],   # index finger
-                'False': [self.response_fingers[2]],   # middle finger
-                'None' : [self.response_fingers[3], 
-                          self.response_fingers[2], 
+                'True':  [self.response_fingers[0]],   # index finger
+                'False': [self.response_fingers[1]],   # middle finger
+                'None' : [self.response_fingers[0], 
                           self.response_fingers[1], 
-                          self.response_fingers[0]] # four fingers from left hand
+                          self.response_fingers[2], 
+                          self.response_fingers[3]] # four fingers from left hand
                 },
             }
 
@@ -89,12 +89,12 @@ class Task:
                           self.response_keys[7]] # four fingers from right hand
                 },
             'left': {   # left hand
-                'True':  [self.response_keys[3]],   # index finger
-                'False': [self.response_keys[2]],   # middle finger
-                'None' : [self.response_keys[3], 
-                          self.response_keys[2], 
+                'True':  [self.response_keys[0]],   # index finger
+                'False': [self.response_keys[1]],   # middle finger
+                'None' : [self.response_keys[0], 
                           self.response_keys[1], 
-                          self.response_keys[0]] # four fingers from left hand
+                          self.response_keys[2], 
+                          self.response_keys[3]] # four fingers from left hand
                 },
             }
 
@@ -133,9 +133,12 @@ class Task:
         ## a dictionary called self.response_fingerMap is created!
         self.response_fingerMap = self.get_response_finger_map()
         hand = self.target_file['hand'][0]
-        true_str = f"if True press {self.key_hand_fingers[hand]['True'][0]} ({self.key_hand_dict[hand]['True'][0]})"
-        false_str = f"if False press {self.key_hand_fingers[hand]['False'][0]} ({self.key_hand_dict[hand]['False'][0]})"
+        # true_str = f"if True press {self.key_hand_fingers[hand]['True'][0]} ({self.key_hand_dict[hand]['True'][0]})"
+        # false_str = f"if False press {self.key_hand_fingers[hand]['False'][0]} ({self.key_hand_dict[hand]['False'][0]})"
  
+        true_str = f"if True press {self.key_hand_fingers[hand]['True'][0]}"
+        false_str = f"if False press {self.key_hand_fingers[hand]['False'][0]}"
+
         self.instruction_text = f"{self.task_name} task\n\n {true_str} \n {false_str}"
 
         # 3.2 display the instruction text        
@@ -389,7 +392,7 @@ class VisualSearch(Task):
 
     def __init__(self, screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save = True):
         super(VisualSearch, self).__init__(screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save_response = save)
-        self.feedback_type = 'rt' # reaction
+        self.feedback_type = 'acc' # reaction
         self.name          = 'visual_search'
     
     def _get_stims(self):
@@ -487,7 +490,7 @@ class NBack(Task):
 
     def __init__(self, screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save = True):
         super(NBack, self).__init__(screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save_response = save)
-        self.feedback_type = 'rt' # reaction
+        self.feedback_type = 'acc' # reaction
         self.name          = 'n_back'
 
     def _get_trial_info(self):
@@ -675,7 +678,7 @@ class SemanticPrediction(Task):
     
     def __init__(self, screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save = True):
         super(SemanticPrediction, self).__init__(screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save_response = save)
-        self.feedback_type = 'rt' # reaction
+        self.feedback_type = 'acc' # reaction
         self.name          = 'semantic_prediction'
 
     def _get_trial_info(self):
@@ -1088,8 +1091,8 @@ class FingerSequence(Task):
         # create a dictionary to map keys to digits
         response_left  = consts.response_keys[0:4]
         response_right = consts.response_keys[4:8]
-        map_right      = dict(zip(response_right, ('1', '2', '3', '4')))
-        map_left       = dict(zip(response_left, ('1', '2', '3', '4')))
+        map_right      = dict(zip(response_right, ('2', '3', '4', '5')))
+        map_left       = dict(zip(response_left, ('2', '3', '4', '5')))
         self.key_digit = dict(zip(('right', 'left'), (map_right, map_left)))
 
     def _get_trial_info(self):
@@ -1098,8 +1101,8 @@ class FingerSequence(Task):
         in the target file, the field called sequence must contain a string with spaces between the keys
         """
         super().get_trial_info(self.trial)
+        # print(f"trial_number {self.trial}")
         self.sequence_text = str(self.target_file['sequence'][self.trial])
-        # self.announce_time = self.target_file['announce_time'][self.trial]
         
         # create a list of digits that are to be pressed
         self.digits_seq = self.sequence_text.split(" ")
@@ -1171,12 +1174,11 @@ class FingerSequence(Task):
         
         ## each time a key is pressed, event.getKeys return a list
         ## the returned list has one element which is also a list ([[key, time]])
-        ## the first index gives the key and the second index gives the time of press
-        # each word will remain on the screen for a certain amount of time (self.stem_word_dur)
         if self.ttl_flag: # wait for ttl pulse
             ttl.check()
         else: # do not wait for ttl pulse
             pass
+
         press = event.getKeys(self.response_keys, timeStamped=self.clock) # records the pressed key
         if len(press)>0: # a press has been made`
             self.pressed_digits.append(self._get_press_digit(press[0][0])) # the pressed key is converted to its corresponding digit and appended to the list
