@@ -16,6 +16,7 @@ from experiment_code.task_blocks import TASK_MAP
 from experiment_code.ttl import ttl
 from experiment_code.screen import Screen
 from psychopy.hardware.emulator import launchScan
+from psychopy.hardware import keyboard
 import pylink as pl # to connect to eyelink
 
 
@@ -172,7 +173,8 @@ class Experiment:
         # opening an edf file to store eye recordings
         ## the file name should not have too many characters (<=8?)
         ### get the run number
-        self.tk_filename = f"{self.subj_id}_r{self.run_number}.edf"
+        self.tk_filename = f"s_{self.run_number}.edf"
+        # self.tk_filename = f"{self.subj_id}_r{self.run_number}.edf"
         self.tk.openDataFile(self.tk_filename)
         # set the sampling rate for the eyetracker
         ## you can set it to 500 or 250 
@@ -317,12 +319,19 @@ class Experiment:
                     (-9, 0), (0, 0), (9, 0), 
                     (-9, 6), (0, 6), (9, 6)]
         for position, feedback in zip(positions, feedback_all):
-            scoreboard = visual.TextStim(screen.window, text = feedback, color = [-1, -1, -1], pos = position, height = 0.5)
+            scoreboard = visual.TextStim(screen.window, text = feedback, color = [-1, -1, -1], pos = position, height = 0.7)
             scoreboard.draw()
 
         screen.window.flip()
 
         event.waitKeys()
+        kb = keyboard.Keyboard()
+        # Listen for keypresses until escape is pressed
+        keys = kb.getKeys()
+        if '2' not in keys:
+            # quit screen and exit
+            event.waitKeys()
+            core.quit()
 
         return
 
@@ -398,6 +407,8 @@ class Experiment:
         # stop the eyetracker
         if self.eye_flag:
             self.stop_eyetracker()
+            # get the edf file from Eyelink PC
+            self.tk.receiveDataFile(self.tk_filename, self.tk_filename)
 
         # end experiment
         end_exper_text = f"End of run\n\nTake a break!"
@@ -406,15 +417,21 @@ class Experiment:
         self.stimuli_screen.window.flip()
 
         # waits for a key press to end the experiment
-        event.waitKeys()
-        # quit screen and exit
-        self.stimuli_screen.window.close()
-        core.quit()
+        # event.waitKeys()
+        # Make keyboard object
+        kb = keyboard.Keyboard()
+        # Listen for keypresses until escape is pressed
+        keys = kb.getKeys()
+        if 'space' in keys:
+            # quit screen and exit
+            self.stimuli_screen.window.close()
+            core.quit()
 
     def run(self):
         """
         run a run of the experiment
         """
+        print(f"running the experiment")
 
         # 1. initialize the run: timer, responses, run file, etc.
         self.init_run()
@@ -425,6 +442,7 @@ class Experiment:
 
         self.task_obj_list = [] # a list containing task objects in the run
         for t_num, self.task_name in enumerate(self.task_list):
+            print(f"{self.task_name}")
             # get the task_file_info. running this will create self.task_file_info
             self.get_taskfile_info(self.task_name)
             # get the real strat time for each task 
@@ -498,8 +516,8 @@ class Experiment:
         # settings for launchScan:
         MR_settings = {
             'TR': 1.000,       # duration (sec) per whole-brain volume
-            'volumes': 500,    # number of whole-brain 3D volumes per scanning run
-            'sync': '5',       # character to use as the sync timing event; assumed to come at start of a volume
+            'volumes': 330,    # number of whole-brain 3D volumes per scanning run
+            'sync': 't',       # character to use as the sync timing event; assumed to come at start of a volume
             'skip': 5,         # number of volumes lacking a sync pulse at start of scan (for T1 stabilization)
             }
         MR_settings.update(**kwargs)
@@ -519,20 +537,23 @@ class Experiment:
                         globalClock=globalClock, mode = 'Test')
 
         duration = MR_settings['volumes'] * MR_settings['TR']
+        run_loop = True
         # note: globalClock has been reset to 0.0 by launchScan()
-        while globalClock.getTime() < duration:
-            allKeys = event.getKeys()
-            for key in allKeys:
-                if key == MR_settings['sync']:
+        while run_loop:
+            # allKeys = event.getKeys()
+            # for key in allKeys:
+            #     if key == MR_settings['sync']:
+            #         onset = globalClock.getTime()
                     # do your experiment code at this point if you want it sync'd to the TR
-                    self.run()
+            self.run()
+            run_loop = False
                     
-                else:
-                    # handle keys (many fiber-optic buttons become key-board key-presses)
-                    output += u"%3d  %7.3f %s\n" % (vol-1, globalClock.getTime(), str(key))
-                    if key == 'escape':
-                        output += u'user cancel, '
-                        break
+            # else:
+            #     # handle keys (many fiber-optic buttons become key-board key-presses)
+            #     output += u"%3d  %7.3f %s\n" % (vol-1, globalClock.getTime(), str(key))
+            #     if key == 'escape':
+            #         output += u'user cancel, '
+            #         break
         
             # waits for a key press to end the experiment
             # event.waitKeys()
