@@ -6,7 +6,7 @@ class Screen:
         self.fullscr  = fullscr
         self.units    = 'deg'
         self.color    = '#808080'
-        self.size     = [1280, 1024] #[800, 800] #[1440, 900]
+        self.size     = [1024, 768] #[800, 800] #[1440, 900]
         self.distance = 57.0
         self.width    = 30.0
         self.allowGUI = True
@@ -16,12 +16,12 @@ class Screen:
         
     def _create_window(self): 
         return visual.Window(size = self.size, 
-                            screen = self.screen_number,
-                            monitor = self._create_monitor(),
-                            fullscr = self.fullscr,
-                            units = self.units,
-                            color = self.color, 
-                            allowGUI = self.allowGUI) 
+                             screen = self.screen_number,
+                             monitor = self._create_monitor(),
+                             fullscr = self.fullscr,
+                             units = self.units,
+                             color = self.color, 
+                             allowGUI = self.allowGUI) 
 
     def _create_monitor(self):
         # set up monitor
