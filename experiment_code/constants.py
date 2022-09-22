@@ -5,14 +5,15 @@ import os
 # default response keys and the corresponding fingers. Can be modified
 ## first enter the keys for the right hand and then the keys for the left hand
 # response_keys    = ['a', 's', 'd', 'f', 'h', 'j', 'k', 'l']
-response_keys    = ['1', '2', '3', '4', '6', '7', '8', '9']
-response_fingers = ['Pinky', 'Ring', 'Middle', 'Index', 'Index', 'Middle', 'Ring', 'Pinky']
-
+response_keys    = ['2', '3', '4', '5', '2', '3', '4', '5']
+# response_keys    = ['y', 'g', 'r', 'e', 'y', 'g', 'r', 'e']
+# ygrt
+response_fingers = ['Index', 'Middle', 'Ring', 'Pinky', 'Index', 'Middle', 'Ring', 'Pinky']
 # change experiment name to a name you've chosen for your own experiment
 experiment_name = 'pontine_7T'
 # change the str inside Path() to a directory of your choise.
 ## make sure 'stimuli' and 'experiment_code' folders are placed within your base_dir
-base_dir        = Path('/home/ladan/Documents/Project/mdtb_reduced').absolute()
+base_dir        = Path('C:\\Users\\lshah\\OneDrive\\Documents\\Projects\\mdtb_reduced').absolute()
 
 stim_dir   = base_dir / "stimuli"                       # where stimuli for each task are stored
 target_dir = base_dir / experiment_name /"target_files" # contains target files for the task
