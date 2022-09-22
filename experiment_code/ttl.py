@@ -6,7 +6,7 @@ class TTL:
         self.clock      = None #
         self.count      = 0    # the number of ttl pulses 
         self.time       = 0    # the time of the incoming ttl pulse
-        self.ttl_button = '5'  # the button used for simulating a ttl pulse
+        self.ttl_button = 't'  # the button used for simulating a ttl pulse
 
     def reset(self):
         self.clock = core.Clock()
