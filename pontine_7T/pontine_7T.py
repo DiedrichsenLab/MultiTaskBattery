@@ -38,14 +38,25 @@ def create_target(task_list = ['visual_search', 'action_observation_knots', 'fle
     make_target.make_files(task_list = task_list, study_name='fmri', num_runs = num_runs)
 
 def simulate(**kwargs):
+    """simulate the fMRI experiment
+    will be used to simulate the experiment for debugging purposes 
+    and getting a sense of how the experiment will look like in the scanner
+    """
     Custom_Exp = exp_block.Experiment(exp_name="pontine_7T", subj_id='fmri_sim')
     Custom_Exp.simulate_fmri(**kwargs)
 
 # 5. run the experiment.
-## change debug to False once you are sure everything is debugged 
-## make sure that you have changed the screen_res to the res for the subject screen
-## display mode should also be in extend!
 def main(subj_id, debug = True, eye_flag = False):
+    """_summary_
+    change debug to False once you are sure everything is debugged 
+    make sure that you have changed the screen_res to the res for the subject screen
+    display mode should also be in extend!
+
+    Args:
+        subj_id (str): id of the subject
+        debug (bool, optional): Defaults to True for debugging
+        eye_flag (bool, optional): Do you want to do the eyetracking?. Defaults to False.
+    """
     # 1. create a class for the experiment
     Custom_Exp = exp_block.Experiment(exp_name="pontine_7T", subj_id=subj_id, eye_flag=eye_flag)
 

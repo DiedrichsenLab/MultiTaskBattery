@@ -1104,7 +1104,6 @@ class RomanceMovie(Target):
         # get movie dataframe
         self._get_movie()
 
-        # self.stim_df['stim'] = self.stim_df['video_name'] + '.mov'
         self.stim_df['stim'] = f"{self.run_number+1}_romance.mov"
 
         self.stim_df.drop({'video_name'}, inplace=True, axis=1)
@@ -1213,23 +1212,6 @@ class Rest(Target):
 class SocialPrediction(Target):
     pass
 
-TASK_MAP = {
-    "visual_search": VisualSearch, # task_num 1
-    "theory_of_mind": TheoryOfMind, # task_num 2
-    "n_back": NBack, # task_num 3
-    "social_prediction": SocialPrediction, # task_num 4
-    "semantic_prediction": SemanticPrediction, # task_num 5
-    "finger_sequence": FingerSequence, # task_num 7
-    "sternberg_order": SternbergOrder, # task_num 8
-    "visuospatial_order": VisuospatialOrder, # task 9
-    "flexion_extension": FlexionExtension, # task_num 10
-    "verb_generation": VerbGeneration, # task_num 11
-    "romance_movie": RomanceMovie, #task_num 12
-    "action_observation_knots": ActionObservationKnots, #task_num 13
-    "rest": Rest, # task_num?
-    }
-
-
 # Functions to do the job
 def make_task_target(task_name = 'visual_search', study_name = 'behavioral', hand = 'right'):
     """
@@ -1267,11 +1249,31 @@ def make_files(task_list, study_name = 'behavioral', num_runs = 8,
     
     return
 
-# Example code 
-## behavioral
-# make_files(study_name='behavioral', num_runs=8)
-## fmri
-# make_files(study_name='fmri', num_runs=8)
+TASK_MAP = {
+    "visual_search": VisualSearch, # task_num 1
+    "theory_of_mind": TheoryOfMind, # task_num 2
+    "n_back": NBack, # task_num 3
+    "social_prediction": SocialPrediction, # task_num 4
+    "semantic_prediction": SemanticPrediction, # task_num 5
+    "finger_sequence": FingerSequence, # task_num 7
+    "sternberg_order": SternbergOrder, # task_num 8
+    "visuospatial_order": VisuospatialOrder, # task 9
+    "flexion_extension": FlexionExtension, # task_num 10
+    "verb_generation": VerbGeneration, # task_num 11
+    "romance_movie": RomanceMovie, #task_num 12
+    "action_observation_knots": ActionObservationKnots, #task_num 13
+    "rest": Rest, # task_num?
+    }
 
-# AO = ActionObservationKnots()
-# AO._make_files()
+
+
+if __name__ == "__main__":
+    # Example code 
+    ## behavioral
+    make_files(study_name='behavioral', num_runs=8)
+    ## fmri
+    make_files(study_name='fmri', num_runs=8)
+
+    ## Example: creating target files for the action observation knots task
+    AO = ActionObservationKnots()
+    AO._make_files()
