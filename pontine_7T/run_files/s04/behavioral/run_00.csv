@@ -1,0 +1,2 @@
+task_name,task_iter,task_num,num_trials,target_num,target_file,start_time,end_time,instruct_dur
+n_back,1,6,12,1,n_back_30sec_01.csv,0,35,5
