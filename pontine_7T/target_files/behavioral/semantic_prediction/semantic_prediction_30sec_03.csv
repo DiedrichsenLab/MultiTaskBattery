@@ -1,5 +1,0 @@
-,hand,trial_dur,iti_dur,run_number,display_trial_feedback,cloze_probability,dataset,CoRT_mean,CoRT_std,CoRT_descript,target_word,random_word,word_count,cloze_descript,stim,condition_name,stem_word_dur,last_word_dur,trial_dur_correct,display_trial_feedback,replace_stimuli,feedback_type,trial_type,last_word,start_time,end_time
-0,right,6,0.5,2,True,0.39,peele,1.4,0.5477225575051662,strong non-CoRT,steal,nap,8,low cloze,The boys already knew it was wrong to,hard,0.5,1.5,6.0,True,False,rt,True,steal,0.0,6.0
-1,right,6,0.5,2,True,0.32,peele,2.75,0.957427107756338,ambiguous,scam,tug,8,low cloze,Ray immediately knew the salesman's offer was a,hard,0.5,1.5,6.0,True,False,rt,False,tug,6.5,12.5
-2,right,6,0.5,2,True,0.96,peele,1.75,0.957427107756338,strong non-CoRT,wear,leak,8,high cloze,"Before the gala, Katie couldn't decide what to",easy,0.5,1.5,6.0,True,False,rt,True,wear,13.0,19.0
-3,right,6,0.5,2,True,0.81,peele,3.6666666666666665,1.5275252316519468,ambiguous,drink,famous,8,high cloze,The dehydrated athlete grabbed water and began to,easy,0.5,1.5,6.0,True,False,rt,False,famous,19.5,25.5
