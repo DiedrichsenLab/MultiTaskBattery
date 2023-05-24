@@ -1,3 +1,0 @@
-task_name,task_iter,task_num,num_trials,target_num,target_file,start_time,end_time,instruct_dur
-action_observation_knots,1,2,2,8,action_observation_knots_30sec_08.csv,0,35,5
-romance_movie,1,3,1,8,romance_movie_30sec_08.csv,35,70,5
