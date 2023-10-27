@@ -7,7 +7,7 @@ the functional sub-regions of the human cerebellum
 The tasks are Visual Search, Action Observation, N Back,
 Social Prediction, and Semantic Prediction
 
-#### Authors: Maedbh King, Ladan Shahshahani, Suzanne Witt
+#### Authors: Diedrichsenlab (Maedbh King, Ladan Shahshahani, Suzanne Witt, Bassel Arafat, Ince Hussain)
 
 ## Installation
 
@@ -24,7 +24,7 @@ git clone https://github.com/maedbhk/mdtb_reduced.git
 
 ### Installing the Required Python Version
 
-This project requires **python version 3.7.0**. Please ensure it is installed globally on your local machine.
+This project requires **python version >3.7.0**. Please ensure it is installed globally on your local machine.
 
 If you are running Mac OS X or Linux, it is recommended to use [`pyenv`](https://github.com/pyenv/pyenv)
 for python version management. The full installation instructions can be found [here](https://github.com/pyenv/pyenv#installation). 
