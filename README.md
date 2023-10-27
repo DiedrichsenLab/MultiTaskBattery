@@ -1,5 +1,5 @@
 mdtb_reduced
-==============================
+============
 
 This project uses a reduced battery of cognitive and motor tasks to map
 the functional sub-regions of the human cerebellum
