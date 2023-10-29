@@ -5,12 +5,12 @@ import re
 import pandas as pd
 import numpy as np
 import random
-from PIL import Image 
+from PIL import Image
 import moviepy.editor as mp
 import cv2
 import glob
 
-import experiment_code.constants as consts
+import experiment_code.utils as consts
 
 class Utils():
 
@@ -20,7 +20,7 @@ class Utils():
     def _sample_evenly_from_col(self, dataframe, num_stim, column="trial_type", **kwargs):
         if kwargs.get("random_state"):
             random_state = kwargs["random_state"]
-        else: 
+        else:
             random_state = 2
         num_values = len(dataframe[column].unique())
         group_size = int(np.ceil(num_stim / num_values))
@@ -36,20 +36,20 @@ class Utils():
 
         if not os.path.exists(self.target_dir):
             os.makedirs(self.target_dir)
-            
+
         for f in os.listdir(self.target_dir):
             if re.search(targetfile_name, f):
                 regex = r"_(\d+).csv"
                 target_num.append(int(re.findall(regex, f)[0]))
-                
+
         if target_num==[]:
             outfile_name = f"{targetfile_name}_01.csv" # first target file
         else:
             num = np.max(target_num)+1
             outfile_name = f"{targetfile_name}_{num:02d}.csv" # second or more
-        
+
         return outfile_name
-    
+
     def _save_target_files(self, df_target):
         """ saves out target files
             Args:

@@ -9,7 +9,7 @@ import random
 import glob
 import re
 
-import experiment_code.constants as consts
+import experiment_code.utils as consts
 # import constants as consts
 # import constants as consts # for debugging comment the previous line and uncomment this line
 

@@ -4,15 +4,15 @@ import numpy as np
 import pandas as pd
 import math
 # import experiment_code.constants as consts
-import constants as consts
+import experiment_code.utils as consts
 
-def visuospatial_order(nrun = 5, study_name = 'behavioral', 
-                          dot_dur = 0.75, delay_dur = 0.5, 
+def visuospatial_order(nrun = 5, study_name = 'behavioral',
+                          dot_dur = 0.75, delay_dur = 0.5,
                           prob_dur = 1, iti_dur = 0.5,
-                          trial_dur = 6, task_dur = 30, 
-                          hand = 'right', TR = 1, 
-                          display_trial_feedback = True, num_trials = 1, 
-                          circle_radius = 8, load = 6, 
+                          trial_dur = 6, task_dur = 30,
+                          hand = 'right', TR = 1,
+                          display_trial_feedback = True, num_trials = 1,
+                          circle_radius = 8, load = 6,
                           min_distance = 1):
     """
     creates target file for the visuospatial_order task
@@ -37,7 +37,7 @@ def visuospatial_order(nrun = 5, study_name = 'behavioral',
 
     # Version 1. Simple: Considers a circle with a certain radius and draws random dots from the circle
 
-    # loop over runs and create target 
+    # loop over runs and create target
     for run in range(nrun):
         T = {} # dictionary that will be converted to a dataframe later
 
@@ -56,7 +56,7 @@ def visuospatial_order(nrun = 5, study_name = 'behavioral',
         np.random.shuffle(trials_types)
 
         # fill in fields
-        T['trial_type']             = trials_types     
+        T['trial_type']             = trials_types
         T['trial_dur']              = [trial_dur for i in range(n_trials)]
         T['iti_dur']                = [iti_dur for i in range(n_trials)]
         T['delay_dur']              = [delay_dur for i in range(n_trials)]
@@ -86,7 +86,7 @@ def visuospatial_order(nrun = 5, study_name = 'behavioral',
             # ?????????????????????? Points within a square (OLD) ????????????????????????????
             # x = np.random.randint(-circle_radius/2, circle_radius/2, size=1000)
             # y = np.random.randint(-circle_radius/2, circle_radius/2, size=1000)
-            
+
             # circle_xys = [[x[i], y[i]] for i in range(len(x))]
 
             # randomly select from circle_xys
@@ -97,7 +97,7 @@ def visuospatial_order(nrun = 5, study_name = 'behavioral',
 
             # ------------------ Generate random numbers iteratively ------------------------
             # generate random points iteratively,
-            x = np.random.uniform(-circle_radius/2, circle_radius/2) 
+            x = np.random.uniform(-circle_radius/2, circle_radius/2)
             y = np.random.uniform(-circle_radius/2, circle_radius/2)
 
             # checks the distance between all the points to make sure they are at a minimum distance
@@ -106,9 +106,9 @@ def visuospatial_order(nrun = 5, study_name = 'behavioral',
             dot_xys.append([x, y])
             while counter < load + 1:
                 # start generating the other points
-                ## generate another random point 
+                ## generate another random point
                 next_point = False
-                xi = np.random.uniform(-circle_radius/2, circle_radius/2) 
+                xi = np.random.uniform(-circle_radius/2, circle_radius/2)
                 yi = np.random.uniform(-circle_radius/2, circle_radius/2)
 
                 # check the distance between this point and all the other points already in the list dot_xys
@@ -116,20 +116,20 @@ def visuospatial_order(nrun = 5, study_name = 'behavioral',
                     # calculate the distance
                     distance = np.sqrt(((point[0] - xi)**2) + ((point[1] - yi)**2))
                     # print(distance)
-                    
+
                     # if the distance is lower than a threshold, break the loop and generate another point
                     if distance < min_distance:
                         next_point = True
                         break
                     else:
                         continue
-                # append the point to the list of dots only if its distance from 
+                # append the point to the list of dots only if its distance from
                 # all the other points is larger than min_distance
                 if not next_point:
                     counter+=1
                     dot_xys.append([xi, yi])
             # -------------------------------------------------------------------------------
-            T['xys_stim'].append(dot_xys) 
+            T['xys_stim'].append(dot_xys)
             # randomly pick two of the dots for probe based on the trial type
             # get the trial_type for the current trial
             current_tt = T['trial_type'][t]
@@ -144,13 +144,13 @@ def visuospatial_order(nrun = 5, study_name = 'behavioral',
             else: # True trial
                 # sort the indices in ascending order to make sure that their order is conserved
                 probs_idx = np.sort(rand_probs)
-            
+
             probs_xys  = [dot_xys[i] for i in probs_idx]
             ## get the angle between the prob_dots
             abs_y = np.abs(probs_xys[0][1] - probs_xys[1][1])
             abs_x = np.abs(probs_xys[0][0] - probs_xys[1][0])
             # prob_angle = math.degrees(math.atan(abs_y/abs_x))
-            T['xys_prob'].append(probs_xys) 
+            T['xys_prob'].append(probs_xys)
             # T['angle_prob'].append(prob_angle)
 
         df_tmp = pd.DataFrame(T)
@@ -159,12 +159,12 @@ def visuospatial_order(nrun = 5, study_name = 'behavioral',
         df_tmp.to_csv(target_filename)
     return
 
-def visuospatial_order_v2(nrun = 5, study_name = 'behavioral', 
-                       dot_dur = 0.75, delay_dur = 0.5, 
+def visuospatial_order_v2(nrun = 5, study_name = 'behavioral',
+                       dot_dur = 0.75, delay_dur = 0.5,
                        prob_dur = 1, iti_dur = 0.5,
-                       trial_dur = 6, task_dur = 30, 
-                       hand = 'right', TR = 1, 
-                       display_trial_feedback = True, num_trials = 1, 
+                       trial_dur = 6, task_dur = 30,
+                       hand = 'right', TR = 1,
+                       display_trial_feedback = True, num_trials = 1,
                        max_range = 5, load = 6):
     """
     creates target file for the visuospatial_order task
@@ -189,7 +189,7 @@ def visuospatial_order_v2(nrun = 5, study_name = 'behavioral',
 
     # Version 1. Simple: Considers a circle with a certain radius and draws random dots from the circle
 
-    # loop over runs and create target 
+    # loop over runs and create target
     for run in range(nrun):
         T = {} # dictionary that will be converted to a dataframe later
 
@@ -208,7 +208,7 @@ def visuospatial_order_v2(nrun = 5, study_name = 'behavioral',
         np.random.shuffle(trials_types)
 
         # fill in fields
-        T['trial_type']             = trials_types     
+        T['trial_type']             = trials_types
         T['trial_dur']              = [trial_dur for i in range(n_trials)]
         T['iti_dur']                = [iti_dur for i in range(n_trials)]
         T['delay_dur']              = [delay_dur for i in range(n_trials)]
@@ -230,10 +230,10 @@ def visuospatial_order_v2(nrun = 5, study_name = 'behavioral',
             y = np.random.uniform(-max_range, max_range, load)
             x = np.sort(x)
             y = np.sort(y)
-            
+
             dot_xys = [[x[i], y[i]] for i in range(len(x))]
 
-            T['xys_stim'].append(dot_xys) 
+            T['xys_stim'].append(dot_xys)
             # randomly pick two of the dots for probe based on the trial type
             # get the trial_type for the current trial
             current_tt = T['trial_type'][t]
@@ -248,9 +248,9 @@ def visuospatial_order_v2(nrun = 5, study_name = 'behavioral',
             else: # True trial
                 # sort the indices in ascending order to make sure that their order is conserved
                 probs_idx = np.sort(rand_probs)
-            
+
             probs_xys  = [dot_xys[i] for i in probs_idx]
-            T['xys_prob'].append(probs_xys) 
+            T['xys_prob'].append(probs_xys)
 
 
         df_tmp = pd.DataFrame(T)
@@ -259,12 +259,12 @@ def visuospatial_order_v2(nrun = 5, study_name = 'behavioral',
         df_tmp.to_csv(target_filename)
     return
 
-def sternberg_order(nrun = 5, study_name = 'behavioral', 
-                   digit_dur = 0.75, delay_dur = 0.5, 
-                   prob_dur = 1, load_list = [4, 6], 
-                   iti_dur = 0.5, trial_dur = 6, 
-                   task_dur = 30, hand = 'right', 
-                   display_trial_feedback = True, num_trials = 1, 
+def sternberg_order(nrun = 5, study_name = 'behavioral',
+                   digit_dur = 0.75, delay_dur = 0.5,
+                   prob_dur = 1, load_list = [4, 6],
+                   iti_dur = 0.5, trial_dur = 6,
+                   task_dur = 30, hand = 'right',
+                   display_trial_feedback = True, num_trials = 1,
                    TR = 1):
     """
     creates target file for the sternberg_order task
@@ -320,7 +320,7 @@ def sternberg_order(nrun = 5, study_name = 'behavioral',
         # randomly shuffle trials
         np.random.shuffle(trials_types)
 
-        # generate random numbers betweem 1 and 9 
+        # generate random numbers betweem 1 and 9
         rand_nums = [np.random.choice(range(1, 10), size = 6, replace = False) for i in range(n_trials)]
         ## convert the random numbers to str and concatenate them
         stim_str = []
@@ -330,8 +330,8 @@ def sternberg_order(nrun = 5, study_name = 'behavioral',
             stim_str.append(rand_str)
 
         # fill in fields
-        T['stim']                   = stim_str      
-        T['trial_type']             = trials_types     
+        T['stim']                   = stim_str
+        T['trial_type']             = trials_types
         T['trial_dur']              = [trial_dur for i in range(n_trials)]
         T['iti_dur']                = [iti_dur for i in range(n_trials)]
         T['delay_dur']              = [delay_dur for i in range(n_trials)]
@@ -364,14 +364,14 @@ def sternberg_order(nrun = 5, study_name = 'behavioral',
                 ## if prob order is not empty, then the order has to be changed
                 if len(prob_order)<=1: # at least one number is in the generated prob numbers
                     rand_str = ""
-                    for dig in probs_str: rand_str += str(dig) + " " 
+                    for dig in probs_str: rand_str += str(dig) + " "
                     prob_stim.append(rand_str)
                 else: # then the digit is not in the stim sequence
                     ## find the one that comes last and put it as the first digit in the prob
                     first_prob_digit = current_stim_digits[max(prob_order)]
                     last_prob_digit  = current_stim_digits[min(prob_order)]
 
-                    # generate the prob stim and append it 
+                    # generate the prob stim and append it
                     prob_stim.append(first_prob_digit + " " + last_prob_digit)
 
             else: # if it's True
@@ -384,7 +384,7 @@ def sternberg_order(nrun = 5, study_name = 'behavioral',
                 first_prob_digit = current_stim_digits[min(prob_order)]
                 last_prob_digit  = current_stim_digits[max(prob_order)]
 
-                # generate the prob stim and append it 
+                # generate the prob stim and append it
                 prob_stim.append(first_prob_digit + " " + last_prob_digit)
         T['prob_stim'] = prob_stim
 
@@ -395,10 +395,10 @@ def sternberg_order(nrun = 5, study_name = 'behavioral',
 
     return
 
-def finger_sequence(nrun = 5, study_name = 'behavioral', 
-                    seq_length = 6, num_trials = 1, 
-                    announce_time = 0, iti_dur = 0.5, 
-                    trial_dur = 3.25, TR = 1, 
+def finger_sequence(nrun = 5, study_name = 'behavioral',
+                    seq_length = 6, num_trials = 1,
+                    announce_time = 0, iti_dur = 0.5,
+                    trial_dur = 3.25, TR = 1,
                     task_dur = 30, display_trial_feedback = True):
     """
     creates target file for the finger sequence task
@@ -430,10 +430,10 @@ def finger_sequence(nrun = 5, study_name = 'behavioral',
     # the sequences
     seq = {}
     ## EXperimental:
-    seq['complex'] = ['1 3 2 4 3 2', '2 1 3 4 3 1', 
+    seq['complex'] = ['1 3 2 4 3 2', '2 1 3 4 3 1',
                       '3 2 4 1 4 2', '4 1 2 3 4 1']
     ## Control
-    seq['simple'] = ['1 1 1 1 1 1', '2 2 2 2 2 2', 
+    seq['simple'] = ['1 1 1 1 1 1', '2 2 2 2 2 2',
                      '3 3 3 3 3 3', '4 4 4 4 4 4']
 
     # path to save the target files
@@ -443,7 +443,7 @@ def finger_sequence(nrun = 5, study_name = 'behavioral',
     # loop over runs and create target files
     for run in range(nrun):
         T = {} # dictionary that will be converted to dataframe
-        
+
         n_trials = int(task_dur/(trial_dur + iti_dur)) # total number of trials
         n_trials_comp = int(n_trials/2)
         n_trials_simp = n_trials - n_trials_comp
@@ -465,11 +465,11 @@ def finger_sequence(nrun = 5, study_name = 'behavioral',
         # left_trials_simp    = np.tile('left', (n_trials_left_simp, 1))
         # right_trials_simp   = np.tile('right', (n_trials_right_simp, 1))
         # trials_hands_simp   = np.vstack((left_trials_simp, right_trials_simp))
-        
+
         # shuffle hand assignments for complex and simple trials
         # np.random.shuffle(trials_hands_comp)
         # np.random.shuffle(trials_hands_simp)
-        
+
         # shuffle sequences for complex and simple
         np.random.shuffle(seq['complex'])
         np.random.shuffle(seq['simple'])
@@ -486,7 +486,7 @@ def finger_sequence(nrun = 5, study_name = 'behavioral',
             T['sequence']       = np.concatenate((seq['simple'], seq['complex']), axis=0).T.flatten()
             # T['hand']           = np.concatenate((trials_hands_simp, trials_hands_comp), axis=0).T.flatten()
             T['hand']           = np.tile('left', n_trials).T.flatten()
-        
+
         T['trial_dur']              = [trial_dur for i in range(n_trials)]
         T['iti_dur']                = [iti_dur for i in range(n_trials)]
         T['start_time']             = [(trial_dur + iti_dur)*i for i in range(n_trials)]
@@ -509,10 +509,10 @@ def language():
     """
     pass
 
-def flexion_extension(nrun = 5, study_name = 'behavioral', 
-                      trial_dur = 14, iti_dur = 1, 
+def flexion_extension(nrun = 5, study_name = 'behavioral',
+                      trial_dur = 14, iti_dur = 1,
                       stim_dur = 1,
-                      task_dur = 30, display_trial_feedback = False, 
+                      task_dur = 30, display_trial_feedback = False,
                       TR = 1):
     """
     creates target file for the toe flexion extension task
@@ -560,14 +560,14 @@ def flexion_extension(nrun = 5, study_name = 'behavioral',
 
         ## determine the foot
         # trials_left  = list(np.tile("left", n_trials_left).T.flatten())
-        # trials_right = list(np.tile("right", n_trials_right).T.flatten())         
+        # trials_right = list(np.tile("right", n_trials_right).T.flatten())
 
         ### foot assignment
         #### random makes it difficult!
         # np.random.shuffle(trials_foot)
         #### maybe make it so that every other trial is right foot?
         # trials_foot = trials_left + trials_right
-        # trials_foot[::2] = trials_left 
+        # trials_foot[::2] = trials_left
         # trials_foot[1::2] = trials_right
         #### do nothing fancy and just concatenate them?
         # trials_foot = np.concatenate((trials_left, trials_right), axis = 0)
@@ -575,14 +575,14 @@ def flexion_extension(nrun = 5, study_name = 'behavioral',
         # T['foot'] = trials_foot
 
         df_tmp = pd.DataFrame(T)
-        
+
         target_filename = path2task_target / f"flexion_extension_{task_dur}sec_{run+1:02d}.csv"
         df_tmp.to_csv(target_filename)
 
     return
 
-def visual_search(nrun = 5, study_name = 'behavioral', 
-                  hand = 'right', iti_dur = 0.5, 
+def visual_search(nrun = 5, study_name = 'behavioral',
+                  hand = 'right', iti_dur = 0.5,
                   trial_dur = 2, display_trial_feedback = True,
                   TR = 1, task_dur = 30):
     """
@@ -648,11 +648,11 @@ def rest(trial_dur = 10):
     T['iti_dur']                = 0
     T['star_time']              = 0
     T['stim']                   = 'fixation'
-    T['trial_dur']              = trial_dur 
+    T['trial_dur']              = trial_dur
     T['display_trial_feedback'] = False
 
     df_tmp = pd.DataFrame(T)
-        
+
     target_filename = path2task_target / f"rest_{trial_dur}sec_{run+1:02d}.csv"
     df_tmp.to_csv(target_filename)
 
