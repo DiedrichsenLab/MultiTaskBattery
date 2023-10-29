@@ -1,0 +1,13 @@
+,hand,trial_dur,iti_dur,run_number,display_trial_feedback,stim,condition_name,trial_type,feedback_type,start_time,end_time
+0,right,2,0.5,3,True,4,easy,False,acc,0.0,2.0
+1,right,2,0.5,3,True,4,easy,True,acc,2.5,4.5
+2,right,2,0.5,3,True,8,hard,True,acc,5.0,7.0
+3,right,2,0.5,3,True,8,hard,False,acc,7.5,9.5
+4,right,2,0.5,3,True,4,easy,True,acc,10.0,12.0
+5,right,2,0.5,3,True,4,easy,False,acc,12.5,14.5
+6,right,2,0.5,3,True,8,hard,False,acc,15.0,17.0
+7,right,2,0.5,3,True,4,easy,True,acc,17.5,19.5
+8,right,2,0.5,3,True,8,hard,True,acc,20.0,22.0
+9,right,2,0.5,3,True,8,hard,False,acc,22.5,24.5
+10,right,2,0.5,3,True,4,easy,True,acc,25.0,27.0
+11,right,2,0.5,3,True,8,hard,False,acc,27.5,29.5

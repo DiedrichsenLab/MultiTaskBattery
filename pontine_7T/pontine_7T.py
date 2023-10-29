@@ -3,6 +3,7 @@
 
 # import libraries
 # from quickstart import main
+import sys
 import experiment_code.experiment_block as exp_block
 import experiment_code.make_target as make_target
 from experiment_code.task_blocks import TASK_MAP
@@ -21,11 +22,11 @@ from experiment_code.ttl import ttl
 
 
 # 4. create target files first (if already not done)
-def create_target(task_list = ['visual_search', 'action_observation_knots', 'flexion_extension', 
-                              'finger_sequence', 'theory_of_mind', 'n_back', 'semantic_prediction', 
-                              'rest', 'romance_movie'], 
+def create_target(task_list = ['visual_search', 'flexion_extension',
+                              'finger_sequence', 'theory_of_mind', 'n_back', 'semantic_prediction',
+                              'rest'],
                   num_runs = 8):
-
+    """action_observation_knots', ''romance_movie''"""
     """
     makes target and session files for the pontine experiment.
     Args:
@@ -39,7 +40,7 @@ def create_target(task_list = ['visual_search', 'action_observation_knots', 'fle
 
 def simulate(**kwargs):
     """simulate the fMRI experiment
-    will be used to simulate the experiment for debugging purposes 
+    will be used to simulate the experiment for debugging purposes
     and getting a sense of how the experiment will look like in the scanner
     """
     Custom_Exp = exp_block.Experiment(exp_name="pontine_7T", subj_id='fmri_sim')
@@ -48,7 +49,7 @@ def simulate(**kwargs):
 # 5. run the experiment.
 def main(subj_id, debug = True, eye_flag = False):
     """_summary_
-    change debug to False once you are sure everything is debugged 
+    change debug to False once you are sure everything is debugged
     make sure that you have changed the screen_res to the res for the subject screen
     display mode should also be in extend!
 
@@ -69,4 +70,4 @@ def main(subj_id, debug = True, eye_flag = False):
     return
 
 if __name__ == "__main__":
-    main(debug = True)
+    main(sys.argv[1],debug = True)
