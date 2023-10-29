@@ -1,20 +1,18 @@
-# Create target file for different tasks
+# Task Class defintions
 # @ Ladan Shahshahani  - Maedbh King - Suzanne Witt March 2021
+# Revised 2023 Jorn Diedrichsen, Ince Hussain, Bassel Arafat
 
 # import libraries
 from pathlib import Path
 import os
-import re
 import pandas as pd
 import numpy as np
-import time
-import math
 import glob
 
-from psychopy import visual, core, event, constants, gui # data, logging
+from psychopy import visual, core, event, constants, gui  # data, logging
 from psychopy.visual import ShapeStim
 
-import experiment_code.utils as consts
+import experiment_code.utils as ut
 from experiment_code.screen import Screen
 from experiment_code.ttl import ttl
 
@@ -33,95 +31,26 @@ class Task:
     (VisualSearch, SemanticPrediction, NBack, SocialPrediction, ActionObservation).
     """
 
-    def __init__(self, screen, target_file, run_end, task_name, task_num,
-                 study_name, target_num, ttl_flag, save_response = True):
+    def __init__(self, info, screen, const):
 
+        # Pointers to Screen and experimental constants
         self.screen  = screen
-        self.window  = screen.window
-        self.monitor = screen.monitor
-
-        self.clock         = core.Clock()
-        self.ttl_flag      = ttl_flag
-        self.save_response = save_response
-
-        self.target_file = target_file
-        self.run_end     = run_end
-
-        self.study_name  = study_name
-        self.task_name   = task_name
-        self.task_num    = task_num
-        self.target_num  = target_num
+        self.const   = const
+        self.clock         = core.Clock() # Each tasks has its own clock
+        self.name        = info['task_name']
+        self.task_num    = info['task_num']
+        self.target_file = info['target_file']
 
         self.trial_response     = {} # an empty dictionary which will be filled with trial responses
         self.all_trial_response = [] # an empty list which will be appended with the responses from each trial
 
-        # assign keys to hands
-        ## from const, the response keys are imported first
-        self.response_keys    = consts.response_keys
-        self.response_fingers = consts.response_fingers
-
-        self.key_hand_fingers = {
-            'right': {    # right hand
-                'True':  [self.response_fingers[4]],  # index finger
-                'False': [self.response_fingers[5]],  # middle finger
-                'None' : [self.response_fingers[4],
-                          self.response_fingers[5],
-                          self.response_fingers[6],
-                          self.response_fingers[7]] # four fingers from right hand
-                },
-            'left': {   # left hand
-                'True':  [self.response_fingers[0]],   # index finger
-                'False': [self.response_fingers[1]],   # middle finger
-                'None' : [self.response_fingers[0],
-                          self.response_fingers[1],
-                          self.response_fingers[2],
-                          self.response_fingers[3]] # four fingers from left hand
-                },
-            }
-
-        self.key_hand_dict = {
-            'right': {    # right hand
-                'True':  [self.response_keys[4]],  # index finger
-                'False': [self.response_keys[5]],  # middle finger
-                'None' : [self.response_keys[4],
-                          self.response_keys[5],
-                          self.response_keys[6],
-                          self.response_keys[7]] # four fingers from right hand
-                },
-            'left': {   # left hand
-                'True':  [self.response_keys[0]],   # index finger
-                'False': [self.response_keys[1]],   # middle finger
-                'None' : [self.response_keys[0],
-                          self.response_keys[1],
-                          self.response_keys[2],
-                          self.response_keys[3]] # four fingers from left hand
-                },
-            }
-
-    # 1. get trial info (info that is shared across the tasks)
-    def get_trial_info(self, trial_index):
+    def read_target_file(self):
         """
-        get the information for the current trial
-        task-specific trial info will be loaded inside the specific task class
+        reads the target file
         """
-        self.start_time = self.target_file['start_time'][trial_index]
-        # self.end_time   = self.target_file['end_time'][trial_index]
-        self.trial_dur  = self.target_file['trial_dur'][trial_index]
-        self.iti_dur    = self.target_file['iti_dur'][trial_index]
-        self.hand       = self.target_file['hand'][trial_index]
-    # 2. get the mapping from the keys to fingers
-    def get_response_finger_map(self):
-        """
-        get the response mapping for the task
-        Creates a dictoinary
-        """
-        # 2.1 load in the finger names corresponding to keys
-        self.response_fingers = consts.response_fingers
+        self.target_info = pd.read_csv(self.const.targe_dir / self.name / self.target_file)
 
-        # 2.2 create a dictionary that maps response keys to fingers
-        zip_iterator = zip(self.response_keys, self.response_fingers)
-        return dict(zip_iterator)
-    # 3. display the instructions for the task
+
     def display_instructions(self):
         """
         displays the instruction for the task
@@ -146,7 +75,7 @@ class Task:
         # instr.size = 0.8
         instr_visual.draw()
         self.window.flip()
-    # 4. get the trial response
+
     def get_trial_response(self, wait_time, start_time, start_time_rt, **kwargs):
         """
         get the trial response. the ttl flag determines the timing
@@ -183,7 +112,7 @@ class Task:
                 if self.pressed_keys and not self.response_made: # if at least one press is made
                     self.response_made = True
                     self.rt = self.clock.getTime() - start_time_rt
-    # 5. check the trial response
+
     def check_trial_response(self, wait_time, trial_index, start_time, start_time_rt, **kwargs):
         """
         Checks whether the response made in the trial is correct
@@ -233,6 +162,7 @@ class Task:
             "rt": self.rt
         }
         return response_event
+
     # 6. display the feedback for the current trial
     def display_trial_feedback(self, correct_response):
         """
@@ -251,6 +181,7 @@ class Task:
         feedback = visual.ImageStim(self.window, feedback, pos=(0, 0)) # pos=pos
         feedback.draw()
         self.window.flip()
+
     # 7. Update the trial response (append the response to the list)
     def update_trial_response(self):
         # add additional variables to dict
@@ -259,6 +190,8 @@ class Task:
                                     'ttl_time': self.ttl_time})
 
         self.all_trial_response.append(self.trial_response)
+
+
     # 8. Get the feedback for the task (the type of feedback is different across tasks)
     def get_task_feedback(self, dataframe, feedback_type):
         """
@@ -390,33 +323,26 @@ class VisualSearch(Task):
     # def instruction_text(self):
     #     return response dataframe
 
-    def __init__(self, screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save = True):
-        super(VisualSearch, self).__init__(screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save_response = save)
-        self.feedback_type = 'acc' # reaction
-        self.name          = 'visual_search'
+    def __init__(self, info, screen, const):
+        super.__init__(self, info, screen, const)
+        self.feedback_type = 'acc'
 
-    def _get_stims(self):
+    def get_stims(self):
         # load target and distractor stimuli
         # self.stims = [consts.stim_dir/ self.study_name / self.task_name/ f"{d}.png" for d in self.orientations]
-        self.stims = [consts.stim_dir/ self.task_name/ f"{d}.png" for d in self.orientations]
+        self.stims = [self.const.stim_dir/ self.task_name/ f"{d}.png" for d in self.orientations]
 
         path_to_display = glob.glob(os.path.join(consts.target_dir, self.study_name, self.task_name, f'*display_pos_*_{self.target_num}*'))
         self.tf_display = pd.read_csv(path_to_display[0])
 
-    def _get_trial_info(self):
-        # for this task, no extra fields of the target file are needed
-        # but just to be consistent with all the other tasks, I'm including a _get_trial_info routine
-        # which is just calling get_trial_info from the parent class
-        super().get_trial_info(self.trial)
-
-    def _show_stim(self):
+    def show_stim(self):
         # loop over items and display
         for idx in self.tf_display[self.tf_display['trial']==self.trial].index:
             stim_file = [file for file in self.stims if str(self.tf_display["orientation"][idx]) in file.stem]
 
             stim = visual.ImageStim(self.window, str(stim_file[0]), pos=(self.tf_display['xpos'][idx], self.tf_display['ypos'][idx]), units='deg', size=self.item_size_dva)
             stim.draw()
-        self.window.flip()
+        self.screen.window.flip()
 
     def run(self):
 
@@ -484,7 +410,6 @@ class VisualSearch(Task):
         return rDf
 
 class NBack(Task):
-    # @property
     # def instruction_text(self):
     #     return response dataframe
 
@@ -2235,19 +2160,19 @@ class Rest(Task):
 
         return rDf
 
-TASK_MAP = {
-    "visual_search": VisualSearch, # task_num 1
-    "theory_of_mind": TheoryOfMind, # task_num 2
-    "n_back": NBack, # task_num 3
-    "social_prediction": SocialPrediction, # task_num 4
-    "semantic_prediction": SemanticPrediction, # task_num 5
-    "action_observation": ActionObservation, # task_num 6
-    "finger_sequence": FingerSequence, # task_num 7
-    "sternberg_order": SternbergOrder, # task_num 8
-    "visuospatial_order": VisuospatialOrder, # task 9
-    "flexion_extension": FlexionExtension, # task_num 10
-    "verb_generation": VerbGeneration, # task_num 11
-    "romance_movie": RomanceMovie, #task_num 12
-    "action_observation_knots": ActionObservationKnots, #task_num 13
-    "rest": Rest, # task_num?
+task_map = {
+    "visual_search": VisualSearch,
+    "theory_of_mind": TheoryOfMind,
+    "n_back": NBack,
+    "social_prediction": SocialPrediction,
+    "semantic_prediction": SemanticPrediction,
+    "action_observation": ActionObservation,
+    "finger_sequence": FingerSequence,
+    "sternberg_order": SternbergOrder,
+    "visuospatial_order": VisuospatialOrder,
+    "flexion_extension": FlexionExtension,
+    "verb_generation": VerbGeneration,
+    "romance_movie": RomanceMovie,
+    "action_observation_knots": ActionObservationKnots,
+    "rest": Rest,
     }

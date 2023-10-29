@@ -97,28 +97,35 @@ class Experiment:
         """initializing the run:
             making sure a directory is created for the behavioral results
             getting run file
-            opening a screen to show the stimulus
-            starting the timer
+            Initializes all the tasks for a run
         """
 
         # 1. get the run file info: creates self.run_info
         self.read_runfile()
+
+        # 2. Initialize the all tasks that we need
+        self.task_obj_list = [] # a list containing task objects in the run
+        for t_num, task_info in self.run_info.iterrows():
+            # create a task object for the current task and append it to the list
+            TaskName = TASK_MAP[task_info.task_name]
+
+            Task_obj  = TaskName(task_info,
+                                 screen = self.stimuli_screen,
+                                 const = self.const)
+
+            self.task_obj_list.append(Task_obj)
 
         # 2. make subject folder in data/raw/<subj_id>
         subj_dir = self.const.data_dir / self.subj_id
         ut.dircheck(subj_dir) # making sure the directory is created!
 
         # 3. check if a file for the result of the run already exists
-        self.check_runfile_results()
+        # self.check_datafile()
 
         # 5. start the eyetracker if eyeflag = True
-        if self.eye_flag:
+        if self.eye_tracker:
             self.start_eyetracker()
 
-        # 5. timer stuff!
-        ## start the timer. Needs to know whether the experimenter has chosen to wait for ttl pulse
-        ## creates self.timer_info
-        self.start_timer()
 
         # 6. initialize a list for responses
         self.all_run_response = []
@@ -129,53 +136,31 @@ class Experiment:
         run a run of the experiment
         """
         print(f"running the experiment")
+        self.start_timer()
 
-        # 1. initialize the run: timer, responses, run file, etc.
-        self.init_run()
+        for t_num, task in enumerate(self.task_obj_list):
+            print(f"{task.name}")
 
-        # 2. looping over tasks in the run file
-        ## 2.1 get the list of tasks
-        self.task_list = self.run_info['run_file']['task_name'].tolist()
+            # wait till it's time to start the task
 
-        self.task_obj_list = [] # a list containing task objects in the run
-        for t_num, self.task_name in enumerate(self.task_list):
-            print(f"{self.task_name}")
-            # get the task_file_info. running this will create self.task_file_info
-            self.get_taskfile_info(self.task_name)
-            # get the real strat time for each task
-            ## for debugging make sure that this is at about the start_time specified in the run file
             real_start_time = self.timer_info['global_clock'].getTime() - self.timer_info['t0']
             start_time = self.task_file_info['task_startTime'].values[0]
             print(f"\n{self.task_name}")
             print(f"real_start_time {real_start_time} - start_time {start_time}")
-
-            # if you are doing eyetracking (eye_flag = True)
-            ## sending a message to the edf file specifying task name
-            if self.eye_tracking:
-                pl.sendMessageToFile(f"task_name: {self.task_name} start_track: {pl.currentUsec()} real start time {real_start_time} TR count {ttl.count}")
-
-            # create a task object for the current task and append it to the list
-            TaskName = TASK_MAP[self.task_name]
-
-            Task_obj  = TaskName(screen = self.stimuli_screen,
-                                   target_file = self.task_file_info['task_file'],
-                                   run_end  = self.task_file_info['task_endTime'], task_name = self.task_name, task_num = t_num+1,
-                                   study_name = self.study_name, target_num = self.task_file_info['target_num'],
-                                   ttl_flag = self.ttl_flag)
-
-            self.task_obj_list.append(Task_obj)
-
-            # wait till it's time to start the task
             self.wait_dur(self.task_file_info['task_startTime'].values[0])
 
+            ## sending a message to the edf file specifying task name
+            if self.eye_tracking:
+                pl.sendMessageToFile(f"task_name: {task.name} start_track: {pl.currentUsec()} real start time {real_start_time} TR count {ttl.count}")
+
             # display the instruction text for the task. (instructions are task specific)
-            Task_obj.display_instructions()
+            task.display_instructions()
 
             # wait for a time period equal to instruction duration
             self.wait_dur(self.task_file_info['task_startTime'].values[0] + self.task_file_info['instruct_dur'].values[0])
 
             # show the stimuli for the task and collect responses
-            task_response_df = Task_obj.run()
+            task_response_df = task.run()
 
             # adding run information to response dataframe
             task_response_df['run_name'] = self.run_name
@@ -207,7 +192,8 @@ class Experiment:
     def read_runfile(self):
         """Reads the run file and creates self.run_info
         """
-        self.run_info = pd.read_csv(self.const.run_dir / self.run_file_path)
+        self.run_info = pd.read_csv(self.const.run_dir / self.run_filename)
+
 
     def start_timer(self):
         """
@@ -277,44 +263,6 @@ class Experiment:
         self.tk.close()
         return
 
-    def get_taskfile_info(self, task_name):
-        """
-        gets the target file information of the task b
-        Args:
-            b(int)                      -   task number
-        Returns:
-            target_taskInfo(dict)  -   a dictionary containing target file info for the current task with keys:
-                task_name     : task name
-                task_num      : task number
-                target_file   : target csv file opened as a pandas dataframe
-                task_endTime   : end time of the task run
-                task_startTime : start time of the task run
-                instruct_dur  : duration of instruction for the task
-        """
-        self.task_file_info = {}
-        self.task_file_info['task_name'] = task_name # fill in the task name
-        # getting the row of the dataframe that corresponds to the current task
-        task_info = self.run_info['run_file'].loc[self.run_info['run_file']['task_name'] == task_name]
-
-        # what number is this target file?
-        self.task_file_info['target_num'] = task_info['target_num']
-        if not math.isnan(self.task_file_info['target_num']):
-            self.task_file_info['target_num'] = (f"{int(self.task_file_info['target_num']):02d}")
-
-        # load target file
-        self.task_file_info['task_file'] = pd.read_csv(consts.target_dir / self.study_name / task_name / task_info['target_file'].values[0])
-
-        # get end time of task
-        self.task_file_info['task_endTime'] = task_info['end_time']
-
-        # get start time of task
-        self.task_file_info['task_startTime'] = task_info['start_time']
-
-        # get instruct dur
-        self.task_file_info['instruct_dur'] = task_info['instruct_dur']
-
-        return self.task_file_info
-
     def check_runfile_results(self):
         """
         Checks if a file for behavioral data of the current run already exists
@@ -324,7 +272,7 @@ class Experiment:
             run_iter    -   how many times this run has been run:)
         """
 
-        self.run_dir = consts.raw_dir / self.study_name / 'raw' / self.subj_id / f"{self.study_name}_{self.subj_id}.csv"
+        self.run_dir = self.const.data_dir / f"{self.study_name}_subj-{self.subj_id}_run-{self.run_number}.tsv"
         if os.path.isfile(self.run_dir):
             # load in run_file results if they exist
             self.run_file_results = pd.read_csv(self.run_dir)

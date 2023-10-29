@@ -1,3 +1,4 @@
+import os
 
 def dircheck(path2dir):
     """
@@ -9,13 +10,3 @@ def dircheck(path2dir):
     if not os.path.exists(path2dir):
         print(f"creating {path2dir}")
         os.makedirs(path2dir)
-
-# use dirtree to make sure you have all the folders needed
-def dirtree():
-    """
-    Create all the directories if they don't already exist
-    """
-
-    fpaths = [raw_dir, stim_dir, target_dir, run_dir]
-    for fpath in fpaths:
-        dircheck(fpath)
