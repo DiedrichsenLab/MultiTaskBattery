@@ -11,14 +11,14 @@ response_keys    = ['2', '3', '4', '5', '2', '3', '4', '5']
 response_fingers = ['Index', 'Middle', 'Ring', 'Pinky', 'Index', 'Middle', 'Ring', 'Pinky']
 # change experiment name to a name you've chosen for your own experiment
 experiment_name = 'pontine_7T'
-# change the str inside Path() to a directory of your choise.
+# change the str inside Path() to a directory of your choice.
 ## make sure 'stimuli' and 'experiment_code' folders are placed within your base_dir
-base_dir        = Path('C:\\Users\\lshah\\OneDrive\\Documents\\Projects\\mdtb_reduced').absolute()
-
+base_dir        = Path('/Users/jdiedrichsen/Python/mdtb_reduced').absolute()
+exp_dir        =  Path('/Users/jdiedrichsen/Python/mdtb_reduced/pontine_7T').absolute()              # where the experiment code is stored
 stim_dir   = base_dir / "stimuli"                       # where stimuli for each task are stored
-target_dir = base_dir / experiment_name /"target_files" # contains target files for the task
-run_dir    = base_dir / experiment_name /"run_files"    # contains run files for each session
-raw_dir    = base_dir/ experiment_name / "data"         # This is where the result files are being saved
+target_dir = exp_dir /"target_files" # contains target files for the task
+run_dir    = exp_dir /"run_files"    # contains run files for each session
+raw_dir    = exp_dir / "data"         # This is where the result files are being saved
 
 def dircheck(path2dir):
     """
@@ -30,15 +30,13 @@ def dircheck(path2dir):
     if not os.path.exists(path2dir):
         print(f"creating {path2dir}")
         os.makedirs(path2dir)
-    else:
-        print(f"{path2dir} already exists")
 
 # use dirtree to make sure you have all the folders needed
 def dirtree():
     """
     Create all the directories if they don't already exist
     """
-    
+
     fpaths = [raw_dir, stim_dir, target_dir, run_dir]
     for fpath in fpaths:
         dircheck(fpath)
