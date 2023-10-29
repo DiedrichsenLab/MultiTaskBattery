@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/Pontine_7T/pontine_7T.py",
             "console": "integratedTerminal",
-            "args": ["s01","debug"],
+            "args": ["s01"],
             "justMyCode": true
         }
     ]
