@@ -12,7 +12,7 @@ import sys
 from psychopy import visual, core, event, gui # data, logging
 
 import experiment_code.utils as ut
-from experiment_code.task_blocks import TASK_MAP
+from experiment_code.task_blocks import task_map
 from experiment_code.ttl import ttl
 from experiment_code.screen import Screen
 # from psychopy.hardware.emulator import launchScan
@@ -107,7 +107,7 @@ class Experiment:
         self.task_obj_list = [] # a list containing task objects in the run
         for t_num, task_info in self.run_info.iterrows():
             # create a task object for the current task and append it to the list
-            TaskName = TASK_MAP[task_info.task_name]
+            TaskName = task_map[task_info.task_name]
 
             Task_obj  = TaskName(task_info,
                                  screen = self.stimuli_screen,
