@@ -1,3 +1,9 @@
 *.pyc
 docs/build/*
 .DS_store
+*/data/*
+*/run_files/*
+*/target_files/*
+/stimuli/behavioral/*
+/stimuli/fmri/*
+*.mp4
