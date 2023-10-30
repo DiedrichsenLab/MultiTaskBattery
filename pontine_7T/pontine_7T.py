@@ -52,7 +52,7 @@ def main(subj_id):
     # 2. Now loop over runs:
     while True:
         my_Exp.confirm_run_info()
-        my_Exp.init_run()
+        my_Exp.init_run
         my_Exp.run()
 
     return
