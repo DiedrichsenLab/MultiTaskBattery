@@ -13,7 +13,7 @@ from psychopy import visual, core, event, gui # data, logging
 
 import experiment_code.utils as ut
 from experiment_code.task_blocks import task_map
-from experiment_code.ttl import ttl
+from experiment_code.ttl_clock import TTLClock
 from experiment_code.screen import Screen
 # from psychopy.hardware.emulator import launchScan
 from psychopy.hardware import keyboard
@@ -37,6 +37,7 @@ class Experiment:
         self.exp_name   = const.exp_name
         self.subj_id    = subj_id
         self.const = const
+        self.ttl_clock = TTLClock()
         self.__dict__.update(kwargs)
 
         # open screen and display fixation cross
@@ -136,18 +137,15 @@ class Experiment:
         run a run of the experiment
         """
         print(f"running the experiment")
-        self.start_timer()
-
+        self.ttl_clock.wait_for_first_ttl(wait = self.wait_ttl)
+        task_info = []
+        
         for t_num, task in enumerate(self.task_obj_list):
-            print(f"{task.name}")
+            print(f"{Starting task.name}")
 
             # wait till it's time to start the task
 
-            real_start_time = self.timer_info['global_clock'].getTime() - self.timer_info['t0']
-            start_time = self.task_file_info['task_startTime'].values[0]
-            print(f"\n{self.task_name}")
-            print(f"real_start_time {real_start_time} - start_time {start_time}")
-            self.wait_dur(self.task_file_info['task_startTime'].values[0])
+            task_info['real_start_time'],task_info['start_ttl'],task_info,['start_ttl_time'] = self.ttl_clock.wait_until(task.start_time)
 
             ## sending a message to the edf file specifying task name
             if self.eye_tracking:
@@ -195,40 +193,6 @@ class Experiment:
         self.run_info = pd.read_csv(self.const.run_dir / self.run_filename)
 
 
-    def start_timer(self):
-        """
-        starts the timer for the experiment (for behavioral study)
-        Returns:
-            timer_info(dict)    -   a dictionary with all the info for the timer. keys are:
-            global_clock : the clock from psychopy?
-            t0           : the start time
-        """
-        #initialize a dictionary with timer info
-        self.timer_info = {}
-
-        # wait for ttl pulse or not?
-        if self.ttl_flag: # if true then wait
-
-            ttl.reset()
-            while ttl.count <= 0:
-                # print out the text to the screen
-                ttl_wait_text = f"Waiting for the scanner\n"
-                ttl_wait_ = visual.TextStim(self.stimuli_screen.window, text=ttl_wait_text,
-                                                pos=(0.0,0.0), color=self.stimuli_screen.window.rgb + 0.5, units='deg')
-                ttl.check()
-
-                ttl_wait_.draw()
-                self.stimuli_screen.window.flip()
-
-            # print(f"Received TTL pulse")
-            # get the ttl clock
-            self.timer_info['global_clock'] = ttl.clock
-        else:
-            self.timer_info['global_clock'] = core.Clock()
-
-        self.timer_info['t0'] = self.timer_info['global_clock'].getTime()
-
-        return
 
     def start_eyetracker(self):
         """

@@ -14,7 +14,7 @@ from psychopy.visual import ShapeStim
 
 import experiment_code.utils as ut
 from experiment_code.screen import Screen
-from experiment_code.ttl import ttl
+from experiment_code.ttl_clock import ttl
 
 from ast import literal_eval
 
