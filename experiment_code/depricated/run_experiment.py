@@ -14,7 +14,7 @@ from psychopy import visual, core, event, gui # data, logging
 import experiment_code.utils as consts
 from experiment_code.screen import Screen
 from experiment_code.task_blocks import TASK_MAP
-from experiment_code.ttl import ttl
+from experiment_code.ttl_clock import ttl
 import experiment_code.utils as const
 
 from ast import literal_eval
