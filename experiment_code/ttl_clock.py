@@ -15,14 +15,16 @@ class TTLClock:
         self.ttl_time = 0
 
     def wait_for_first_ttl(self, wait = True):
-        """ This function waits for the first TTL and then resets the clock appropriately"""
+        """ This function waits for the first TTL and then resets the clock appropriately
+        Args:
+            wait (bool):
+                if True, the function will wait for the first TTL
+        """
         if wait:
             print('Waiting for first TTL...')
             while self.ttl_count == 0:
                 self.update()
-            self.clock.reset(self.ttl_time)
-        else:
-            self.reset()
+        self.clock.reset()
 
     def wait_until(self,time):
         """waits until the given  time since the beginning of the run

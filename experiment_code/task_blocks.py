@@ -39,15 +39,16 @@ class Task:
         self.const   = const
         self.ttl_clock       =  ttl_clock  # This is a reference to the clock of the run
         self.name        = info['task_name']
+        self.code        = self.name[:4]
         self.target_file = info['target_file']
-        self.start_time  = info['start_time']
-        self.trial_data = [] # an empty list which will be appended with the responses from each trial
+        self.start_time  = info['start_time'] + info['instruction_dur']
 
     def init_task(self):
         """
-        Initialize task - default is to read the target information
+        Initialize task - default is to read the target information into the trial_info dataframe
         """
         self.trial_info = pd.read_csv(self.const.target_dir / self.name / self.target_file,sep='\t')
+
 
     def display_instructions(self):
         """
@@ -67,103 +68,47 @@ class Task:
         self.window.flip()
 
     def run(self):
-        """Loop over trials and collect dat
+        """Loop over trials and collects data
+        Data will br stored in self.trial_data
 
         Returns:
             info (pd.DataFrame): _description_
         """
-        finished_trials = []
+        self.trial_data = [] # an empty list which will be appended with the responses from each trial
+
         for i,trial in self.trial_info.iterrows():
-            finished_trials.append(self.run_trial(trial))
+            t_data = trial.copy()
+            # Wait for the the start of next trial
+            t_data['real_start_time'],t_data['start_ttl'],t_data['start_ttl_time'] = self.ttl_clock.wait_until(self.start_time + trial.start_time )
+            # Run the trial
+            t_data = self.run_trial(t_data)
+            # Append the trial data
+            self.trial_data.append(t_data)
+        self.trial_data = pd.concat(self.trial_data, ignore_index=True)
 
-        return pd.concat(finished_trials, ignore_index=True)
-
-    def get_trial_response(self, i,trial):
+    def wait_response(self, start_time, max_wait_time):
         """
-        get the trial response. the ttl flag determines the timing
+        waits for a response to be made and then returns the response
         Args:
-            wait_time     - how long will it wait for a response to be made
-            start_time    - start time of the trial
-            start_time_rt - ?????????
-        *** if a task requires a different routine for getting the trial response, it will be added
-        as an attribute for that specific task. This is a general form!
-        """
-        # 5.1 reset the flag that shows whether a response was made
-        self.response_made = False
-        # 5.2 reset the reaction time
-        self.rt = 0
-        # 5.3 reset the list that will contain the pressed keys
-        self.pressed_keys = []
-
-        if self.ttl_flag: # if the user has chosen to use the ttl pulse
-            while (ttl.clock.getTime() - start_time <= wait_time):
-                ttl.check()
-                self.pressed_keys.extend(event.getKeys(keyList= consts.response_keys, timeStamped=self.clock))
-                if self.pressed_keys and not self.response_made: # if at least one press is made
-                    self.response_made = True
-                    self.rt = ttl.clock.getTime() - start_time_rt
-        else: # do not wait for ttl pulse (behavioral)
-            while (self.clock.getTime() - start_time <= wait_time): # and not resp_made:
-                # get the keys that are pressed and the time they were pressed:
-                ## two options here:
-                ### 1. you can just check for the keys that are specified in const.response_keys
-                ### 2. don't look for any specific keys and record every key that is pressed.
-                ## the current code doesn't look for any specific keys and records evey key press
-                # pressed_keys.extend(event.getKeys(keyList=consts.response_keys, timeStamped=self.clock))
-                self.pressed_keys.extend(event.getKeys(keyList=None, timeStamped=self.clock))
-                if self.pressed_keys and not self.response_made: # if at least one press is made
-                    self.response_made = True
-                    self.rt = self.clock.getTime() - start_time_rt
-
-    def check_trial_response(self, i, trial, **kwargs):
-        """
-        Checks whether the response made in the trial is correct
-        Args:
-            wait_time     - length of time allowed for a response to be made
-            trial_index   - index of the trial (as read from the target file). Will be used to get the correct response
-            start_time    - the start time from when a response should have been made
-            start_time_rt - ????????
+            start_time (float): the time the RT-period started
+            max_wait_time (float): How long to wait maximally
         Returns:
-            response_event - a dictionary with fields that correspond to the response:
-                             "corr_key"    : the correct key that should have been pressed,
-                             "pressed_key" : the key that was pressed,
-                             "resp_made"   : whether a response was made or not (True: a response was made),
-                             "corr_resp"   : whether the response was correct,
-                             "rt"          : the reaction time
+            key (str): the key that was pressed ('none' if no key was pressed)
+            rt (float): the reaction time (nan if no key was pressed)
         """
-        # get the row that correspsonds to the current trial
-        row = self.target_file.iloc[trial_index] # the row of target dataframe corresponding to the current trial
-        # get the list of keys that are to be pressed
-        #** making sure that the trial_type is converted to str and it's not boolean
-        self.correct_key_list = self.key_hand_dict[row['hand']][str(row['trial_type'])]
-        self.correct_response = False
+        response_made = False
+        key = 'none'
+        rt = np.nan
 
-        # 6.1 get the trial response
-        self.get_trial_response(wait_time, start_time, start_time_rt)
+        while (self.ttl_clock.get_time() - start_time <= max_wait_time) and not response_made:
+            self.ttl_clock.update()
+            keys=event.getKeys(keyList= self.const.response_keys, timeStamped=self.ttl_clock.clock)
+            if len(keys)>0:
+                response_made = True
+                key = keys[0][0]
+                rt = keys[0][1] - start_time
+        return key, rt
 
-        # 6.2 check the trial response
-        if self.pressed_keys and self.response_made:
-            # assuming pressed_keys is sorted by timestamp; is it?
-            # determine correct response based on first key press only
-            if self.pressed_keys[0][0] == self.correct_key_list[0]:
-                self.correct_response = True
-            elif self.pressed_keys[0][0] != self.correct_key_list[0]:
-                self.correct_response = False
-        # 6.3 determine the key that was pressed
-        # the pressed key will be recorded even if it's the wrong key
-        if not self.pressed_keys:
-            # then no key was pressed
-            resp_key = None
-        else:
-            resp_key = self.pressed_keys[0][0]
-        response_event = {
-            "corr_key": self.correct_key_list[0],
-            "pressed_key": resp_key,
-            "resp_made": self.response_made,
-            "corr_resp": self.correct_response,
-            "rt": self.rt
-        }
-        return response_event
 
     # 6. display the feedback for the current trial
     def display_trial_feedback(self, correct_response):
@@ -173,17 +118,19 @@ class Task:
             correct_response - a boolean variable. True if the response was correct, False otherwise
         """
         if correct_response:
-            # feedback = os.path.join(consts.stim_dir, self.study_name ,'correct.png')
-            feedback = os.path.join(consts.stim_dir,'correct.png')
-        elif not correct_response:
-            # feedback = os.path.join(consts.stim_dir, self.study_name, 'incorrect.png')
-            feedback = os.path.join(consts.stim_dir, 'incorrect.png')
+            feedback = os.path.join(self.const.stim_dir,'correct.png')
+        else:
+            feedback = os.path.join(self.const.stim_dir, 'incorrect.png')
 
         # display feedback on screen
         feedback = visual.ImageStim(self.window, feedback, pos=(0, 0)) # pos=pos
         feedback.draw()
         self.window.flip()
 
+    def save_data(self, subject_id, run_num):
+        self.trial_data.insert(0, 'run_num', [run_num]*len(self.trial_data))
+        trial_data_file = self.const.data_dir / self.subj_id / f"{self.subj_id}_task-{self.code}.tsv"
+        ut.append_data_to_file(trial_data_file, self.trial_data)
 
     # 8. Get the feedback for the task (the type of feedback is different across tasks)
     def get_task_feedback(self, dataframe, feedback_type):
@@ -253,33 +200,6 @@ class Task:
         return t_current
 
 
-
-    ## get the real start time of the trial
-    def get_real_start_time(self, t0):
-        """
-        gets the real start time and the ttl time
-        If the user has chosen not to use the ttl pulse.
-        ttl_time is set to 0.
-        Args:
-            t0 -
-        """
-        if self.ttl_flag:
-            self.real_start_time = ttl.clock.getTime()
-            self.ttl_time = t0 - ttl.time
-            self.ttl_count = ttl.count
-        else:
-            # self.real_start_time = self.clock.getTime() - t0
-            self.real_start_time = self.clock.getTime()
-            self.ttl_time = 0
-            self.ttl_count = 0
-
-    def get_time_before_disp(self):
-        # start timer before display
-        if self.ttl_flag:
-            self.t2 = ttl.clock.getTime()
-        else:
-            self.t2 = self.clock.getTime()
-
     # save the response for the task
     def save_task_response(self, response_df, file_path):
         """
@@ -306,8 +226,6 @@ class Task:
                 self.window.close()
                 core.quit()
     ### shows fixation
-
-
 
     def show_fixation(self, t0, delta_t):
         if self.ttl_flag: # wait for ttl pulse
@@ -426,40 +344,36 @@ class NBack(Task):
             self.stim.append(visual.ImageStim(self.window, str(stim_path)))
 
     def run_trial(self,trial):
+        """Runs a single trial of the nback task (after it started)
+        Args:
+            trial (pd.Series):
+                Row of trial_info, with all information about the trial
 
+        Returns:
+            trial (pd.Series):
+                Row of trial_data with all response data added
+        """
         # Flush any keys in buffer
         event.clearEvents()
 
         # display stimulus
-        self._show_stim()
-
-        # Start timer before display (get self.t2)
-        self.get_time_before_disp()
+        self.stim[trial['trial_num']].draw()
+        self.window.flip()
 
         # collect responses
-        wait_time = self.trial_dur
-        self.trial_response = self.check_trial_response(wait_time = wait_time,
-                                                        trial_index = self.trial,
-                                                        start_time = self.t0,
-                                                        start_time_rt = self.t2)
+        key,trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['trial_dur'])
 
-        # update trial response
-        self.update_trial_response()
+        # check if response is correct
+        trial['response'] = (key == self.const.response_keys[1])
+        trial['correct'] = (trial['response'] == trial['trial_type'])
 
         # display trial feedback
-        if self.target_file['display_trial_feedback'][self.trial] and self.response_made:
-            self.display_trial_feedback(correct_response = self.correct_response)
-        else:
-            self.screen.fixation_cross()
+        if trial['display_trial_feedback'] and (key != 'none'):
+            self.display_trial_feedback(trial['correct'])
 
-        # 5 show fixation for the duration of the iti
-        ## 5.1 get current time
-        t_start_iti = self.get_current_trial_time()
-        self.show_fixation(t_start_iti, self.iti_dur)
+        self.screen.fixation_cross()
 
-        # 6.
-        self.screen_quit()
-
+        return trial
 
 
 class SocialPrediction(Task):
@@ -2050,8 +1964,6 @@ class ActionObservationKnots(Task):
         return rDf
 
 class Rest(Task):
-
-
     def __init__(self, info, screen, ttl_clock, const):
         super().__init__(info, screen, ttl_clock, const)
         self.feedback_type = 'none'
@@ -2064,52 +1976,16 @@ class Rest(Task):
         instr_visual.draw()
         self.window.flip()
 
-    def _show_stim(self):
+    def show_stim(self):
         # show fixation cross
         self.screen.fixation_cross()
 
-    def run(self):
+    def run_trial(self,trial):
         # get current time (self.t0)
-        self.t0 = self.get_current_trial_time()
+        self.screen.fixation_cross()
+        self.ttl_clock.wait_until(self.start_time + trial['trial_dur'])
+        return trial
 
-        # loop over trials
-        self.all_trial_response = [] # collect data
-
-        for self.trial in self.target_file.index:
-
-            # show the fixation for the duration of iti
-            self.show_fixation(self.t0, self.target_file['start_time'][self.trial])
-
-            # collect real_start_time for each block (self.real_start_time)
-            self.get_real_start_time(self.t0)
-
-            # show stim
-            self._show_stim()
-
-            # Start timer before display (get self.t2)
-            self.get_time_before_disp()
-
-            # leave fixation on screen for `trial_dur`
-            wait_time = self.target_file['start_time'][self.trial] + self.target_file['trial_dur'][self.trial]
-
-            if self.ttl_flag:
-                while (ttl.clock.getTime() - self.t0 <= wait_time): # and not resp_made:
-                    ttl.check()
-            else:
-                while (self.clock.getTime() - self.t0 <= wait_time): # and not resp_made:
-                    pass
-
-            # update trial response
-            self.trial_response = {}
-            self.update_trial_response()
-
-            # 6.
-            self.screen_quit()
-
-        # get the response dataframe
-        rDf = self.get_task_response(all_trial_response=self.all_trial_response)
-
-        return rDf
 
 task_map = {
     "visual_search": VisualSearch,
