@@ -155,7 +155,7 @@ def visuospatial_order(nrun = 5, study_name = 'behavioral',
 
         df_tmp = pd.DataFrame(T)
 
-        target_filename = path2task_target / f"visuospatial_order_{task_dur}sec_{run+1:02d}.csv"
+        target_filename = path2task_target / f"visuospatial_order_{task_dur}sec_{run+1:02d}.tsv"
         df_tmp.to_csv(target_filename)
     return
 
@@ -255,7 +255,7 @@ def visuospatial_order_v2(nrun = 5, study_name = 'behavioral',
 
         df_tmp = pd.DataFrame(T)
 
-        target_filename = path2task_target / f"visuospatial_order_{task_dur}sec_{run+1:02d}.csv"
+        target_filename = path2task_target / f"visuospatial_order_{task_dur}sec_{run+1:02d}.tsv"
         df_tmp.to_csv(target_filename)
     return
 
@@ -390,7 +390,7 @@ def sternberg_order(nrun = 5, study_name = 'behavioral',
 
         df_tmp = pd.DataFrame(T)
 
-        target_filename = path2task_target / f"sternberg_order_{task_dur}sec_{run+1:02d}.csv"
+        target_filename = path2task_target / f"sternberg_order_{task_dur}sec_{run+1:02d}.tsv"
         df_tmp.to_csv(target_filename)
 
     return
@@ -497,7 +497,7 @@ def finger_sequence(nrun = 5, study_name = 'behavioral',
 
         df_tmp = pd.DataFrame(T)
 
-        target_filename = path2task_target / f"finger_sequence_{task_dur}sec_{run+1:02d}.csv"
+        target_filename = path2task_target / f"finger_sequence_{task_dur}sec_{run+1:02d}.tsv"
         df_tmp.to_csv(target_filename)
     return
 
@@ -576,7 +576,7 @@ def flexion_extension(nrun = 5, study_name = 'behavioral',
 
         df_tmp = pd.DataFrame(T)
 
-        target_filename = path2task_target / f"flexion_extension_{task_dur}sec_{run+1:02d}.csv"
+        target_filename = path2task_target / f"flexion_extension_{task_dur}sec_{run+1:02d}.tsv"
         df_tmp.to_csv(target_filename)
 
     return
@@ -653,7 +653,7 @@ def rest(trial_dur = 10):
 
     df_tmp = pd.DataFrame(T)
 
-    target_filename = path2task_target / f"rest_{trial_dur}sec_{run+1:02d}.csv"
+    target_filename = path2task_target / f"rest_{trial_dur}sec_{run+1:02d}.tsv"
     df_tmp.to_csv(target_filename)
 
 def run_target():
