@@ -45,9 +45,9 @@ class Task:
 
     def init_task(self):
         """
-        Initialize task - default is to reading the target informatio
+        Initialize task - default is to read the target information
         """
-        self.trial_info = pd.read_csv(self.const.targe_dir / self.name / self.target_file)
+        self.trial_info = pd.read_csv(self.const.target_dir / self.name / self.target_file,sep='\t')
 
     def display_instructions(self):
         """
@@ -418,24 +418,16 @@ class NBack(Task):
         self.feedback_type = 'acc'
 
     def init_task(self):
-        super().init_task()
+        """Read the target file and get all the stimuli necessary"""
+        self.trial_info = pd.read_csv(self.const.target_dir / self.name / self.target_file,sep='\t')
         self.stim=[]
-        for stim in self.target_file['stim']:
-            video_file = self.const.stim_dir / self.name / stim
+        for stim in self.trial_info['stim']:
+            stim_path = self.const.stim_dir / self.name / stim
             self.stim.append(visual.ImageStim(self.window, str(stim_path)))
 
     def run_trial(self,trial):
-        # get current time (self.t0)
-        trial.t0 = self.get_current_trial_time()
 
-        # show the fixation for the duration of iti
-        self.show_fixation(self.t0, self.start_time- self.t0)
-
-
-        # collect real_start_time for each block (self.real_start_time)
-        self.get_real_start_time(self.t0)
-
-        # flush any keys in buffer
+        # Flush any keys in buffer
         event.clearEvents()
 
         # display stimulus
