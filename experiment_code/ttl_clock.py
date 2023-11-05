@@ -25,6 +25,7 @@ class TTLClock:
             while self.ttl_count == 0:
                 self.update()
         self.clock.reset()
+        self.ttl_time = 0
 
     def wait_until(self,time):
         """waits until the given  time since the beginning of the run
@@ -46,12 +47,7 @@ class TTLClock:
         return self.clock.getTime()
 
     def update(self):
-        # check time of incoming TRs and count number of TRs
-        assert self.clock, "must set clock attribute"
-
-        # event.getKeys returns a list of tuples.
-        # how many tuples? Depends on how many keys have been pressed
-        # in the tuple, the first element is always the pressed key and the second element is the time of press
+        # get all the ttl pulses in the buffer
         keys = event.getKeys([self.ttl_button], timeStamped=self.clock)
 
         # checks if the pressed key is the key used as the ttl pulse

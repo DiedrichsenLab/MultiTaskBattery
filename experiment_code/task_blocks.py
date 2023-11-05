@@ -41,14 +41,12 @@ class Task:
         self.name        = info['task_name']
         self.code        = self.name[:4]
         self.target_file = info['target_file']
-        self.start_time  = info['start_time'] + info['instruction_dur']
 
     def init_task(self):
         """
         Initialize task - default is to read the target information into the trial_info dataframe
         """
         self.trial_info = pd.read_csv(self.const.target_dir / self.name / self.target_file,sep='\t')
-
 
     def display_instructions(self):
         """
@@ -84,7 +82,7 @@ class Task:
             t_data = self.run_trial(t_data)
             # Append the trial data
             self.trial_data.append(t_data)
-        self.trial_data = pd.concat(self.trial_data, ignore_index=True)
+        self.trial_data = pd.DataFrame(self.trial_data)
 
     def wait_response(self, start_time, max_wait_time):
         """
@@ -109,27 +107,27 @@ class Task:
                 rt = keys[0][1] - start_time
         return key, rt
 
-
-    # 6. display the feedback for the current trial
-    def display_trial_feedback(self, correct_response):
+    def display_trial_feedback(self, give_feedback,correct_response):
         """
-        display the feedback for the current trial (correct response or not?)
+        display the feedback for the current trial using the color of the fixation cross
+
         Args:
-            correct_response - a boolean variable. True if the response was correct, False otherwise
+            give_feedback (bool):
+                If true, gives informative feedback - otherwise just shows fixation cross
+            correct_response (bool):
+                Response was correct?, False otherwise
         """
-        if correct_response:
-            feedback = os.path.join(self.const.stim_dir,'correct.png')
+        if give_feedback:
+            if correct_response:
+                self.screen.fixation_cross('green')
+            else:
+                self.screen.fixation_cross('red')
         else:
-            feedback = os.path.join(self.const.stim_dir, 'incorrect.png')
+            self.screen.fixation_cross('white')
 
-        # display feedback on screen
-        feedback = visual.ImageStim(self.window, feedback, pos=(0, 0)) # pos=pos
-        feedback.draw()
-        self.window.flip()
-
-    def save_data(self, subject_id, run_num):
+    def save_data(self, subj_id, run_num):
         self.trial_data.insert(0, 'run_num', [run_num]*len(self.trial_data))
-        trial_data_file = self.const.data_dir / self.subj_id / f"{self.subj_id}_task-{self.code}.tsv"
+        trial_data_file = self.const.data_dir / subj_id / f"{subj_id}_task-{self.code}.tsv"
         ut.append_data_to_file(trial_data_file, self.trial_data)
 
     # 8. Get the feedback for the task (the type of feedback is different across tasks)
@@ -368,11 +366,7 @@ class NBack(Task):
         trial['correct'] = (trial['response'] == trial['trial_type'])
 
         # display trial feedback
-        if trial['display_trial_feedback'] and (key != 'none'):
-            self.display_trial_feedback(trial['correct'])
-
-        self.screen.fixation_cross()
-
+        self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
         return trial
 
 
@@ -1986,20 +1980,3 @@ class Rest(Task):
         self.ttl_clock.wait_until(self.start_time + trial['trial_dur'])
         return trial
 
-
-task_map = {
-    "visual_search": VisualSearch,
-    "theory_of_mind": TheoryOfMind,
-    "n_back": NBack,
-    "social_prediction": SocialPrediction,
-    "semantic_prediction": SemanticPrediction,
-    "action_observation": ActionObservation,
-    "finger_sequence": FingerSequence,
-    "sternberg_order": SternbergOrder,
-    "visuospatial_order": VisuospatialOrder,
-    "flexion_extension": FlexionExtension,
-    "verb_generation": VerbGeneration,
-    "romance_movie": RomanceMovie,
-    "action_observation_knots": ActionObservationKnots,
-    "rest": Rest,
-    }
