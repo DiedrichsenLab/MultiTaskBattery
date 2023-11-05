@@ -90,7 +90,7 @@ class Experiment:
             # pass on the values for your debugging with the following keywords
             self.subj_id = 'test00'
             self.run_number =  1
-            self.run_file_path = 'run_01.tsv'
+            self.run_filename = 'run_01.tsv'
             self.wait_ttl = True
 
     def init_run(self):
@@ -111,6 +111,7 @@ class Experiment:
 
             Task_obj  = TaskName(task_info,
                                  screen = self.stimuli_screen,
+                                 ttl_clock = self.ttl_clock,
                                  const = self.const)
 
             self.task_obj_list.append(Task_obj)
@@ -121,7 +122,7 @@ class Experiment:
         self.run_data_file = self.const.data_dir / self.subj_id / f"subj-{self.subj_id}.tsv"
 
         # 5. start the eyetracker if eyeflag = True
-        if self.eye_tracker:
+        if self.const.eye_tracker:
             self.start_eyetracker()
 
 
@@ -137,14 +138,14 @@ class Experiment:
             print(f"Starting{task.name}")
 
             # Take the task data from the run_info dataframe
-            r_data = self.run_info.iloc[t_num]
+            r_data = self.run_info.iloc[t_num].copy()
             # wait till it's time to start the task
 
             r_data['real_start_time'],r_data['start_ttl'],r_data['start_ttl_time'] = self.ttl_clock.wait_until(task.start_time)
 
             ## sending a message to the edf file specifying task name
-            if self.eye_tracking:
-                pl.sendMessageToFile(f"task_name: {task.name} start_track: {pl.currentUsec()} real start time {r_data.real_start_time} TR count {ttl_clock.count}")
+            if self.const.eye_tracker:
+                pl.sendMessageToFile(f"task_name: {task.name} start_track: {pl.currentUsec()} real start time {r_data.real_start_time} TR count {ttl_clock.ttl_count}")
 
             # display the instruction text for the task. (instructions are task specific)
             task.display_instructions()

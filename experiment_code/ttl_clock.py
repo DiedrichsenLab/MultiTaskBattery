@@ -18,7 +18,7 @@ class TTLClock:
         """ This function waits for the first TTL and then resets the clock appropriately"""
         if wait:
             print('Waiting for first TTL...')
-            while self.count ==0:
+            while self.ttl_count == 0:
                 self.update()
             self.clock.reset(self.ttl_time)
         else:
@@ -54,6 +54,6 @@ class TTLClock:
 
         # checks if the pressed key is the key used as the ttl pulse
         for k in keys:
-            self.count += 1 # each time a ttl button is pressed, ttl count increases
+            self.ttl_count += 1 # each time a ttl button is pressed, ttl count increases
             self.ttl_time = k[1] # the time when the ttl button has been pressed
-            print(f"TR count: {self.count} -    TR time: {self.ttl_time}", end = "\r")
+            print(f"TR count: {self.ttl_count} -    TR time: {self.ttl_time}", end = "\r")

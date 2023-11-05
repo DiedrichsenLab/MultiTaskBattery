@@ -31,24 +31,23 @@ class Task:
     (VisualSearch, SemanticPrediction, NBack, SocialPrediction, ActionObservation).
     """
 
-    def __init__(self, info, screen, const):
+    def __init__(self, info, screen, ttl_clock, const):
 
         # Pointers to Screen and experimental constants
         self.screen  = screen
+        self.window = screen.window # Shortcut to window
         self.const   = const
-        self.clock         = core.Clock() # Each tasks has its own clock
+        self.ttl_clock       =  ttl_clock  # This is a reference to the clock of the run
         self.name        = info['task_name']
-        self.task_num    = info['task_num']
         self.target_file = info['target_file']
-
-        self.trial_response     = {} # an empty dictionary which will be filled with trial responses
-        self.all_trial_response = [] # an empty list which will be appended with the responses from each trial
+        self.start_time  = info['start_time']
+        self.trial_data = [] # an empty list which will be appended with the responses from each trial
 
     def init_task(self):
         """
         Initialize task - default is to reading the target informatio
         """
-        self.target_info = pd.read_csv(self.const.targe_dir / self.name / self.target_file)
+        self.trial_info = pd.read_csv(self.const.targe_dir / self.name / self.target_file)
 
     def display_instructions(self):
         """
@@ -56,24 +55,28 @@ class Task:
         Most tasks have the same instructions. (Tasks that have True/False responses)
         Those tasks that have different instructions will have their own routine
         """
-        # 3.1 create the instruction text
-        # first use get_response_fingerMap to get the mapping between keys and finger names
-        ## a dictionary called self.response_fingerMap is created!
-        self.response_fingerMap = self.get_response_finger_map()
-        hand = self.trial_info['hand'][0]
-        # true_str = f"if True press {self.key_hand_fingers[hand]['True'][0]} ({self.key_hand_dict[hand]['True'][0]})"
-        # false_str = f"if False press {self.key_hand_fingers[hand]['False'][0]} ({self.key_hand_dict[hand]['False'][0]})"
+        true_str = f"if True press {self.const.response_keys[1]}"
+        false_str = f"if False press {self.const.response_keys[2]}"
 
-        true_str = f"if True press {self.key_hand_fingers[hand]['True'][0]}"
-        false_str = f"if False press {self.key_hand_fingers[hand]['False'][0]}"
-
-        self.instruction_text = f"{self.task_name} task\n\n {true_str} \n {false_str}"
+        self.instruction_text = f"{self.name} task\n\n {true_str} \n {false_str}"
 
         # 3.2 display the instruction text
         instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
         # instr.size = 0.8
         instr_visual.draw()
         self.window.flip()
+
+    def run(self):
+        """Loop over trials and collect dat
+
+        Returns:
+            info (pd.DataFrame): _description_
+        """
+        finished_trials = []
+        for i,trial in self.trial_info.iterrows():
+            finished_trials.append(self.run_trial(trial))
+
+        return pd.concat(finished_trials, ignore_index=True)
 
     def get_trial_response(self, i,trial):
         """
@@ -320,16 +323,16 @@ class VisualSearch(Task):
     #     return response dataframe
 
     def __init__(self, info, screen, const):
-        super.__init__(self, info, screen, const)
+        super().__init__(info, screen, const)
         self.feedback_type = 'acc'
 
     def init_task(self):
         # load target and distractor stimuli
-        # self.stims = [consts.stim_dir/ self.study_name / self.task_name/ f"{d}.png" for d in self.orientations]
-        super.init_task()
-        self.stims = [self.const.stim_dir/ self.task_name/ f"{d}.png" for d in self.orientations]
+        # self.stims = [consts.stim_dir/ self.study_name / self.name/ f"{d}.png" for d in self.orientations]
+        super().init_task()
+        self.stims = [self.const.stim_dir/ self.name/ f"{d}.png" for d in self.orientations]
 
-        display_file = os.path.join(self.const.target_dir,  self.task_name, self.trial_info['display_file'])
+        display_file = os.path.join(self.const.target_dir,  self.name, self.trial_info['display_file'])
         self.tf_display = pd.read_csv(display_file)
 
     def show_stim(self):
@@ -410,32 +413,16 @@ class NBack(Task):
     # def instruction_text(self):
     #     return response dataframe
 
-    def __init__(self, info, screen, const):
-        super.__init__(self, info, screen, const)
+    def __init__(self, info, screen, ttl_clock, const):
+        super().__init__(info, screen, ttl_clock, const)
         self.feedback_type = 'acc'
 
     def init_task(self):
         super().init_task()
         self.stim=[]
         for stim in self.target_file['stim']:
-            video_file = self.const.stim_dir / self.task_name / stim
+            video_file = self.const.stim_dir / self.name / stim
             self.stim.append(visual.ImageStim(self.window, str(stim_path)))
-
-    def run(self):
-        """Loop over trials and collect dat
-
-        Returns:
-            info (pd.DataFrame): _description_
-        """
-
-
-        finished_trials = []
-        for i,trial in self.trial_info.iterrows():
-            finished_trials.append(self.run_trial(trial))
-
-        # get the response dataframe
-        return pd.concat(finished_trials, ignore_index=True)
-
 
     def run_trial(self,trial):
         # get current time (self.t0)
@@ -488,15 +475,15 @@ class SocialPrediction(Task):
         return "Social Prediction Task\n\nYou have the following options\n\nHandShake = 1\nHug = 2\nHighFive = 3\nKiss = 4\n\nGo as fast as you can while being accurate"
 
     def __init__(self, info, screen, const):
-        super.__init__(self, info, screen, const)
+        super().__init__(info, screen, const)
         self.feedback_type = 'acc'
 
     def init_task(self):
         super().init_task()
-        # stim_path = consts.stim_dir / self.study_name / self.task_name / self.target_file['stim'][self.trial]
+        # stim_path = consts.stim_dir / self.study_name / self.name / self.target_file['stim'][self.trial]
         self.stim=[]
         for stim in self.target_file['stim']:
-            video_file = self.const.stim_dir / self.task_name / stim
+            video_file = self.const.stim_dir / self.name / stim
             self.stim.append(visual.ImageStim(self.window, str(stim_path)))
 
     def _get_first_response(self):
@@ -599,12 +586,12 @@ class SemanticPrediction(Task):
     #     return "Language Prediction Task\n\nYou will read a sentence and decide if the final word of the sentence makes sense\n\nIf the word makes sense, press 3\n\nIf the word does not make sense, press 4\n\nAnswer as quickly and as accurately as possible"
 
     def __init__(self, info, screen, const):
-        super.__init__(self, info, screen, const)
+        super().__init__(info, screen, const)
         self.feedback_type = 'acc'
 
     def init_task(self):
         super().init_task()
-        # stim_path = consts.stim_dir / self.study_name / self.task_name / self.target_file['stim'][self.trial]
+        # stim_path = consts.stim_dir / self.study_name / self.name / self.target_file['stim'][self.trial]
         for i,trial in self.trial_info.iterrows():
             pass
 
@@ -719,15 +706,15 @@ class SemanticPrediction(Task):
 class ActionObservation(Task):
 
     def __init__(self, info, screen, const):
-        super.__init__(self, info, screen, const)
+        super().__init__(info, screen, const)
         self.feedback_type = 'acc'
 
     def init_task(self):
         super().init_task()
         for i,trial in self.trial_info.iterrows():
             video_file = self.trial_info['stim'][self.trial]
-        # self.path_to_video = os.path.join(consts.stim_dir, self.study_name, self.task_name, "modified_clips", video_file)
-        self.path_to_video = os.path.join(consts.stim_dir, self.study_name, self.task_name, "modified_clips", video_file)
+        # self.path_to_video = os.path.join(consts.stim_dir, self.study_name, self.name, "modified_clips", video_file)
+        self.path_to_video = os.path.join(consts.stim_dir, self.study_name, self.name, "modified_clips", video_file)
 
     def _show_stim(self):
         mov = visual.MovieStim3(self.window, self.path_to_video, flipVert=False, flipHoriz=False, loop=False)
@@ -847,7 +834,7 @@ class ActionObservation(Task):
 class TheoryOfMind(Task):
 
     def __init__(self, info, screen, const):
-        super.__init__(self, info, screen, const)
+        super().__init__(info, screen, const)
         self.feedback_type = 'acc'
 
     def instruction_text(self):
@@ -981,8 +968,8 @@ class FingerSequence(Task):
         the digit turns red if the incorrect key was pressed
     """
 
-    def __init__(self, screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save = True):
-        super(FingerSequence, self).__init__(screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save_response = save)
+    def __init__(self, screen, target_file, run_end, name, task_num, study_name, target_num, ttl_flag, save = True):
+        super().__init__(screen, target_file, run_end, name, task_num, study_name, target_num, ttl_flag, save_response = save)
         self.feedback_type = 'acc' # reaction
         self.name          = 'finger_sequence'
 
@@ -1016,7 +1003,7 @@ class FingerSequence(Task):
         mapStr   = [f"for {item} press {self.response_fingerMap[item]}\n" for item in self.key_hand_dict[hand]['None']]
         temp_str = ''.join(mapStr)
 
-        self.instruction_text = f"{self.task_name} task\n\nUse your {hand} hand:\n" + temp_str
+        self.instruction_text = f"{self.name} task\n\nUse your {hand} hand:\n" + temp_str
 
         # display the instruction text
         instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
@@ -1222,8 +1209,8 @@ class SternbergOrder(Task):
     5. show fixation (iti_dur)
     """
 
-    def __init__(self, screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save = True):
-        super(SternbergOrder, self).__init__(screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save_response = save)
+    def __init__(self, screen, target_file, run_end, name, task_num, study_name, target_num, ttl_flag, save = True):
+        super().__init__(screen, target_file, run_end, name, task_num, study_name, target_num, ttl_flag, save_response = save)
         self.feedback_type = 'acc' # reaction
         self.name          = 'sternberg_order'
 
@@ -1349,8 +1336,8 @@ class SternbergOrder(Task):
 
 class VisuospatialOrder(Task):
 
-    def __init__(self, screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save = True):
-        super(VisuospatialOrder, self).__init__(screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save_response = save)
+    def __init__(self, screen, target_file, run_end, name, task_num, study_name, target_num, ttl_flag, save = True):
+        super().__init__(screen, target_file, run_end, name, task_num, study_name, target_num, ttl_flag, save_response = save)
         self.feedback_type = 'acc' # reaction
         self.name          = 'visuospatial_order'
 
@@ -1506,8 +1493,8 @@ class VisuospatialOrder(Task):
 
 class VisuospatialOrderV2(Task):
 
-    def __init__(self, screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save = True):
-        super(VisuospatialOrderV2, self).__init__(screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save_response = save)
+    def __init__(self, screen, target_file, run_end, name, task_num, study_name, target_num, ttl_flag, save = True):
+        super().__init__(screen, target_file, run_end, name, task_num, study_name, target_num, ttl_flag, save_response = save)
         self.feedback_type = 'acc' # reaction
         self.name          = 'visuospatial_order'
 
@@ -1653,8 +1640,8 @@ class FlexionExtension(Task):
     """
     flexion extension of toes! No particular feedback
     """
-    def __init__(self, screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save = True):
-        super(FlexionExtension, self).__init__(screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save_response = save)
+    def __init__(self, screen, target_file, run_end, name, task_num, study_name, target_num, ttl_flag, save = True):
+        super().__init__(screen, target_file, run_end, name, task_num, study_name, target_num, ttl_flag, save_response = save)
         self.feedback_type = 'None' # reaction
         self.name          = 'flexion_extension'
 
@@ -1668,7 +1655,7 @@ class FlexionExtension(Task):
         # self.foot = self.target_file['foot'][self.trial]
 
     def display_instructions(self): # overriding the display instruction from the parent class
-        self.instruction_text = f"{self.task_name} task \n\n flex and extend your right and left toes"
+        self.instruction_text = f"{self.name} task \n\n flex and extend your right and left toes"
         instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
         instr_visual.draw()
         self.window.flip()
@@ -1761,8 +1748,8 @@ class VerbGeneration(Task):
     # def instruction_text(self):
     #     return "Verb Generation Task\n\nYou will read a series of nouns. For some nouns you will be asked to silently generate a verb.\n\nAnswer as quickly and as accurately as possible"
 
-    def __init__(self, screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save = True):
-        super(VerbGeneration, self).__init__(screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save_response = save)
+    def __init__(self, screen, target_file, run_end, name, task_num, study_name, target_num, ttl_flag, save = True):
+        super().__init__(screen, target_file, run_end, name, task_num, study_name, target_num, ttl_flag, save_response = save)
         self.feedback_type = 'None' # no feedback
         self.name          = 'verb_generation'
 
@@ -1775,7 +1762,7 @@ class VerbGeneration(Task):
 
     def display_instructions(self): # overriding the display instruction from the parent class
 
-        self.instruction_text = f"{self.task_name} task \n\n Silently read the words presented.  \n\n When GENERATE is shown, silently think of verbs that go with the words."
+        self.instruction_text = f"{self.name} task \n\n Silently read the words presented.  \n\n When GENERATE is shown, silently think of verbs that go with the words."
         instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
         instr_visual.draw()
         self.window.flip()
@@ -1883,8 +1870,8 @@ class RomanceMovie(Task):
     # def instruction_text(self):
     #     return "Romance Movie Task\n\nYou will passively watch a 30-second clip from a movie.  Please keep your head as still as possible."
 
-    def __init__(self, screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save = True):
-        super(RomanceMovie, self).__init__(screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save_response = save)
+    def __init__(self, screen, target_file, run_end, name, task_num, study_name, target_num, ttl_flag, save = True):
+        super().__init__(screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save_response = save)
         self.feedback_type = 'None' # no feedback
         self.name          = 'romance_movie'
 
@@ -1983,7 +1970,7 @@ class ActionObservationKnots(Task):
     #     return "Action Observation Task\n\nYou will passively watch two 15-second clips.  Please keep your head as still as possible."
 
     def __init__(self, screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save = True):
-        super(ActionObservationKnots, self).__init__(screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save_response = save)
+        super().__init__(screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save_response = save)
         self.feedback_type = 'None' # no feedback
         self.name          = 'action_observation_knots'
 
@@ -2072,11 +2059,10 @@ class ActionObservationKnots(Task):
 
 class Rest(Task):
 
-    # @property
 
-    def __init__(self, screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save = False):
-        super(Rest, self).__init__(screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save_response = save)
-        self.feedback_type = 'none' # reaction
+    def __init__(self, info, screen, ttl_clock, const):
+        super().__init__(info, screen, ttl_clock, const)
+        self.feedback_type = 'none'
         self.name          = 'rest'
 
     def display_instructions(self): # overriding the display instruction routine from the parent

@@ -7,9 +7,8 @@ import os
 exp_name = 'pontine_7T'
 
 # Response key assignment:
-response_keys    = ['a', 's', 'd', 'f', 'h', 'j', 'k', 'l']
-# response_keys    = ['2', '3', '4', '5', '2', '3', '4', '5']
-response_fingers = ['Pinky', 'Ring','Middle', 'Index', 'Index', 'Middle', 'Ring', 'Pinky']
+response_keys    = ['a', 's', 'd', 'f']
+response_fingers = ['Pinky', 'Ring','Middle', 'Index']
 
 
 # Directory definitions for experiment
@@ -25,7 +24,7 @@ stim_dir   = None                                       # where stimuli for each
 eye_tracker = False                                     # do you want to do the eyetracking?
 
 # Running in debug mode?
-debug = False                                           # set to True for debugging
+debug = True                                           # set to True for debugging
 
 # Screen settings for subject display
 screen_res = [1920, 1080]                               # screen resolution
