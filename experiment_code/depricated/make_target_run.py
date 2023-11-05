@@ -339,7 +339,7 @@ class SocialPrediction(Utils):
         super().__init__()
         self.task_name = 'social_prediction'
         self.dataset_name = 'homevideos'
-        self.logging_file = 'homevideos_annotations_logging.csv'
+        self.logging_file = 'homevideos_annotations_logging.tsv'
         self.video_name = ['dynamic_0ms', 'dynamic_100ms']
         self.resized = True
         self.balance_blocks = {'actors': ['SB', 'MK'],
@@ -482,7 +482,7 @@ class SemanticPrediction(Utils):
     def __init__(self):
         super().__init__()
         self.task_name = 'semantic_prediction'
-        self.logging_file = 'sentence_validation.csv'
+        self.logging_file = 'sentence_validation.tsv'
         self.stem_word_dur = 0.5
         self.last_word_dur = 1.5
         self.frac = .3
@@ -628,7 +628,7 @@ class ActionObservation(Utils):
     def __init__(self):
         super().__init__()
         self.task_name = "action_observation"
-        self.logging_file = 'all_clips_annotation_logging.csv'
+        self.logging_file = 'all_clips_annotation_logging.tsv'
         self.video_name = ['dynamic_120ms']
         self.manipulation = 'left_right'
         self.resized = True
@@ -832,7 +832,7 @@ class TheoryOfMind(Utils):
     def __init__(self):
         super().__init__()
         self.task_name = 'theory_of_mind'
-        self.logging_file = 'theory_of_mind.csv'
+        self.logging_file = 'theory_of_mind.tsv'
         self.story_dur = 10
         self.question_dur = 4
         self.frac = .3
@@ -957,7 +957,7 @@ class VerbGeneration(Utils):
     def __init__(self):
         super().__init__()
         self.task_name = 'verb_generation'
-        self.logging_file = 'verb_generation.csv'
+        self.logging_file = 'verb_generation.tsv'
         self.frac = .3
         self.balance_blocks = {'session_list': ['1','2']}
         self.block_dur_secs = 15
@@ -1072,7 +1072,7 @@ class RomanceMovie(Utils):
     def __init__(self):
         super().__init__()
         self.task_name = 'romance_movie'
-        self.logging_file = 'romance_movie_logging.csv'
+        self.logging_file = 'romance_movie_logging.tsv'
         self.video_name = ['romance']
         self.balance_blocks = {'condition_name': ['romance']}
         self.block_dur_secs = 30
@@ -1189,7 +1189,7 @@ class ActionObservationKnots(Utils):
     def __init__(self):
         super().__init__()
         self.task_name = 'act_obs_knots'
-        self.logging_file = 'action_observation_knots_logging.csv'
+        self.logging_file = 'action_observation_knots_logging.tsv'
         self.video_name_action = ['knotAction']
         self.video_name_control = ['knotControl']
         self.balance_blocks = {'condition_name': ['knot'], 'session_list': [1,2]}
@@ -1339,7 +1339,7 @@ class Rest(Utils):
 
 
         # save target file
-        self.target_name = self.task_name + '_' + str(self.rest_dur_secs) + 'sec.csv'
+        self.target_name = self.task_name + '_' + str(self.rest_dur_secs) + 'sec.tsv'
 
         # create dataframe
         dataframe = self._create_new_columns()
@@ -1387,7 +1387,7 @@ class MakeFiles:
 
             target_file_name = Path(target_file).name
             num_sec = re.findall(r'\d+(?=sec)', target_file)[0]
-            target_num = re.findall(r'\d+(?=.csv)', target_file)[0]
+            target_num = re.findall(r'\d+(?=.tsv)', target_file)[0]
             num_trials = len(dataframe)
 
             data = {'task_name': self.task_name, 'task_num': self.task_num+1, # 'block_iter': iter+1
@@ -1535,7 +1535,7 @@ class MakeFiles:
                 self._create_run_dataframe(target_files = target_files_sample)
 
             # save run file
-            run_name = self.run_name_prefix + '_' +  f'{run+1:02d}' + '.csv'
+            run_name = self.run_name_prefix + '_' +  f'{run+1:02d}' + '.tsv'
             self._save_run_file(run_name = run_name)
             print(f'saving out {run_name}')
 

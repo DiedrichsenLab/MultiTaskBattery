@@ -69,7 +69,7 @@ def get_runfile_info(run_name, study_name):
     """
     run_info = {} # a dictionary with all the info for the run
     # load run file
-    run_info['run_file'] = pd.read_csv(consts.run_dir / study_name / f"{run_name}.csv")
+    run_info['run_file'] = pd.read_csv(consts.run_dir / study_name / f"{run_name}.tsv")
 
     # get run num
     run_info['run_num'] = int(re.findall(r'\d+', run_name)[0])
@@ -91,7 +91,7 @@ def check_runfile_results(experiment_info):
     subj_id    = experiment_info['subj_id']
     run_name   = experiment_info['run_name']
 
-    fpath = consts.raw_dir / study_name / 'raw' / subj_id / f"{study_name}_{subj_id}.csv"
+    fpath = consts.raw_dir / study_name / 'raw' / subj_id / f"{study_name}_{subj_id}.tsv"
     if os.path.isfile(fpath):
         # load in run_file results if they exist
         run_file_results = pd.read_csv(fpath)
@@ -186,14 +186,14 @@ def save_response(response_df, study_name, subj_id, task_name):
     """
     # collect existing data
     try:
-        target_file_results = pd.read_csv(consts.raw_dir /study_name/ 'raw' / subj_id / f"{study_name}_{subj_id}_{task_name}.csv")
+        target_file_results = pd.read_csv(consts.raw_dir /study_name/ 'raw' / subj_id / f"{study_name}_{subj_id}_{task_name}.tsv")
         target_resp_df = pd.concat([target_file_results, response_df], axis=0, sort=False)
         # if there is no existing data, just save current data
     except:
         target_resp_df = response_df
         pass
     # save all data
-    target_resp_df.to_csv(consts.raw_dir / study_name/ 'raw' / subj_id / f"{study_name}_{subj_id}_{task_name}.csv", index=None, header=True)
+    target_resp_df.to_csv(consts.raw_dir / study_name/ 'raw' / subj_id / f"{study_name}_{subj_id}_{task_name}.tsv", index=None, header=True)
 
 def get_runfile_results(run_file, all_run_response, run_file_results):
     """
@@ -266,7 +266,7 @@ def run():
     Run file name is the name of a csv file that containg the names of the task with
     the order in which they will be presented and their start/end times.
     Once the experiment is run, the data will be saved in a file with a filename specified as follows:
-    $experimentName_subjId_taskName.csv
+    $experimentName_subjId_taskName.tsv
     """
 
     # 1. open up the input box to get the experiment info from the experimenter
@@ -375,7 +375,7 @@ def run():
     df_run_results = get_runfile_results(run_info['run_file'], all_run_response, run_file_results)
 
     # 9.2 save the run results
-    run_filename = f"{exp_info['study_name']}_{exp_info['subj_id']}.csv"
+    run_filename = f"{exp_info['study_name']}_{exp_info['subj_id']}.tsv"
     df_run_results.to_csv(subj_dir / run_filename, index=None, header=True)
 
     # 10. present feedback from all tasks on screen

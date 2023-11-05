@@ -39,14 +39,14 @@ class Utils():
 
         for f in os.listdir(self.target_dir):
             if re.search(targetfile_name, f):
-                regex = r"_(\d+).csv"
+                regex = r"_(\d+).tsv"
                 target_num.append(int(re.findall(regex, f)[0]))
 
         if target_num==[]:
-            outfile_name = f"{targetfile_name}_01.csv" # first target file
+            outfile_name = f"{targetfile_name}_01.tsv" # first target file
         else:
             num = np.max(target_num)+1
-            outfile_name = f"{targetfile_name}_{num:02d}.csv" # second or more
+            outfile_name = f"{targetfile_name}_{num:02d}.tsv" # second or more
 
         return outfile_name
 

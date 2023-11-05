@@ -42,7 +42,7 @@ class Target():
         self.target_filename = f"{self.task_name}_{self.task_dur}sec_{self.run_number+1:02d}"
         self.target_dir      = consts.target_dir / self.study_name / self.task_name
 
-        self.target_filedir = self.target_dir / f"{self.target_filename}.csv"
+        self.target_filedir = self.target_dir / f"{self.target_filename}.tsv"
 
         # set the random seed to be able to reproduce?
         if self.random_seed:
@@ -172,7 +172,7 @@ class Session():
             print('not balanced ...')
 
             # delete any run files that exist in the folder
-            files = glob.glob(os.path.join(consts.run_dir, self.study_name, '*run*.csv'))
+            files = glob.glob(os.path.join(consts.run_dir, self.study_name, '*run*.tsv'))
             # for f in files:
             #     os.remove(f)
             self.make_run_files()
@@ -188,7 +188,7 @@ class Session():
             target_dir = os.path.join(consts.target_dir, self.study_name, self.task_name)
 
             # delete any target files that exist in the folder
-            files = glob.glob(os.path.join(target_dir, '*.csv'))
+            files = glob.glob(os.path.join(target_dir, '*.tsv'))
             # for f in files:
             #     os.remove(f)
 
@@ -228,7 +228,7 @@ class Session():
 
                 # get target files for `task_name`
                 self.task_target_dir = os.path.join(consts.target_dir, self.study_name, self.task_name)
-                self.fpaths = sorted(glob.glob(os.path.join(self.task_target_dir, f'*{self.task_name}_{self.task_dur}sec_*.csv')))
+                self.fpaths = sorted(glob.glob(os.path.join(self.task_target_dir, f'*{self.task_name}_{self.task_dur}sec_*.tsv')))
                 target_file = self.fpaths[run]
                 iter = 0
                 dataframe = pd.read_csv(target_file)
@@ -238,7 +238,7 @@ class Session():
 
                 target_file_name = Path(target_file).name
                 num_sec = re.findall(r'\d+(?=sec)', target_file)[0]
-                target_num = re.findall(r'\d+(?=.csv)', target_file)[0]
+                target_num = re.findall(r'\d+(?=.tsv)', target_file)[0]
                 num_trials = len(dataframe)
 
                 data = {'task_name': self.task_name, 'task_iter': iter + 1, 'task_num': self.task_num + 1, # 'block_iter': iter+1
@@ -266,7 +266,7 @@ class Session():
             df_run.drop({'num_sec'}, inplace=True, axis=1)
 
             # save run file
-            run_name = 'run_' +  f'{run+1:02d}' + '.csv'
+            run_name = 'run_' +  f'{run+1:02d}' + '.tsv'
             filepath = os.path.join(consts.run_dir, self.study_name)
             consts.dircheck(filepath)
             df_run.to_csv(os.path.join(filepath, run_name), index=False, header=True)
@@ -700,7 +700,7 @@ class VisualSearch(Target):
 
         # save out visual display
         str_part = self.target_filename.partition(self.task_name)
-        visual_display_name = 'display_pos' + str_part[2]+".csv"
+        visual_display_name = 'display_pos' + str_part[2]+".tsv"
         # self.target_dir = consts.target_dir / self.study_name / self.task_name
         df_display.to_csv(os.path.join(self.target_dir, visual_display_name))
 
@@ -740,9 +740,9 @@ class SemanticPrediction(Target):
         # read in the stimulus csv file
         # stim_dir = os.path.join(consts.stim_dir, self.study_name, self.task_name)
         stim_dir = os.path.join(consts.stim_dir, self.task_name)
-        stim_df  = pd.read_csv(os.path.join(stim_dir, 'sentence_validation.csv'))
+        stim_df  = pd.read_csv(os.path.join(stim_dir, 'sentence_validation.tsv'))
 
-        self.log_df = pd.read_csv(os.path.join(stim_dir, f'semantic_prediction_logging_{self.run_number}.csv'))
+        self.log_df = pd.read_csv(os.path.join(stim_dir, f'semantic_prediction_logging_{self.run_number}.tsv'))
 
         # conds = [self.balance_blocks['condition_name'][key] for key in self.balance_blocks['condition_name'].keys()]
         conds   = list(self.trials_info['condition_name'].keys())
@@ -786,7 +786,7 @@ class SemanticPrediction(Target):
 
         ## save the new logging
         log_dir = os.path.join(consts.stim_dir, self.task_name)
-        self.log_df.to_csv(os.path.join(log_dir, f'semantic_prediction_logging_{self.run_number+1}.csv'), index=False)
+        self.log_df.to_csv(os.path.join(log_dir, f'semantic_prediction_logging_{self.run_number+1}.tsv'), index=False)
 
         idx = sample_group.index
         sampidx = idx.get_level_values(len(columns)) # get third level
@@ -933,10 +933,10 @@ class TheoryOfMind(Target):
         # read in the stimulus csv file
         # stim_dir = os.path.join(consts.stim_dir, self.study_name, self.task_name)
         stim_dir = os.path.join(consts.stim_dir, self.task_name)
-        stim_df  = pd.read_csv(os.path.join(stim_dir, 'theory_of_mind.csv'))
+        stim_df  = pd.read_csv(os.path.join(stim_dir, 'theory_of_mind.tsv'))
 
         # get the logging file
-        self.log_df = pd.read_csv(os.path.join(stim_dir, f'theory_of_mind_logging_{self.run_number}.csv'))
+        self.log_df = pd.read_csv(os.path.join(stim_dir, f'theory_of_mind_logging_{self.run_number}.tsv'))
 
         # conds = [self.balance_blocks['condition_name'][key] for key in self.balance_blocks['condition_name'].keys()]
         conds        = self.trials_info['condition_name']
@@ -961,7 +961,7 @@ class TheoryOfMind(Target):
         self.log_df["extracted"] = extracted.values
          ## save the new logging
         log_dir = os.path.join(consts.stim_dir, self.task_name)
-        self.log_df.to_csv(os.path.join(log_dir, f'theory_of_mind_logging_{self.run_number+1}.csv'), index=False)
+        self.log_df.to_csv(os.path.join(log_dir, f'theory_of_mind_logging_{self.run_number+1}.tsv'), index=False)
 
 
     def _add_task_info(self, random_state):
@@ -1020,7 +1020,7 @@ class ActionObservationKnots(Target):
         # load in stimuli
         # stim_dir = os.path.join(consts.stim_dir, self.study_name, self.task_name)
         stim_dir = os.path.join(consts.stim_dir, self.task_name)
-        stim_df  = pd.read_csv(os.path.join(stim_dir, 'action_observation_knots.csv'))
+        stim_df  = pd.read_csv(os.path.join(stim_dir, 'action_observation_knots.tsv'))
 
         # remove all filenames where any of the videos have not been extracted
         stims_to_remove = stim_df.query('extracted==False')["video_name_action"].to_list()
@@ -1088,7 +1088,7 @@ class RomanceMovie(Target):
 
         # load in stimuli
         stim_dir = os.path.join(consts.stim_dir, self.task_name)
-        stim_df  = pd.read_csv(os.path.join(stim_dir, 'romance_movie.csv'))
+        stim_df  = pd.read_csv(os.path.join(stim_dir, 'romance_movie.tsv'))
 
         # remove all filenames where any of the videos have not been extracted
         stims_to_remove = stim_df.query('extracted==False')["video_name"].to_list()
@@ -1143,7 +1143,7 @@ class VerbGeneration(Target):
         # read in the stimulus csv file
         # stim_dir = os.path.join(consts.stim_dir, self.study_name, self.task_name)
         stim_dir = os.path.join(consts.stim_dir, self.task_name)
-        stim_df  = pd.read_csv(os.path.join(stim_dir, 'verb_generation.csv'))
+        stim_df  = pd.read_csv(os.path.join(stim_dir, 'verb_generation.tsv'))
 
         self.stim_df = stim_df.query(f'session_list=={self.trials_info["session_list"]}')
         pass

@@ -4,8 +4,8 @@
 import sys
 import experiment_code.experiment_block as exp_block
 import experiment_code.make_target as make_target
-from experiment_code.task_blocks import TASK_MAP
-from experiment_code.ttl_clock import ttl
+from experiment_code.task_blocks import task_map
+from experiment_code.ttl_clock import TTLClock
 import constants as const
 
 
