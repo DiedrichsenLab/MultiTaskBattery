@@ -75,7 +75,7 @@ class Experiment:
             #Set up input box
             inputDlg = gui.Dlg(title = f"{self.exp_name}")
             inputDlg.addField('Enter Subject id (str):',initial = self.subj_id)      # run number (int)
-            inputDlg.addField('Enter Run Number (int):',initial =1 )      # run number (int)
+            inputDlg.addField('Enter Run Number (int):',initial = self.run_number+1)      # run number (int)
             inputDlg.addField('Run File name (str):',initial = 'run_01.tsv')      # run number (int)
             inputDlg.addField('Wait for TTL pulse?', initial = True) # a checkbox for ttl pulse (set it true for scanning)
 
@@ -93,7 +93,7 @@ class Experiment:
             print("running in debug mode")
             # pass on the values for your debugging with the following keywords
             self.subj_id = 'test00'
-            self.run_number =  1
+            self.run_number = self.run_number+1
             self.run_filename = 'run_01.tsv'
             self.wait_ttl = True
 
@@ -123,7 +123,7 @@ class Experiment:
         # 3. make subject folder in data/raw/<subj_id>
         subj_dir = self.const.data_dir / self.subj_id
         ut.dircheck(subj_dir) # making sure the directory is created!
-        self.run_data_file = self.const.data_dir / self.subj_id / f"subj-{self.subj_id}.tsv"
+        self.run_data_file = self.const.data_dir / self.subj_id / f"{self.subj_id}.tsv"
 
 
     def run(self):
@@ -145,8 +145,8 @@ class Experiment:
 
             # Take the task data from the run_info dataframe
             r_data = self.run_info.iloc[t_num].copy()
-            # wait till it's time to start the task
 
+            # wait till it's time to start the task
             r_data['real_start_time'],r_data['start_ttl'],r_data['start_ttl_time'] = self.ttl_clock.wait_until(task.start_time)
 
             ## sending a message to the edf file specifying task name
@@ -159,18 +159,25 @@ class Experiment:
             # wait for a time period equal to instruction duration
             self.ttl_clock.wait_until(r_data.start_time + r_data.instruct_dur)
 
-            # Run the task and collect the responses
+            # Run the task (which saves its data to the target)
             task.run()
 
+            # Add the end time of the task
             r_data['real_end_time'] = self.ttl_clock.get_time()
             run_data.append(r_data)
-
-        ut.append_data_to_file(self.run_data_file, pd.DataFrame(run_data))
 
         # Stop the eyetracker
         if self.const.eye_tracker:
             self.stop_eyetracker()
 
+        # save the run data to the run file
+        run_data = pd.DataFrame(run_data)
+        run_data.insert(0,'run_num',[self.run_number]*len(run_data))
+        ut.append_data_to_file(self.run_data_file, )
+
+        # Save the trial data for each task
+        for task in self.task_obj_list:
+            task.save_task_data(self.subj_id, self.run_number)
 
     def start_eyetracker(self):
         """
