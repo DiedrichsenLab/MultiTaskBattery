@@ -27,5 +27,7 @@ eye_tracker = False                                     # do you want to do the 
 debug = True                                           # set to True for debugging
 
 # Screen settings for subject display
-screen_res = [1920, 1080]                               # screen resolution
-
+screen = {}
+screen['size'] = [800, 400]                             # screen resolution
+screen['fullscr'] = False                               # full screen?
+screen['number'] = 1                                    # 0 = main display, 1 = secondary display

@@ -4,13 +4,11 @@
 # import libraries
 import os
 import pandas as pd
-import numpy as np
-import math
 import glob
 import sys
+from pathlib import Path
 
 from psychopy import visual, core, event, gui # data, logging
-
 import experiment_code.utils as ut
 from experiment_code.task_blocks import task_map
 from experiment_code.ttl_clock import TTLClock
@@ -38,10 +36,11 @@ class Experiment:
         self.const = const
         self.ttl_clock = TTLClock()
         self.__dict__.update(kwargs)
+        self.set_const_defaults()
 
         # open screen and display fixation cross
         ### set the resolution of the subject screen here:
-        self.stimuli_screen = Screen(screen_number=1)
+        self.screen = Screen(const.screen)
 
         # connect to the eyetracker already
         if self.const.eye_tracker:
@@ -52,6 +51,11 @@ class Experiment:
             ## set the ip address of the EyeLink ethernet connection
             ## to 100.1.1.2 and the subnet mask to 255.255.255.0
             self.tk = pl.EyeLink('100.1.1.1')
+
+    def set_const_defaults(self):
+        """ Make sure all the necessary variables are set in the constant file - otherwise set them to default values"""
+        if self.const.stim_dir is None:
+            self.const.stim_dir = Path(os.path.dirname(os.path.dirname(__file__))) / 'stimuli'  # where the experiment code is stored
 
     def confirm_run_info(self):
         """
@@ -101,29 +105,25 @@ class Experiment:
         """
 
         # 1. get the run file info: creates self.run_info
-        self.read_runfile()
+        self.run_info = pd.read_csv(self.const.run_dir / self.run_filename,sep='\t')
 
         # 2. Initialize the all tasks that we need
         self.task_obj_list = [] # a list containing task objects in the run
         for t_num, task_info in self.run_info.iterrows():
-            # create a task object for the current task and append it to the list
+            # create a task object for the current task, reads the trial file, and append it to the list
             TaskName = task_map[task_info.task_name]
 
             Task_obj  = TaskName(task_info,
-                                 screen = self.stimuli_screen,
+                                 screen = self.screen,
                                  ttl_clock = self.ttl_clock,
                                  const = self.const)
-
+            Task_obj.init_task()
             self.task_obj_list.append(Task_obj)
 
-        # 2. make subject folder in data/raw/<subj_id>
+        # 3. make subject folder in data/raw/<subj_id>
         subj_dir = self.const.data_dir / self.subj_id
         ut.dircheck(subj_dir) # making sure the directory is created!
         self.run_data_file = self.const.data_dir / self.subj_id / f"subj-{self.subj_id}.tsv"
-
-        # 5. start the eyetracker if eyeflag = True
-        if self.const.eye_tracker:
-            self.start_eyetracker()
 
 
     def run(self):
@@ -131,8 +131,14 @@ class Experiment:
         run a run of the experiment
         """
         print(f"running the experiment")
+        self.screen.fixation_cross()
+
         self.ttl_clock.wait_for_first_ttl(wait = self.wait_ttl)
         run_data = []
+
+        # Start the eyetracker
+        if self.const.eye_tracker:
+            self.start_eyetracker()
 
         for t_num, task in enumerate(self.task_obj_list):
             print(f"Starting{task.name}")
@@ -154,17 +160,16 @@ class Experiment:
             self.ttl_clock.wait_until(r_data.start_time + r_data.instruct_dur)
 
             # Run the task and collect the responses
-            task.run(r_data)
+            task.run()
 
             r_data['real_end_time'] = self.ttl_clock.get_time()
             run_data.append(r_data)
 
         ut.append_data_to_file(self.run_data_file, pd.DataFrame(run_data))
 
-    def read_runfile(self):
-        """Reads the run file and creates self.run_info
-        """
-        self.run_info = pd.read_csv(self.const.run_dir / self.run_filename,sep='\t')
+        # Stop the eyetracker
+        if self.const.eye_tracker:
+            self.stop_eyetracker()
 
 
     def start_eyetracker(self):
@@ -199,8 +204,6 @@ class Experiment:
         # self.tk.receiveDataFile(self.tk_filename, self.tk_filename)
         self.tk.close()
         return
-
-
 
     def show_scoreboard(self, taskObjs, screen):
         """
@@ -255,16 +258,6 @@ class Experiment:
         return
 
 
-    def wait_dur(self, wait_time):
-        """
-        waits for a certain amount of time specified in wait_time
-        """
-        while (self.timer_info['global_clock'].getTime() - self.timer_info['t0']) <= wait_time:
-            if self.ttl_flag:
-                ttl.check()
-            else:
-                pass
-
     def end_run(self):
         """
         finishes the run.
@@ -276,7 +269,7 @@ class Experiment:
         self.set_runfile_results(self.all_run_response, save = True)
 
         # present feedback from all tasks on screen
-        self.show_scoreboard(self.task_obj_list, self.stimuli_screen)
+        self.show_scoreboard(self.task_obj_list, self.screen)
 
         # stop the eyetracker
         if self.eye_flag:
@@ -286,9 +279,9 @@ class Experiment:
 
         # end experiment
         end_exper_text = f"End of run\n\nTake a break!"
-        end_experiment = visual.TextStim(self.stimuli_screen.window, text=end_exper_text, color=[-1, -1, -1])
+        end_experiment = visual.TextStim(self.screen.window, text=end_exper_text, color=[-1, -1, -1])
         end_experiment.draw()
-        self.stimuli_screen.window.flip()
+        self.screen.window.flip()
 
         # waits for a key press to end the experiment
         # event.waitKeys()
@@ -298,7 +291,7 @@ class Experiment:
         keys = kb.getKeys()
         if 'space' in keys:
             # quit screen and exit
-            self.stimuli_screen.window.close()
+            self.screen.window.close()
             core.quit()
 
 
@@ -329,7 +322,7 @@ class Experiment:
         for i in range(-1 * MR_settings['skip'], 0):
             output += u'%d prescan skip (no sync)\n' % i
 
-        vol = launchScan(self.stimuli_screen.window, settings = MR_settings,
+        vol = launchScan(self.screen.window, settings = MR_settings,
                         globalClock=globalClock, mode = 'Test')
 
         duration = MR_settings['volumes'] * MR_settings['TR']
