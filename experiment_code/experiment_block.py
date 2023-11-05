@@ -33,6 +33,7 @@ class Experiment:
 
         self.exp_name   = const.exp_name
         self.subj_id    = subj_id
+        self.run_number = 0
         self.const = const
         self.ttl_clock = TTLClock()
         self.__dict__.update(kwargs)
@@ -132,7 +133,7 @@ class Experiment:
         """
         print(f"running the experiment")
         self.screen.fixation_cross()
-
+        self.ttl_clock.reset()
         self.ttl_clock.wait_for_first_ttl(wait = self.wait_ttl)
         run_data = []
 
@@ -141,13 +142,13 @@ class Experiment:
             self.start_eyetracker()
 
         for t_num, task in enumerate(self.task_obj_list):
-            print(f"Starting{task.name}")
+            print(f"Starting: {task.name}")
 
             # Take the task data from the run_info dataframe
             r_data = self.run_info.iloc[t_num].copy()
 
             # wait till it's time to start the task
-            r_data['real_start_time'],r_data['start_ttl'],r_data['start_ttl_time'] = self.ttl_clock.wait_until(task.start_time)
+            r_data['real_start_time'],r_data['start_ttl'],r_data['start_ttl_time'] = self.ttl_clock.wait_until(r_data.start_time)
 
             ## sending a message to the edf file specifying task name
             if self.const.eye_tracker:
@@ -160,6 +161,7 @@ class Experiment:
             self.ttl_clock.wait_until(r_data.start_time + r_data.instruct_dur)
 
             # Run the task (which saves its data to the target)
+            task.start_time = self.ttl_clock.get_time()
             task.run()
 
             # Add the end time of the task
@@ -169,15 +171,22 @@ class Experiment:
         # Stop the eyetracker
         if self.const.eye_tracker:
             self.stop_eyetracker()
+            self.tk.receiveDataFile(self.tk_filename, self.tk_filename)
 
         # save the run data to the run file
         run_data = pd.DataFrame(run_data)
         run_data.insert(0,'run_num',[self.run_number]*len(run_data))
-        ut.append_data_to_file(self.run_data_file, )
+        ut.append_data_to_file(self.run_data_file, run_data )
 
         # Save the trial data for each task
         for task in self.task_obj_list:
-            task.save_task_data(self.subj_id, self.run_number)
+            task.save_data(self.subj_id, self.run_number)
+
+        end_exper_text = f"End of run\n\nTake a break!"
+        end_experiment = visual.TextStim(self.screen.window, text=end_exper_text, color=[-1, -1, -1])
+        end_experiment.draw()
+        self.screen.window.flip()
+
 
     def start_eyetracker(self):
         """
@@ -263,96 +272,3 @@ class Experiment:
             core.quit()
 
         return
-
-
-    def end_run(self):
-        """
-        finishes the run.
-        converting the log of all responses to a dataframe and saving it
-        showing a scoreboard with results from all the tasks
-        showing a final text and waiting for key to close the stimuli screen
-        """
-
-        self.set_runfile_results(self.all_run_response, save = True)
-
-        # present feedback from all tasks on screen
-        self.show_scoreboard(self.task_obj_list, self.screen)
-
-        # stop the eyetracker
-        if self.eye_flag:
-            self.stop_eyetracker()
-            # get the edf file from Eyelink PC
-            self.tk.receiveDataFile(self.tk_filename, self.tk_filename)
-
-        # end experiment
-        end_exper_text = f"End of run\n\nTake a break!"
-        end_experiment = visual.TextStim(self.screen.window, text=end_exper_text, color=[-1, -1, -1])
-        end_experiment.draw()
-        self.screen.window.flip()
-
-        # waits for a key press to end the experiment
-        # event.waitKeys()
-        # Make keyboard object
-        kb = keyboard.Keyboard()
-        # Listen for keypresses until escape is pressed
-        keys = kb.getKeys()
-        if 'space' in keys:
-            # quit screen and exit
-            self.screen.window.close()
-            core.quit()
-
-
-    def simulate_fmri(self, **kwargs):
-        """
-        mostly borrowed from fMRI_launchScan.py:
-        https://github.com/psychopy/psychopy/blob/release/psychopy/demos/coder/experiment%20control/fMRI_launchScan.py)
-        emulates sync (ttl) pulses. Emulation is to allow debugging script timing
-        offline, without requiring a scanner (or a hardware sync pulse generator).
-        """
-        # settings for launchScan:
-        MR_settings = {
-            'TR': 1.000,       # duration (sec) per whole-brain volume
-            'volumes': 330,    # number of whole-brain 3D volumes per scanning run
-            'sync': 't',       # character to use as the sync timing event; assumed to come at start of a volume
-            'skip': 5,         # number of volumes lacking a sync pulse at start of scan (for T1 stabilization)
-            }
-        MR_settings.update(**kwargs)
-
-        # settings for the experiment
-        self.set_info(debug = True, **kwargs)
-
-        # win = visual.Window(fullscr=False, screen = 0)
-        globalClock = core.Clock()
-
-        # summary of run timing, for each key press:
-        output = u'vol    onset key\n'
-        for i in range(-1 * MR_settings['skip'], 0):
-            output += u'%d prescan skip (no sync)\n' % i
-
-        vol = launchScan(self.screen.window, settings = MR_settings,
-                        globalClock=globalClock, mode = 'Test')
-
-        duration = MR_settings['volumes'] * MR_settings['TR']
-        run_loop = True
-        # note: globalClock has been reset to 0.0 by launchScan()
-        while run_loop:
-            # allKeys = event.getKeys()
-            # for key in allKeys:
-            #     if key == MR_settings['sync']:
-            #         onset = globalClock.getTime()
-                    # do your experiment code at this point if you want it sync'd to the TR
-            self.run()
-            run_loop = False
-
-            # else:
-            #     # handle keys (many fiber-optic buttons become key-board key-presses)
-            #     output += u"%3d  %7.3f %s\n" % (vol-1, globalClock.getTime(), str(key))
-            #     if key == 'escape':
-            #         output += u'user cancel, '
-            #         break
-
-            # waits for a key press to end the experiment
-            # event.waitKeys()
-            # quit screen and exit
-            # win.close()
-            # core.quit()

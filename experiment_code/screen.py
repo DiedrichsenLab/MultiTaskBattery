@@ -26,13 +26,13 @@ class Screen:
                              color = self.color,
                              allowGUI = self.allowGUI)
 
-    def fixation_cross(self):
+    def fixation_cross(self, color='white'):
         #fixation cross
         fixation = visual.ShapeStim(self.window,
             vertices=((0, -0.05), (0, 0.05), (0,0), (-0.03,0), (0.03, 0)),
             lineWidth=5,
             closeShape=False,
-            lineColor='white',
+            lineColor= color,
             units='norm'
         )
         fixation.draw()

@@ -1,0 +1,15 @@
+index	class	code					
+visual_search	VIsualSearch	viss					
+theory_of_mind	TheoryOfMind	tom					
+n_back	Back	nbko					
+social_prediction	SocialPrediction	socpred					
+semantic_prediction	SemanticPrediction	sempred					
+action_observation	ActionObservation	actobs					
+finger_sequence	FingerSequence	fingseq					
+sternberg_order	SternbergOrder	sternord					
+visuospatial_order	VisuospatialOrder	visspord					
+foot_movement	Foot_movement	foot					
+verb_generation	VerbGeneration	verbgen					
+romance_movie	RomanceMovie	rommov					
+action_observation_knots	ActionObservationKnots	actobsk					
+rest	Rest	rest					
