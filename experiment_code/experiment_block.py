@@ -10,7 +10,7 @@ from pathlib import Path
 
 from psychopy import visual, core, event, gui # data, logging
 import experiment_code.utils as ut
-from experiment_code.task_blocks import task_map
+import experiment_code.task_blocks as tasks
 from experiment_code.ttl_clock import TTLClock
 from experiment_code.screen import Screen
 # from psychopy.hardware.emulator import launchScan
@@ -57,6 +57,10 @@ class Experiment:
         """ Make sure all the necessary variables are set in the constant file - otherwise set them to default values"""
         if self.const.stim_dir is None:
             self.const.stim_dir = Path(os.path.dirname(os.path.dirname(__file__))) / 'stimuli'  # where the experiment code is stored
+
+        if self.const.task_table is None:
+            self.const.task_table = Path(os.path.dirname(__file__)) / 'task_list,tsv'  # where the experiment code is stored
+
 
     def confirm_run_info(self):
         """
@@ -107,14 +111,16 @@ class Experiment:
 
         # 1. get the run file info: creates self.run_info
         self.run_info = pd.read_csv(self.const.run_dir / self.run_filename,sep='\t')
+        task_table = pd.read_csv(self.const.task_table,sep='\t')
 
         # 2. Initialize the all tasks that we need
         self.task_obj_list = [] # a list containing task objects in the run
         for t_num, task_info in self.run_info.iterrows():
             # create a task object for the current task, reads the trial file, and append it to the list
-            TaskName = task_map[task_info.task_name]
-
-            Task_obj  = TaskName(task_info,
+            t = task_table[task_info.task_name]
+            task_info['code'] = t.code
+            TaskClass = tasks.get_attr(t.task_class)
+            Task_obj  = TaskClass(task_info,
                                  screen = self.screen,
                                  ttl_clock = self.ttl_clock,
                                  const = self.const)
