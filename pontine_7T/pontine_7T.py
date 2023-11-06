@@ -46,15 +46,12 @@ def main(subj_id):
         debug (bool, optional): Defaults to True for debugging
         eye_flag (bool, optional): Do you want to do the eyetracking?. Defaults to False.
     """
-    # 1. create a class for the experiment
     my_Exp = exp_block.Experiment(const, subj_id=subj_id)
 
-    # 2. Now loop over runs:
     while True:
         my_Exp.confirm_run_info()
         my_Exp.init_run()
         my_Exp.run()
-
     return
 
 if __name__ == "__main__":
