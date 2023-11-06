@@ -1,6 +1,6 @@
 # Task Class defintions
-# @ Ladan Shahshahani  - Maedbh King - Suzanne Witt March 2021
-# Revised 2023 Jorn Diedrichsen, Ince Hussain, Bassel Arafat
+# March 2021: First version: Ladan Shahshahani  - Maedbh King - Suzanne Witt,
+# Revised 2023: Jorn Diedrichsen, Ince Hussain, Bassel Arafat
 
 # import libraries
 from pathlib import Path
@@ -126,6 +126,12 @@ class Task:
             self.screen.fixation_cross('white')
 
     def save_data(self, subj_id, run_num):
+        """Saves the data to the trial data file
+
+        Args:
+            subj_id (str): Subject id to determine name
+            run_num (int): Number of run - inserted as first column
+        """
         self.trial_data.insert(0, 'run_num', [run_num]*len(self.trial_data))
         trial_data_file = self.const.data_dir / subj_id / f"{subj_id}_task-{self.code}.tsv"
         ut.append_data_to_file(trial_data_file, self.trial_data)
