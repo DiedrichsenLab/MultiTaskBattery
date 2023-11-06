@@ -14,6 +14,7 @@ Documentation
    :caption: Contents:
 
    installation.rst
+   overview.rst
    running_experiment.rst
    building_experiment.rst
    reference.rst

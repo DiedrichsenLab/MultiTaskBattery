@@ -2,7 +2,7 @@ Installation
 ============
 
 Cloning this Repository
-=======================
+-----------------------
 
 1. Copy the git repo URL. Click the "Clone or Download" button and copy the link (`https://github.com/diedrichsenlab/mdtb_reduced.git`).
 2. Go to your terminal and navigate (using `cd` and `ls` commands) to the directory where you want to clone the repository.
@@ -11,6 +11,8 @@ Cloning this Repository
 ```
 git clone https://github.com/diedrichsenlab/mdtb_reduced.git
 ```
+
+Or use Gitdesktop to clone the repository.
 
 ### Installing the Required Python Version
 
@@ -36,12 +38,12 @@ Install the required version of python:
     $ pyenv install 3.7.0
 
 Installing the Required Python Packages
-=======================================
+---------------------------------------
 
-It is a good idea to create a virtual environment, and install the dependencies in this environment.
-This can be done using `pipenv`, or to make it more convient virtualenvwrapper.
+It is a good idea to create a virtual environment, and install the dependencies in this environment. This can be done using `pipenv`, or to make it more convient virtualenvwrapper.
 
 required packages:
-psychopy (with depedendecies)
-psychopy-mri-emulator
+pip install psychopy 
+pip install psychopy-mri-emulator
 
+Installs the required packages in the virtual environment with requirements. 
