@@ -375,6 +375,52 @@ class NBack(Task):
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
         return trial
 
+    def make_trial_file(self, 
+                        hand = 'right',
+                        task_dur =  30, 
+                        trial_dur = 2, 
+                        iti_dur   = 0.5,
+                        stim = ['9.jpg','11.jpg','15.jpg','18.jpg','28.jpg'],
+                        file_name = 'n_back_30sec_01.tsv' ):
+        n_trials = np.int(np.floor(task_dur / (trial_dur+iti_dur)))
+        trial_info = [] 
+
+        prev_stim = ['x','x']
+        t = 0 
+        for n in range(n_trials): 
+            trial = {}
+            trial['trial_num'] = n
+            trial['hand'] = hand
+            trial['trial_dur'] = trial_dur
+            trial['iti_dur'] = iti_dur
+            trial['display_trial_feedback'] = True
+            # Determine if this should be N-2 repetition trial 
+            if n<2:
+                trial['trial_type'] = 0
+            else:
+                trial['trial_type'] = np.random.randint(0,2)
+            # Now choose the stimulus accordingly 
+            if trial['trial_type']==0:
+                trial['stim'] = stim[np.random.randint(0,len(stim))]
+            else:
+                trial['stim'] = prev_stim[1]
+
+            trial['display_trial_feedback'] = True
+            trial['feedback_type'] = 'acc'
+            trial['start_time'] = t
+            trial['end_time'] = t + trial_dur + iti_dur
+            trial_info.append(trial)
+            
+            # Update for next trial: 
+            t= trial['end_time']
+            prev_stim[1] = prev_stim[0]
+            prev_stim[0] = trial['stim']
+
+        trial_info = pd.DataFrame(trial_info)
+        trial_info.to_csv(self.const.target_dir / self.name / name,sep='\t',index=False)
+
+
+
 
 class SocialPrediction(Task):
     def instruction_text(self):
