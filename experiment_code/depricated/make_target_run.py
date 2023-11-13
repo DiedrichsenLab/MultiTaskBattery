@@ -10,9 +10,9 @@ import cv2
 import glob
 import shutil
 
-import experiment_code.constants as consts
+import experiment_code.utils as consts
 from experiment_code.targetfile_utils import Utils
-# import experiment_code.targetfile_utils  as utils 
+# import experiment_code.targetfile_utils  as utils
 
 # create instances of directories
 
@@ -33,7 +33,7 @@ class VisualSearch(Utils):
             replace (bool): sample stim with or without replacement
             display_trial_feedback (bool): display trial-by-trial feedback
     """
-    
+
     def __init__(self):
         super().__init__()
         self.task_name = 'visual_search'
@@ -42,18 +42,18 @@ class VisualSearch(Utils):
         self.block_dur_secs = 15
         self.num_blocks = 5
         self.tile_block = 1
-        self.trial_dur = 2 
+        self.trial_dur = 2
         self.iti_dur = .5
         self.instruct_dur = 5
         self.hand = 'right'
         self.replace = False
         self.display_trial_feedback = True
-    
+
     def _get_block_info(self, **kwargs):
         # length (in secs) of the block
         if kwargs.get('block_dur_secs'):
             self.block_dur_secs = kwargs['block_dur_secs']
-        
+
         # repeat the target files
         if kwargs.get('tile_block'):
             self.tile_block = kwargs['tile_block']
@@ -63,12 +63,12 @@ class VisualSearch(Utils):
             self.num_blocks = kwargs['num_blocks'] * self.tile_block
 
         # get overall number of trials
-        self.num_trials = int(self.block_dur_secs / (self.trial_dur + self.iti_dur))  
+        self.num_trials = int(self.block_dur_secs / (self.trial_dur + self.iti_dur))
 
         # get `num_stims` - lowest denominator across `balance_blocks`
         denominator = np.prod([len(stim) for stim in [*self.balance_blocks.values()]])
         self.num_stims = ceil(self.num_trials / denominator) # round up to nearest int
-    
+
     def _create_columns(self):
 
         def _get_condition(x):
@@ -107,8 +107,8 @@ class VisualSearch(Utils):
         data_dicts = []
         for trial_idx, trial_conditions in enumerate(display_pos):
             for condition, point in trial_conditions.items():
-                data_dicts.append({'trial': trial_idx, 'stim': condition, 'xpos': point[0], 'ypos': point[1], 'orientation': orientations_correct[trial_idx][condition]})  
-        
+                data_dicts.append({'trial': trial_idx, 'stim': condition, 'xpos': point[0], 'ypos': point[1], 'orientation': orientations_correct[trial_idx][condition]})
+
         # save out to dataframe
         df_display = pd.DataFrame.from_records(data_dicts)
 
@@ -121,10 +121,10 @@ class VisualSearch(Utils):
         tf_name = self._get_target_file_name(tf_name)
 
         str_part = tf_name.partition(self.task_name)
-        visual_display_name = 'display_pos' + str_part[2] 
+        visual_display_name = 'display_pos' + str_part[2]
 
         return visual_display_name
-    
+
     def _make_search_display(self, display_size, orientations, trial_type):
         # make location and orientations lists (for target and distractor items)
 
@@ -147,23 +147,23 @@ class VisualSearch(Utils):
 
         ## STIM ORIENTATIONS
         orientations_list = orientations*int(display_size/4)
-        
+
         # if trial type is false - randomly replace target stim (90)
         # with a distractor
         if not trial_type:
             orientations_list = [random.sample(orientations[1:],1)[0] if x==90 else x for x in orientations_list]
-        
-        # if trial is true and larger than 4, leave one target stim (90) in list 
+
+        # if trial is true and larger than 4, leave one target stim (90) in list
         # and randomly replace the others with distractor stims
         if display_size >4 and trial_type:
             indices = [i for i, x in enumerate(orientations_list) if x == 90]
             indices.pop(0)
             new_num = random.sample(orientations[1:],2) # always assumes that orientations_list is as follows: [90,180,270,360]
-            for i, n in zip(*(indices, new_num)): 
+            for i, n in zip(*(indices, new_num)):
                 orientations_list[i] = n
 
         return dict(enumerate(locations)), dict(enumerate(orientations_list))
-        
+
     def make_targetfile(self, **kwargs):
         """
         makes target file(s) for visual search given parameters in __init__
@@ -209,7 +209,7 @@ class NBack(Utils):
             replace (bool): sample stim with or without replacement
             display_trial_feedback (bool): display trial-by-trial feedback
     """
-    
+
     def __init__(self):
         super().__init__()
         self.task_name = 'n_back'
@@ -218,18 +218,18 @@ class NBack(Utils):
         self.block_dur_secs = 15
         self.num_blocks = 5
         self.tile_block = 1
-        self.trial_dur = 1.5 
+        self.trial_dur = 1.5
         self.iti_dur = .5
         self.instruct_dur = 5
         self.hand = 'left'
         self.replace = False
         self.display_trial_feedback = True
-    
+
     def _get_block_info(self, **kwargs):
         # length (in secs) of the block
         if kwargs.get('block_dur_secs'):
             self.block_dur_secs = kwargs['block_dur_secs']
-        
+
         # repeat the target files
         if kwargs.get('tile_block'):
             self.tile_block = kwargs['tile_block']
@@ -239,12 +239,12 @@ class NBack(Utils):
             self.num_blocks = kwargs['num_blocks'] * self.tile_block
 
         # get overall number of trials
-        self.num_trials = int(self.block_dur_secs / (self.trial_dur + self.iti_dur))  
+        self.num_trials = int(self.block_dur_secs / (self.trial_dur + self.iti_dur))
 
         # get `num_stims` - lowest denominator across `balance_blocks`
         denominator = np.prod([len(stim) for stim in [*self.balance_blocks.values()]])
         self.num_stims = ceil(self.num_trials / denominator) # round up to nearest int
-       
+
     def _create_columns(self):
 
         def _get_condition(x):
@@ -257,7 +257,7 @@ class NBack(Utils):
         # make trial_type column
         dataframe = pd.DataFrame()
         dataframe['trial_type'] = self.num_stims*(True, False)
-        dataframe = dataframe.sample(n=self.num_trials, random_state=self.random_state, replace=False).reset_index(drop=True) 
+        dataframe = dataframe.sample(n=self.num_trials, random_state=self.random_state, replace=False).reset_index(drop=True)
         dataframe['trial_type'][:self.n_back] = False # first n+cond_type trials (depending on cond_type) have to be False
 
         # make `n_back` and `condition_name` cols
@@ -268,7 +268,7 @@ class NBack(Utils):
         dataframe['display_trial_feedback'] = self.display_trial_feedback
 
         return dataframe
-    
+
     def _balance_design(self, dataframe):
         # load in stimuli
         stim_files = [f for f in os.listdir(str(consts.stim_dir / self.task_name)) if f.endswith('g')]
@@ -334,25 +334,25 @@ class SocialPrediction(Utils):
             replace (bool): sample stim with or without replacement
             display_trial_feedback (bool): display trial-by-trial feedback
     """
-    
+
     def __init__(self):
         super().__init__()
         self.task_name = 'social_prediction'
         self.dataset_name = 'homevideos'
-        self.logging_file = 'homevideos_annotations_logging.csv'
+        self.logging_file = 'homevideos_annotations_logging.tsv'
         self.video_name = ['dynamic_0ms', 'dynamic_100ms']
         self.resized = True
-        self.balance_blocks = {'actors': ['SB', 'MK'], 
+        self.balance_blocks = {'actors': ['SB', 'MK'],
                 'condition_name': {'dynamic_0ms': 'easy', 'dynamic_100ms': 'hard'},
                 'label': ['hug', 'handShake']}
         self.block_dur_secs = 15
         self.num_blocks = 5
         self.tile_block = 1
-        self.trial_dur = 2.5 
+        self.trial_dur = 2.5
         self.iti_dur = .5
         self.instruct_dur = 5
         self.hand = 'right'
-        self.replace = False 
+        self.replace = False
         self.display_trial_feedback = True
 
     def _filter_dataframe(self, dataframe):
@@ -390,7 +390,7 @@ class SocialPrediction(Utils):
         dataframe['display_trial_feedback'] = self.display_trial_feedback
 
         return dataframe
-    
+
     def _balance_design(self, dataframe):
         # group the dataframe according to `balance_blocks`
         dataframe = dataframe.groupby([*self.balance_blocks], as_index=False).apply(lambda x: x.sample(n=self.num_stims, random_state=self.random_state, replace=self.replace)).reset_index(drop=True)
@@ -399,12 +399,12 @@ class SocialPrediction(Utils):
         dataframe = dataframe.sample(n=self.num_trials, random_state=self.random_state, replace=False).reset_index(drop=True)
 
         return dataframe
-     
+
     def _get_block_info(self, **kwargs):
         # length (in secs) of the block
         if kwargs.get('block_dur_secs'):
             self.block_dur_secs = kwargs['block_dur_secs']
-        
+
         # repeat the target files
         if kwargs.get('tile_block'):
             self.tile_block = kwargs['tile_block']
@@ -414,12 +414,12 @@ class SocialPrediction(Utils):
             self.num_blocks = kwargs['num_blocks'] * self.tile_block
 
         # get overall number of trials
-        self.num_trials = int(self.block_dur_secs / (self.trial_dur + self.iti_dur))  
+        self.num_trials = int(self.block_dur_secs / (self.trial_dur + self.iti_dur))
 
         # get `num_stims` - lowest denominator across `balance_blocks`
         denominator = np.prod([len(stim) for stim in [*self.balance_blocks.values()]])
         self.num_stims = ceil(self.num_trials / denominator) # round up to nearest int
-    
+
     def make_targetfile(self, **kwargs):
         """
         makes target file(s) for social prediction given parameters in __init__
@@ -430,7 +430,7 @@ class SocialPrediction(Utils):
 
         # return logging file
         fpath = os.path.join(consts.stim_dir, self.task_name, self.logging_file)
-        
+
         # read in stimulus dataframe
         df = pd.read_csv(fpath)
 
@@ -454,7 +454,7 @@ class SocialPrediction(Utils):
             if self.replace==False:
                 df_filtered = df_filtered.merge(df_target, how='left', indicator=True)
                 df_filtered = df_filtered[df_filtered['_merge'] == 'left_only'].drop('_merge', axis=1)
-            
+
             self.target_dir = os.path.join(consts.target_dir, self.task_name)
             self._save_target_files(df_target)
 
@@ -478,11 +478,11 @@ class SemanticPrediction(Utils):
             replace (bool): sample stim with or without replacement
             display_trial_feedback (bool): display trial-by-trial feedback
     """
-    
+
     def __init__(self):
         super().__init__()
         self.task_name = 'semantic_prediction'
-        self.logging_file = 'sentence_validation.csv'
+        self.logging_file = 'sentence_validation.tsv'
         self.stem_word_dur = 0.5
         self.last_word_dur = 1.5
         self.frac = .3
@@ -499,13 +499,13 @@ class SemanticPrediction(Utils):
         self.display_trial_feedback = True
 
     def _filter_dataframe(self, dataframe):
-        # conds = [self.balance_blocks['condition_name'][key] for key in self.balance_blocks['condition_name'].keys()]  
-        conds = list(self.balance_blocks['condition_name'].keys()) 
+        # conds = [self.balance_blocks['condition_name'][key] for key in self.balance_blocks['condition_name'].keys()]
+        conds = list(self.balance_blocks['condition_name'].keys())
         dataframe = dataframe.query(f'CoRT_descript=={self.balance_blocks["CoRT_descript"]} and cloze_descript=={conds}')
 
         # strip erroneous characters from sentences
         dataframe['stim'] = dataframe['full_sentence'].str.replace('|', ' ')
-        
+
         return dataframe
 
     def _create_new_columns(self, dataframe):
@@ -521,9 +521,9 @@ class SemanticPrediction(Utils):
 
     def _add_random_word(self, dataframe, columns):
         """ sample `frac_random` and add to `full_sentence`
-            Args: 
+            Args:
                 dataframe (pandas dataframe): dataframe
-            Returns: 
+            Returns:
                 dataframe with modified `full_sentence` col
         """
         idx = dataframe.groupby(columns).apply(lambda x: x.sample(frac=self.frac, replace=False, random_state=self.random_state)).index
@@ -542,12 +542,12 @@ class SemanticPrediction(Utils):
         dataframe = dataframe.sample(n=self.num_trials, random_state=self.random_state, replace=False).reset_index(drop=True)
 
         return dataframe
-    
+
     def _get_block_info(self, **kwargs):
         # length (in secs) of the block
         if kwargs.get('block_dur_secs'):
             self.block_dur_secs = kwargs['block_dur_secs']
-        
+
         # repeat the target files
         if kwargs.get('tile_block'):
             self.tile_block = kwargs['tile_block']
@@ -557,12 +557,12 @@ class SemanticPrediction(Utils):
             self.num_blocks = kwargs['num_blocks'] * self.tile_block
 
         # get overall number of trials
-        self.num_trials = int(self.block_dur_secs / (self.trial_dur + self.iti_dur))  
+        self.num_trials = int(self.block_dur_secs / (self.trial_dur + self.iti_dur))
 
         # get `num_stims` - lowest denominator across `balance_blocks`
         denominator = np.prod([len(stim) for stim in [*self.balance_blocks.values()]])
         self.num_stims = ceil(self.num_trials / denominator) # round up to nearest int
-    
+
     def make_targetfile(self, **kwargs):
         """
         makes target file(s) for semantic prediction given parameters in __init__
@@ -572,7 +572,7 @@ class SemanticPrediction(Utils):
 
         # return logging file
         fpath = os.path.join(consts.stim_dir, self.task_name, self.logging_file)
-        
+
         # read in stimulus dataframe
         df = pd.read_csv(fpath)
 
@@ -599,7 +599,7 @@ class SemanticPrediction(Utils):
 
             # add random word based on `self.frac`
             df_target = self._add_random_word(dataframe=df_target, columns=['condition_name']) # 'CoRT_descript'
-            
+
             # save out target files
             self.target_dir = os.path.join(consts.target_dir, self.task_name)
             self._save_target_files(df_target)
@@ -624,11 +624,11 @@ class ActionObservation(Utils):
             replace (bool): sample stim with or without replacement
             display_trial_feedback (bool): display trial-by-trial feedback
     """
-    
+
     def __init__(self):
         super().__init__()
         self.task_name = "action_observation"
-        self.logging_file = 'all_clips_annotation_logging.csv'
+        self.logging_file = 'all_clips_annotation_logging.tsv'
         self.video_name = ['dynamic_120ms']
         self.manipulation = 'left_right'
         self.resized = True
@@ -636,7 +636,7 @@ class ActionObservation(Utils):
         self.block_dur_secs = 15
         self.num_blocks = 5
         self.tile_block = 1
-        self.trial_dur = 2 
+        self.trial_dur = 2
         self.iti_dur = .5
         self.instruct_dur = 5
         self.hand = 'left'
@@ -675,7 +675,7 @@ class ActionObservation(Utils):
         df_filtered.loc[df_filtered['hit_target'].isnull(), 'hit_target'] = df_filtered['instructed_target']
 
         return df_filtered
-    
+
     def _create_new_columns(self, dataframe):
 
         def _get_condition(x):
@@ -697,7 +697,7 @@ class ActionObservation(Utils):
                 print(f'{x} not in list')
 
             return condition
-        
+
         def _get_trial_type(x):
             if self.manipulation=="miss_goal":
                 list1= [5,6,7,8,9,10,11,12]
@@ -740,8 +740,8 @@ class ActionObservation(Utils):
 
         dataframe['display_trial_feedback'] = self.display_trial_feedback
 
-        return dataframe  
-    
+        return dataframe
+
     def _balance_design(self, dataframe):
         # group the dataframe according to `balance_blocks`
         dataframe = dataframe.groupby([*self.balance_blocks], as_index=False).apply(lambda x: x.sample(n=self.num_stims, random_state=self.random_state, replace=self.replace)).reset_index(drop=True)
@@ -750,12 +750,12 @@ class ActionObservation(Utils):
         dataframe = dataframe.sample(n=self.num_trials, random_state=self.random_state, replace=False).reset_index(drop=True)
 
         return dataframe
-    
+
     def _get_block_info(self, **kwargs):
         # length (in secs) of the block
         if kwargs.get('block_dur_secs'):
             self.block_dur_secs = kwargs['block_dur_secs']
-        
+
         # repeat the target files
         if kwargs.get('tile_block'):
             self.tile_block = kwargs['tile_block']
@@ -765,7 +765,7 @@ class ActionObservation(Utils):
             self.num_blocks = kwargs['num_blocks'] * self.tile_block
 
         # get overall number of trials
-        self.num_trials = int(self.block_dur_secs / (self.trial_dur + self.iti_dur))  
+        self.num_trials = int(self.block_dur_secs / (self.trial_dur + self.iti_dur))
 
         # get `num_stims` - lowest denominator across `balance_blocks`
         denominator = np.prod([len(stim) for stim in [*self.balance_blocks.values()]])
@@ -780,7 +780,7 @@ class ActionObservation(Utils):
 
         # return logging file
         fpath = os.path.join(consts.stim_dir, self.task_name, self.logging_file)
-        
+
         # read in stimulus dataframe
         df = pd.read_csv(fpath)
 
@@ -804,7 +804,7 @@ class ActionObservation(Utils):
             if self.replace==False:
                 df_filtered = df_filtered.merge(df_target, how='left', indicator=True)
                 df_filtered = df_filtered[df_filtered['_merge'] == 'left_only'].drop('_merge', axis=1)
-            
+
             self.target_dir = os.path.join(consts.target_dir, self.task_name)
             self._save_target_files(df_target)
 
@@ -828,11 +828,11 @@ class TheoryOfMind(Utils):
             replace (bool): sample stim with or without replacement
             display_trial_feedback (bool): display trial-by-trial feedback
     """
-    
+
     def __init__(self):
         super().__init__()
         self.task_name = 'theory_of_mind'
-        self.logging_file = 'theory_of_mind.csv'
+        self.logging_file = 'theory_of_mind.tsv'
         self.story_dur = 10
         self.question_dur = 4
         self.frac = .3
@@ -849,7 +849,7 @@ class TheoryOfMind(Utils):
 
     def _filter_dataframe(self, dataframe):
         dataframe = dataframe.query(f'condition=={self.balance_blocks["condition_name"]} and response=={self.balance_blocks["trial_type"]}')
-        
+
         return dataframe
 
     def _create_new_columns(self, dataframe):
@@ -860,7 +860,7 @@ class TheoryOfMind(Utils):
         dataframe['question_dur'] = self.question_dur
         dataframe['trial_dur_correct'] = dataframe['story_dur'] + self.iti_dur + dataframe['question_dur']
         dataframe['display_trial_feedback'] = self.display_trial_feedback
-        
+
         responses = self.balance_blocks['trial_type']
         dataframe['trial_type'] = dataframe['response'].apply(lambda x: True if x==responses[0] else False)
 
@@ -874,12 +874,12 @@ class TheoryOfMind(Utils):
         dataframe = dataframe.sample(n=self.num_trials, random_state=self.random_state, replace=False).reset_index(drop=True)
 
         return dataframe
-    
+
     def _get_block_info(self, **kwargs):
         # length (in secs) of the block
         if kwargs.get('block_dur_secs'):
             self.block_dur_secs = kwargs['block_dur_secs']
-        
+
         # repeat the target files
         if kwargs.get('tile_block'):
             self.tile_block = kwargs['tile_block']
@@ -889,12 +889,12 @@ class TheoryOfMind(Utils):
             self.num_blocks = kwargs['num_blocks'] * self.tile_block
 
         # get overall number of trials
-        self.num_trials = int(self.block_dur_secs / (self.trial_dur + self.iti_dur))  
+        self.num_trials = int(self.block_dur_secs / (self.trial_dur + self.iti_dur))
 
         # get `num_stims` - lowest denominator across `balance_blocks`
         denominator = np.prod([len(stim) for stim in [*self.balance_blocks.values()]])
         self.num_stims = ceil(self.num_trials / denominator) # round up to nearest int
-    
+
     def make_targetfile(self, **kwargs):
         """
         makes target file(s) for theory of mind given parameters in __init__
@@ -904,7 +904,7 @@ class TheoryOfMind(Utils):
 
         # return logging file
         fpath = os.path.join(consts.stim_dir, self.task_name, self.logging_file)
-        
+
         # read in stimulus dataframe
         df = pd.read_csv(fpath)
 
@@ -928,7 +928,7 @@ class TheoryOfMind(Utils):
             if self.replace==False:
                 df_filtered = df_filtered.merge(df_target, how='left', indicator=True)
                 df_filtered = df_filtered[df_filtered['_merge'] == 'left_only'].drop('_merge', axis=1)
-            
+
             # save out target files
             self.target_dir = os.path.join(consts.target_dir, self.task_name)
             self._save_target_files(df_target)
@@ -953,11 +953,11 @@ class VerbGeneration(Utils):
             replace (bool): sample stim with or without replacement
             display_trial_feedback (bool): display trial-by-trial feedback
     """
-    
+
     def __init__(self):
         super().__init__()
         self.task_name = 'verb_generation'
-        self.logging_file = 'verb_generation.csv'
+        self.logging_file = 'verb_generation.tsv'
         self.frac = .3
         self.balance_blocks = {'session_list': ['1','2']}
         self.block_dur_secs = 15
@@ -972,7 +972,7 @@ class VerbGeneration(Utils):
 
     def _filter_dataframe(self, dataframe):
         dataframe = dataframe.query(f'session_list=={self.balance_blocks["session_list"]}')
-        
+
         return dataframe
 
     def _create_new_columns(self, dataframe):
@@ -991,12 +991,12 @@ class VerbGeneration(Utils):
         dataframe = dataframe.sample(n=self.num_trials, random_state=self.random_state, replace=False).reset_index(drop=True)
 
         return dataframe
-    
+
     def _get_block_info(self, **kwargs):
         # length (in secs) of the block
         if kwargs.get('block_dur_secs'):
             self.block_dur_secs = kwargs['block_dur_secs']
-        
+
         # repeat the target files
         if kwargs.get('tile_block'):
             self.tile_block = kwargs['tile_block']
@@ -1006,12 +1006,12 @@ class VerbGeneration(Utils):
             self.num_blocks = kwargs['num_blocks'] * self.tile_block
 
         # get overall number of trials
-        self.num_trials = int(self.block_dur_secs / (self.trial_dur + self.iti_dur))  
+        self.num_trials = int(self.block_dur_secs / (self.trial_dur + self.iti_dur))
 
         # get `num_stims` - lowest denominator across `balance_blocks`
         denominator = np.prod([len(stim) for stim in [*self.balance_blocks.values()]])
         self.num_stims = ceil(self.num_trials / denominator) # round up to nearest int
-    
+
     def make_targetfile(self, **kwargs):
         """
         makes target file(s) for theory of mind given parameters in __init__
@@ -1021,7 +1021,7 @@ class VerbGeneration(Utils):
 
         # return logging file
         fpath = os.path.join(consts.stim_dir, self.task_name, self.logging_file)
-        
+
         # read in stimulus dataframe
         df = pd.read_csv(fpath)
 
@@ -1045,7 +1045,7 @@ class VerbGeneration(Utils):
             if self.replace==False:
                 df_filtered = df_filtered.merge(df_target, how ='left', indicator=True)
                 df_filtered = df_filtered[df_filtered['_merge'] == 'left_only'].drop('_merge', axis=1)
-            
+
             # save out target files
             self.target_dir = os.path.join(consts.target_dir, self.task_name)
             self._save_target_files(df_target)
@@ -1068,21 +1068,21 @@ class RomanceMovie(Utils):
             replace (bool): sample stim with or without replacement
             display_trial_feedback (bool): display trial-by-trial feedback
     """
-    
+
     def __init__(self):
         super().__init__()
         self.task_name = 'romance_movie'
-        self.logging_file = 'romance_movie_logging.csv'
+        self.logging_file = 'romance_movie_logging.tsv'
         self.video_name = ['romance']
         self.balance_blocks = {'condition_name': ['romance']}
         self.block_dur_secs = 30
         self.num_blocks = 5
         self.tile_block = 1
-        self.trial_dur = 20 
+        self.trial_dur = 20
         self.iti_dur = .5
         self.instruct_dur = 5
         self.hand = 'None'
-        self.replace = False 
+        self.replace = False
         self.display_trial_feedback = False
 
     def _filter_dataframe(self, dataframe):
@@ -1102,18 +1102,18 @@ class RomanceMovie(Utils):
         dataframe['display_trial_feedback'] = self.display_trial_feedback
 
         return dataframe
-    
+
     def _balance_design(self, dataframe):
         # ensure that only `num_trials` are sampled
         dataframe = dataframe.sample(n=self.num_trials, random_state=self.random_state, replace=False).reset_index(drop=True)
 
         return dataframe
-     
+
     def _get_block_info(self, **kwargs):
         # length (in secs) of the block
         if kwargs.get('block_dur_secs'):
             self.block_dur_secs = kwargs['block_dur_secs']
-        
+
         # repeat the target files
         if kwargs.get('tile_block'):
             self.tile_block = kwargs['tile_block']
@@ -1123,12 +1123,12 @@ class RomanceMovie(Utils):
             self.num_blocks = kwargs['num_blocks'] * self.tile_block
 
         # get overall number of trials
-        self.num_trials = int(self.block_dur_secs / (self.trial_dur + self.iti_dur))  
+        self.num_trials = int(self.block_dur_secs / (self.trial_dur + self.iti_dur))
 
         # get `num_stims` - lowest denominator across `balance_blocks`
         denominator = np.prod([len(stim) for stim in [*self.balance_blocks.values()]])
         self.num_stims = ceil(self.num_trials / denominator) # round up to nearest int
-    
+
     def make_targetfile(self, **kwargs):
         """
         makes target file(s) for social prediction given parameters in __init__
@@ -1139,7 +1139,7 @@ class RomanceMovie(Utils):
 
         # return logging file
         fpath = os.path.join(consts.stim_dir, self.task_name, self.logging_file)
-        
+
         # read in stimulus dataframe
         df = pd.read_csv(fpath)
 
@@ -1163,7 +1163,7 @@ class RomanceMovie(Utils):
             if self.replace==False:
                 df_filtered = df_filtered.merge(df_target, how='left', indicator=True)
                 df_filtered = df_filtered[df_filtered['_merge'] == 'left_only'].drop('_merge', axis=1)
-            
+
             self.target_dir = os.path.join(consts.target_dir, self.task_name)
             self._save_target_files(df_target)
 
@@ -1185,22 +1185,22 @@ class ActionObservationKnots(Utils):
             replace (bool): sample stim with or without replacement
             display_trial_feedback (bool): display trial-by-trial feedback
     """
-    
+
     def __init__(self):
         super().__init__()
         self.task_name = 'act_obs_knots'
-        self.logging_file = 'action_observation_knots_logging.csv'
-        self.video_name_action = ['knotAction'] 
+        self.logging_file = 'action_observation_knots_logging.tsv'
+        self.video_name_action = ['knotAction']
         self.video_name_control = ['knotControl']
         self.balance_blocks = {'condition_name': ['knot'], 'session_list': [1,2]}
         self.block_dur_secs = 30
         self.num_blocks = 5
         self.tile_block = 1
-        self.trial_dur = 15 
+        self.trial_dur = 15
         self.iti_dur = .5
         self.instruct_dur = 5
         self.hand = 'None'
-        self.replace = False 
+        self.replace = False
         self.display_trial_feedback = False
 
     def _filter_dataframe(self, dataframe):
@@ -1223,7 +1223,7 @@ class ActionObservationKnots(Utils):
         dataframe['display_trial_feedback'] = self.display_trial_feedback
 
         return dataframe
-    
+
     def _balance_design(self, dataframe):
         # group the dataframe according to `balance_blocks`
         dataframe = dataframe.groupby([*self.balance_blocks], as_index=False).apply(lambda x: x.sample(n=self.num_stims, random_state=self.random_state, replace=self.replace)).reset_index(drop=True)
@@ -1232,12 +1232,12 @@ class ActionObservationKnots(Utils):
         dataframe = dataframe.sample(n=self.num_trials, random_state=self.random_state, replace=False).reset_index(drop=True)
 
         return dataframe
-     
+
     def _get_block_info(self, **kwargs):
         # length (in secs) of the block
         if kwargs.get('block_dur_secs'):
             self.block_dur_secs = kwargs['block_dur_secs']
-        
+
         # repeat the target files
         if kwargs.get('tile_block'):
             self.tile_block = kwargs['tile_block']
@@ -1247,12 +1247,12 @@ class ActionObservationKnots(Utils):
             self.num_blocks = kwargs['num_blocks'] * self.tile_block
 
         # get overall number of trials
-        self.num_trials = int(self.block_dur_secs / (self.trial_dur + self.iti_dur))  
+        self.num_trials = int(self.block_dur_secs / (self.trial_dur + self.iti_dur))
 
         # get `num_stims` - lowest denominator across `balance_blocks`
         denominator = np.prod([len(stim) for stim in [*self.balance_blocks.values()]])
         self.num_stims = ceil(self.num_trials / denominator) # round up to nearest int
-    
+
     def make_targetfile(self, **kwargs):
         """
         makes target file(s) for social prediction given parameters in __init__
@@ -1263,7 +1263,7 @@ class ActionObservationKnots(Utils):
 
         # return logging file
         fpath = os.path.join(consts.stim_dir, self.task_name, self.logging_file)
-        
+
         # read in stimulus dataframe
         df = pd.read_csv(fpath)
 
@@ -1287,7 +1287,7 @@ class ActionObservationKnots(Utils):
             if self.replace==False:
                 df_filtered = df_filtered.merge(df_target, how='left', indicator=True)
                 df_filtered = df_filtered[df_filtered['_merge'] == 'left_only'].drop('_merge', axis=1)
-            
+
             self.target_dir = os.path.join(consts.target_dir, self.task_name)
             self._save_target_files(df_target)
 
@@ -1329,17 +1329,17 @@ class Rest(Utils):
         dataframe['display_trial_feedback'] = self.display_trial_feedback
 
         return dataframe
-    
+
     def make_targetfile(self, **kwargs):
         """
         makes target file(s) for rest given parameters in __init__
         """
         # get info about block
         self._get_block_info(**kwargs)
-        
+
 
         # save target file
-        self.target_name = self.task_name + '_' + str(self.rest_dur_secs) + 'sec.csv'
+        self.target_name = self.task_name + '_' + str(self.rest_dur_secs) + 'sec.tsv'
 
         # create dataframe
         dataframe = self._create_new_columns()
@@ -1375,19 +1375,19 @@ class MakeFiles:
         self.rest_dur_secs = 10
         self.num_runs = 5
         self.counterbalance_runs = True
-    
+
     def _create_run_dataframe(self, target_files):
         for iter, target_file in enumerate(target_files):
-            
+
             # load target file
             dataframe = pd.read_csv(target_file)
 
-            start_time = dataframe.iloc[0]['start_time'] + self.cum_time 
+            start_time = dataframe.iloc[0]['start_time'] + self.cum_time
             end_time = dataframe.iloc[-1]['start_time'] + dataframe.iloc[-1]['trial_dur'] + self.instruct_dur + self.cum_time
 
             target_file_name = Path(target_file).name
             num_sec = re.findall(r'\d+(?=sec)', target_file)[0]
-            target_num = re.findall(r'\d+(?=.csv)', target_file)[0]
+            target_num = re.findall(r'\d+(?=.tsv)', target_file)[0]
             num_trials = len(dataframe)
 
             data = {'task_name': self.task_name, 'task_num': self.task_num+1, # 'block_iter': iter+1
@@ -1397,14 +1397,14 @@ class MakeFiles:
 
             self.all_data.append(data)
             self.cum_time = end_time
-    
+
     def _save_run_file(self, run_name):
         # make dataframe from a dictionary
         df_run = pd.DataFrame.from_dict(self.all_data)
 
         # save out to file
         df_run.to_csv(os.path.join(consts.run_dir, run_name), index=False, header=True)
-    
+
     def _add_rest(self):
         run_files = sorted(glob.glob(os.path.join(consts.run_dir, f'*{self.run_name_prefix}*')))
 
@@ -1419,14 +1419,14 @@ class MakeFiles:
             dataframe = self._add_rest_rows(dataframe)
 
             dataframe.to_csv(run_file, index = False, header = True)
-    
+
     def _counterbalance_runs(self):
         pass
-    
+
     def _check_task_run(self):
         # check if task exists in dict
         exists_in_dict = [True for key in self.target_dict.keys() if self.task_name==key]
-        if not exists_in_dict: 
+        if not exists_in_dict:
             self.target_dict.update({self.task_name: self.fpaths})
 
         # create run dataframe
@@ -1434,37 +1434,37 @@ class MakeFiles:
         target_files_sample = [self.target_dict[self.task_name].pop(random.randrange(len(self.target_dict[self.task_name]))) for _ in np.arange(self.tile_run)]
 
         return target_files_sample
-   
-    def _insert_row(self, row_number, dataframe, row_value): 
-        # Slice the upper half of the dataframe 
-        df1 = dataframe[0:row_number] 
-    
-        # Store the result of lower half of the dataframe 
-        df2 = dataframe[row_number:] 
-    
-        # Insert the row in the upper half dataframe 
-        df1.loc[row_number]=row_value 
-    
-        # Concat the two dataframes 
-        df_result = pd.concat([df1, df2]) 
-    
-        # Reassign the index labels 
-        df_result.index = [*range(df_result.shape[0])] 
-    
-        # Return the updated dataframe 
-        return df_result 
-    
+
+    def _insert_row(self, row_number, dataframe, row_value):
+        # Slice the upper half of the dataframe
+        df1 = dataframe[0:row_number]
+
+        # Store the result of lower half of the dataframe
+        df2 = dataframe[row_number:]
+
+        # Insert the row in the upper half dataframe
+        df1.loc[row_number]=row_value
+
+        # Concat the two dataframes
+        df_result = pd.concat([df1, df2])
+
+        # Reassign the index labels
+        df_result.index = [*range(df_result.shape[0])]
+
+        # Return the updated dataframe
+        return df_result
+
     def _correct_start_end_times(self, dataframe):
 
         timestamps = (np.cumsum(dataframe['num_sec'] + dataframe['instruct_dur'])).to_list()
 
         dataframe['end_time'] = timestamps
 
-        timestamps.insert(0, 0) 
+        timestamps.insert(0, 0)
         dataframe['start_time'] = timestamps[:-1]
 
-        return dataframe 
-    
+        return dataframe
+
     def _add_rest_rows(self, dataframe):
 
         self.num_rest = (len(self.task_names) * self.tile_run) - 1
@@ -1478,20 +1478,20 @@ class MakeFiles:
                     'target_file': self.target_name, 'start_time': None, 'end_time': None,
                     'instruct_dur': 0, 'feedback_type': None}
 
-        # Let's create a row which we want to insert 
+        # Let's create a row which we want to insert
         for row_number in rest:
             # row_value = np.tile('rest', len(dataframe.columns))
             row_value = list(row_dict.values())
-            if row_number > dataframe.index.max()+1: 
-                print("Invalid row_number") 
-            else: 
+            if row_number > dataframe.index.max()+1:
+                print("Invalid row_number")
+            else:
                 dataframe = self._insert_row(row_number, dataframe, row_value)
 
         # update start and end times
         dataframe = self._correct_start_end_times(dataframe)
 
         return dataframe
-    
+
     def make_targetfiles(self):
         for self.task_name in self.task_names:
 
@@ -1503,10 +1503,10 @@ class MakeFiles:
             # make target files
             BlockClass = TASK_MAP[self.task_name]
             block = BlockClass()
-            block.make_targetfile(block_dur_secs = self.block_dur_secs, 
+            block.make_targetfile(block_dur_secs = self.block_dur_secs,
                                 num_blocks = self.num_runs,
                                 tile_block = self.tile_run)
-    
+
     def make_runfiles(self):
         # delete any run files that exist in the folder
         files = glob.glob(os.path.join(consts.run_dir, '*'))
@@ -1535,7 +1535,7 @@ class MakeFiles:
                 self._create_run_dataframe(target_files = target_files_sample)
 
             # save run file
-            run_name = self.run_name_prefix + '_' +  f'{run+1:02d}' + '.csv'
+            run_name = self.run_name_prefix + '_' +  f'{run+1:02d}' + '.tsv'
             self._save_run_file(run_name = run_name)
             print(f'saving out {run_name}')
 
@@ -1546,7 +1546,7 @@ class MakeFiles:
         # OPTION TO ADD REST TO RUNS
         if self.rest_dur_secs > 0:
             self._add_rest()
-    
+
     def make_all(self):
         # create target files
         self.make_targetfiles()

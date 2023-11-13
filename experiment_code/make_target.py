@@ -8,99 +8,165 @@ import os
 import random
 import glob
 import re
-
-import experiment_code.constants as consts
-# import constants as consts
-# import constants as consts # for debugging comment the previous line and uncomment this line
+import experiment_code.utils as ut
 
 
 
-# define classes for target file and run files
+def shuffle_rows(dataframe):
+    """
+    randomly shuffles rows of the dataframe
+
+    Args:
+        dataframe (dataframe): dataframe to be shuffled
+    Returns:
+        dataframe (dataframe): shuffled dataframe
+    """
+    indx = np.arange(len(dataframe.index))
+    np.random.shuffle(indx)
+    dataframe = (dataframe.iloc[indx]).reset_index(drop = True)
+    return dataframe
+
+def add_start_end_times(dataframe, offset, task_dur):
+    """
+    adds start and end times to the dataframe
+
+    Args:
+        dataframe (dataframe): dataframe to be shuffled
+        offset (float): offset of the task
+        task_dur (float): duration of the task
+    Returns:
+        dataframe (dataframe): dataframe with start and end times
+    """
+    dataframe['start_time'] = np.arange(offset, offset + len(dataframe)*task_dur, task_dur)
+    dataframe['end_time']   = dataframe['start_time'] + task_dur
+    return dataframe
+
+def make_run_file(task_list,
+                  tfiles,
+                  offset = 0,
+                  instruction_dur = 5,
+                  task_dur = 30):
+    """
+    Make a single run file
+    """
+    # Get rows of the task_table corresponding to the task_list
+    indx = [np.where(ut.task_table['name']==t)[0][0] for t in task_list]
+    R = {'task_name':task_list,
+         'task_code':ut.task_table['code'].iloc[indx],
+         'target_file':tfiles,
+         'instruction_dur':[instruction_dur]*len(task_list)}
+    R = pd.DataFrame(R)
+    R = shuffle_rows(R)
+    R = add_start_end_times(R, offset, task_dur+instruction_dur)
+    return R
+
+def get_task_class(name):
+    """Creates an object of the task class based on the task name
+    Args:
+        name (str): name of the task
+    Returns:
+        class_name (str): class name for task
+    """
+    index = np.where(ut.task_table['name']==name)[0][0]
+    class_name = ut.task_table.iloc[index]['class']
+    return class_name
+
 class Target():
-
-    def __init__(self, study_name, task_name, hand, trial_dur, iti_dur,
-                 run_number, display_trial_feedback = True, task_dur = 30, 
-                 tr = 1, random_seed = True):
-
+    def __init__(self, const) :
+        """ The Target class is class for creating target files for different tasks
+        Args:
+            const: module for constants
         """
-        variables and information shared across all tasks
-        """
-        self.study_name             = study_name             # name of the study: 'fmri' or 'behavioral'
-        self.task_name              = task_name              # name of the task
-        self.task_dur               = task_dur               # duration of the task (default: 30 sec)
-        self.hand                   = hand                   # string representing the hand: "right", "left", or "none"
-        self.trial_dur              = trial_dur              # duration of trial
-        self.iti_dur                = iti_dur                # duration of the inter trial interval
-        self.display_trial_feedback = display_trial_feedback # display feedback after trial (default: True)
-        self.tr                     = tr                     # the TR of the scanner
-        self.run_number             = run_number             # the number of run
-        self.replace                = False
-        self.random_seed            = random_seed            # if set to true, random.seed will set a seed for random operations (for replicability)
-        self.target_dataframe       = pd.DataFrame()         # an empty dataframe
+        self.exp_name   = const.exp_name
+        self.target_dir = const.target_dir
 
-        # file naming stuff
-        self.target_filename = f"{self.task_name}_{self.task_dur}sec_{self.run_number+1:02d}"
-        self.target_dir      = consts.target_dir / self.study_name / self.task_name
 
-        self.target_filedir = self.target_dir / f"{self.target_filename}.csv"
+class NBack(Target):
+    def __init__(self, const):
+        super().__init__(const)
+        self.name = 'n_back'
 
-        # set the random seed to be able to reproduce?
-        if self.random_seed:
-            # run number is used as the seed
-            random.seed(a = self.run_number, version=2)
-         
-    def make_trials(self):
-        """
-        making trials (rows) with columns (variables) shared across tasks
-        """
-        self.num_trials = int(self.task_dur/(self.trial_dur + self.iti_dur)) # total number of trials
-        # self.target_dict['start_time'] = [(self.trial_dur + self.iti_dur)*trial_number for trial_number in range(self.num_trials)]
-        # self.target_dict['end_time']   = [(trial_number+1)*self.trial_dur + trial_number*self.iti_dur for trial_number in range(self.num_trials)]
-        self.target_dataframe['hand']       = np.tile(self.hand, self.num_trials).T.flatten() 
-        self.target_dataframe['trial_dur']  = [self.trial_dur for trial_number in range(self.num_trials)]
-        self.target_dataframe['iti_dur']    = [self.iti_dur for trial_number in range(self.num_trials)]
-        self.target_dataframe['run_number'] = [self.run_number for trial_number in range(self.num_trials)]
+    def make_trial_file(self,
+                        hand = 'right',
+                        task_dur =  30,
+                        trial_dur = 2,
+                        iti_dur   = 0.5,
+                        stim = ['9.jpg','11.jpg','15.jpg','18.jpg','28.jpg'],
+                        file_name = None ):
+        n_trials = int(np.floor(task_dur / (trial_dur+iti_dur)))
+        trial_info = []
 
-        self.target_dataframe['display_trial_feedback'] = [self.display_trial_feedback for trial_number in range(self.num_trials)]
+        prev_stim = ['x','x']
+        t = 0
+        for n in range(n_trials):
+            trial = {}
+            trial['trial_num'] = n
+            trial['hand'] = hand
+            trial['trial_dur'] = trial_dur
+            trial['iti_dur'] = iti_dur
+            trial['display_trial_feedback'] = True
+            # Determine if this should be N-2 repetition trial
+            if n<2:
+                trial['trial_type'] = 0
+            else:
+                trial['trial_type'] = np.random.randint(0,2)
+            # Now choose the stimulus accordingly
+            if trial['trial_type']==0:
+                trial['stim'] = stim[np.random.randint(0,len(stim))]
+            else:
+                trial['stim'] = prev_stim[1]
 
-    def make_trials_time(self, dataframe):
-        """
-        adds start_time and end_time columns to the dataframe
-        """
+            trial['display_trial_feedback'] = True
+            trial['feedback_type'] = 'acc'
+            trial['start_time'] = t
+            trial['end_time'] = t + trial_dur + iti_dur
+            trial_info.append(trial)
 
-        dataframe['start_time'] = [(self.trial_dur + self.iti_dur)*trial_number for trial_number in range(self.num_trials)]
-        dataframe['end_time']   = [(trial_number+1)*self.trial_dur + trial_number*self.iti_dur for trial_number in range(self.num_trials)]
+            # Update for next trial:
+            t= trial['end_time']
+            prev_stim[1] = prev_stim[0]
+            prev_stim[0] = trial['stim']
 
-        return dataframe
-    
-    def shuffle_rows(self, dataframe):
-        """
-        randomly shuffles rows of the dataframe
-        """
-        # randomly shuffle rows of the dataframe
-        # Method 1: doesn't seem to be shuffling correctly!
-        # dataframe = dataframe.sample(frac = 1, random_state=random_state, axis = 0).reset_index(drop=True)
-        # Method 2: 
-        indx = np.arange(len(dataframe.index))
-        np.random.shuffle(indx)
-        dataframe = (dataframe.iloc[indx]).reset_index(drop = True)
-        return dataframe
+        trial_info = pd.DataFrame(trial_info)
+        if file_name is not None:
+            trial_info.to_csv(self.target_dir / self.name / file_name,sep='\t',index=False)
+        return trial_info
 
-    def save_target_file(self, dataframe):
-        """
-        save the target file in the corresponding directory
-        """
-        consts.dircheck(self.target_dir)
-        dataframe.to_csv(self.target_filedir)
+
+class Rest(Target):
+    def __init__(self, const):
+        super().__init__(const)
+        self.name = 'rest'
+
+    def make_trial_file(self,
+                        task_dur =  30,
+                        file_name = None ):
+        trial = {}
+        trial['trial_num'] = [1]
+        trial['trial_dur'] = [task_dur]
+        trial['start_time'] = [0]
+        trial['end_time'] =  [task_dur]
+        trial_info = pd.DataFrame(trial)
+        if file_name is not None:
+            trial_info.to_csv(self.target_dir / self.name / file_name,sep='\t',index=False)
+        return trial_info
+
+
+
+### ====================================================================================================
+# What follows is potentially depreciated code, which I think is unecessarily complicated
+### ====================================================================================================
+
+
 
 class Session():
 
-    def __init__(self, study_name, 
-                 task_list = ['visual_search', 'action_observation_knots', 'flexion_extension', 
-                              'finger_sequence', 'theory_of_mind', 'n_back', 'semantic_prediction', 
-                              'rest'], 
-                 instruct_dur = 5, task_dur = 30, num_runs = 8, 
-                 tile_runs = 1, counter_balance = True, 
+    def __init__(self, study_name,
+                 task_list = ['visual_search', 'action_observation_knots', 'flexion_extension',
+                              'finger_sequence', 'theory_of_mind', 'n_back', 'semantic_prediction',
+                              'rest'],
+                 instruct_dur = 5, task_dur = 30, num_runs = 8,
+                 tile_runs = 1, counter_balance = True,
                  session = 1, start_hand = 'right'):
 
         self.study_name      = study_name      # 'fmri' or 'behavioral'
@@ -121,7 +187,7 @@ class Session():
         """
         # check if task exists in dict
         exists_in_dict = [True for key in self.target_dict.keys() if self.task_name==key]
-        if not exists_in_dict: 
+        if not exists_in_dict:
             self.target_dict.update({self.task_name: self.fpaths})
 
         # create run dataframe
@@ -162,7 +228,7 @@ class Session():
         # get pivot table
         f = pd.pivot_table(dataframe_all, index=['task'], columns=['last_task'], values=['task_num'], aggfunc=len)
 
-        return sum([sum(f['task_num'][col]>5) for col in f['task_num'].columns]) 
+        return sum([sum(f['task_num'][col]>5) for col in f['task_num'].columns])
 
     def _counterbalance_runs(self):
         """
@@ -172,13 +238,13 @@ class Session():
             print('not balanced ...')
 
             # delete any run files that exist in the folder
-            files = glob.glob(os.path.join(consts.run_dir, self.study_name, '*run*.csv'))
+            files = glob.glob(os.path.join(consts.run_dir, self.study_name, '*run*.tsv'))
             # for f in files:
             #     os.remove(f)
             self.make_run_files()
-        
+
         print('these runs are perfectly balanced')
-    
+
     def make_target_files(self):
         """
         makes target files for all the tasks in task list
@@ -188,14 +254,14 @@ class Session():
             target_dir = os.path.join(consts.target_dir, self.study_name, self.task_name)
 
             # delete any target files that exist in the folder
-            files = glob.glob(os.path.join(target_dir, '*.csv'))
+            files = glob.glob(os.path.join(target_dir, '*.tsv'))
             # for f in files:
             #     os.remove(f)
 
             # create an array for run numbers
             runs = range((self.session - 1)*self.num_runs, (self.session - 1)*self.num_runs+self.num_runs)
 
-            for run in runs:                
+            for run in runs:
                 # make target files
                 TaskClass = TASK_MAP[self.task_name]
                 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -209,7 +275,7 @@ class Session():
 
                 Task_target = TaskClass(run_number = run, study_name = self.study_name, hand = hand)
                 Task_target._make_files()
-    
+
     def make_run_files(self):
         """
         makes run file
@@ -219,7 +285,7 @@ class Session():
 
         # create an array for run numbers
         runs = range((self.session - 1)*self.num_runs, (self.session - 1)*self.num_runs+self.num_runs)
-        
+
         for run in runs:
             self.cum_time = 0.0
             self.all_data = []
@@ -228,17 +294,17 @@ class Session():
 
                 # get target files for `task_name`
                 self.task_target_dir = os.path.join(consts.target_dir, self.study_name, self.task_name)
-                self.fpaths = sorted(glob.glob(os.path.join(self.task_target_dir, f'*{self.task_name}_{self.task_dur}sec_*.csv')))
+                self.fpaths = sorted(glob.glob(os.path.join(self.task_target_dir, f'*{self.task_name}_{self.task_dur}sec_*.tsv')))
                 target_file = self.fpaths[run]
                 iter = 0
                 dataframe = pd.read_csv(target_file)
 
-                start_time = dataframe.iloc[0]['start_time'] + self.cum_time 
+                start_time = dataframe.iloc[0]['start_time'] + self.cum_time
                 end_time   = dataframe.iloc[-1]['start_time'] + dataframe.iloc[-1]['trial_dur'] + self.instruct_dur + self.cum_time
 
                 target_file_name = Path(target_file).name
                 num_sec = re.findall(r'\d+(?=sec)', target_file)[0]
-                target_num = re.findall(r'\d+(?=.csv)', target_file)[0]
+                target_num = re.findall(r'\d+(?=.tsv)', target_file)[0]
                 num_trials = len(dataframe)
 
                 data = {'task_name': self.task_name, 'task_iter': iter + 1, 'task_num': self.task_num + 1, # 'block_iter': iter+1
@@ -255,18 +321,18 @@ class Session():
             df_run = df_run.sample(n=len(df_run), replace=False)
 
             # correct `start_time`, `run_time`
-            df_run['start_time'] = sorted(df_run['start_time']) 
-            df_run['end_time'] = sorted(df_run['end_time']) 
+            df_run['start_time'] = sorted(df_run['start_time'])
+            df_run['end_time'] = sorted(df_run['end_time'])
 
             timestamps = (np.cumsum(df_run['num_sec'].astype(int) + df_run['instruct_dur'].astype(int))).to_list()
             df_run['end_time'] = timestamps
-            timestamps.insert(0, 0) 
+            timestamps.insert(0, 0)
             df_run['start_time'] = timestamps[:-1]
 
             df_run.drop({'num_sec'}, inplace=True, axis=1)
 
             # save run file
-            run_name = 'run_' +  f'{run+1:02d}' + '.csv'
+            run_name = 'run_' +  f'{run+1:02d}' + '.tsv'
             filepath = os.path.join(consts.run_dir, self.study_name)
             consts.dircheck(filepath)
             df_run.to_csv(os.path.join(filepath, run_name), index=False, header=True)
@@ -277,17 +343,17 @@ class Session():
             self._counterbalance_runs()
         else:
             print(f"You have chosen not to counter balance runs!")
-        
+
 
 # define classes for each task target file.
 # add your tasks as classes
 class FingerSequence(Target):
     def __init__(self, study_name = 'behavioral', hand = 'right', trial_dur = 3.25,
-                 iti_dur = 0.5, run_number = 1, display_trial_feedback = True, 
+                 iti_dur = 0.5, run_number = 1, display_trial_feedback = True,
                  task_dur=30, tr = 1, seq_length = 6):
 
-        super(FingerSequence, self).__init__(study_name = study_name, task_name = 'finger_sequence', hand = hand, 
-                                             trial_dur = trial_dur, iti_dur = iti_dur, run_number = run_number, 
+        super(FingerSequence, self).__init__(study_name = study_name, task_name = 'finger_sequence', hand = hand,
+                                             trial_dur = trial_dur, iti_dur = iti_dur, run_number = run_number,
                                              display_trial_feedback = display_trial_feedback, task_dur = task_dur, tr = tr)
         self.seq_length = seq_length # number of digits to be pressed in a trial
 
@@ -296,10 +362,10 @@ class FingerSequence(Target):
         # the sequences
         self.seq = {}
         ## EXperimental:
-        self.seq['complex'] = ['2 4 3 5 4 3', '3 2 4 5 4 2', 
+        self.seq['complex'] = ['2 4 3 5 4 3', '3 2 4 5 4 2',
                         '4 3 5 2 5 3', '5 2 3 4 5 2']
         ## Control
-        self.seq['simple'] = ['2 2 2 2 2 2', '3 3 3 3 3 3', 
+        self.seq['simple'] = ['2 2 2 2 2 2', '3 3 3 3 3 3',
                         '4 4 4 4 4 4', '5 5 5 5 5 5']
 
     def _add_task_info(self, random_state):
@@ -332,7 +398,7 @@ class FingerSequence(Target):
         dataframe = self.shuffle_rows(self.target_dataframe)
 
         return dataframe
-    
+
     def _make_files(self):
         """
         makes target file and (if exists) related task info and  saves them
@@ -345,11 +411,11 @@ class FingerSequence(Target):
 
 class SternbergOrder(Target):
     def __init__(self, study_name = 'behavioral', hand = 'right', trial_dur = 6,
-                 iti_dur = 0.5, run_number = 1, display_trial_feedback = True, 
-                 task_dur=30, tr = 1, digit_dur = 0.75, delay_dur = 0.5, 
+                 iti_dur = 0.5, run_number = 1, display_trial_feedback = True,
+                 task_dur=30, tr = 1, digit_dur = 0.75, delay_dur = 0.5,
                  prob_dur = 1, load = 6):
-        super(SternbergOrder, self).__init__(study_name = study_name, task_name = 'sternberg_order', hand = hand, 
-                                             trial_dur = trial_dur, iti_dur = iti_dur, run_number = run_number, 
+        super(SternbergOrder, self).__init__(study_name = study_name, task_name = 'sternberg_order', hand = hand,
+                                             trial_dur = trial_dur, iti_dur = iti_dur, run_number = run_number,
                                              display_trial_feedback = display_trial_feedback, task_dur = task_dur, tr = tr)
 
         self.trials_info   = {'condition_name':["forward"], "trial_type":[True, False]}
@@ -358,10 +424,10 @@ class SternbergOrder(Target):
         self.digit_dur     = digit_dur # length of time each digit remains on the screen
         self.delay_dur     = delay_dur # duration of the delay
         self.load          = load      # memory load
-    
+
     def _get_stim_digits(self):
 
-        # generate random numbers betweem 1 and 9 
+        # generate random numbers betweem 1 and 9
         rand_nums = [np.random.choice(range(1, 10), size = 6, replace = False) for i in range(self.num_trials)]
         ## convert the random numbers to str and concatenate them
         self.stim_str = []
@@ -369,7 +435,7 @@ class SternbergOrder(Target):
             rand_str = ""
             for x in nums: rand_str += str(x) + " "
             self.stim_str.append(rand_str)
-    
+
     def _get_prob_digits(self):
         # determine the prob stim for each trial based on trial type
         self.prob_stim = []
@@ -396,9 +462,9 @@ class SternbergOrder(Target):
                 first_prob_digit = current_stim_digits[min(prob_order)]
                 last_prob_digit  = current_stim_digits[max(prob_order)]
 
-            # generate the prob stim and append it 
+            # generate the prob stim and append it
             self.prob_stim.append(first_prob_digit + " " + last_prob_digit)
-    
+
     def _add_task_info(self, random_state):
         super().make_trials() # first fill in the common fields
 
@@ -419,7 +485,7 @@ class SternbergOrder(Target):
         self._get_prob_digits()
 
         self.target_dataframe['prob_stim'] = self.prob_stim
-        
+
         dataframe = self.shuffle_rows(self.target_dataframe)
 
         return dataframe
@@ -436,11 +502,11 @@ class SternbergOrder(Target):
 
 class FlexionExtension(Target):
     def __init__(self, study_name = 'behavioral', hand = None, trial_dur = 30,
-                 iti_dur = 0, run_number = 1, display_trial_feedback = False, 
+                 iti_dur = 0, run_number = 1, display_trial_feedback = False,
                  task_dur = 30, stim_dur = 2, tr = 1):
 
-        super(FlexionExtension, self).__init__(study_name = study_name, task_name = 'flexion_extension', hand = None, 
-                                               trial_dur = trial_dur, iti_dur = iti_dur, run_number = run_number, 
+        super(FlexionExtension, self).__init__(study_name = study_name, task_name = 'flexion_extension', hand = None,
+                                               trial_dur = trial_dur, iti_dur = iti_dur, run_number = run_number,
                                                display_trial_feedback = display_trial_feedback, task_dur = task_dur, tr = tr)
 
         self.trials_info = {"condition_name":["flexion extention"], "trial_type":[None]}
@@ -471,14 +537,14 @@ class FlexionExtension(Target):
 
 class VisuospatialOrder(Target):
     def __init__(self, study_name = 'behavioral', hand = 'right', trial_dur = 6,
-                 iti_dur = 0.5, run_number = 1, display_trial_feedback = True, 
-                 task_dur=30, tr = 1, dot_dur = 0.75, delay_dur = 0.5, 
+                 iti_dur = 0.5, run_number = 1, display_trial_feedback = True,
+                 task_dur=30, tr = 1, dot_dur = 0.75, delay_dur = 0.5,
                  prob_dur = 1, load = 6, min_distance = 1, width = 8):
-        super(VisuospatialOrder, self).__init__(study_name = study_name, task_name = 'visuospatial_order', hand = hand, 
-                                                trial_dur = trial_dur, iti_dur = iti_dur, run_number = run_number, 
+        super(VisuospatialOrder, self).__init__(study_name = study_name, task_name = 'visuospatial_order', hand = hand,
+                                                trial_dur = trial_dur, iti_dur = iti_dur, run_number = run_number,
                                                 display_trial_feedback = display_trial_feedback, task_dur = task_dur, tr = tr)
 
-        
+
         self.trials_info = {'condition_name':[None], "trial_type":[True, False]}
         self.prob_dur     = prob_dur     # length of time the prob remains on the screen (also time length for response to be made)
         self.digit_dur    = dot_dur      # length of time each digit remains on the screen
@@ -492,7 +558,7 @@ class VisuospatialOrder(Target):
         creates coordinates for dots to be used as stimulus
         """
         # generate random points
-        x = np.random.uniform(-self.width/2, self.width/2) 
+        x = np.random.uniform(-self.width/2, self.width/2)
         y = np.random.uniform(-self.width/2, self.width/2)
 
         # checks the distance between all the points to make sure they are at a minimum distance
@@ -501,9 +567,9 @@ class VisuospatialOrder(Target):
         self.dot_xyz.append([x, y])
         while counter < self.load + 1:
             # start generating the other points
-            ## generate another random point 
+            ## generate another random point
             next_point = False
-            xi = np.random.uniform(-self.width/2, self.width/2) 
+            xi = np.random.uniform(-self.width/2, self.width/2)
             yi = np.random.uniform(-self.width/2, self.width/2)
 
             # check the distance between this point and all the other points already in the list dot_xys
@@ -511,14 +577,14 @@ class VisuospatialOrder(Target):
                 # calculate the distance
                 distance = np.sqrt(((point[0] - xi)**2) + ((point[1] - yi)**2))
                 # print(distance)
-                
+
                 # if the distance is lower than a threshold, break the loop and generate another point
                 if distance < self.min_distance:
                     next_point = True
                     break
                 else:
                     continue
-            # append the point to the list of dots only if its distance from 
+            # append the point to the list of dots only if its distance from
             # all the other points is larger than min_distance
             if not next_point:
                 counter+=1
@@ -531,10 +597,10 @@ class VisuospatialOrder(Target):
 
         # randomly pick two of the dots for probe based on the trial type
         # get the trial_type for the current trial
-        current_tt = self.target_dataframe['trial_type'].loc[trial_number]  
+        current_tt = self.target_dataframe['trial_type'].loc[trial_number]
 
         # pick two dots
-        rand_probs = np.random.choice(len(self.dot_xyz), size = 2, replace = False) 
+        rand_probs = np.random.choice(len(self.dot_xyz), size = 2, replace = False)
 
         if ~ current_tt: # False trial
             # the trial is false so two wrong digits with wrong order can be generated
@@ -543,9 +609,9 @@ class VisuospatialOrder(Target):
         else: # True trial
             # sort the indices in ascending order to make sure that their order is conserved
             self.probs_idx = np.sort(rand_probs)
-        
-        self.probs_xyz  = [self.dot_xyz[i] for i in self.probs_idx]  
-    
+
+        self.probs_xyz  = [self.dot_xyz[i] for i in self.probs_idx]
+
     def _add_task_info(self, random_state):
         super().make_trials() # first fill in the common fields
 
@@ -563,7 +629,7 @@ class VisuospatialOrder(Target):
         # np.random.shuffle(trial_types)
         # self.target_dict['trial_type'] = trial_types
         # ----------------------------------------------------------------
-        # or 2. 
+        # or 2.
         # self.target_dict['trial_type'] = np.random.choice([True, False], size = self.num_trials, replace=True)
         self.target_dataframe['trial_type'] = (int(self.num_trials/len(self.trials_info['trial_type'])))*self.trials_info['trial_type']
         # ------------------------------------------------------------------
@@ -578,7 +644,7 @@ class VisuospatialOrder(Target):
         coords_prob = []
         # loop over trials and create coordinates of stim and prob
         for trial_number in range(self.num_trials):
-            
+
             # get coordinates for stimulus dot
             self._get_trial_stim_coords()
             coords_stim.append(self.dot_xyz)
@@ -605,12 +671,12 @@ class VisuospatialOrder(Target):
         self.save_target_file(self.df)
 
 class VisualSearch(Target):
-    def __init__(self, study_name = 'behavioral', hand = 'right', 
-                 trial_dur = 2, iti_dur = 0.5, run_number = 1, display_trial_feedback = True, 
+    def __init__(self, study_name = 'behavioral', hand = 'right',
+                 trial_dur = 2, iti_dur = 0.5, run_number = 1, display_trial_feedback = True,
                  task_dur = 30, tr = 1, replace = False):
 
-        super(VisualSearch, self).__init__(study_name = study_name, task_name = 'visual_search', hand = hand, 
-                                           trial_dur = trial_dur, iti_dur = iti_dur, run_number = run_number, 
+        super(VisualSearch, self).__init__(study_name = study_name, task_name = 'visual_search', hand = hand,
+                                           trial_dur = trial_dur, iti_dur = iti_dur, run_number = run_number,
                                            display_trial_feedback = display_trial_feedback, task_dur = task_dur,
                                            tr = tr)
 
@@ -628,19 +694,19 @@ class VisualSearch(Target):
 
         conds       = [self.trials_info['condition_name'][key] for key in self.trials_info['condition_name'].keys()]
         conds_names = [key for key in self.trials_info['condition_name'].keys()]
-        
+
         self.target_dataframe['stim']            = (int(self.num_trials/len(conds)))*conds
         self.target_dataframe['condition_name']  = (int(self.num_trials/len(conds_names)))*conds_names
         # randomly shuffle true falses before assigning it to stim
         trial_type_list = (int(self.num_trials/len(self.trials_info['trial_type'])))*self.trials_info['trial_type']
         random.shuffle(trial_type_list)
         self.target_dataframe['trial_type']      = trial_type_list
-        
+
         self.target_dataframe['feedback_type']   = [self.feedback_type for trial_number in range(self.num_trials)]
-        
+
 
         # dataframe['trial_type'] = dataframe['trial_type'].sort_values().reset_index(drop=True)
-        self.target_dataframe['stim'] = self.target_dataframe['stim'].astype(int) # convert stim to int 
+        self.target_dataframe['stim'] = self.target_dataframe['stim'].astype(int) # convert stim to int
 
         # randomly shuffle rows of the dataframe
         dataframe = self.shuffle_rows(self.target_dataframe)
@@ -669,19 +735,19 @@ class VisualSearch(Target):
 
         ## STIM ORIENTATIONS
         orientations_list = orientations*int(display_size/4)
-        
+
         # if trial type is false - randomly replace target stim (90)
         # with a distractor
         if not trial_type:
             orientations_list = [random.sample(orientations[1:],1)[0] if x==90 else x for x in orientations_list]
-        
-        # if trial is true and larger than 4, leave one target stim (90) in list 
+
+        # if trial is true and larger than 4, leave one target stim (90) in list
         # and randomly replace the others with distractor stims
         if display_size >4 and trial_type:
             indices = [i for i, x in enumerate(orientations_list) if x == 90]
             indices.pop(0)
             new_num = random.sample(orientations[1:],2) # always assumes that orientations_list is as follows: [90,180,270,360]
-            for i, n in zip(*(indices, new_num)): 
+            for i, n in zip(*(indices, new_num)):
                 orientations_list[i] = n
 
         return dict(enumerate(locations)), dict(enumerate(orientations_list))
@@ -693,14 +759,14 @@ class VisualSearch(Target):
         data_dicts = []
         for trial_idx, trial_conditions in enumerate(display_pos):
             for condition, point in trial_conditions.items():
-                data_dicts.append({'trial': trial_idx, 'stim': condition, 'xpos': point[0], 'ypos': point[1], 'orientation': orientations_correct[trial_idx][condition]})  
-        
+                data_dicts.append({'trial': trial_idx, 'stim': condition, 'xpos': point[0], 'ypos': point[1], 'orientation': orientations_correct[trial_idx][condition]})
+
         # save out to dataframe
         df_display = pd.DataFrame.from_records(data_dicts)
 
         # save out visual display
         str_part = self.target_filename.partition(self.task_name)
-        visual_display_name = 'display_pos' + str_part[2]+".csv" 
+        visual_display_name = 'display_pos' + str_part[2]+".tsv"
         # self.target_dir = consts.target_dir / self.study_name / self.task_name
         df_display.to_csv(os.path.join(self.target_dir, visual_display_name))
 
@@ -719,10 +785,10 @@ class VisualSearch(Target):
 
 class SemanticPrediction(Target):
     def __init__(self, study_name = 'behavioral', hand = 'right', trial_dur = 6,
-                 iti_dur = 0.5, run_number = 1, display_trial_feedback = True, 
+                 iti_dur = 0.5, run_number = 1, display_trial_feedback = True,
                  task_dur=30, tr = 1, stem_word_dur = 0.5, last_word_dur = 1.5, frac = 0.3):
-        super(SemanticPrediction, self).__init__(study_name = study_name, task_name = 'semantic_prediction', hand = hand, 
-                                                 trial_dur = trial_dur, iti_dur = iti_dur, run_number = run_number, 
+        super(SemanticPrediction, self).__init__(study_name = study_name, task_name = 'semantic_prediction', hand = hand,
+                                                 trial_dur = trial_dur, iti_dur = iti_dur, run_number = run_number,
                                                  display_trial_feedback = display_trial_feedback, task_dur = task_dur, tr = tr)
 
         self.trials_info = {"condition_name": {"high cloze": "easy", "low cloze": "hard"},
@@ -740,12 +806,12 @@ class SemanticPrediction(Target):
         # read in the stimulus csv file
         # stim_dir = os.path.join(consts.stim_dir, self.study_name, self.task_name)
         stim_dir = os.path.join(consts.stim_dir, self.task_name)
-        stim_df  = pd.read_csv(os.path.join(stim_dir, 'sentence_validation.csv'))
+        stim_df  = pd.read_csv(os.path.join(stim_dir, 'sentence_validation.tsv'))
 
-        self.log_df = pd.read_csv(os.path.join(stim_dir, f'semantic_prediction_logging_{self.run_number}.csv'))
+        self.log_df = pd.read_csv(os.path.join(stim_dir, f'semantic_prediction_logging_{self.run_number}.tsv'))
 
-        # conds = [self.balance_blocks['condition_name'][key] for key in self.balance_blocks['condition_name'].keys()]  
-        conds   = list(self.trials_info['condition_name'].keys()) 
+        # conds = [self.balance_blocks['condition_name'][key] for key in self.balance_blocks['condition_name'].keys()]
+        conds   = list(self.trials_info['condition_name'].keys())
         self.stim_df = stim_df.query(f'cloze_descript=={conds}')
         # use stimuli not already extracted
         ## first get the cloze_descript
@@ -766,12 +832,12 @@ class SemanticPrediction(Target):
         # ensure that only `num_trials` are sampled
         num_stims = int(self.num_trials / len(self.trials_info['condition_name']))
         self.stim_df = self.stim_df.groupby('condition_name', as_index=False).apply(lambda x: x.sample(n=num_stims, random_state=random_state, replace=False)).reset_index(drop=True)
-    
+
     def _add_random_word(self, random_state, columns):
         """ sample `frac_random` and add to `full_sentence`
-            Args: 
+            Args:
                 dataframe (pandas dataframe): dataframe
-            Returns: 
+            Returns:
                 dataframe with modified `full_sentence` col
         """
 
@@ -780,13 +846,13 @@ class SemanticPrediction(Target):
         sample_group = group_columns.apply(lambda x: x.sample(frac=self.frac, replace=False, random_state=random_state))
         # find the extracted rows of the stimuli df
         extracted = self.log_df["full_sentence"].isin(sample_group["full_sentence"])
-        
+
         # load in the logging file and update the extracted column
         self.log_df["extracted"] = extracted.values
 
         ## save the new logging
         log_dir = os.path.join(consts.stim_dir, self.task_name)
-        self.log_df.to_csv(os.path.join(log_dir, f'semantic_prediction_logging_{self.run_number+1}.csv'), index=False)
+        self.log_df.to_csv(os.path.join(log_dir, f'semantic_prediction_logging_{self.run_number+1}.tsv'), index=False)
 
         idx = sample_group.index
         sampidx = idx.get_level_values(len(columns)) # get third level
@@ -811,7 +877,7 @@ class SemanticPrediction(Target):
         self.stim_df['display_trial_feedback'] = self.display_trial_feedback
         self.stim_df['replace_stimuli']        = self.replace
         self.stim_df['feedback_type']          = self.feedback_type
-        
+
         # self.stim_df.drop({'full_sentence'}, inplace=True, axis=1)
 
         # balance design
@@ -837,86 +903,14 @@ class SemanticPrediction(Target):
         self.df = self.make_trials_time(self.df)
         self.save_target_file(self.df)
 
-class NBack(Target):
-    def __init__(self, study_name = 'behavioral', hand = 'right', trial_dur = 2,
-                 iti_dur = 0.5, run_number = 1, display_trial_feedback = True, 
-                 task_dur=30, tr = 1, n_back = 2, replace = False):
-        super(NBack, self).__init__(study_name = study_name, task_name = 'n_back', hand = hand, 
-                                                 trial_dur = trial_dur, iti_dur = iti_dur, run_number = run_number, 
-                                                 display_trial_feedback = display_trial_feedback, task_dur = task_dur, tr = tr)
 
-        self.feedback_type = 'acc'
-        self.n_back        = n_back
-        self.replace       = replace
-        self.trials_info   = {"condition_name": {"easy": "2_back-", "hard": "2_back+"}, 'trial_type': [True, False]}
-
-    def _get_stim(self):
-        """
-        get the stimulus file
-        """
-        # load in stimuli
-        # stim_dir   = os.path.join(consts.stim_dir, self.study_name, self.task_name)
-        stim_dir   = os.path.join(consts.stim_dir, self.task_name)
-        stim_files = [f for f in os.listdir(str(stim_dir)) if ((f.endswith('g')) and not(f.startswith('.')))]
-        # first two images are always random (and false)
-        # all other images are either match or not a match
-        stim_list = random.sample(stim_files, k=self.n_back)
-        # stim_list = stim_files
-        for tt in self.target_dataframe['trial_type'][self.n_back:]: # loop over n+self.n_back
-
-            match_img     = stim_list[-self.n_back]
-            # print(f"match image:{match_img}")
-            no_match_imgs = [stim for stim in stim_files if stim != match_img] # was match_img[0]
-            if tt == False: # not a match
-                # random.seed(self.random_state)
-                stim_list.append(random.sample(no_match_imgs, k=self.n_back-1)[0])
-            else:           # match
-                stim_list.append(match_img)
-
-        self.target_dataframe["stim"] = [''.join(x) for x in stim_list]
-    
-    def _add_task_info(self, random_state):
-        super().make_trials() # first fill in the common fields
-
-        # get `num_stims`
-        self.num_stims = int(self.num_trials / len(self.trials_info['condition_name']))
-
-        self.target_dataframe['trial_type'] = self.num_stims*(True, False)
-        self.target_dataframe = self.target_dataframe.sample(n=self.num_trials, replace=False).reset_index(drop=True) 
-        self.target_dataframe['trial_type'][:self.n_back] = False # first n+cond_type trials (depending on cond_type) have to be False
-
-        # make `n_back` and `condition_name` cols
-        conds = [self.trials_info['condition_name'][key] for key in self.trials_info['condition_name'].keys()]
-        self.target_dataframe['n_back'] = np.where(self.target_dataframe["trial_type"]==False, conds[0], conds[1])
-
-        # create a dictionary with inverse mapping between condition name and n-back 
-        inv_condition_map = dict((v, k) for k, v in self.trials_info['condition_name'].items())
-        self.target_dataframe['condition_name'] = self.target_dataframe['n_back'].apply(lambda x: inv_condition_map[x])
-
-        self.target_dataframe['display_trial_feedback'] = self.display_trial_feedback
-        self.target_dataframe['replace_stimuli']        = self.replace
-        self.target_dataframe['feedback_type']          = self.feedback_type
-
-        # get the stimulus based on trial_type
-        self._get_stim()
-
-        # # randomly shuffle rows of the dataframe
-        # dataframe = self.shuffle_rows(self.target_dataframe)
-
-        return self.target_dataframe
-    
-    def _make_files(self):
-        # save target file
-        self.df = self._add_task_info(random_state=self.run_number)
-        self.df = self.make_trials_time(self.df)
-        self.save_target_file(self.df)
 
 class TheoryOfMind(Target):
     def __init__(self, study_name = 'behavioral', hand = 'right', trial_dur = 14,
-                 iti_dur = 0.5, run_number = 1, display_trial_feedback = True, 
+                 iti_dur = 0.5, run_number = 1, display_trial_feedback = True,
                  task_dur=30, tr = 1, story_dur = 10, question_dur = 4, frac = 0.3):
-        super(TheoryOfMind, self).__init__(study_name = study_name, task_name = 'theory_of_mind', hand = hand, 
-                                           trial_dur = trial_dur, iti_dur = iti_dur, run_number = run_number, 
+        super(TheoryOfMind, self).__init__(study_name = study_name, task_name = 'theory_of_mind', hand = hand,
+                                           trial_dur = trial_dur, iti_dur = iti_dur, run_number = run_number,
                                            display_trial_feedback = display_trial_feedback, task_dur = task_dur, tr = tr)
 
         self.trials_info = {'condition_name': ['belief','photo'],'trial_type': [True, False]}
@@ -925,7 +919,7 @@ class TheoryOfMind(Target):
         self.story_dur     = story_dur    # length of time the story remains on the screen
         self.question_dur  = question_dur # length of time question remains on the screen
         self.frac          = frac         # ??????
-    
+
     def _get_story(self):
         """
         get stories dataframe
@@ -933,35 +927,35 @@ class TheoryOfMind(Target):
         # read in the stimulus csv file
         # stim_dir = os.path.join(consts.stim_dir, self.study_name, self.task_name)
         stim_dir = os.path.join(consts.stim_dir, self.task_name)
-        stim_df  = pd.read_csv(os.path.join(stim_dir, 'theory_of_mind.csv'))
+        stim_df  = pd.read_csv(os.path.join(stim_dir, 'theory_of_mind.tsv'))
 
         # get the logging file
-        self.log_df = pd.read_csv(os.path.join(stim_dir, f'theory_of_mind_logging_{self.run_number}.csv'))
+        self.log_df = pd.read_csv(os.path.join(stim_dir, f'theory_of_mind_logging_{self.run_number}.tsv'))
 
-        # conds = [self.balance_blocks['condition_name'][key] for key in self.balance_blocks['condition_name'].keys()]  
-        conds        = self.trials_info['condition_name'] 
+        # conds = [self.balance_blocks['condition_name'][key] for key in self.balance_blocks['condition_name'].keys()]
+        conds        = self.trials_info['condition_name']
         self.stim_df = stim_df.query(f'condition=={conds} and response=={self.trials_info["trial_type"]}')
 
         descript = self.log_df.query(f'condition=={conds} and response=={self.trials_info["trial_type"]}')
         not_extracted = descript["extracted"] != "TRUE"
         self.stim_df = self.stim_df.loc[not_extracted.values]
-    
+
     def _balance_design(self, random_state):
         # group the dataframe according to `balance_blocks`
         self.stim_df = self.stim_df.groupby([*self.trials_info], as_index=False).apply(lambda x: x.sample(n=self.num_stims, random_state=random_state, replace=self.replace)).reset_index(drop=True)
 
         # ensure that only `num_trials` are sampled
         self.target_df = self.stim_df.sample(n=self.num_trials, random_state=random_state, replace=False).reset_index(drop=True)
-    
+
         # find the extracted rows of the stimuli df
         extracted = self.log_df["story"].isin(self.target_df["story"])
         # print(sum(extracted))QUIT
-        
+
         # load in the logging file and update the extracted column
         self.log_df["extracted"] = extracted.values
          ## save the new logging
         log_dir = os.path.join(consts.stim_dir, self.task_name)
-        self.log_df.to_csv(os.path.join(log_dir, f'theory_of_mind_logging_{self.run_number+1}.csv'), index=False)
+        self.log_df.to_csv(os.path.join(log_dir, f'theory_of_mind_logging_{self.run_number+1}.tsv'), index=False)
 
 
     def _add_task_info(self, random_state):
@@ -978,7 +972,7 @@ class TheoryOfMind(Target):
         self.stim_df['question_dur']           = self.question_dur
         self.stim_df['trial_dur_correct']      = self.story_dur + self.iti_dur + self.question_dur
         self.stim_df['display_trial_feedback'] = self.display_trial_feedback
-        
+
         self.stim_df['trial_type'] = self.stim_df['response']
 
         self.stim_df.drop({'condition', 'response'}, inplace=True, axis=1)
@@ -1004,10 +998,10 @@ class TheoryOfMind(Target):
 
 class ActionObservationKnots(Target):
     def __init__(self, study_name = 'behavioral', hand = None, trial_dur = 14,
-                 iti_dur = 0.5, run_number = 1, display_trial_feedback = False, 
+                 iti_dur = 0.5, run_number = 1, display_trial_feedback = False,
                  task_dur=30, tr = 1):
-        super(ActionObservationKnots, self).__init__(study_name = study_name, task_name = 'action_observation_knots', hand = None, 
-                                           trial_dur = trial_dur, iti_dur = iti_dur, run_number = run_number, 
+        super(ActionObservationKnots, self).__init__(study_name = study_name, task_name = 'action_observation_knots', hand = None,
+                                           trial_dur = trial_dur, iti_dur = iti_dur, run_number = run_number,
                                            display_trial_feedback = display_trial_feedback, task_dur = task_dur, tr = tr)
 
         self.trials_info = {'condition_name': ['knot'], 'session_list': [1,2]}
@@ -1020,12 +1014,12 @@ class ActionObservationKnots(Target):
         # load in stimuli
         # stim_dir = os.path.join(consts.stim_dir, self.study_name, self.task_name)
         stim_dir = os.path.join(consts.stim_dir, self.task_name)
-        stim_df  = pd.read_csv(os.path.join(stim_dir, 'action_observation_knots.csv'))
- 
+        stim_df  = pd.read_csv(os.path.join(stim_dir, 'action_observation_knots.tsv'))
+
         # remove all filenames where any of the videos have not been extracted
         stims_to_remove = stim_df.query('extracted==False')["video_name_action"].to_list()
         self.stim_df    = stim_df[~stim_df["video_name_action"].isin(stims_to_remove)]
-    
+
     def _balance_design(self, random_state):
         self.stim_df = self.stim_df.groupby([*self.trials_info], as_index=False).apply(lambda x: x.sample(n=self.num_stims, random_state=random_state, replace=self.replace)).reset_index(drop=True)
         # ensure that only `num_trials` are sampled
@@ -1073,10 +1067,10 @@ class ActionObservationKnots(Target):
 
 class RomanceMovie(Target):
     def __init__(self, study_name = 'behavioral', hand = None, trial_dur = 28,
-                 iti_dur = 0, run_number = 1, display_trial_feedback = False, 
+                 iti_dur = 0, run_number = 1, display_trial_feedback = False,
                  task_dur = 30, tr = 1):
-        super(RomanceMovie, self).__init__(study_name = study_name, task_name = 'romance_movie', hand = None, 
-                                           trial_dur = trial_dur, iti_dur = iti_dur, run_number = run_number, 
+        super(RomanceMovie, self).__init__(study_name = study_name, task_name = 'romance_movie', hand = None,
+                                           trial_dur = trial_dur, iti_dur = iti_dur, run_number = run_number,
                                            display_trial_feedback = display_trial_feedback, task_dur = task_dur, tr = tr)
 
         self.trials_info = {'condition_name': ['romance']}
@@ -1088,8 +1082,8 @@ class RomanceMovie(Target):
 
         # load in stimuli
         stim_dir = os.path.join(consts.stim_dir, self.task_name)
-        stim_df  = pd.read_csv(os.path.join(stim_dir, 'romance_movie.csv'))
- 
+        stim_df  = pd.read_csv(os.path.join(stim_dir, 'romance_movie.tsv'))
+
         # remove all filenames where any of the videos have not been extracted
         stims_to_remove = stim_df.query('extracted==False')["video_name"].to_list()
         self.stim_df    = stim_df[~stim_df["video_name"].isin(stims_to_remove)]
@@ -1116,7 +1110,7 @@ class RomanceMovie(Target):
         dataframe = self.shuffle_rows(self.target_dataframe)
 
         return dataframe
-    
+
     def _make_files(self):
         """
         makes target file and (if exists) related task info and  saves them
@@ -1129,10 +1123,10 @@ class RomanceMovie(Target):
 
 class VerbGeneration(Target):
     def __init__(self, study_name = 'behavioral', hand = None, trial_dur = 1.6,
-                 iti_dur = 0.5, run_number = 1, display_trial_feedback = False, 
+                 iti_dur = 0.5, run_number = 1, display_trial_feedback = False,
                  task_dur=30, tr = 1, frac = 0.3):
-        super(VerbGeneration, self).__init__(study_name = study_name, task_name = 'verb_generation', hand = None, 
-                                                 trial_dur = trial_dur, iti_dur = iti_dur, run_number = run_number, 
+        super(VerbGeneration, self).__init__(study_name = study_name, task_name = 'verb_generation', hand = None,
+                                                 trial_dur = trial_dur, iti_dur = iti_dur, run_number = run_number,
                                                  display_trial_feedback = display_trial_feedback, task_dur = task_dur, tr = tr)
 
         self.frac        = frac
@@ -1143,18 +1137,18 @@ class VerbGeneration(Target):
         # read in the stimulus csv file
         # stim_dir = os.path.join(consts.stim_dir, self.study_name, self.task_name)
         stim_dir = os.path.join(consts.stim_dir, self.task_name)
-        stim_df  = pd.read_csv(os.path.join(stim_dir, 'verb_generation.csv'))
+        stim_df  = pd.read_csv(os.path.join(stim_dir, 'verb_generation.tsv'))
 
         self.stim_df = stim_df.query(f'session_list=={self.trials_info["session_list"]}')
         pass
-    
+
     def _balance_design(self, random_state):
         # group the dataframe according to `balance_blocks`
         self.stim_df = self.stim_df.groupby([*self.trials_info], as_index=False).apply(lambda x: x.sample(n=self.num_stims, random_state=random_state, replace=self.replace)).reset_index(drop=True)
 
         # ensure that only `num_trials` are sampled
         self.target_df = self.stim_df.sample(n=self.num_trials, random_state=random_state, replace=False).reset_index(drop=True)
-    
+
     def _add_task_info(self, random_state):
         super().make_trials() # first fill in the common fields
 
@@ -1184,30 +1178,6 @@ class VerbGeneration(Target):
         self.df = self.make_trials_time(self.df)
         self.save_target_file(self.df)
 
-class Rest(Target):
-    def __init__(self, study_name = 'behavioral', hand = None, trial_dur = 30,
-                 iti_dur = 0, run_number = 1, display_trial_feedback = False, 
-                 task_dur = 30, tr = 1):
-        super(Rest, self).__init__(study_name = study_name, task_name = 'rest', hand = hand, 
-                                           trial_dur = trial_dur, iti_dur = iti_dur, run_number = run_number, 
-                                           display_trial_feedback = display_trial_feedback, task_dur = task_dur, tr = tr)
-
-    def _add_task_info(self):
-        super().make_trials() # first fill in the common fields
-
-        self.target_dataframe['stim'] = 'fixation'
-
-        return self.target_dataframe
-
-    def _make_files(self):
-        """
-        makes target file and (if exists) related task info and  saves them
-        """
-
-        # save target file
-        self.df = self._add_task_info()
-        self.df = self.make_trials_time(self.df)
-        self.save_target_file(self.df)
 
 class SocialPrediction(Target):
     pass
@@ -1231,7 +1201,9 @@ def make_task_target(task_name = 'visual_search', study_name = 'behavioral', han
     Task_target._make_files()
 
     return
-def make_files(task_list, study_name = 'behavioral', num_runs = 8, 
+
+
+def make_files(task_list, study_name = 'behavioral', num_runs = 8,
                start_hand = 'right', session = 1):
     """
     make target files and run files
@@ -1240,37 +1212,20 @@ def make_files(task_list, study_name = 'behavioral', num_runs = 8,
         num_runs   - number of runs that you want to create
         start_hand - starting hand of the session
     """
-    Sess = Session(task_list = task_list, study_name = study_name, 
-                   num_runs = num_runs, start_hand = start_hand, 
+    Sess = Session(task_list = task_list, study_name = study_name,
+                   num_runs = num_runs, start_hand = start_hand,
                    session = session)
     Sess.make_target_files()
     Sess.make_run_files()
     Sess.check_counter_balance()
-    
+
     return
-
-TASK_MAP = {
-    "visual_search": VisualSearch, # task_num 1
-    "theory_of_mind": TheoryOfMind, # task_num 2
-    "n_back": NBack, # task_num 3
-    "social_prediction": SocialPrediction, # task_num 4
-    "semantic_prediction": SemanticPrediction, # task_num 5
-    "finger_sequence": FingerSequence, # task_num 7
-    "sternberg_order": SternbergOrder, # task_num 8
-    "visuospatial_order": VisuospatialOrder, # task 9
-    "flexion_extension": FlexionExtension, # task_num 10
-    "verb_generation": VerbGeneration, # task_num 11
-    "romance_movie": RomanceMovie, #task_num 12
-    "action_observation_knots": ActionObservationKnots, #task_num 13
-    "rest": Rest, # task_num?
-    }
-
 
 
 if __name__ == "__main__":
-    # Example code 
+    # Example code
     ## behavioral
-    make_files(study_name='behavioral', num_runs=8)
+
     ## fmri
     make_files(study_name='fmri', num_runs=8)
 
