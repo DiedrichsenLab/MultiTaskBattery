@@ -4,13 +4,24 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
         {
             "name": "Python: Pontine7T",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/Pontine_7T/pontine_7T.py",
             "console": "integratedTerminal",
-            "args": ["s01"],
+            "args": [
+                "s01"
+            ],
             "justMyCode": true
         }
     ]
