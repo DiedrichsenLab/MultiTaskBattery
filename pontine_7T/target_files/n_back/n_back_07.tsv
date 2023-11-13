@@ -1,0 +1,13 @@
+trial_num	hand	trial_dur	iti_dur	display_trial_feedback	trial_type	stim	feedback_type	start_time	end_time
+0	right	2	0.5	True	0	18.jpg	acc	0.0	2.5
+1	right	2	0.5	True	0	15.jpg	acc	2.5	5.0
+2	right	2	0.5	True	1	18.jpg	acc	5.0	7.5
+3	right	2	0.5	True	0	9.jpg	acc	7.5	10.0
+4	right	2	0.5	True	1	18.jpg	acc	10.0	12.5
+5	right	2	0.5	True	1	9.jpg	acc	12.5	15.0
+6	right	2	0.5	True	1	18.jpg	acc	15.0	17.5
+7	right	2	0.5	True	0	15.jpg	acc	17.5	20.0
+8	right	2	0.5	True	1	18.jpg	acc	20.0	22.5
+9	right	2	0.5	True	1	15.jpg	acc	22.5	25.0
+10	right	2	0.5	True	0	18.jpg	acc	25.0	27.5
+11	right	2	0.5	True	0	15.jpg	acc	27.5	30.0
