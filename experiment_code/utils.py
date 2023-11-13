@@ -1,6 +1,9 @@
 import os
 import pandas as pd
 
+task_table_name = os.path.dirname(__file__) + '/task_list,tsv'  # where the experiment code is stored
+task_table = pd.read_csv(task_table_name, sep = '\t')
+
 def dircheck(path2dir):
     """
     Checks if a directory exists! if it does not exist, it creates it
@@ -11,7 +14,6 @@ def dircheck(path2dir):
     if not os.path.exists(path2dir):
         print(f"creating {path2dir}")
         os.makedirs(path2dir)
-
 
 def append_data_to_file(filename,data):
     """ Appends a data frame to an (possibly) existing tsv file

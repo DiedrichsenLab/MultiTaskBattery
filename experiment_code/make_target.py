@@ -10,88 +10,39 @@ import glob
 import re
 
 import experiment_code.utils as consts
-# import constants as consts
-# import constants as consts # for debugging comment the previous line and uncomment this line
+
+
+def shuffle_rows(dataframe):
+    """
+    randomly shuffles rows of the dataframe
+
+    Args:
+        dataframe (dataframe): dataframe to be shuffled
+    Returns:
+        dataframe (dataframe): shuffled dataframe
+    """
+    indx = np.arange(len(dataframe.index))
+    np.random.shuffle(indx)
+    dataframe = (dataframe.iloc[indx]).reset_index(drop = True)
+    return dataframe
+
+def make_run_file(const,
+                  task_list,
+                  offset = 0,
+                  instruction_dur = 5,
+                  task_dur = 30):
 
 
 
-# define classes for target file and run files
 class Target():
-
-    def __init__(self, study_name, task_name, hand, trial_dur, iti_dur,
-                 run_number, display_trial_feedback = True, task_dur = 30,
-                 tr = 1, random_seed = True):
-
+    def __init__(self, const) :
+        """ The Target class is class for creating target files for different tasks
+        Args:
+            const: module for constants
         """
-        variables and information shared across all tasks
-        """
-        self.study_name             = study_name             # name of the study: 'fmri' or 'behavioral'
-        self.task_name              = task_name              # name of the task
-        self.task_dur               = task_dur               # duration of the task (default: 30 sec)
-        self.hand                   = hand                   # string representing the hand: "right", "left", or "none"
-        self.trial_dur              = trial_dur              # duration of trial
-        self.iti_dur                = iti_dur                # duration of the inter trial interval
-        self.display_trial_feedback = display_trial_feedback # display feedback after trial (default: True)
-        self.tr                     = tr                     # the TR of the scanner
-        self.run_number             = run_number             # the number of run
-        self.replace                = False
-        self.random_seed            = random_seed            # if set to true, random.seed will set a seed for random operations (for replicability)
-        self.target_dataframe       = pd.DataFrame()         # an empty dataframe
+        self.exp_name   = const.exp_name
+        self.target_dir = const.target_dir
 
-        # file naming stuff
-        self.target_filename = f"{self.task_name}_{self.task_dur}sec_{self.run_number+1:02d}"
-        self.target_dir      = consts.target_dir / self.study_name / self.task_name
-
-        self.target_filedir = self.target_dir / f"{self.target_filename}.tsv"
-
-        # set the random seed to be able to reproduce?
-        if self.random_seed:
-            # run number is used as the seed
-            random.seed(a = self.run_number, version=2)
-
-    def make_trials(self):
-        """
-        making trials (rows) with columns (variables) shared across tasks
-        """
-        self.num_trials = int(self.task_dur/(self.trial_dur + self.iti_dur)) # total number of trials
-        # self.target_dict['start_time'] = [(self.trial_dur + self.iti_dur)*trial_number for trial_number in range(self.num_trials)]
-        # self.target_dict['end_time']   = [(trial_number+1)*self.trial_dur + trial_number*self.iti_dur for trial_number in range(self.num_trials)]
-        self.target_dataframe['hand']       = np.tile(self.hand, self.num_trials).T.flatten()
-        self.target_dataframe['trial_dur']  = [self.trial_dur for trial_number in range(self.num_trials)]
-        self.target_dataframe['iti_dur']    = [self.iti_dur for trial_number in range(self.num_trials)]
-        self.target_dataframe['run_number'] = [self.run_number for trial_number in range(self.num_trials)]
-
-        self.target_dataframe['display_trial_feedback'] = [self.display_trial_feedback for trial_number in range(self.num_trials)]
-
-    def make_trials_time(self, dataframe):
-        """
-        adds start_time and end_time columns to the dataframe
-        """
-
-        dataframe['start_time'] = [(self.trial_dur + self.iti_dur)*trial_number for trial_number in range(self.num_trials)]
-        dataframe['end_time']   = [(trial_number+1)*self.trial_dur + trial_number*self.iti_dur for trial_number in range(self.num_trials)]
-
-        return dataframe
-
-    def shuffle_rows(self, dataframe):
-        """
-        randomly shuffles rows of the dataframe
-        """
-        # randomly shuffle rows of the dataframe
-        # Method 1: doesn't seem to be shuffling correctly!
-        # dataframe = dataframe.sample(frac = 1, random_state=random_state, axis = 0).reset_index(drop=True)
-        # Method 2:
-        indx = np.arange(len(dataframe.index))
-        np.random.shuffle(indx)
-        dataframe = (dataframe.iloc[indx]).reset_index(drop = True)
-        return dataframe
-
-    def save_target_file(self, dataframe):
-        """
-        save the target file in the corresponding directory
-        """
-        consts.dircheck(self.target_dir)
-        dataframe.to_csv(self.target_filedir)
 
 class Session():
 
@@ -838,78 +789,50 @@ class SemanticPrediction(Target):
         self.save_target_file(self.df)
 
 class NBack(Target):
-    def __init__(self, study_name = 'behavioral', hand = 'right', trial_dur = 2,
-                 iti_dur = 0.5, run_number = 1, display_trial_feedback = True,
-                 task_dur=30, tr = 1, n_back = 2, replace = False):
-        super(NBack, self).__init__(study_name = study_name, task_name = 'n_back', hand = hand,
-                                                 trial_dur = trial_dur, iti_dur = iti_dur, run_number = run_number,
-                                                 display_trial_feedback = display_trial_feedback, task_dur = task_dur, tr = tr)
+    def make_trial_file(self,
+                        hand = 'right',
+                        task_dur =  30,
+                        trial_dur = 2,
+                        iti_dur   = 0.5,
+                        stim = ['9.jpg','11.jpg','15.jpg','18.jpg','28.jpg'],
+                        file_name = 'n_back_30sec_01.tsv' ):
+        n_trials = np.int(np.floor(task_dur / (trial_dur+iti_dur)))
+        trial_info = []
 
-        self.feedback_type = 'acc'
-        self.n_back        = n_back
-        self.replace       = replace
-        self.trials_info   = {"condition_name": {"easy": "2_back-", "hard": "2_back+"}, 'trial_type': [True, False]}
+        prev_stim = ['x','x']
+        t = 0
+        for n in range(n_trials):
+            trial = {}
+            trial['trial_num'] = n
+            trial['hand'] = hand
+            trial['trial_dur'] = trial_dur
+            trial['iti_dur'] = iti_dur
+            trial['display_trial_feedback'] = True
+            # Determine if this should be N-2 repetition trial
+            if n<2:
+                trial['trial_type'] = 0
+            else:
+                trial['trial_type'] = np.random.randint(0,2)
+            # Now choose the stimulus accordingly
+            if trial['trial_type']==0:
+                trial['stim'] = stim[np.random.randint(0,len(stim))]
+            else:
+                trial['stim'] = prev_stim[1]
 
-    def _get_stim(self):
-        """
-        get the stimulus file
-        """
-        # load in stimuli
-        # stim_dir   = os.path.join(consts.stim_dir, self.study_name, self.task_name)
-        stim_dir   = os.path.join(consts.stim_dir, self.task_name)
-        stim_files = [f for f in os.listdir(str(stim_dir)) if ((f.endswith('g')) and not(f.startswith('.')))]
-        # first two images are always random (and false)
-        # all other images are either match or not a match
-        stim_list = random.sample(stim_files, k=self.n_back)
-        # stim_list = stim_files
-        for tt in self.target_dataframe['trial_type'][self.n_back:]: # loop over n+self.n_back
+            trial['display_trial_feedback'] = True
+            trial['feedback_type'] = 'acc'
+            trial['start_time'] = t
+            trial['end_time'] = t + trial_dur + iti_dur
+            trial_info.append(trial)
 
-            match_img     = stim_list[-self.n_back]
-            # print(f"match image:{match_img}")
-            no_match_imgs = [stim for stim in stim_files if stim != match_img] # was match_img[0]
-            if tt == False: # not a match
-                # random.seed(self.random_state)
-                stim_list.append(random.sample(no_match_imgs, k=self.n_back-1)[0])
-            else:           # match
-                stim_list.append(match_img)
+            # Update for next trial:
+            t= trial['end_time']
+            prev_stim[1] = prev_stim[0]
+            prev_stim[0] = trial['stim']
 
-        self.target_dataframe["stim"] = [''.join(x) for x in stim_list]
+        trial_info = pd.DataFrame(trial_info)
+        trial_info.to_csv(self.const.target_dir / self.name / file_name,sep='\t',index=False)
 
-    def _add_task_info(self, random_state):
-        super().make_trials() # first fill in the common fields
-
-        # get `num_stims`
-        self.num_stims = int(self.num_trials / len(self.trials_info['condition_name']))
-
-        self.target_dataframe['trial_type'] = self.num_stims*(True, False)
-        self.target_dataframe = self.target_dataframe.sample(n=self.num_trials, replace=False).reset_index(drop=True)
-        self.target_dataframe['trial_type'][:self.n_back] = False # first n+cond_type trials (depending on cond_type) have to be False
-
-        # make `n_back` and `condition_name` cols
-        conds = [self.trials_info['condition_name'][key] for key in self.trials_info['condition_name'].keys()]
-        self.target_dataframe['n_back'] = np.where(self.target_dataframe["trial_type"]==False, conds[0], conds[1])
-
-        # create a dictionary with inverse mapping between condition name and n-back
-        inv_condition_map = dict((v, k) for k, v in self.trials_info['condition_name'].items())
-        self.target_dataframe['condition_name'] = self.target_dataframe['n_back'].apply(lambda x: inv_condition_map[x])
-
-        self.target_dataframe['display_trial_feedback'] = self.display_trial_feedback
-        self.target_dataframe['replace_stimuli']        = self.replace
-        self.target_dataframe['feedback_type']          = self.feedback_type
-
-        # get the stimulus based on trial_type
-        self._get_stim()
-
-        # # randomly shuffle rows of the dataframe
-        # dataframe = self.shuffle_rows(self.target_dataframe)
-
-        return self.target_dataframe
-
-    def _make_files(self):
-        # save target file
-        self.df = self._add_task_info(random_state=self.run_number)
-        self.df = self.make_trials_time(self.df)
-        self.save_target_file(self.df)
 
 class TheoryOfMind(Target):
     def __init__(self, study_name = 'behavioral', hand = 'right', trial_dur = 14,

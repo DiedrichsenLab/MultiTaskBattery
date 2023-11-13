@@ -55,10 +55,10 @@ class Experiment:
 
     def set_const_defaults(self):
         """ Make sure all the necessary variables are set in the constant file - otherwise set them to default values"""
-        if self.const.stim_dir is None:
+        if not 'stim_dir' in dir(self.const):
             self.const.stim_dir = Path(os.path.dirname(os.path.dirname(__file__))) / 'stimuli'  # where the experiment code is stored
 
-        if self.const.task_table is None:
+        if not 'task_table' in dir(self.const):
             self.const.task_table = Path(os.path.dirname(__file__)) / 'task_list,tsv'  # where the experiment code is stored
 
 
