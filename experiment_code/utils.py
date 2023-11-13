@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 
-task_table_name = os.path.dirname(__file__) + '/task_list,tsv'  # where the experiment code is stored
+task_table_name = os.path.dirname(__file__) + '/task_table.tsv'  # where the experiment code is stored
 task_table = pd.read_csv(task_table_name, sep = '\t')
 
 def dircheck(path2dir):

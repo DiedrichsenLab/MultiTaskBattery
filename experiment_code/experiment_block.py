@@ -55,12 +55,9 @@ class Experiment:
 
     def set_const_defaults(self):
         """ Make sure all the necessary variables are set in the constant file - otherwise set them to default values"""
-        if not 'stim_dir' in dir(self.const):
-            self.const.stim_dir = Path(os.path.dirname(os.path.dirname(__file__))) / 'stimuli'  # where the experiment code is stored
-
-        if not 'task_table' in dir(self.const):
-            self.const.task_table = Path(os.path.dirname(__file__)) / 'task_list,tsv'  # where the experiment code is stored
-
+        # if not 'stim_dir' in dir(self.const):
+        #     self.const.stim_dir = Path(os.path.dirname(os.path.dirname(__file__))) / 'stimuli'  # where the experiment code is stored
+        pass
 
     def confirm_run_info(self):
         """
@@ -111,13 +108,12 @@ class Experiment:
 
         # 1. get the run file info: creates self.run_info
         self.run_info = pd.read_csv(self.const.run_dir / self.run_filename,sep='\t')
-        task_table = pd.read_csv(self.const.task_table,sep='\t')
 
         # 2. Initialize the all tasks that we need
         self.task_obj_list = [] # a list containing task objects in the run
         for t_num, task_info in self.run_info.iterrows():
             # create a task object for the current task, reads the trial file, and append it to the list
-            t = task_table[task_info.task_name]
+            t = ut.task_table[task_info.task_name]
             task_info['code'] = t.code
             TaskClass = tasks.get_attr(t.task_class)
             Task_obj  = TaskClass(task_info,

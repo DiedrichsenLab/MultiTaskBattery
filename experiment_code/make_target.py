@@ -8,8 +8,8 @@ import os
 import random
 import glob
 import re
+import experiment_code.utils as ut
 
-import experiment_code.utils as consts
 
 
 def shuffle_rows(dataframe):
@@ -26,13 +26,50 @@ def shuffle_rows(dataframe):
     dataframe = (dataframe.iloc[indx]).reset_index(drop = True)
     return dataframe
 
-def make_run_file(const,
-                  task_list,
+def add_start_end_times(dataframe, offset, task_dur):
+    """
+    adds start and end times to the dataframe
+
+    Args:
+        dataframe (dataframe): dataframe to be shuffled
+        offset (float): offset of the task
+        task_dur (float): duration of the task
+    Returns:
+        dataframe (dataframe): dataframe with start and end times
+    """
+    dataframe['start_time'] = np.arange(offset, offset + len(dataframe)*task_dur, task_dur)
+    dataframe['end_time']   = dataframe['start_time'] + task_dur
+    return dataframe
+
+def make_run_file(task_list,
+                  tfiles,
                   offset = 0,
                   instruction_dur = 5,
                   task_dur = 30):
+    """
+    Make a single run file
+    """
+    # Get rows of the task_table corresponding to the task_list
+    indx = [np.where(ut.task_table['name']==t)[0][0] for t in task_list]
+    R = {'task_name':task_list,
+         'task_code':ut.task_table['code'].iloc[indx],
+         'target_file':tfiles,
+         'instruction_dur':[instruction_dur]*len(task_list)}
+    R = pd.DataFrame(R)
+    R = shuffle_rows(R)
+    R = add_start_end_times(R, offset, task_dur+instruction_dur)
+    return R
 
-
+def get_task_class(name):
+    """Creates an object of the task class based on the task name
+    Args:
+        name (str): name of the task
+    Returns:
+        class_name (str): class name for task
+    """
+    index = np.where(ut.task_table['name']==name)[0][0]
+    class_name = ut.task_table.iloc[index]['class']
+    return class_name
 
 class Target():
     def __init__(self, const) :
@@ -42,6 +79,84 @@ class Target():
         """
         self.exp_name   = const.exp_name
         self.target_dir = const.target_dir
+
+
+class NBack(Target):
+    def __init__(self, const):
+        super().__init__(const)
+        self.name = 'n_back'
+
+    def make_trial_file(self,
+                        hand = 'right',
+                        task_dur =  30,
+                        trial_dur = 2,
+                        iti_dur   = 0.5,
+                        stim = ['9.jpg','11.jpg','15.jpg','18.jpg','28.jpg'],
+                        file_name = None ):
+        n_trials = int(np.floor(task_dur / (trial_dur+iti_dur)))
+        trial_info = []
+
+        prev_stim = ['x','x']
+        t = 0
+        for n in range(n_trials):
+            trial = {}
+            trial['trial_num'] = n
+            trial['hand'] = hand
+            trial['trial_dur'] = trial_dur
+            trial['iti_dur'] = iti_dur
+            trial['display_trial_feedback'] = True
+            # Determine if this should be N-2 repetition trial
+            if n<2:
+                trial['trial_type'] = 0
+            else:
+                trial['trial_type'] = np.random.randint(0,2)
+            # Now choose the stimulus accordingly
+            if trial['trial_type']==0:
+                trial['stim'] = stim[np.random.randint(0,len(stim))]
+            else:
+                trial['stim'] = prev_stim[1]
+
+            trial['display_trial_feedback'] = True
+            trial['feedback_type'] = 'acc'
+            trial['start_time'] = t
+            trial['end_time'] = t + trial_dur + iti_dur
+            trial_info.append(trial)
+
+            # Update for next trial:
+            t= trial['end_time']
+            prev_stim[1] = prev_stim[0]
+            prev_stim[0] = trial['stim']
+
+        trial_info = pd.DataFrame(trial_info)
+        if file_name is not None:
+            trial_info.to_csv(self.target_dir / self.name / file_name,sep='\t',index=False)
+        return trial_info
+
+
+class Rest(Target):
+    def __init__(self, const):
+        super().__init__(const)
+        self.name = 'rest'
+
+    def make_trial_file(self,
+                        task_dur =  30,
+                        file_name = None ):
+        trial = {}
+        trial['trial_num'] = [1]
+        trial['trial_dur'] = [task_dur]
+        trial['start_time'] = [0]
+        trial['end_time'] =  [task_dur]
+        trial_info = pd.DataFrame(trial)
+        if file_name is not None:
+            trial_info.to_csv(self.target_dir / self.name / file_name,sep='\t',index=False)
+        return trial_info
+
+
+
+### ====================================================================================================
+# What follows is potentially depreciated code, which I think is unecessarily complicated
+### ====================================================================================================
+
 
 
 class Session():
@@ -788,50 +903,6 @@ class SemanticPrediction(Target):
         self.df = self.make_trials_time(self.df)
         self.save_target_file(self.df)
 
-class NBack(Target):
-    def make_trial_file(self,
-                        hand = 'right',
-                        task_dur =  30,
-                        trial_dur = 2,
-                        iti_dur   = 0.5,
-                        stim = ['9.jpg','11.jpg','15.jpg','18.jpg','28.jpg'],
-                        file_name = 'n_back_30sec_01.tsv' ):
-        n_trials = np.int(np.floor(task_dur / (trial_dur+iti_dur)))
-        trial_info = []
-
-        prev_stim = ['x','x']
-        t = 0
-        for n in range(n_trials):
-            trial = {}
-            trial['trial_num'] = n
-            trial['hand'] = hand
-            trial['trial_dur'] = trial_dur
-            trial['iti_dur'] = iti_dur
-            trial['display_trial_feedback'] = True
-            # Determine if this should be N-2 repetition trial
-            if n<2:
-                trial['trial_type'] = 0
-            else:
-                trial['trial_type'] = np.random.randint(0,2)
-            # Now choose the stimulus accordingly
-            if trial['trial_type']==0:
-                trial['stim'] = stim[np.random.randint(0,len(stim))]
-            else:
-                trial['stim'] = prev_stim[1]
-
-            trial['display_trial_feedback'] = True
-            trial['feedback_type'] = 'acc'
-            trial['start_time'] = t
-            trial['end_time'] = t + trial_dur + iti_dur
-            trial_info.append(trial)
-
-            # Update for next trial:
-            t= trial['end_time']
-            prev_stim[1] = prev_stim[0]
-            prev_stim[0] = trial['stim']
-
-        trial_info = pd.DataFrame(trial_info)
-        trial_info.to_csv(self.const.target_dir / self.name / file_name,sep='\t',index=False)
 
 
 class TheoryOfMind(Target):
@@ -1107,30 +1178,6 @@ class VerbGeneration(Target):
         self.df = self.make_trials_time(self.df)
         self.save_target_file(self.df)
 
-class Rest(Target):
-    def __init__(self, study_name = 'behavioral', hand = None, trial_dur = 30,
-                 iti_dur = 0, run_number = 1, display_trial_feedback = False,
-                 task_dur = 30, tr = 1):
-        super(Rest, self).__init__(study_name = study_name, task_name = 'rest', hand = hand,
-                                           trial_dur = trial_dur, iti_dur = iti_dur, run_number = run_number,
-                                           display_trial_feedback = display_trial_feedback, task_dur = task_dur, tr = tr)
-
-    def _add_task_info(self):
-        super().make_trials() # first fill in the common fields
-
-        self.target_dataframe['stim'] = 'fixation'
-
-        return self.target_dataframe
-
-    def _make_files(self):
-        """
-        makes target file and (if exists) related task info and  saves them
-        """
-
-        # save target file
-        self.df = self._add_task_info()
-        self.df = self.make_trials_time(self.df)
-        self.save_target_file(self.df)
 
 class SocialPrediction(Target):
     pass
@@ -1174,28 +1221,11 @@ def make_files(task_list, study_name = 'behavioral', num_runs = 8,
 
     return
 
-TASK_MAP = {
-    "visual_search": VisualSearch, # task_num 1
-    "theory_of_mind": TheoryOfMind, # task_num 2
-    "n_back": NBack, # task_num 3
-    "social_prediction": SocialPrediction, # task_num 4
-    "semantic_prediction": SemanticPrediction, # task_num 5
-    "finger_sequence": FingerSequence, # task_num 7
-    "sternberg_order": SternbergOrder, # task_num 8
-    "visuospatial_order": VisuospatialOrder, # task 9
-    "flexion_extension": FlexionExtension, # task_num 10
-    "verb_generation": VerbGeneration, # task_num 11
-    "romance_movie": RomanceMovie, #task_num 12
-    "action_observation_knots": ActionObservationKnots, #task_num 13
-    "rest": Rest, # task_num?
-    }
-
-
 
 if __name__ == "__main__":
     # Example code
     ## behavioral
-    make_files(study_name='behavioral', num_runs=8)
+
     ## fmri
     make_files(study_name='fmri', num_runs=8)
 
