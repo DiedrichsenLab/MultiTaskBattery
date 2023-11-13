@@ -7,3 +7,5 @@ docs/build/*
 /stimuli/behavioral/*
 /stimuli/fmri/*
 *.mp4
+pontine_7T/.DS_Store
+.DS_Store
