@@ -386,11 +386,11 @@ class VerbGeneration(Task):
     def init_task(self):
         """ Initialize task-specific settings. """
         self.trial_info = pd.read_csv(self.const.target_dir / self.name / self.target_file, sep='\t')
-        self.trial_info['noun'] = self.trial_info['word'].str.strip()
+        self.trial_info['noun'] = self.trial_info['stim'].str.strip()
 
     def display_instructions(self): # overriding the display instruction from the parent class
 
-        self.instruction_text = f"{self.task_name} task \n\n Silently read the words presented.  \n\n When GENERATE is shown, silently think of verbs that go with the words."
+        self.instruction_text = f"{self.name} task \n\n Silently read the words presented.  \n\n When GENERATE is shown, silently think of verbs that go with the words."
         instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
         instr_visual.draw()
         self.window.flip()
@@ -424,19 +424,13 @@ class VerbGeneration(Task):
         trial['real_start_time'] = real_start_time
         trial['start_ttl'] = start_ttl
         trial['start_ttl_time'] = start_ttl_time
+
+        # collect responses
+        key,trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['trial_dur'])
+
+        # display trial feedback
+        self.display_trial_feedback(give_feedback= False, correct_response = False)
         return trial
-
-
-
-    def run(self):
-        """ Loop over trials and collect data. """
-        self.trial_data = []
-
-        for i, trial in self.trial_info.iterrows():
-            t_data = self.run_trial(trial)
-            self.trial_data.append(t_data)
-
-        self.trial_data = pd.DataFrame(self.trial_data)
 
 
 class SocialPrediction(Task):
