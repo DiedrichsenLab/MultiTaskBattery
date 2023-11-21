@@ -1,3 +1,4 @@
 task_name	task_code	target_file	instruction_dur	start_time	end_time
-rest	rest	rest_30s.tsv	5	0	35
-n_back	nbko	n_back_01.tsv	5	35	70
+n_back	nbko	n_back_01.tsv	5	0	35
+verb_generation	verbgen	verb_generation_01.tsv	5	35	70
+rest	rest	rest_30s.tsv	5	70	105
