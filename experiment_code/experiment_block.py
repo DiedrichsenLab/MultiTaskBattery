@@ -113,9 +113,10 @@ class Experiment:
         self.task_obj_list = [] # a list containing task objects in the run
         for t_num, task_info in self.run_info.iterrows():
             # create a task object for the current task, reads the trial file, and append it to the list
-            t = ut.task_table[task_info.task_name]
+            t = ut.task_table[ut.task_table['name']== task_info.task_name]
             task_info['code'] = t.code
-            TaskClass = tasks.get_attr(t.task_class)
+            class_name = t.task_class.iloc[0]
+            TaskClass = getattr(tasks, class_name)
             Task_obj  = TaskClass(task_info,
                                  screen = self.screen,
                                  ttl_clock = self.ttl_clock,
@@ -160,7 +161,7 @@ class Experiment:
             task.display_instructions()
 
             # wait for a time period equal to instruction duration
-            self.ttl_clock.wait_until(r_data.start_time + r_data.instruct_dur)
+            self.ttl_clock.wait_until(r_data.start_time + r_data.instruction_dur)
 
             # Run the task (which saves its data to the target)
             task.start_time = self.ttl_clock.get_time()

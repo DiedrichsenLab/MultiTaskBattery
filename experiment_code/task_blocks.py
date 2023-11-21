@@ -374,6 +374,64 @@ class NBack(Task):
         # display trial feedback
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
         return trial
+    
+class VerbGeneration(Task):
+    # def instruction_text(self):
+    #     return "Verb Generation Task\n\nYou will read a series of nouns. For some nouns you will be asked to silently generate a verb.\n\nAnswer as quickly and as accurately as possible"
+
+    def __init__(self, info, screen, ttl_clock, const):
+        super().__init__(info, screen, ttl_clock, const)
+        self.feedback_type = 'None'
+
+    def init_task(self):
+        """ Initialize task-specific settings. """
+        self.trial_info = pd.read_csv(self.const.target_dir / self.name / self.target_file, sep='\t')
+        self.trial_info['noun'] = self.trial_info['stim'].str.strip()
+
+    def display_instructions(self): # overriding the display instruction from the parent class
+
+        self.instruction_text = f"{self.name} task \n\n Silently read the words presented.  \n\n When GENERATE is shown, silently think of verbs that go with the words."
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
+        instr_visual.draw()
+        self.window.flip()
+
+    def show_stim(self, noun):
+        """ Display a word for a fixed time. """
+        stim = visual.TextStim(self.window, text=noun, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg')
+        stim.draw()
+        self.window.flip()
+
+    def display_generate_instruction(self):
+        """ Display the 'GENERATE' instruction. """
+        generate_instr = visual.TextStim(self.window, text='GENERATE', pos=(0.0, 0.0), color=(-1, -1, -1), units='deg')
+        generate_instr.draw()
+        self.window.flip()
+
+    def run_trial(self, trial):
+        """ Run a single trial of the VerbGeneration task. """
+        # Wait for the start time of the trial
+        real_start_time, start_ttl, start_ttl_time = self.ttl_clock.wait_until(trial['start_time'])
+
+        # Display word
+        self.show_stim(trial['noun'])
+
+        # Optionally display GENERATE instruction at the halfway point
+        if trial.name == int(self.trial_info.index.stop / 2):
+            self.display_generate_instruction()
+
+        # Here you can handle the response collection if needed
+
+        trial['real_start_time'] = real_start_time
+        trial['start_ttl'] = start_ttl
+        trial['start_ttl_time'] = start_ttl_time
+
+        # collect responses
+        key,trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['trial_dur'])
+
+        # display trial feedback
+        self.display_trial_feedback(give_feedback= False, correct_response = False)
+        return trial
+
 
 class SocialPrediction(Task):
     def instruction_text(self):
@@ -1639,128 +1697,6 @@ class FlexionExtension(Task):
             # update trial response
             self.trial_response = {}
             self.update_trial_response()
-
-            # 6.
-            self.screen_quit()
-
-        # get the response dataframe
-        rDf = self.get_task_response(all_trial_response=self.all_trial_response)
-
-        return rDf
-
-class VerbGeneration(Task):
-    # @property
-    # def instruction_text(self):
-    #     return "Verb Generation Task\n\nYou will read a series of nouns. For some nouns you will be asked to silently generate a verb.\n\nAnswer as quickly and as accurately as possible"
-
-    def __init__(self, screen, target_file, run_end, name, task_num, study_name, target_num, ttl_flag, save = True):
-        super().__init__(screen, target_file, run_end, name, task_num, study_name, target_num, ttl_flag, save_response = save)
-        self.feedback_type = 'None' # no feedback
-        self.name          = 'verb_generation'
-
-    def _get_trial_info(self):
-        # get stim (i.e. story)
-        super().get_trial_info(self.trial)
-        self.noun = self.target_file['word'][self.trial]
-        self.noun = self.noun.strip()
-        self.start_time = self.target_file['start_time'][self.trial]
-
-    def display_instructions(self): # overriding the display instruction from the parent class
-
-        self.instruction_text = f"{self.name} task \n\n Silently read the words presented.  \n\n When GENERATE is shown, silently think of verbs that go with the words."
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
-        instr_visual.draw()
-        self.window.flip()
-
-    def _show_stim(self):
-        # display word for fixed time
-        self.word_start = self.get_current_trial_time()
-        stim = visual.TextStim(self.window, text=self.noun, pos=(0.0,0.0), color=(-1,-1,-1), units='deg')
-        stim.text = stim.text  # per PsychoPy documentation, this should reduce timing delays in displaying text
-        stim.draw()
-        self.window.flip()
-
-        # the word will remain on the screen for a certain amount of time (self.trial_dur)
-        if self.ttl_flag: # wait for ttl pulse
-            while ttl.clock.getTime()-self.word_start <= self.trial_dur - 0.1:
-                    ttl.check()
-        else: # do not wait for ttl pulse
-            while self.clock.getTime()-self.word_start <= self.trial_dur - 0.1:
-                pass
-
-    def _show_instruct_read(self):
-        # display instruction for fixed time
-        self.instruct_read_start = self.get_current_trial_time()
-        stim = visual.TextStim(self.window, text='READ', pos=(0.0,0.0), color=(-1,-1,-1), units='deg')
-        stim.text = stim.text  # per PsychoPy documentation, this should reduce timing delays in displaying text
-        stim.draw()
-        self.window.flip()
-
-        # the instruction will remain on the screen for a certain amount of time (self.instruct_dur_secs)
-        if self.ttl_flag: # wait for ttl pulse
-            while ttl.clock.getTime()-self.instruct_read_start <= self.trial_dur - 0.1:
-                    ttl.check()
-        else: # do not wait for ttl pulse
-            while self.clock.getTime()-self.instruct_read_start <= self.trial_dur - 0.1:
-                pass
-
-    def _show_instruct_generate(self):
-        # display instruction for fixed time
-        self.instruct_generate_start = self.get_current_trial_time()
-        stim = visual.TextStim(self.window, text='GENERATE', pos=(0.0,0.0), color=(-1,-1,-1), units='deg')
-        stim.text = stim.text  # per PsychoPy documentation, this should reduce timing delays in displaying text
-        stim.draw()
-        self.window.flip()
-
-        # the instruction will remain on the screen for a certain amount of time (self.instruct_dur_secs)
-        if self.ttl_flag: # wait for ttl pulse
-            while ttl.clock.getTime()-self.instruct_generate_start <= self.trial_dur - 0.1:
-                    ttl.check()
-        else: # do not wait for ttl pulse
-            while self.clock.getTime()-self.instruct_generate_start <= self.trial_dur - 0.1:
-                pass
-
-    def run(self):
-        # run the task
-
-        # loop over trials
-        self.all_trial_response = [] # pre-allocate
-
-        for self.trial in self.target_file.index:
-
-            # get stims
-            self._get_trial_info()
-
-            # get current time (self.t0)
-            self.t0 = self.get_current_trial_time()
-
-            # show the fixation for the duration of iti
-            # wait here till the startTime
-            self.show_fixation(self.t0, self.start_time - self.t0)
-
-            # collect real_start_time for each block (self.real_start_time)
-            self.get_real_start_time(self.t0)
-
-            # 0.1 Show "GENERATE" instruction if this is half-way point
-            if self.trial == int(self.target_file.index.stop/2):
-                self._show_instruct_generate()
-
-            # 1. show actions
-            self._show_stim()
-
-            ## 3.2 get the time before collecting responses (self.t2)
-            self.get_time_before_disp()
-
-            # 4. display trial feedback
-            if self.target_file['display_trial_feedback'][self.trial] and self.response_made:
-                self.display_trial_feedback(correct_response = self.correct_response)
-            else:
-                self.screen.fixation_cross()
-
-            # 5 show fixation for the duration of the iti
-            ## 5.1 get current time
-            t_start_iti = self.get_current_trial_time()
-            self.show_fixation(t_start_iti, self.iti_dur)
 
             # 6.
             self.screen_quit()

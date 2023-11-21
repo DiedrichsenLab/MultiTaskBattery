@@ -15,6 +15,7 @@ exp_dir = Path(os.path.dirname(os.path.realpath(__file__)))   # where the experi
 target_dir = exp_dir / "target_files"  # contains target files for the task
 run_dir    = exp_dir / "run_files"     # contains run files for each session
 data_dir   = exp_dir / "data"          # This is where the result files are being saved
+stim_dir   = exp_dir /'..'/ "stimuli"       # This is where the stimuli are stored
 
 # Eye tracker?
 eye_tracker = False                                     # do you want to do the eyetracking?
