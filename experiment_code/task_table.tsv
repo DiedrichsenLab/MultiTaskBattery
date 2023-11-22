@@ -1,15 +1,15 @@
-name	task_class	code
-visual_search	VIsualSearch	viss
-theory_of_mind	TheoryOfMind	tom
-n_back	NBack	nbko
-social_prediction	SocialPrediction	socpred
-semantic_prediction	SemanticPrediction	sempred
-action_observation	ActionObservation	actobs
-finger_sequence	FingerSequence	fingseq
-sternberg_order	SternbergOrder	sternord
-visuospatial_order	VisuospatialOrder	visspord
-foot_movement	Foot_movement	foot
-verb_generation	VerbGeneration	verbgen
-romance_movie	RomanceMovie	rommov
-action_observation_knots	ActionObservationKnots	actobsk
-rest	Rest	rest
+name	task_class	code	description	reference
+visual_search	VIsualSearch	viss		
+theory_of_mind	TheoryOfMind	tom		
+n_back	NBack	nbko		
+social_prediction	SocialPrediction	socpred		
+semantic_prediction	SemanticPrediction	sempred		
+action_observation	ActionObservation	actobs		
+finger_sequence	FingerSequence	fingseq		
+sternberg_order	SternbergOrder	sternord		
+visuospatial_order	VisuospatialOrder	visspord		
+foot_movement	Foot_movement	foot		
+verb_generation	VerbGeneration	verbgen	"Words presented, participants read the words. At halfpoint, ""GENERATE"" is shown, participants need to covertly generate verbs associated with words"	"D'Mello et al.,2017"
+romance_movie	RomanceMovie	rommov		
+action_observation_knots	ActionObservationKnots	actobsk		
+rest	Rest	rest	Lie in scanner with a fixation cross	NA
