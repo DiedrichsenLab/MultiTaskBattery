@@ -68,7 +68,7 @@ def get_task_class(name):
         class_name (str): class name for task
     """
     index = np.where(ut.task_table['name']==name)[0][0]
-    class_name = ut.task_table.iloc[index]['class']
+    class_name = ut.task_table.iloc[index]['task_class']
     return class_name
 
 class Target():
@@ -79,7 +79,6 @@ class Target():
         """
         self.exp_name   = const.exp_name
         self.target_dir = const.target_dir
-
 
 class NBack(Target):
     def __init__(self, const):
@@ -132,7 +131,6 @@ class NBack(Target):
             trial_info.to_csv(self.target_dir / self.name / file_name,sep='\t',index=False)
         return trial_info
 
-
 class Rest(Target):
     def __init__(self, const):
         super().__init__(const)
@@ -151,7 +149,6 @@ class Rest(Target):
             trial_info.to_csv(self.target_dir / self.name / file_name,sep='\t',index=False)
         return trial_info
     
-
 class VerbGeneration(Target):
     def __init__(self, const):
         super().__init__(const)
@@ -202,6 +199,79 @@ class VerbGeneration(Target):
             ut.dircheck(self.target_dir / self.name)
             trial_info.to_csv(self.target_dir / self.name / file_name,sep='\t',index=False)
 
+        return trial_info
+    
+class FlexionExtension(Target):
+    def __init__(self, const):
+        super().__init__(const)
+        self.name = 'flexion_extension'
+
+    def make_trial_file(self,
+                        hand = None,
+                        task_dur =  30,
+                        trial_dur = 30,
+                        iti_dur   = 0,
+                        file_name = None ):
+        n_trials = int(np.floor(task_dur / (trial_dur+iti_dur)))
+        trial_info = []
+
+        t = 0
+
+        for n in range(n_trials):
+            trial = {}
+            trial['trial_num'] = n
+            trial['hand'] = 'None'  # as hand is not used
+            trial['trial_dur'] = trial_dur
+            trial['iti_dur'] = iti_dur
+            trial['stim'] = "flexion extension"
+            trial['display_trial_feedback'] = False
+            trial['trial_type'] = 'None'  # as there are no true or false responses
+            trial['start_time'] = t
+            trial['end_time'] = t + trial_dur + iti_dur
+            trial_info.append(trial)
+
+            # Update for next trial:
+            t = trial['end_time']
+
+        trial_info = pd.DataFrame(trial_info)
+        if file_name is not None:
+            trial_info.to_csv(self.target_dir / self.name / file_name, sep='\t', index=False)
+        return trial_info
+class TongueMovement(Target):
+    def __init__(self, const):
+        super().__init__(const)
+        self.name = 'tongue_movement'
+
+    def make_trial_file(self,
+                        hand = None,
+                        task_dur =  30,
+                        trial_dur = 1,
+                        iti_dur   = 0,
+                        file_name = None ):
+        n_trials = int(np.floor(task_dur / (trial_dur+iti_dur)))
+        trial_info = []
+
+        t = 0
+
+        for n in range(n_trials):
+            trial = {}
+            trial['trial_num'] = n
+            trial['hand'] = 'None'  # Hand is not used in this task
+            trial['trial_dur'] = trial_dur
+            trial['iti_dur'] = iti_dur
+            trial['display_trial_feedback'] = False
+            # Alternate between 'right' and 'left' for each trial
+            trial['trial_type'] = 'right' if n % 2 == 0 else 'left'
+            trial['start_time'] = t
+            trial['end_time'] = t + trial_dur + iti_dur
+            trial_info.append(trial)
+
+            # Update for next trial:
+            t = trial['end_time']
+
+        trial_info = pd.DataFrame(trial_info)
+        if file_name is not None:
+            trial_info.to_csv(self.target_dir / self.name / file_name, sep='\t', index=False)
         return trial_info
 
 
@@ -538,41 +608,6 @@ class SternbergOrder(Target):
 
         self.target_dataframe['prob_stim'] = self.prob_stim
 
-        dataframe = self.shuffle_rows(self.target_dataframe)
-
-        return dataframe
-
-    def _make_files(self):
-        """
-        makes target file and (if exists) related task info and  saves them
-        """
-
-        # save target file
-        self.df = self._add_task_info(random_state=self.run_number)
-        self.df = self.make_trials_time(self.df)
-        self.save_target_file(self.df)
-
-class FlexionExtension(Target):
-    def __init__(self, study_name = 'behavioral', hand = None, trial_dur = 30,
-                 iti_dur = 0, run_number = 1, display_trial_feedback = False,
-                 task_dur = 30, stim_dur = 2, tr = 1):
-
-        super(FlexionExtension, self).__init__(study_name = study_name, task_name = 'flexion_extension', hand = None,
-                                               trial_dur = trial_dur, iti_dur = iti_dur, run_number = run_number,
-                                               display_trial_feedback = display_trial_feedback, task_dur = task_dur, tr = tr)
-
-        self.trials_info = {"condition_name":["flexion extention"], "trial_type":[None]}
-        self.stim_dur = stim_dur # time while either flexion or extension is remaining on the screen
-
-    def _add_task_info(self, random_state):
-        super().make_trials() # first fill in the common fields
-
-        self.target_dataframe['stim']       = ["flexion extension" for i in range(self.num_trials)]
-        self.target_dataframe['stim_dur']   = [self.stim_dur for i in range(self.num_trials)]
-        self.target_dataframe['trial_type'] = ['None' for i in range(self.num_trials)] # there are no true of false responses
-        self.target_dataframe['hand']       = ['None' for i in range(self.num_trials)] # hand is not used
-
-        # randomly shuffle rows of the dataframe
         dataframe = self.shuffle_rows(self.target_dataframe)
 
         return dataframe
