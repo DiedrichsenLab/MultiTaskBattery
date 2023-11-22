@@ -211,6 +211,7 @@ class FlexionExtension(Target):
                         task_dur =  30,
                         trial_dur = 30,
                         iti_dur   = 0,
+                        stim_dur = 2,
                         file_name = None ):
         n_trials = int(np.floor(task_dur / (trial_dur+iti_dur)))
         trial_info = []
@@ -224,6 +225,7 @@ class FlexionExtension(Target):
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
             trial['stim'] = "flexion extension"
+            trial['stim_dur'] = stim_dur
             trial['display_trial_feedback'] = False
             trial['trial_type'] = 'None'  # as there are no true or false responses
             trial['start_time'] = t
@@ -237,6 +239,7 @@ class FlexionExtension(Target):
         if file_name is not None:
             trial_info.to_csv(self.target_dir / self.name / file_name, sep='\t', index=False)
         return trial_info
+    
 class TongueMovement(Target):
     def __init__(self, const):
         super().__init__(const)

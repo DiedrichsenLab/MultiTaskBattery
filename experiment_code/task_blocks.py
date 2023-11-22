@@ -84,6 +84,7 @@ class Task:
             self.trial_data.append(t_data)
         self.trial_data = pd.DataFrame(self.trial_data)
 
+
     def wait_response(self, start_time, max_wait_time):
         """
         waits for a response to be made and then returns the response
@@ -339,114 +340,121 @@ class VerbGeneration(Task):
         # display trial feedback
         self.display_trial_feedback(give_feedback= False, correct_response = False)
         return trial
+    
+class Rest(Task):
+    def __init__(self, info, screen, ttl_clock, const):
+        super().__init__(info, screen, ttl_clock, const)
+        self.feedback_type = 'none'
+        self.name          = 'rest'
+
+    def display_instructions(self): # overriding the display instruction routine from the parent
+        self.instruction_text = 'Rest: Fixate on the cross'
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
+        # instr.size = 0.8
+        instr_visual.draw()
+        self.window.flip()
+
+    def show_stim(self):
+        # show fixation cross
+        self.screen.fixation_cross()
+
+    def run_trial(self,trial):
+        # get current time (self.t0)
+        self.screen.fixation_cross()
+        self.ttl_clock.wait_until(self.start_time + trial['trial_dur'])
+        return trial
 
 class FlexionExtension(Task):
     """
-    flexion extension of toes! No particular feedback
+    Flexion extension of toes! No particular feedback.
     """
-    def __init__(self, screen, target_file, run_end, name, task_num, study_name, target_num, ttl_flag, save = True):
-        super().__init__(screen, target_file, run_end, name, task_num, study_name, target_num, ttl_flag, save_response = save)
-        self.feedback_type = 'None' # reaction
-        self.name          = 'flexion_extension'
+    def __init__(self, info, screen, ttl_clock, const):
+        super().__init__(info, screen, ttl_clock, const)
+        self.feedback_type = 'None'
+    
+    def init_task(self):
+        self.trial_info = pd.read_csv(self.const.target_dir / self.name / self.target_file, sep='\t')
 
-    def _get_trial_info(self):
-        # reads info from the target file
-        super().get_trial_info(self.trial)
-        self.stim = self.target_file['stim'][self.trial]
-        self.stim_dur = self.target_file['stim_dur'][self.trial]
-        self.trial_type = self.target_file['trial_type'][self.trial]
-        self.display_trial_feedback = self.target_file['display_trial_feedback'][self.trial]
-        # self.foot = self.target_file['foot'][self.trial]
-
-    def display_instructions(self): # overriding the display instruction from the parent class
-        self.instruction_text = f"{self.name} task \n\n flex and extend your right and left toes"
+    def display_instructions(self):
+        self.instruction_text = f"{self.name} task \n\n Flex and extend your right and left toes"   
         instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
         instr_visual.draw()
         self.window.flip()
 
-    def _show_stim(self):
-        # displays the instruction:
-        # either flexion or extension appears
-        self.stim_pair = self.stim.split()
-        n_rep = int(self.trial_dur/(self.stim_dur*2)) # number of times a stimulus pair will be repeated
+    def run_trial(self, trial):
+        real_start_time, start_ttl, start_ttl_time = self.ttl_clock.wait_until(trial['start_time'])
+        # Handle the display of each action
+        self.stim_pair = trial['stim'].split()
+        n_rep = int(trial['trial_dur'] / (trial['stim_dur'] * 2))
+        stim_actions = np.tile(self.stim_pair, n_rep)
 
-        self.stim_act = np.tile(self.stim_pair, n_rep)
-
-
-        for act in self.stim_act:
-            self.act_start = self.get_current_trial_time()
-            # stim = visual.TextStim(self.window, text = self.foot + "\n "+ act, pos=(0.0,0.0), color=(-1,-1,-1), units='deg', height = 1.5)
-            stim = visual.TextStim(self.window, text = act, pos=(0.0,0.0), color=(-1,-1,-1), units='deg', height = 1.5)
+        for action in stim_actions:
+            # Display action
+            stim = visual.TextStim(self.window, text=action, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height=1.5)
             stim.draw()
             self.window.flip()
 
-            # core.wait(self.stem_word_dur)
+            # Wait for the duration of the stimulus
+            start_time = self.ttl_clock.get_time()
+            self.ttl_clock.wait_until(start_time + trial['stim_dur'])
 
-            # each word will remain on the screen for a certain amount of time (self.stem_word_dur)
-            if self.ttl_flag: # wait for ttl pulse
-                while ttl.clock.getTime()-self.act_start <= self.stim_dur:
-                    ttl.check()
-            else: # do not wait for ttl pulse
-                while self.clock.getTime()-self.act_start <= self.stim_dur:
-                    pass
+        trial['real_start_time'] = real_start_time
+        trial['start_ttl'] = start_ttl
+        trial['start_ttl_time'] = start_ttl_time
 
-    def run(self):
-        # run the task
-
-        # loop over trials
-        self.all_trial_response = [] # pre-allocate
-
-        for self.trial in self.target_file.index:
-
-            # get stims
-            self._get_trial_info()
-
-            # get current time (self.t0)
-            self.t0 = self.get_current_trial_time()
-
-            # show the fixation for the duration of iti
-            # wait here till the startTime
-            self.show_fixation(self.t0, self.start_time - self.t0)
-
-            # collect real_start_time for each block (self.real_start_time)
-            self.get_real_start_time(self.t0)
-
-            # 1. show actions
-            self._show_stim()
-
-            ## 3.2 get the time before collecting responses (self.t2)
-            self.get_time_before_disp()
-
-            # 4. display trial feedback
-            if self.target_file['display_trial_feedback'][self.trial] and self.response_made:
-                self.display_trial_feedback(correct_response = self.correct_response)
-            else:
-                self.screen.fixation_cross()
-
-            # 5 show fixation for the duration of the iti
-            ## 5.1 get current time
-            t_start_iti = self.get_current_trial_time()
-            self.show_fixation(t_start_iti, self.iti_dur)
-
-            # if self.ttl_flag:
-            #     while (ttl.clock.getTime() - self.t0 <= wait_time): # and not resp_made:
-            #         ttl.check()
-            # else:
-            #     while (self.clock.getTime() - self.t0 <= wait_time): # and not resp_made:
-            #         pass
-
-            # update trial response
-            self.trial_response = {}
-            self.update_trial_response()
-
-            # 6.
-            self.screen_quit()
-
-        # get the response dataframe
-        rDf = self.get_task_response(all_trial_response=self.all_trial_response)
-
-        return rDf
+        # No response is expected in this task, so return trial as is
+        return trial
     
+class TongueMovement(Task):
+    """
+    Tongue movement following Buckner et al., 2022! No particular feedback.
+    """
+    def __init__(self, info, screen, ttl_clock, const):
+        super().__init__(info, screen, ttl_clock, const)
+        self.feedback_type = 'None'
+    
+    def init_task(self):
+        self.trial_info = pd.read_csv(self.const.target_dir / self.name / self.target_file, sep='\t')
+
+    def display_instructions(self):
+        self.instruction_text = f"{self.name} task \n\n Move your tongue left to right touching your upper premolar teeth"   
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
+        instr_visual.draw()
+        self.window.flip()
+
+    def run_trial(self, trial):
+        """ Run a single trial of the tonguemovement task. """
+        # Wait for the start time of the trial
+        real_start_time, start_ttl, start_ttl_time = self.ttl_clock.wait_until(trial['start_time'])
+
+        # draw fixation cross without flipping
+        self.screen.fixation_cross(flip=False)
+        
+        # Check the trial_type and display the corresponding stimulus
+        if trial['trial_type'] == 'right':
+            # If trial_type is 'right', show the black circle around the fixation cross
+            circle_visual = visual.Circle(self.window, radius=1, edges= 32, fillColor=None, lineColor='black')
+            circle_visual.draw()
+
+        self.window.flip()
+
+        # Here you can handle the response collection if needed
+
+        trial['real_start_time'] = real_start_time
+        trial['start_ttl'] = start_ttl
+        trial['start_ttl_time'] = start_ttl_time
+
+        # collect responses
+        key,trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['trial_dur'])
+
+        # display trial feedback
+        self.display_trial_feedback(give_feedback= False, correct_response = False)
+        return trial
+    
+
+### ====================================================================================================
+# What follows is tasks we still need to modify
+### ====================================================================================================
 
 class VisualSearch(Task):
     # @property
@@ -539,11 +547,6 @@ class VisualSearch(Task):
         rDf = self.get_task_response(all_trial_response=self.all_trial_response)
 
         return rDf
-    
-
-### ====================================================================================================
-# What follows is tasks we still need to modify
-### ====================================================================================================
 
 class SocialPrediction(Task):
     def instruction_text(self):
@@ -1904,26 +1907,5 @@ class ActionObservationKnots(Task):
 
         return rDf
 
-class Rest(Task):
-    def __init__(self, info, screen, ttl_clock, const):
-        super().__init__(info, screen, ttl_clock, const)
-        self.feedback_type = 'none'
-        self.name          = 'rest'
 
-    def display_instructions(self): # overriding the display instruction routine from the parent
-        self.instruction_text = 'Rest: Fixate on the cross'
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
-        # instr.size = 0.8
-        instr_visual.draw()
-        self.window.flip()
-
-    def show_stim(self):
-        # show fixation cross
-        self.screen.fixation_cross()
-
-    def run_trial(self,trial):
-        # get current time (self.t0)
-        self.screen.fixation_cross()
-        self.ttl_clock.wait_until(self.start_time + trial['trial_dur'])
-        return trial
 
