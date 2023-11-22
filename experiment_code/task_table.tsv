@@ -13,4 +13,5 @@ verb_generation	VerbGeneration	verbgen	"Words presented, participants read the w
 romance_movie	RomanceMovie	rommov		
 action_observation_knots	ActionObservationKnots	actobsk		
 rest	Rest	rest	Lie in scanner with a fixation cross	NA
-tongue_movement	TongueMovement	tongue		
+tongue_movement	TongueMovement	tongue	"move tongue from right to left, touching upper premolar teeth guided by a flashing black circle around a fixation crosshair, black circle means right no cirlce means left, 1s periods"	"A Third Somatomotor Representation in the Human Cerebellum (Bucknet et al., 2022)"
+flexion_extension	FlexionExtension	flexexten	alternating periods of flexing/extending toes	

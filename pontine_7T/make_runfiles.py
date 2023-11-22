@@ -5,10 +5,14 @@ import numpy as np
 
 """ This is an example script to make the run files and trial files for an experiment"""
 
-tasks = ['n_back','rest','verb_generation'] # ,'social_prediction','verb_generation'
+tasks = ['n_back','rest','verb_generation','flexion_extension', 'tongue_movement'] # ,'social_prediction','verb_generation'
+
+#  check if dirs for the tasks exist, if not, make them
+for task in tasks:
+    ut.dircheck(const.target_dir / task)
 
 for r in range(1,9):
-    tfiles = [f'n_back_{r:02d}.tsv','rest_30s.tsv',f'verb_generation_{r:02d}.tsv'] # f'social_prediction_{r:02d}.tsv',f'verb_generation_{r:02d}.tsv',
+    tfiles = [f'n_back_{r:02d}.tsv','rest_30s.tsv',f'verb_generation_{r:02d}.tsv', f'flexsion_extension_{r:02d}.tsv', f'tongue_movement_{r:02d}.tsv']
     T  = mt.make_run_file(tasks,tfiles)
     T.to_csv(const.run_dir / f'run_{r:02d}.tsv',sep='\t',index=False)
 
