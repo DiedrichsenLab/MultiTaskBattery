@@ -1,6 +1,0 @@
-task_name	task_code	target_file	instruction_dur	start_time	end_time
-verb_generation	verbgen	verb_generation_07.tsv	5	0	35
-rest	rest	rest_30s.tsv	5	35	70
-n_back	nbko	n_back_07.tsv	5	70	105
-flexion_extension	flexexten	flexion_extension_07.tsv	5	105	140
-tongue_movement	tongue	tongue_movement_07.tsv	5	140	175
