@@ -23,7 +23,7 @@ class Experiment:
     A general class with attributes common to experiments
     """
 
-    def __init__(self, const, subj_id, **kwargs):
+    def __init__(self, const, subj_id):
         """
             const (module):
                 local constants.py module (see pontine_7T/constants.py) as example
@@ -36,7 +36,6 @@ class Experiment:
         self.run_number = 0
         self.const = const
         self.ttl_clock = TTLClock()
-        self.__dict__.update(kwargs)
         self.set_const_defaults()
 
         # open screen and display fixation cross
