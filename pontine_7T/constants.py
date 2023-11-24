@@ -16,8 +16,8 @@ target_dir = exp_dir / "target_files"  # contains target files for the task
 run_dir    = exp_dir / "run_files"     # contains run files for each session
 data_dir   = exp_dir / "data"          # This is where the result files are being saved
 
-# Eye tracker?
-eye_tracker = False                                     # do you want to do the eyetracking?
+# is the Eye tracker being used
+eye_tracker = False                                     # do you want to do  eyetracking?
 
 # Running in debug mode?
 debug = True                                           # set to True for debugging
