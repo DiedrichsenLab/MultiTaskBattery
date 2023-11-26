@@ -7,7 +7,8 @@ import numpy as np
 
 tasks = ['n_back','rest','verb_generation','tongue_movement', 'flexion_extension'] # ,'social_prediction','verb_generation'
 
-#  check if dirs for the tasks exist, if not, make them
+#  check if dirs for the tasks and runs exist, if not, make them
+ut.dircheck(const.run_dir)
 for task in tasks:
     ut.dircheck(const.target_dir / task)
 
