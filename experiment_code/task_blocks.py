@@ -9,7 +9,7 @@ import pandas as pd
 import numpy as np
 import glob
 
-from psychopy import visual, core, event, constants, gui  # data, logging
+from psychopy import visual, sound, core, event, constants, gui  # data, logging
 from psychopy.visual import ShapeStim
 
 import experiment_code.utils as ut
@@ -450,6 +450,45 @@ class TongueMovement(Task):
         # display trial feedback
         self.display_trial_feedback(give_feedback= False, correct_response = False)
         return trial
+    
+class AuditoryNarrative(Task):
+    def __init__(self, info, screen, ttl_clock, const):
+        super().__init__(info, screen, ttl_clock, const)
+        self.feedback_type = 'None'  
+
+    def init_task(self):
+        """ Initialize task-specific settings, including preparing the trial information. """
+        self.trial_info = pd.read_csv(self.const.target_dir / self.name / self.target_file, sep='\t')
+
+    def run_trial(self, trial):
+        """ Run a single trial of the AuditoryNarrative task. """
+
+        self.screen.fixation_cross()
+        # Wait for the start time of the trial
+        real_start_time, start_ttl, start_ttl_time = self.ttl_clock.wait_until(trial['start_time'])
+
+        # Load and play audio stimulus for the current trial
+        audio_path = self.const.stim_dir / self.name / trial['stim']
+        audio_stim = sound.Sound(str(audio_path))
+        audio_stim.play()
+
+        # Wait for the duration of the trial while audio is playing
+        self.ttl_clock.wait_until(real_start_time + trial['trial_dur'])
+
+        trial['real_start_time'] = real_start_time
+        trial['start_ttl'] = start_ttl
+        trial['start_ttl_time'] = start_ttl_time
+
+        # Assuming no response is expected in this task
+        return trial
+
+    def display_instructions(self):
+        """ Display instructions specific to the auditory narrative task. """
+        self.instruction_text = 'Auditory Narrative Task\n\nListen to the narrative attentively.'
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
+        instr_visual.draw()
+        self.window.flip()
+
     
 
 ### ====================================================================================================
