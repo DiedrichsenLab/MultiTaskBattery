@@ -315,6 +315,43 @@ class AuditoryNarrative(Target):
 
         return trial_info
 
+class RomanceMovie(Target):
+    def __init__(self, const):
+        super().__init__(const)
+        self.name = 'romance_movie'
+
+    def make_trial_file(self, run_number, task_dur=30, trial_dur=30, iti_dur=0, file_name=None):
+        n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
+        trial_info = []
+
+        t = 0
+
+        for n in range(n_trials):
+            trial = {}
+            trial['trial_num'] = n
+            trial['hand'] = 'None'  # Hand is not used in this task
+            trial['trial_dur'] = trial_dur
+            trial['iti_dur'] = iti_dur
+            trial['display_trial_feedback'] = False
+
+            # Assuming a standard movie file for each trial - replace with actual logic
+            trial['stim'] = f'{run_number:02d}_romance.mov'
+            
+            trial['start_time'] = t
+            trial['end_time'] = t + trial_dur + iti_dur
+            trial_info.append(trial)
+
+            # Update for next trial:
+            t = trial['end_time']
+
+        trial_info = pd.DataFrame(trial_info)
+        if file_name is not None:
+            trial_info.to_csv(self.target_dir / self.name / file_name, sep='\t', index=False)
+
+        return trial_info
+
+
+
 ### ====================================================================================================
 # What follows is potentially depreciated code, which I think is unecessarily complicated
 ### ====================================================================================================
@@ -1192,62 +1229,6 @@ class ActionObservationKnots(Target):
         self.df = self.make_trials_time(self.df)
         self.save_target_file(self.df)
 
-class RomanceMovie(Target):
-    def __init__(self, study_name = 'behavioral', hand = None, trial_dur = 28,
-                 iti_dur = 0, run_number = 1, display_trial_feedback = False,
-                 task_dur = 30, tr = 1):
-        super(RomanceMovie, self).__init__(study_name = study_name, task_name = 'romance_movie', hand = None,
-                                           trial_dur = trial_dur, iti_dur = iti_dur, run_number = run_number,
-                                           display_trial_feedback = display_trial_feedback, task_dur = task_dur, tr = tr)
-
-        self.trials_info = {'condition_name': ['romance']}
-
-    def _get_movie(self):
-        """
-        get the movie filenames in a dataframe
-        """
-
-        # load in stimuli
-        stim_dir = os.path.join(consts.stim_dir, self.task_name)
-        stim_df  = pd.read_csv(os.path.join(stim_dir, 'romance_movie.tsv'))
-
-        # remove all filenames where any of the videos have not been extracted
-        stims_to_remove = stim_df.query('extracted==False')["video_name"].to_list()
-        self.stim_df    = stim_df[~stim_df["video_name"].isin(stims_to_remove)]
-
-    def _balance_design(self, random_state):
-        # ensure that only `num_trials` are sampled
-        self.target_df = self.stim_df.sample(n=self.num_trials, random_state=random_state, replace=False).reset_index(drop=True)
-
-    def _add_task_info(self, random_state):
-        super().make_trials() # first fill in the common fields
-
-        # get movie dataframe
-        self._get_movie()
-
-        self.stim_df['stim'] = f"{self.run_number+1}_romance.mov"
-
-        self.stim_df.drop({'video_name'}, inplace=True, axis=1)
-
-        self._balance_design(random_state)
-
-        self.target_dataframe = pd.concat([self.target_df, self.target_dataframe], axis = 1)
-
-        # randomly shuffle rows of the dataframe
-        dataframe = self.shuffle_rows(self.target_dataframe)
-
-        return dataframe
-
-    def _make_files(self):
-        """
-        makes target file and (if exists) related task info and  saves them
-        """
-
-        # save target file
-        self.df = self._add_task_info(random_state=self.run_number)
-        self.df = self.make_trials_time(self.df)
-        self.save_target_file(self.df)
-
 
 class SocialPrediction(Target):
     pass
@@ -1302,3 +1283,13 @@ if __name__ == "__main__":
     ## Example: creating target files for the action observation knots task
     AO = ActionObservationKnots()
     AO._make_files()
+
+
+
+
+
+
+
+
+
+    
