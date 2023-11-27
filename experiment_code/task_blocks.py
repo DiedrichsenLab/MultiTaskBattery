@@ -457,8 +457,13 @@ class AuditoryNarrative(Task):
         self.feedback_type = 'None'  
 
     def init_task(self):
-        """ Initialize task-specific settings, including preparing the trial information. """
         self.trial_info = pd.read_csv(self.const.target_dir / self.name / self.target_file, sep='\t')
+
+    def display_instructions(self):
+        self.instruction_text = 'Auditory Narrative Task\n\nListen to the narrative attentively.'
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
+        instr_visual.draw()
+        self.window.flip()
 
     def run_trial(self, trial):
         """ Run a single trial of the AuditoryNarrative task. """
@@ -482,14 +487,42 @@ class AuditoryNarrative(Task):
         # Assuming no response is expected in this task
         return trial
 
+class RomanceMovie(Task):
+    def __init__(self, info, screen, ttl_clock, const):
+        super().__init__(info, screen, ttl_clock, const)
+        self.name = 'romance_movie' 
+
     def display_instructions(self):
-        """ Display instructions specific to the auditory narrative task. """
-        self.instruction_text = 'Auditory Narrative Task\n\nListen to the narrative attentively.'
+        self.instruction_text = "In this task, you will watch short clips from a romance movie. Please keep your head still and pay attention to the screen."
         instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
         instr_visual.draw()
         self.window.flip()
 
-    
+    def run_trial(self, trial):
+        # Assuming that 'stim' column in trial contains the file name of the video clip
+        movie_file_name = trial['stim']
+
+        # Construct the movie file path
+        movie_path = Path(self.const.stim_dir) / self.name / 'clips' / movie_file_name
+
+        # Convert Path object to string for compatibility
+        movie_path_str = str(movie_path)
+
+        # Create a MovieStim3 object
+        movie_clip = visual.MovieStim3(self.window, movie_path_str, loop=False)
+
+        start_time = self.ttl_clock.get_time()
+        while self.ttl_clock.get_time() - start_time < trial['trial_dur']:
+            if movie_clip.status == visual.FINISHED:
+                break
+            movie_clip.draw()
+            self.window.flip()
+            self.ttl_clock.update()
+
+        # collect responses
+        key,trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['trial_dur'])
+
+        return trial
 
 ### ====================================================================================================
 # What follows is tasks we still need to modify
@@ -1744,106 +1777,6 @@ class VisuospatialOrderV2(Task):
             ## 5.1 get current time
             t_start_iti = self.get_current_trial_time()
             self.show_fixation(t_start_iti, self.iti_dur)
-
-            # 6.
-            self.screen_quit()
-
-        # get the response dataframe
-        rDf = self.get_task_response(all_trial_response=self.all_trial_response)
-
-        return rDf
-
-
-class RomanceMovie(Task):
-    # @property
-    # def instruction_text(self):
-    #     return "Romance Movie Task\n\nYou will passively watch a 30-second clip from a movie.  Please keep your head as still as possible."
-
-    def __init__(self, screen, target_file, run_end, name, task_num, study_name, target_num, ttl_flag, save = True):
-        super().__init__(screen, target_file, run_end, task_name, task_num, study_name, target_num, ttl_flag, save_response = save)
-        self.feedback_type = 'None' # no feedback
-        self.name          = 'romance_movie'
-
-    def _get_trial_info(self):
-        video_file = self.target_file['stim'][self.trial]
-        self.iti_dur = self.target_file['iti_dur'][self.trial]
-        self.trial_dur = self.target_file['trial_dur'][self.trial]
-        self.start_time = self.target_file['start_time'][self.trial]
-        # self.path_to_video = os.path.join(consts.stim_dir, self.study_name, self.task_name, 'clips', video_file)
-        self.path_to_video = os.path.join(consts.stim_dir, self.task_name, 'clips', video_file)
-
-    def display_instructions(self): # overriding the display instruction from the parent class
-        self.instruction_text = f"{self.task_name} task \n\n Please keep your head still while watching the movie clip."
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
-        instr_visual.draw()
-        self.window.flip()
-
-    def _show_stim(self):
-        mov = visual.MovieStim3(self.window, self.path_to_video, flipVert=False, flipHoriz=False, loop=False)
-        # play movie
-        self.trial_response_all = []
-        wait_time = self.trial_dur
-
-        if self.ttl_flag: # if the user chooses to wait for the ttl pulse
-            while (ttl.clock.getTime() - self.t0 <= wait_time): # and not resp_made:
-                # play movie
-                # while mov.status != visual.FINISHED:
-                ttl.check()
-                # draw frame to screen
-                mov.draw()
-                self.window.flip()
-
-        else:
-            while (self.clock.getTime() - self.t0 <= wait_time): # and not resp_made:
-                # play movie
-                # while mov.status != visual.FINISHED:
-                # draw frame to screen
-                mov.draw()
-                self.window.flip()
-
-        # mov.stop()
-
-    def run(self):
-        # run the task
-
-        # loop over trials
-        self.all_trial_response = [] # pre-allocate
-
-        for self.trial in self.target_file.index:
-
-            # get stims
-            self._get_trial_info()
-
-            # get current time (self.t0)
-            self.t0 = self.get_current_trial_time()
-
-            # show the fixation for the duration of iti
-            # wait here till the startTime
-            self.show_fixation(self.t0, self.start_time - self.t0)
-
-            # collect real_start_time for each block (self.real_start_time)
-            self.get_real_start_time(self.t0)
-
-            ## 3.2 get the time before collecting responses (self.t2)
-            self.get_time_before_disp()
-
-            # 1. show actions
-            self._show_stim()
-
-            # 4. display trial feedback
-            if self.target_file['display_trial_feedback'][self.trial] and self.response_made:
-                self.display_trial_feedback(correct_response = self.correct_response)
-            else:
-                self.screen.fixation_cross()
-
-            # 5 show fixation for the duration of the iti
-            ## 5.1 get current time
-            t_start_iti = self.get_current_trial_time()
-            self.show_fixation(t_start_iti, self.iti_dur)
-
-            # update trial response
-            self.trial_response = {}
-            self.update_trial_response()
 
             # 6.
             self.screen_quit()
