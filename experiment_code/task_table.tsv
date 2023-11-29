@@ -16,3 +16,4 @@ rest	Rest	rest	Lie in scanner with a fixation cross	NA
 tongue_movement	TongueMovement	tongue	"move tongue from right to left, touching upper premolar teeth guided by a flashing black circle around a fixation crosshair, black circle means right no cirlce means left, 1s periods"	"A Third Somatomotor Representation in the Human Cerebellum (Bucknet et al., 2022)"
 flexion_extension	FlexionExtension	flexexten	alternating periods of flexing/extending toes	
 auditory_narrative	AuditoryNarrative	audnarr	30 second snippets of a moth radiohour story (wheretheressmoke)	Novel
+spatial_navigation	SpatialNavigation	spatialnav		

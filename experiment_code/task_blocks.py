@@ -518,11 +518,42 @@ class RomanceMovie(Task):
             movie_clip.draw()
             self.window.flip()
             self.ttl_clock.update()
+        return trial
+    
+class SpatialNavigation(Task):
+    def __init__(self, info, screen, ttl_clock, const):
+        super().__init__(info, screen, ttl_clock, const)
+        self.feedback_type = 'None' 
 
-        # collect responses
-        key,trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['trial_dur'])
+    def init_task(self):
+        self.trial_info = pd.read_csv(self.const.target_dir / self.name / self.target_file, sep='\t')
+
+    def display_instructions(self):
+        start_location = self.trial_info.iloc[0]['location_1']
+        end_location = self.trial_info.iloc[0]['location_2']
+
+        self.instruction_text = (f"Spatial navigation task\n\n"
+                                    f"Imagine walking around your childhood home\n"
+                                    f"Start in the {start_location} – end in the {end_location}\n"
+                                    f"Focus on the fixation cross")
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1],  wrapWidth=400)
+        instr_visual.draw()
+        self.window.flip()
+
+    
+    def run_trial(self,trial):
+        # Wait for the start time of the trial
+        real_start_time, start_ttl, start_ttl_time = self.ttl_clock.wait_until(trial['start_time'])
+
+        self.screen.fixation_cross()
+        self.ttl_clock.wait_until(self.start_time + trial['trial_dur'])
+
+        trial['real_start_time'] = real_start_time
+        trial['start_ttl'] = start_ttl
+        trial['start_ttl_time'] = start_ttl_time
 
         return trial
+
 
 ### ====================================================================================================
 # What follows is tasks we still need to modify
