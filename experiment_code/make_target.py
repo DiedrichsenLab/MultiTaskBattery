@@ -333,15 +333,10 @@ class RomanceMovie(Target):
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
             trial['display_trial_feedback'] = False
-
-            # Assuming a standard movie file for each trial - replace with actual logic
             trial['stim'] = f'{run_number:02d}_romance.mov'
-            
             trial['start_time'] = t
             trial['end_time'] = t + trial_dur + iti_dur
             trial_info.append(trial)
-
-            # Update for next trial:
             t = trial['end_time']
 
         trial_info = pd.DataFrame(trial_info)
@@ -350,7 +345,41 @@ class RomanceMovie(Target):
 
         return trial_info
 
+class SpatialNavigation(Target):
+    def __init__(self, const):
+        super().__init__(const)
+        self.name = 'spatial_navigation'
+        self.locations = ["KITCHEN", "BEDROOM", "FRONT-DOOR", "WASHROOM", "LIVING-ROOM"]
 
+    def make_trial_file(self, run_number, task_dur=30, trial_dur=30, iti_dur=0, file_name=None):
+
+        n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
+        trial_info = []
+
+        # Randomly select two different locations
+        loc1, loc2 = random.sample(self.locations, 2)
+        
+        t = 0
+
+        for n in range(n_trials):
+            trial = {}
+            trial['trial_num'] = n
+            trial['hand'] = 'None'  # Hand is not used in this task
+            trial['trial_dur'] = trial_dur
+            trial['iti_dur'] = iti_dur
+            trial['display_trial_feedback'] = False
+            trial['start_time'] = t
+            trial['end_time'] = t + trial_dur + iti_dur
+            trial['location_1'] = loc1
+            trial['location_2'] = loc2
+            trial_info.append(trial)
+            t = trial['end_time']
+
+        trial_info = pd.DataFrame(trial_info)
+        if file_name is not None:
+            trial_info.to_csv(self.target_dir / self.name / file_name, sep='\t', index=False)
+
+        return trial_info
 
 ### ====================================================================================================
 # What follows is potentially depreciated code, which I think is unecessarily complicated
