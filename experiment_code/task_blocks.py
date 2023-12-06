@@ -642,6 +642,48 @@ class DegradedPassage(Task):
         trial['start_ttl_time'] = start_ttl_time
 
         return trial
+    
+class ActionObservation(Task):
+    def __init__(self, info, screen, ttl_clock, const):
+        super().__init__(info, screen, ttl_clock, const)
+        self.name = 'action_observation' 
+
+    def display_instructions(self): # overriding the display instruction from the parent class
+        self.instruction_text = f"Action Observation task \n\n Keep your head still while watching the two clips. \n\n Try and remember the knot shown."
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
+        instr_visual.draw()
+        self.window.flip()
+
+
+    def run_trial(self, trial):
+
+
+        # Assuming that 'stim' column in trial contains the file name of the video clip
+        movie_file_name = trial['stim']
+
+        # Construct the movie file path
+        movie_path = Path(self.const.stim_dir) / self.name / 'clips' / movie_file_name
+
+        # Convert Path object to string for compatibility
+        movie_path_str = str(movie_path)
+
+        # Create a MovieStim3 object
+        movie_clip = visual.MovieStim3(self.window, movie_path_str, loop=False)
+
+        start_time = self.ttl_clock.get_time()
+        while self.ttl_clock.get_time() - start_time < trial['trial_dur']:
+            if movie_clip.status == visual.FINISHED:
+                break
+            movie_clip.draw()
+            self.window.flip()
+            self.ttl_clock.update()
+
+        self.screen.fixation_cross()
+
+        # wait duration iti
+        self.ttl_clock.wait_until(self.start_time + trial['trial_dur'] + trial['iti_dur'])
+
+        return trial
 
 
 
@@ -961,134 +1003,6 @@ class SemanticPrediction(Task):
                 self.display_trial_feedback(correct_response = self.correct_response)
             else:
                 self.screen.fixation_cross()
-
-            # 5 show fixation for the duration of the iti
-            ## 5.1 get current time
-            t_start_iti = self.get_current_trial_time()
-            self.show_fixation(t_start_iti, self.iti_dur)
-
-            # 6.
-            self.screen_quit()
-
-        # get the response dataframe
-        rDf = self.get_task_response(all_trial_response=self.all_trial_response)
-
-        return rDf
-
-class ActionObservation(Task):
-
-    def __init__(self, info, screen, const):
-        super().__init__(info, screen, const)
-        self.feedback_type = 'acc'
-
-    def init_task(self):
-        super().init_task()
-        for i,trial in self.trial_info.iterrows():
-            video_file = self.trial_info['stim'][self.trial]
-        # self.path_to_video = os.path.join(consts.stim_dir, self.study_name, self.name, "modified_clips", video_file)
-        self.path_to_video = os.path.join(consts.stim_dir, self.study_name, self.name, "modified_clips", video_file)
-
-    def _show_stim(self):
-        mov = visual.MovieStim3(self.window, self.path_to_video, flipVert=False, flipHoriz=False, loop=False)
-
-        # play movie
-        self.trial_response_all = []
-        wait_time = self.trial_dur
-        print(f"mov status : {mov.status}")
-
-        # while mov.status != visual.FINISHED:
-        while mov.status != constants.FINISHED:
-
-            if self.ttl_flag:
-                while (ttl.clock.getTime() - self.t0 <= wait_time):
-                    ttl.check()
-                    # draw frame to screen
-                    mov.draw()
-                    self.window.flip()
-
-                    # get trial response
-                    self.trial_response = self.check_trial_response(wait_time = wait_time,
-                                                                    trial_index = self.trial,
-                                                                    start_time = self.t0,
-                                                                    start_time_rt = self.t2)
-
-            else:
-                while (self.clock.getTime() - self.t0 <= wait_time):
-                    # draw frame to screen
-                    mov.draw()
-                    self.window.flip()
-
-                    # get trial response
-                    self.trial_response = self.check_trial_response(wait_time = wait_time,
-                                                                    trial_index = self.trial,
-                                                                    start_time = self.t0,
-                                                                    start_time_rt = self.t2)
-
-        # if self.ttl_flag:
-        #     while (ttl.clock.getTime() - self.t0 <= wait_time): # and not resp_made:
-        #         # play movie
-        #         while mov.status != visual.FINISHED:
-        #             ttl.check()
-        #             # draw frame to screen
-        #             mov.draw()
-        #             self.window.flip()
-
-        #         # get trial response
-        #         self.trial_response = self.check_trial_response(wait_time = wait_time,
-        #                                                         trial_index = self.trial,
-        #                                                         start_time = self.t0,
-        #                                                         start_time_rt = self.t2)
-        # else:
-        #     while (self.clock.getTime() - self.t0 <= wait_time): # and not resp_made:
-        #         # play movie
-        #         while mov.status != visual.FINISHED:
-
-        #             # draw frame to screen
-        #             mov.draw()
-        #             self.window.flip()
-
-        #         # get trial response
-        #         self.trial_response = self.check_trial_response(wait_time = wait_time,
-        #                                                         trial_index = self.trial,
-        #                                                         start_time = self.t0,
-        #                                                         start_time_rt = self.t2)
-
-    def run(self):
-
-        # loop over trials
-        self.all_trial_response = [] # pre-allocate
-
-        for self.trial in self.target_file.index:
-
-            # get trial info and stims
-            self._get_trial_info()
-
-            # get current time (self.t0)
-            self.t0 = self.get_current_trial_time()
-
-            # show the fixation for the duration of iti
-            self.show_fixation(self.t0, self.start_time - self.t0)
-
-            # collect real_start_time for each block (self.real_start_time)
-            self.get_real_start_time(self.t0)
-
-            # flush any keys in buffer
-            event.clearEvents()
-
-            # Start timer before display (get self.t2)
-            self.get_time_before_disp()
-
-            # display stims and get trial response
-            self._show_stim()
-
-            # show feedback or fixation cross
-            if self.target_file['display_trial_feedback'][self.trial] and self.response_made:
-                self.display_trial_feedback(correct_response = self.correct_response)
-            else:
-                self.screen.fixation_cross()
-
-            # update response
-            self.update_trial_response()
 
             # 5 show fixation for the duration of the iti
             ## 5.1 get current time

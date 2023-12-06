@@ -462,6 +462,48 @@ class DegradedPassage(Target):
             trial_info.to_csv(self.target_dir / self.name / file_name, sep='\t', index=False)
 
         return trial_info
+    
+class ActionObservation(Target):
+    def __init__(self, const):
+        super().__init__(const)
+        self.name = 'action_observation'
+        self.knot_names = ['Abyss', 'Adage', 'Ampere', 'Arbor', 'Baron', 'Belfry', 'Bramble',\
+                        'Brigand', 'Brocade', 'Casement', 'Chamois', 'Coffer', 'Cornice',\
+                        'Farthing', 'Fissure', 'Flora', 'Frontage', 'Gadfly', 'Garret', \
+                        'Gentry', 'Henchman', 'Magnate', 'Mutton', 'Perry', 'Phial', \
+                        'Placard', 'Polka', 'Purser', 'Rosin', 'Shilling', 'Simper', \
+                        'Spangle', 'Squire', 'Vestment', 'Wampum', 'Wicket']
+
+
+
+    def make_trial_file(self, run_number, task_dur=30, trial_dur=14, iti_dur=1, file_name=None):
+        n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
+        trial_info = []
+
+        t = 0
+
+        for n in range(n_trials):
+            trial = {}
+            trial['trial_num'] = n
+            trial['hand'] = 'None'  # Hand is not used in this task
+            trial['trial_dur'] = trial_dur
+            trial['iti_dur'] = iti_dur
+            trial['display_trial_feedback'] = False
+            knot_index = (run_number - 1)
+            if n == 0:
+                trial['stim'] = f'knotAction{self.knot_names[knot_index]}.mov'
+            else:
+                trial['stim'] = f'knotControl{self.knot_names[knot_index]}.mov'
+            trial['start_time'] = t
+            trial['end_time'] = t + trial_dur + iti_dur
+            trial_info.append(trial)
+            t = trial['end_time']
+
+        trial_info = pd.DataFrame(trial_info)
+        if file_name is not None:
+            trial_info.to_csv(self.target_dir / self.name / file_name, sep='\t', index=False)
+
+        return trial_info
 ### ====================================================================================================
 # What follows is potentially depreciated code, which I think is unecessarily complicated
 ### ====================================================================================================
