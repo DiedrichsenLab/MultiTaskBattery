@@ -381,6 +381,54 @@ class SpatialNavigation(Target):
 
         return trial_info
 
+class TheoryOfMind(Target):
+    def __init__(self, const):
+        super().__init__(const)
+        self.name = 'theory_of_mind'
+
+    def make_trial_file(self, hand='right', run_number=None, task_dur=30, 
+                        trial_dur=14, iti_dur=1, story_dur=10, 
+                        question_dur=4, file_name=None):
+        # Initialize necessary variables
+        n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
+        trial_info = []
+        t = 0
+
+
+        stim_path = Path(os.path.dirname(os.path.realpath(__file__))) / '..' / 'stimuli' / 'theory_of_mind'
+        stim_file = stim_path / 'theory_of_mind.csv'
+
+         # Read and slice the stimuli based on run number
+        stim = pd.read_csv(stim_file)
+        start_row = (run_number - 1) * 2
+        end_row = run_number * 2 - 1
+        stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
+
+        for n in range(n_trials):
+            trial = {}
+            trial['trial_num'] = n
+            trial['hand'] = hand
+            trial['trial_dur'] = trial_dur
+            trial['iti_dur'] = iti_dur
+            trial['story'] = stim['story'][n] 
+            trial['question'] = stim['question'][n]  
+            trial['condition'] = stim['condition'][n]
+            trial['response'] = stim['response'][n]
+            trial['story_dur'] = story_dur
+            trial['question_dur'] = question_dur
+            trial['display_trial_feedback'] = True
+            trial['start_time'] = t
+            trial['end_time'] = t + trial_dur + iti_dur
+            trial_info.append(trial)
+
+            # Update for next trial:
+            t = trial['end_time']
+
+        trial_info = pd.DataFrame(trial_info)
+        if file_name is not None:
+            trial_info.to_csv(self.target_dir / self.name / file_name, sep='\t', index=False)
+        return trial_info
+
 ### ====================================================================================================
 # What follows is potentially depreciated code, which I think is unecessarily complicated
 ### ====================================================================================================
@@ -1080,99 +1128,6 @@ class SemanticPrediction(Target):
         self._add_random_word(random_state=random_state, columns=['condition_name']) # 'CoRT_descript'
 
         self.target_dataframe = pd.concat([self.target_dataframe, self.target_df], axis = 1)
-
-        # randomly shuffle rows of the dataframe
-        dataframe = self.shuffle_rows(self.target_dataframe)
-
-        return dataframe
-
-    def _make_files(self):
-        """
-        makes target file and (if exists) related task info and  saves them
-        """
-
-        # save target file
-        self.df = self._add_task_info(random_state=self.run_number)
-        self.df = self.make_trials_time(self.df)
-        self.save_target_file(self.df)
-
-
-
-class TheoryOfMind(Target):
-    def __init__(self, study_name = 'behavioral', hand = 'right', trial_dur = 14,
-                 iti_dur = 0.5, run_number = 1, display_trial_feedback = True,
-                 task_dur=30, tr = 1, story_dur = 10, question_dur = 4, frac = 0.3):
-        super(TheoryOfMind, self).__init__(study_name = study_name, task_name = 'theory_of_mind', hand = hand,
-                                           trial_dur = trial_dur, iti_dur = iti_dur, run_number = run_number,
-                                           display_trial_feedback = display_trial_feedback, task_dur = task_dur, tr = tr)
-
-        self.trials_info = {'condition_name': ['belief','photo'],'trial_type': [True, False]}
-
-        self.feedback_type = 'acc'
-        self.story_dur     = story_dur    # length of time the story remains on the screen
-        self.question_dur  = question_dur # length of time question remains on the screen
-        self.frac          = frac         # ??????
-
-    def _get_story(self):
-        """
-        get stories dataframe
-        """
-        # read in the stimulus csv file
-        # stim_dir = os.path.join(consts.stim_dir, self.study_name, self.task_name)
-        stim_dir = os.path.join(consts.stim_dir, self.task_name)
-        stim_df  = pd.read_csv(os.path.join(stim_dir, 'theory_of_mind.tsv'))
-
-        # get the logging file
-        self.log_df = pd.read_csv(os.path.join(stim_dir, f'theory_of_mind_logging_{self.run_number}.tsv'))
-
-        # conds = [self.balance_blocks['condition_name'][key] for key in self.balance_blocks['condition_name'].keys()]
-        conds        = self.trials_info['condition_name']
-        self.stim_df = stim_df.query(f'condition=={conds} and response=={self.trials_info["trial_type"]}')
-
-        descript = self.log_df.query(f'condition=={conds} and response=={self.trials_info["trial_type"]}')
-        not_extracted = descript["extracted"] != "TRUE"
-        self.stim_df = self.stim_df.loc[not_extracted.values]
-
-    def _balance_design(self, random_state):
-        # group the dataframe according to `balance_blocks`
-        self.stim_df = self.stim_df.groupby([*self.trials_info], as_index=False).apply(lambda x: x.sample(n=self.num_stims, random_state=random_state, replace=self.replace)).reset_index(drop=True)
-
-        # ensure that only `num_trials` are sampled
-        self.target_df = self.stim_df.sample(n=self.num_trials, random_state=random_state, replace=False).reset_index(drop=True)
-
-        # find the extracted rows of the stimuli df
-        extracted = self.log_df["story"].isin(self.target_df["story"])
-        # print(sum(extracted))QUIT
-
-        # load in the logging file and update the extracted column
-        self.log_df["extracted"] = extracted.values
-         ## save the new logging
-        log_dir = os.path.join(consts.stim_dir, self.task_name)
-        self.log_df.to_csv(os.path.join(log_dir, f'theory_of_mind_logging_{self.run_number+1}.tsv'), index=False)
-
-
-    def _add_task_info(self, random_state):
-        super().make_trials() # first fill in the common fields
-
-        # get `num_stims`
-        self.num_stims = int(self.num_trials / len(self.trials_info['condition_name']))
-
-        # get the stimuls dataframe
-        self._get_story()
-
-        self.stim_df['condition_name']         = self.stim_df['condition']
-        self.stim_df['story_dur']              = self.story_dur
-        self.stim_df['question_dur']           = self.question_dur
-        self.stim_df['trial_dur_correct']      = self.story_dur + self.iti_dur + self.question_dur
-        self.stim_df['display_trial_feedback'] = self.display_trial_feedback
-
-        self.stim_df['trial_type'] = self.stim_df['response']
-
-        self.stim_df.drop({'condition', 'response'}, inplace=True, axis=1)
-
-        self._balance_design(random_state)
-
-        self.target_dataframe = pd.concat([self.target_df, self.target_dataframe], axis = 1)
 
         # randomly shuffle rows of the dataframe
         dataframe = self.shuffle_rows(self.target_dataframe)
