@@ -21,9 +21,9 @@ from experiment_code.ttl import ttl
 
 
 # 4. create target files first (if already not done)
-def create_target(task_list = ['visual_search', 'action_observation_knots', 'flexion_extension', 
+def create_target(task_list = ['visual_search', 'flexion_extension', 
                               'finger_sequence', 'theory_of_mind', 'n_back', 'semantic_prediction', 
-                              'rest', 'romance_movie'], 
+                              'rest'], 
                   num_runs = 8):
 
     """
@@ -46,7 +46,7 @@ def simulate(**kwargs):
     Custom_Exp.simulate_fmri(**kwargs)
 
 # 5. run the experiment.
-def main(subj_id, debug = True, eye_flag = False):
+def main(subj_id, debug = False, eye_flag = False):
     """_summary_
     change debug to False once you are sure everything is debugged 
     make sure that you have changed the screen_res to the res for the subject screen
@@ -69,4 +69,5 @@ def main(subj_id, debug = True, eye_flag = False):
     return
 
 if __name__ == "__main__":
-    main(debug = True)
+    # main(debug = True)
+    create_target()
