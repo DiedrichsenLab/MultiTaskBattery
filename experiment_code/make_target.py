@@ -572,6 +572,7 @@ class DemandGrid(Target):
             original_sequence = self.generate_sequence(grid_size, sequence_length)
             trial['grid_sequence'] = original_sequence
             trial['modified_sequence'] = self.modify_sequence(original_sequence, grid_size)
+            trial['correct_side'] = random.choice(['left', 'right'])
             trial['trial_dur'] = trial_dur
             trial['sequence_dur'] = sequence_dur
             trial['question_dur'] = question_dur
