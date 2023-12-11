@@ -585,7 +585,82 @@ class DemandGrid(Target):
         if file_name is not None:
             trial_info.to_csv(self.target_dir / self.name / file_name, sep='\t', index=False)
         return trial_info
+    
+class SentenceReading(Target):
+    def __init__(self, const):
+        super().__init__(const)
+        self.name = 'sentence_reading'
 
+    def make_trial_file(self, run_number, task_dur=30, trial_dur=5.8, iti_dur=0.2, file_name=None):
+        n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
+        trial_info = []
+
+        stim_path = Path(os.path.dirname(os.path.realpath(__file__))) / '..' / 'stimuli' / 'sentence_reading'
+        sitm_file = stim_path / 'sentences_shuffled.csv'
+
+        df = pd.read_csv(sitm_file)
+
+        t = 0
+
+        for n in range(n_trials):
+            trial = {}
+            trial['trial_num'] = n
+            trial['hand'] = 'None'  # Hand is not used in this task
+            trial['trial_dur'] = trial_dur
+            trial['iti_dur'] = iti_dur
+            trial['display_trial_feedback'] = False
+            sentence_index = (run_number - 1) * n_trials + n 
+            trial['stim'] = df['sentence'][sentence_index]
+            trial['start_time'] = t
+            trial['end_time'] = t + trial_dur + iti_dur
+            trial_info.append(trial)
+
+            # Update for next trial:
+            t = trial['end_time']
+
+        trial_info = pd.DataFrame(trial_info)
+        if file_name is not None:
+            trial_info.to_csv(self.target_dir / self.name / file_name, sep='\t', index=False)
+
+        return trial_info
+    
+class NonwordReading(Target):
+    def __init__(self, const):
+        super().__init__(const)
+        self.name = 'nonword_reading'
+
+    def make_trial_file(self, run_number, task_dur=30, trial_dur=5.8, iti_dur=0.2, file_name=None):
+        n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
+        trial_info = []
+
+        stim_path = Path(os.path.dirname(os.path.realpath(__file__))) / '..' / 'stimuli' / 'nonword_reading'
+        sitm_file = stim_path / 'nonwords_shuffled.csv'
+
+        df = pd.read_csv(sitm_file)
+
+        t = 0
+
+        for n in range(n_trials):
+            trial = {}
+            trial['trial_num'] = n
+            trial['hand'] = 'None'  # Hand is not used in this task
+            trial['trial_dur'] = trial_dur
+            trial['iti_dur'] = iti_dur
+            trial['display_trial_feedback'] = False
+            sentence_index = (run_number - 1) * n_trials + n 
+            trial['stim'] = df['sentence'][sentence_index]
+            trial['start_time'] = t
+            trial['end_time'] = t + trial_dur + iti_dur
+            trial_info.append(trial)
+
+            # Update for next trial:
+            t = trial['end_time']
+
+        trial_info = pd.DataFrame(trial_info)
+        if file_name is not None:
+            trial_info.to_csv(self.target_dir / self.name / file_name, sep='\t', index=False)
+
+        return trial_info
 ### ====================================================================================================
 # What follows is potentially depreciated code, which I think is unecessarily complicated
 ### ====================================================================================================
