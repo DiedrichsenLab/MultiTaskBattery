@@ -885,6 +885,64 @@ class NonwordReading(Task):
 
         return trial
 
+class OddBall(Task):
+    def __init__(self, info, screen, ttl_clock, const):
+        super().__init__(info, screen, ttl_clock, const)
+        self.feedback_type = 'None'  
+
+    def init_task(self):
+        self.trial_info = pd.read_csv(self.const.target_dir / self.name / self.target_file, sep='\t')
+
+    def display_instructions(self):
+        self.instruction_text = 'Oddball task \n\n Press the button with your index finger when you see a red K'
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
+        instr_visual.draw()
+        self.window.flip()
+
+    def run_trial(self, trial):
+        """ Run a single trial of the AuditoryNarrative task. """
+        # Wait for the start time of the trial
+        real_start_time, start_ttl, start_ttl_time = self.ttl_clock.wait_until(trial['start_time'])
+
+        current_trial =  trial['stim']
+
+        # show stem
+        if current_trial == 'red_K':
+            word_stim = visual.TextStim(self.window, text='K', pos=(0.0, 0.0), color='red', units='deg')
+            word_stim.draw()
+            self.window.flip()
+            self.ttl_clock.wait_until(self.ttl_clock.get_time() + trial['trial_dur'])
+        elif current_trial == 'black_K':
+            word_stim = visual.TextStim(self.window, text='K', pos=(0.0, 0.0), color='black', units='deg')
+            word_stim.draw()
+            self.window.flip()
+            self.ttl_clock.wait_until(self.ttl_clock.get_time() + trial['trial_dur'])
+
+        elif current_trial == 'red_O':
+            word_stim = visual.TextStim(self.window, text='O', pos=(0.0, 0.0), color='red', units='deg')
+            word_stim.draw()
+            self.window.flip()
+            self.ttl_clock.wait_until(self.ttl_clock.get_time() + trial['trial_dur'])
+        elif current_trial == 'black_O':
+            word_stim = visual.TextStim(self.window, text='O', pos=(0.0, 0.0), color='black', units='deg')
+            word_stim.draw()
+            self.window.flip()
+            self.ttl_clock.wait_until(self.ttl_clock.get_time() + trial['trial_dur'])
+
+        # wait duration of stim
+        self.ttl_clock.wait_until(self.start_time + trial['trial_dur'])
+
+        # fixation cross
+        self.screen.fixation_cross()
+
+        # Wait for the duration of iti
+        self.ttl_clock.wait_until(self.start_time + trial['trial_dur'] + trial['iti_dur'])
+
+        trial['real_start_time'] = real_start_time
+        trial['start_ttl'] = start_ttl
+        trial['start_ttl_time'] = start_ttl_time
+
+        return trial
 
 
 ### ====================================================================================================
