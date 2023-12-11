@@ -785,7 +785,105 @@ class DemandGrid(Task):
         # fixation cross
         self.screen.fixation_cross()
 
+class SentenceReading(Task):
+    def __init__(self, info, screen, ttl_clock, const):
+        super().__init__(info, screen, ttl_clock, const)
+        self.feedback_type = 'None'  
 
+    def init_task(self):
+        self.trial_info = pd.read_csv(self.const.target_dir / self.name / self.target_file, sep='\t')
+
+    def display_instructions(self):
+        self.instruction_text = 'Sentence reading task \n\n Read each English word and press a button when then image of a hand pressing a button is displayed'
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
+        instr_visual.draw()
+        self.window.flip()
+
+    def run_trial(self, trial):
+        """ Run a single trial of the AuditoryNarrative task. """
+        # Wait for the start time of the trial
+        real_start_time, start_ttl, start_ttl_time = self.ttl_clock.wait_until(trial['start_time'])
+
+        # get sentence and split into words by space
+        sentence = trial['stim']
+        words = sentence.split()
+
+        #show words seqeuntially each for 450ms
+        for word in words:
+            word_stim = visual.TextStim(self.window, text=word, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg')
+            word_stim.draw()
+            self.window.flip()
+            self.ttl_clock.wait_until(self.ttl_clock.get_time() + 0.45)
+
+        # show press button image
+        button_stim = visual.ImageStim(self.window, image=str(self.const.stim_dir / self.name / 'hand_press_transparent.png'))
+        button_stim.draw()
+        self.window.flip()
+        self.ttl_clock.wait_until(self.ttl_clock.get_time() + 0.4)
+
+        # show blank_transparent image
+        blank_stim = visual.ImageStim(self.window, image=str(self.const.stim_dir / self.name / 'blank_transparent.png'))
+        blank_stim.draw()
+        self.window.flip()
+
+        # Wait for the duration of the trial while audio is playing
+        self.ttl_clock.wait_until(real_start_time + trial['trial_dur'])
+
+        trial['real_start_time'] = real_start_time
+        trial['start_ttl'] = start_ttl
+        trial['start_ttl_time'] = start_ttl_time
+
+        return trial
+
+class NonwordReading(Task):
+    def __init__(self, info, screen, ttl_clock, const):
+        super().__init__(info, screen, ttl_clock, const)
+        self.feedback_type = 'None'  
+
+    def init_task(self):
+        self.trial_info = pd.read_csv(self.const.target_dir / self.name / self.target_file, sep='\t')
+
+    def display_instructions(self):
+        self.instruction_text = 'Nonword reading task \n\n Read each nonword word and press a button when then image of a hand pressing a button is displayed'
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
+        instr_visual.draw()
+        self.window.flip()
+
+    def run_trial(self, trial):
+        """ Run a single trial of the AuditoryNarrative task. """
+        # Wait for the start time of the trial
+        real_start_time, start_ttl, start_ttl_time = self.ttl_clock.wait_until(trial['start_time'])
+
+        # get sentence and split into words by space
+        sentence = trial['stim']
+        words = sentence.split()
+
+        #show words seqeuntially each for 450ms
+        for word in words:
+            word_stim = visual.TextStim(self.window, text=word, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg')
+            word_stim.draw()
+            self.window.flip()
+            self.ttl_clock.wait_until(self.ttl_clock.get_time() + 0.45)
+
+        # show press button image
+        button_stim = visual.ImageStim(self.window, image=str(self.const.stim_dir / self.name / 'hand_press_transparent.png'))
+        button_stim.draw()
+        self.window.flip()
+        self.ttl_clock.wait_until(self.ttl_clock.get_time() + 0.4)
+
+        # show blank_transparent image
+        blank_stim = visual.ImageStim(self.window, image=str(self.const.stim_dir / self.name / 'blank_transparent.png'))
+        blank_stim.draw()
+        self.window.flip()
+
+        # Wait for the duration of the trial while audio is playing
+        self.ttl_clock.wait_until(real_start_time + trial['trial_dur'])
+
+        trial['real_start_time'] = real_start_time
+        trial['start_ttl'] = start_ttl
+        trial['start_ttl_time'] = start_ttl_time
+
+        return trial
 
 
 

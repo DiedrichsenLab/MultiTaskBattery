@@ -19,3 +19,5 @@ auditory_narrative	AuditoryNarrative	audnarr	30 second snippets of a moth radioh
 spatial_navigation	SpatialNavigation	spatialnav		
 degraded_passage	DegradedPassage	degpass		
 demand_grid	DemandGrid	demgrid		
+sentence_reading	SentenceReading	senread		
+nonword_reading	NonwordReading	nwdread		
