@@ -1,4 +1,11 @@
 *.pyc
+.DS_Store
+experiment_code/.DS_Store
+pontine_7T/.DS_Store
+pontine_7T/stimuli/.DS_Store
+pontine_7T/target_files/.DS_Store
+pontine_7T/target_files/behavioral/.DS_Store
+pontine_7T/target_files/fmri/.DS_Store
 docs/build/*
 .DS_store
 */data/*
@@ -10,3 +17,4 @@ docs/build/*
 pontine_7T/.DS_Store
 .DS_Store
 venv
+env/
