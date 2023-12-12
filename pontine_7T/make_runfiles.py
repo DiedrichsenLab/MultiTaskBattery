@@ -5,7 +5,7 @@ import numpy as np
 
 """ This is an example script to make the run files and trial files for an experiment"""
 
-tasks = ['nonword_reading','oddball'] # ,'social_prediction','verb_generation'
+tasks = ['intact_passage','degraded_passage'] # ,'social_prediction','verb_generation'
 
 #  check if dirs for the tasks and runs exist, if not, make them
 ut.dircheck(const.run_dir)

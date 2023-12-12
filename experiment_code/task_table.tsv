@@ -22,3 +22,4 @@ demand_grid	DemandGrid	demgrid
 sentence_reading	SentenceReading	senread		
 nonword_reading	NonwordReading	nwdread		
 oddball	OddBall	odbal		
+intact_passage	IntactPassage	intpass		
