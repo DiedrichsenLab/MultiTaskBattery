@@ -17,3 +17,4 @@ docs/build/*
 pontine_7T/.DS_Store
 .DS_Store
 venv
+env/

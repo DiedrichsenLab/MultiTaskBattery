@@ -1,5 +1,5 @@
 name	task_class	code	description	reference
-visual_search	VIsualSearch	viss		
+visual_search	VisualSearch	viss		
 theory_of_mind	TheoryOfMind	tom		
 n_back	NBack	nbko		
 social_prediction	SocialPrediction	socpred		
