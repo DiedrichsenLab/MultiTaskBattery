@@ -720,7 +720,7 @@ class ActionObservation(Task):
 
         return trial
     
-class DemandGrid(Task):
+class DemandGridEasy(Task):
     def __init__(self, info, screen, ttl_clock, const):
         super().__init__(info, screen, ttl_clock, const)
         self.grid_size = (3,4)
@@ -801,6 +801,115 @@ class DemandGrid(Task):
             self.window.flip()
             core.wait(1)  # Each box lights up for 1 second
             self.grid[x][y].fillColor = 'white'
+
+         # Determine which side the correct sequence will be displayed
+        correct_side = trial['correct_side']
+
+
+        # # Display the original and modified sequence on the left or right side
+        modified_sequence = literal_eval(trial['modified_sequence'])
+
+        original_grid = self.create_grid(sequence=original_sequence, position=correct_side)
+        modified_grid = self.create_grid(sequence=modified_sequence, position='left' if correct_side == 'right' else 'right')
+        self.window.flip()
+
+        # collect responses
+        key,trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['question_dur'])
+
+
+        # fixation cross
+        self.screen.fixation_cross()
+
+class DemandGridHard(Task):
+    def __init__(self, info, screen, ttl_clock, const):
+        super().__init__(info, screen, ttl_clock, const)
+        self.grid_size = (3,4)
+        self.square_size = 1.5
+
+    def init_task(self):
+        """Read the target file and get all the stimuli necessary"""
+        self.trial_info = pd.read_csv(self.const.target_dir / self.name / self.target_file, sep='\t')
+
+
+    def display_instructions(self):
+        self.instruction_text = (f"Demand Grid task \n\n"
+                                "Watch the sequence of boxes that light \n\n"
+                                "up and then choose the correct pattern")                             
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1],  wrapWidth=400)
+        instr_visual.draw()
+        self.window.flip()
+
+    def create_grid(self, sequence=None, position='center'):
+        """Creates the grid of squares for the DemandGrid task, lighting up specific squares blue if a sequence is given,
+        and positions the grid left, right, or center."""
+        # Calculate the size of the grid
+        grid_width = self.grid_size[0] * self.square_size
+        grid_height = self.grid_size[1] * self.square_size
+
+        # Calculate offsets based on the desired position
+        if position == 'left':
+            offset_x = -10
+        elif position == 'right':
+            offset_x = 10
+        else:  # center
+            offset_x = 0
+
+        # Center the grid vertically
+        offset_y = 0
+
+        grid = []
+
+        # Create and draw the grid
+        for i in range(self.grid_size[0]):
+            row = []
+            for j in range(self.grid_size[1]):
+                # Calculate position with the offsets
+                square_x = (j - self.grid_size[0] / 2 + 0.5) * self.square_size + offset_x
+                square_y = (self.grid_size[1] / 2 - i - 0.5) * self.square_size + offset_y
+
+                # Determine the fill color based on the sequence
+                fill_color = 'blue' if sequence and (i, j) in sequence else 'white'
+
+                rect = visual.Rect(self.window, width=self.square_size, height=self.square_size,
+                                pos=(square_x, square_y), lineWidth=3,
+                                lineColor='black', fillColor=fill_color)
+                rect.draw()
+                row.append(rect)
+            grid.append(row)
+
+        return grid
+
+
+    
+    def run_trial(self, trial):
+        """Runs a single trial of the DemandGrid task with two boxes lighting up at a time"""
+        real_start_time, start_ttl, start_ttl_time = self.ttl_clock.wait_until(trial['start_time'])
+
+        # Draw the entire grid in its initial state
+        self.grid = self.create_grid()
+        self.window.flip()
+
+        # Display the sequence in pairs
+        original_sequence = literal_eval(trial['grid_sequence'])
+        for i in range(0, len(original_sequence), 2):  # Iterate in steps of 2
+            if i + 1 < len(original_sequence):
+                pair = [original_sequence[i], original_sequence[i + 1]]
+            else:
+                pair = [original_sequence[i]]  # In case of an odd number of elements in the sequence
+
+            for pos in pair:
+                x, y = pos
+                self.grid[x][y].fillColor = 'blue'
+            
+            for row in self.grid:
+                for rect in row:
+                    rect.draw()
+            self.window.flip()
+            core.wait(1)  # Each pair of boxes lights up for 1 second
+
+            for pos in pair:
+                x, y = pos
+                self.grid[x][y].fillColor = 'white'
 
          # Determine which side the correct sequence will be displayed
         correct_side = trial['correct_side']
