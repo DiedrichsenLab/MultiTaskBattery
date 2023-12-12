@@ -434,7 +434,7 @@ class DegradedPassage(Target):
         super().__init__(const)
         self.name = 'degraded_passage'
 
-    def make_trial_file(self, run_number, task_dur=30, trial_dur=15, iti_dur=0, file_name=None):
+    def make_trial_file(self, run_number, task_dur=30, trial_dur=14.5, iti_dur=0.5, file_name=None):
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
 
@@ -450,6 +450,40 @@ class DegradedPassage(Target):
             # Select the appropriate audio file
             audio_file_num = (run_number - 1) * n_trials + n + 1
             trial['stim'] = f'degraded_passage_{audio_file_num}.wav'
+            trial['start_time'] = t
+            trial['end_time'] = t + trial_dur + iti_dur
+            trial_info.append(trial)
+
+            # Update for next trial:
+            t = trial['end_time']
+
+        trial_info = pd.DataFrame(trial_info)
+        if file_name is not None:
+            trial_info.to_csv(self.target_dir / self.name / file_name, sep='\t', index=False)
+
+        return trial_info
+    
+class IntactPassage(Target):
+    def __init__(self, const):
+        super().__init__(const)
+        self.name = 'intact_passage'
+
+    def make_trial_file(self, run_number, task_dur=30, trial_dur=14.5, iti_dur=0.5, file_name=None):
+        n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
+        trial_info = []
+
+        t = 0
+
+        for n in range(n_trials):
+            trial = {}
+            trial['trial_num'] = n
+            trial['hand'] = 'None'  # Hand is not used in this task
+            trial['trial_dur'] = trial_dur
+            trial['iti_dur'] = iti_dur
+            trial['display_trial_feedback'] = False
+            # Select the appropriate audio file
+            audio_file_num = (run_number - 1) * n_trials + n + 1
+            trial['stim'] = f'intact_passage_{audio_file_num}.wav'
             trial['start_time'] = t
             trial['end_time'] = t + trial_dur + iti_dur
             trial_info.append(trial)

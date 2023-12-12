@@ -623,7 +623,42 @@ class DegradedPassage(Task):
         self.window.flip()
 
     def run_trial(self, trial):
-        """ Run a single trial of the AuditoryNarrative task. """
+        """ Run a single trial of the task. """
+
+        self.screen.fixation_cross()
+        # Wait for the start time of the trial
+        real_start_time, start_ttl, start_ttl_time = self.ttl_clock.wait_until(trial['start_time'])
+
+        # Load and play audio stimulus for the current trial
+        audio_path = self.const.stim_dir / self.name / trial['stim']
+        audio_stim = sound.Sound(str(audio_path))
+        audio_stim.play()
+
+        # Wait for the duration of the trial while audio is playing
+        self.ttl_clock.wait_until(real_start_time + trial['trial_dur'])
+
+        trial['real_start_time'] = real_start_time
+        trial['start_ttl'] = start_ttl
+        trial['start_ttl_time'] = start_ttl_time
+
+        return trial
+    
+class IntactPassage(Task):
+    def __init__(self, info, screen, ttl_clock, const):
+        super().__init__(info, screen, ttl_clock, const)
+        self.feedback_type = 'None'  
+
+    def init_task(self):
+        self.trial_info = pd.read_csv(self.const.target_dir / self.name / self.target_file, sep='\t')
+
+    def display_instructions(self):
+        self.instruction_text = 'Intact Passage Task\n\nListen to the audio attentively.'
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
+        instr_visual.draw()
+        self.window.flip()
+
+    def run_trial(self, trial):
+        """ Run a single trial of the task. """
 
         self.screen.fixation_cross()
         # Wait for the start time of the trial
