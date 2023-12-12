@@ -11,11 +11,11 @@ import glob
 from psychopy import visual, core, event, gui # data, logging
 
 
-import experiment_code.constants as consts
+import experiment_code.utils as consts
 from experiment_code.screen import Screen
 from experiment_code.task_blocks import TASK_MAP
-from experiment_code.ttl import ttl
-import experiment_code.constants as const
+from experiment_code.ttl_clock import ttl
+import experiment_code.utils as const
 
 from ast import literal_eval
 # -----------------------------------------------------------------------------
@@ -33,11 +33,11 @@ def display_input_box():
     """
     #Set up input box
     inputDlg = gui.Dlg(title = "Run Experiment")
-    
-    inputDlg.addField('Enter Subject ID:') 
+
+    inputDlg.addField('Enter Subject ID:')
     inputDlg.addField('Enter Study Name:')  # either behavioral or fmri
     inputDlg.addField('Enter Run Name:')
-    inputDlg.addField('Wait for TTL pulse?', initial=False) # a checkbox 
+    inputDlg.addField('Wait for TTL pulse?', initial=False) # a checkbox
 
     inputDlg.show()
 
@@ -52,7 +52,7 @@ def display_input_box():
         experiment_info['ttl_flag'] = inputDlg.data[3]
     else:
         sys.exit()
-    
+
     return experiment_info
 
 def get_runfile_info(run_name, study_name):
@@ -67,9 +67,9 @@ def get_runfile_info(run_name, study_name):
         run_num(int)               : an integer representing the run number (get from the run filename)
         task_nums(numpy array)    : a numpy array with the number of target files in each run file
     """
-    run_info = {} # a dictionary with all the info for the run 
+    run_info = {} # a dictionary with all the info for the run
     # load run file
-    run_info['run_file'] = pd.read_csv(consts.run_dir / study_name / f"{run_name}.csv")
+    run_info['run_file'] = pd.read_csv(consts.run_dir / study_name / f"{run_name}.tsv")
 
     # get run num
     run_info['run_num'] = int(re.findall(r'\d+', run_name)[0])
@@ -91,15 +91,15 @@ def check_runfile_results(experiment_info):
     subj_id    = experiment_info['subj_id']
     run_name   = experiment_info['run_name']
 
-    fpath = consts.raw_dir / study_name / 'raw' / subj_id / f"{study_name}_{subj_id}.csv"
+    fpath = consts.raw_dir / study_name / 'raw' / subj_id / f"{study_name}_{subj_id}.tsv"
     if os.path.isfile(fpath):
-        # load in run_file results if they exist 
+        # load in run_file results if they exist
         run_file_results = pd.read_csv(fpath)
         if len(run_file_results.query(f'run_name=="{run_name}"')) > 0:
             current_iter = run_file_results.query(f'run_name=="{run_name}"')['run_iter'].max() # how many times has this run_file been executed?
             run_iter = current_iter+1
         else:
-            run_iter = 1 
+            run_iter = 1
     else:
         run_iter = 1
         run_file_results = pd.DataFrame()
@@ -131,7 +131,7 @@ def start_timer(ttl_flag):
         timer_info['global_clock'] = ttl.clock
     else:
         timer_info['global_clock'] = core.Clock()
-    
+
     timer_info['t0']           = timer_info['global_clock'].getTime()
 
     return timer_info
@@ -148,7 +148,7 @@ def get_targetfile_info(study_name, run_file, b):
         task_name     : task name
         task_num      : task number
         target_file   : target csv file opened as a pandas dataframe
-        task_endTime   : end time of the task run 
+        task_endTime   : end time of the task run
         task_startTime : start time of the task run
         instruct_dur  : duration of instruction for the task
     """
@@ -174,11 +174,11 @@ def get_targetfile_info(study_name, run_file, b):
     target_binfo['instruct_dur'] = run_file['instruct_dur'][b]
 
     return target_binfo
-        
+
 def save_response(response_df, study_name, subj_id, task_name):
     """
     gets the response dataframe and save it
-    Args: 
+    Args:
         response_df -   response dataframe
         study_name  -   study name: fmri or behavioral
         subj_id     -   id assigned to the subject
@@ -186,14 +186,14 @@ def save_response(response_df, study_name, subj_id, task_name):
     """
     # collect existing data
     try:
-        target_file_results = pd.read_csv(consts.raw_dir /study_name/ 'raw' / subj_id / f"{study_name}_{subj_id}_{task_name}.csv")
+        target_file_results = pd.read_csv(consts.raw_dir /study_name/ 'raw' / subj_id / f"{study_name}_{subj_id}_{task_name}.tsv")
         target_resp_df = pd.concat([target_file_results, response_df], axis=0, sort=False)
         # if there is no existing data, just save current data
     except:
         target_resp_df = response_df
         pass
-    # save all data 
-    target_resp_df.to_csv(consts.raw_dir / study_name/ 'raw' / subj_id / f"{study_name}_{subj_id}_{task_name}.csv", index=None, header=True)
+    # save all data
+    target_resp_df.to_csv(consts.raw_dir / study_name/ 'raw' / subj_id / f"{study_name}_{subj_id}_{task_name}.tsv", index=None, header=True)
 
 def get_runfile_results(run_file, all_run_response, run_file_results):
     """
@@ -205,15 +205,15 @@ def get_runfile_results(run_file, all_run_response, run_file_results):
     Returns:
         df_run_results(pandas dataframe)    -   a dataframe containing behavioral results
     """
-    # save run results 
+    # save run results
     new_run_df = pd.concat([run_file, pd.DataFrame.from_records(all_run_response)], axis=1)
-    
+
     try: # collect existing data
         df_run_results = pd.concat([run_file_results, new_run_df], axis=0, sort=False)
-        
+
     except: # if there is no existing data, just save current data
         df_run_results = new_run_df
-        pass 
+        pass
 
     return df_run_results
 
@@ -231,7 +231,7 @@ def show_scoreboard(subj_dir, taskObjs, screen):
 
         # get the task name
         t_name = obj.name
-        
+
         # discard rest. There are no specific feedback for rest and it can be excluded from the final scoreboard
         #if t_name != 'rest':
         if t_name not in ['rest', 'verb_generation', 'romance_movie', 'act_obs_knots']:
@@ -242,7 +242,7 @@ def show_scoreboard(subj_dir, taskObjs, screen):
             # get the feedback dictionary for the task
             feedback = obj.get_task_feedback(dataframe, obj.feedback_type)
 
-            # get the corresponding text for the feedback and append it to the overal list 
+            # get the corresponding text for the feedback and append it to the overal list
             feedback_text = f'{t_name}\n\nCurrent score: {feedback["curr"]} {feedback["measure"]}\n\nPrevious score: {feedback["prev"]} {feedback["measure"]}'
             feedback_all.append(feedback_text)
 
@@ -263,10 +263,10 @@ def show_scoreboard(subj_dir, taskObjs, screen):
 def run():
     """
     opens up a GUI with fields for subject id, experiment name, and run file name
-    Run file name is the name of a csv file that containg the names of the task with 
+    Run file name is the name of a csv file that containg the names of the task with
     the order in which they will be presented and their start/end times.
     Once the experiment is run, the data will be saved in a file with a filename specified as follows:
-    $experimentName_subjId_taskName.csv
+    $experimentName_subjId_taskName.tsv
     """
 
     # 1. open up the input box to get the experiment info from the experimenter
@@ -286,7 +286,7 @@ def run():
     exp_screen = Screen()
 
     # 6. timer stuff!
-    ## start the timer. Needs to know whether the experimenter has chosen to wait for ttl pulse 
+    ## start the timer. Needs to know whether the experimenter has chosen to wait for ttl pulse
     timer_info = start_timer(exp_info['ttl_flag'])
 
     # 7. initialize a list for responses
@@ -299,7 +299,7 @@ def run():
         # 8.1 get target info
         target_binfo = get_targetfile_info(exp_info['study_name'], run_info['run_file'], b)
 
-        # 8.2 get the real strat time for each task 
+        # 8.2 get the real strat time for each task
         ## for debugging make sure that this is at about the start_time specified in the run file
         real_start_time = timer_info['global_clock'].getTime() - timer_info['t0']
         print(f"real_start_time:{real_start_time} == start_time: {target_binfo['task_startTime']}????") # for debugging purposes!
@@ -315,10 +315,10 @@ def run():
         # 8.3 get the task object and append it to a list
         TaskName = TASK_MAP[target_binfo['task_name']]
 
-        Task_Block  = TaskName(screen = exp_screen, 
-                              target_file = target_binfo['target_file'], 
-                              run_end  = target_binfo['task_endTime'], task_name = target_binfo['task_name'],  
-                              study_name = exp_info['study_name'], target_num = target_binfo['target_num'], 
+        Task_Block  = TaskName(screen = exp_screen,
+                              target_file = target_binfo['target_file'],
+                              run_end  = target_binfo['task_endTime'], task_name = target_binfo['task_name'],
+                              study_name = exp_info['study_name'], target_num = target_binfo['target_num'],
                               ttl_flag = exp_info['ttl_flag'])
 
         taskObj_list.append(Task_Block)
@@ -329,7 +329,7 @@ def run():
                 ttl.check()
             else:
                 pass
-    
+
         # 8.5 get the instruction text for the task and display it
         Task_Block.display_instructions()
 
@@ -375,10 +375,10 @@ def run():
     df_run_results = get_runfile_results(run_info['run_file'], all_run_response, run_file_results)
 
     # 9.2 save the run results
-    run_filename = f"{exp_info['study_name']}_{exp_info['subj_id']}.csv"
+    run_filename = f"{exp_info['study_name']}_{exp_info['subj_id']}.tsv"
     df_run_results.to_csv(subj_dir / run_filename, index=None, header=True)
 
-    # 10. present feedback from all tasks on screen 
+    # 10. present feedback from all tasks on screen
     show_scoreboard(subj_dir, taskObj_list, exp_screen)
 
     # 11. end experiment
