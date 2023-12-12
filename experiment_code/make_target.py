@@ -539,10 +539,10 @@ class ActionObservation(Target):
 
         return trial_info
     
-class DemandGrid(Target):
+class DemandGridEasy(Target):
     def __init__(self, const):
         super().__init__(const)
-        self.name = 'demand_grid'
+        self.name = 'demand_grid_easy'
 
     def get_adjacent_positions(self, pos, grid_size):
         x, y = pos
@@ -597,6 +597,87 @@ class DemandGrid(Target):
                     return sequence_copy  # Return the modified sequence if it's different and connected
         
     def make_trial_file(self, run_number=None, task_dur=30, trial_dur=7, question_dur=3, sequence_dur=4, iti_dur=0.5, grid_size=(3, 4), sequence_length=4, file_name=None):
+        n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
+        trial_info = []
+
+        for n in range(n_trials):
+            trial = {}
+            trial['trial_num'] = n
+            original_sequence = self.generate_sequence(grid_size, sequence_length)
+            trial['grid_sequence'] = original_sequence
+            trial['modified_sequence'] = self.modify_sequence(original_sequence, grid_size)
+            trial['correct_side'] = random.choice(['left', 'right'])
+            trial['trial_dur'] = trial_dur
+            trial['sequence_dur'] = sequence_dur
+            trial['question_dur'] = question_dur
+            trial['iti_dur'] = iti_dur
+            trial['start_time'] = n * (trial_dur + iti_dur)
+            trial['end_time'] = trial['start_time'] + trial_dur
+            trial_info.append(trial)
+
+        trial_info = pd.DataFrame(trial_info)
+        if file_name is not None:
+            trial_info.to_csv(self.target_dir / self.name / file_name, sep='\t', index=False)
+        return trial_info
+    
+class DemandGridHard(Target):
+    def __init__(self, const):
+        super().__init__(const)
+        self.name = 'demand_grid_hard'
+
+    def get_adjacent_positions(self, pos, grid_size):
+        x, y = pos
+        adjacent = []
+        for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+            new_x, new_y = x + dx, y + dy
+            if 0 <= new_x < grid_size[0] and 0 <= new_y < grid_size[1]:
+                adjacent.append((new_x, new_y))
+        return adjacent
+
+    def generate_sequence(self, grid_size=(3, 4), sequence_length=4):
+        sequence = [(random.randint(0, grid_size[0] - 1), random.randint(0, grid_size[1] - 1))]
+
+        while len(sequence) < sequence_length:
+            possible_moves = set()
+            for pos in sequence:
+                for adj_pos in self.get_adjacent_positions(pos, grid_size):
+                    if adj_pos not in sequence:
+                        possible_moves.add(adj_pos)
+
+            if not possible_moves:
+                break  # Restart if no valid moves are possible
+
+            sequence.append(random.choice(list(possible_moves)))
+
+        return sequence
+
+    def modify_sequence(self, sequence, grid_size=(3, 4)):
+        def is_connected(seq):
+            to_visit = {seq[0]}
+            visited = set()
+            while to_visit:
+                pos = to_visit.pop()
+                if pos in visited: 
+                    continue
+                visited.add(pos)
+                to_visit.update({adj for adj in self.get_adjacent_positions(pos, grid_size) if adj in seq})
+            return len(visited) == len(seq)
+
+        modified_sequence = sequence[:]  # Make a copy of the original sequence to modify
+        while True:
+            sequence_copy = modified_sequence[:]  # Work with a copy to avoid altering the original sequence during checks
+            removed_position = sequence_copy.pop(0) if random.choice([True, False]) else sequence_copy.pop()
+
+            # Generate a list of adjacent positions excluding the removed position and current sequence positions
+            adjacent_positions = {adj_pos for pos in sequence_copy for adj_pos in self.get_adjacent_positions(pos, grid_size)}
+            possible_moves = adjacent_positions - set(sequence_copy) - {removed_position}
+
+            if possible_moves:
+                sequence_copy.append(random.choice(list(possible_moves)))
+                if is_connected(sequence_copy) and sequence_copy != sequence:
+                    return sequence_copy  # Return the modified sequence if it's different and connected
+        
+    def make_trial_file(self, run_number=None, task_dur=30, trial_dur=7, question_dur=3, sequence_dur=4, iti_dur=0.5, grid_size=(3, 4), sequence_length=8, file_name=None):
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
 

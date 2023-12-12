@@ -18,8 +18,9 @@ flexion_extension	FlexionExtension	flexexten	alternating periods of flexing/exte
 auditory_narrative	AuditoryNarrative	audnarr	30 second snippets of a moth radiohour story (wheretheressmoke)	Novel
 spatial_navigation	SpatialNavigation	spatialnav		
 degraded_passage	DegradedPassage	degpass		
-demand_grid	DemandGrid	demgrid		
+demand_grid_easy	DemandGridEasy	dmgrdeas		
 sentence_reading	SentenceReading	senread		
 nonword_reading	NonwordReading	nwdread		
 oddball	OddBall	odbal		
 intact_passage	IntactPassage	intpass		
+demand_grid_hard	DemandGridHard	dmgrdhrd		
