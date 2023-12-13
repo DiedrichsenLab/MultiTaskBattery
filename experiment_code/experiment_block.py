@@ -52,7 +52,7 @@ class Experiment:
             ## to 100.1.1.2 and the subnet mask to 255.255.255.0
             self.tk = pl.EyeLink('100.1.1.1')
 
-    def set_const_defaults(self):
+    def set_const_defaults(self): # jorn, do we need this?
         """ Make sure all the necessary variables are set in the constant file - otherwise set them to default values"""
         # if not 'stim_dir' in dir(self.const):
         #     self.const.stim_dir = Path(os.path.dirname(os.path.dirname(__file__))) / 'stimuli'  # where the experiment code is stored
@@ -63,8 +63,6 @@ class Experiment:
         Presents a GUI to confirm the settings for the run:
 
         The following parameters will be set:
-        behav_trianing  - is it behavioral training or scanning?
-            ** behavioral training target/run files are always stored under behavioral and scanning files are under fmri
         run_number      - run number
         subj_id         - id assigned to the subject
         ttl_flag        - should the program wait for the ttl pulse or not? For scanning THIS FLAG HAS TO BE SET TO TRUE
@@ -223,7 +221,7 @@ class Experiment:
         self.tk.close()
         return
 
-    def show_scoreboard(self, taskObjs, screen):
+    def show_scoreboard(self, taskObjs, screen): # jorn, do we need this?
         """
         Presents a score board in the end of the run
         Args:
