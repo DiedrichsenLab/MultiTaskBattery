@@ -39,7 +39,7 @@ class Task:
         self.const   = const
         self.ttl_clock       =  ttl_clock  # This is a reference to the clock of the run
         self.name        = info['task_name']
-        self.code        = self.name[:4]
+        self.code        = self.name[:4] # jorn, why are u using name when code was previously defined, this is problematic we should just use the code column
         self.target_file = info['target_file']
 
     def init_task(self):

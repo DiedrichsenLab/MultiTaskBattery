@@ -1,23 +1,17 @@
 # Pontine 7T experiment - main script
-# Ladan Shahshahani, Jorn Diedrichsen, Ince Hussain, 2021-23
+# Ladan Shahshahani, Bassel Arafat, Jorn Diedrichsen, Ince Hussain, 2021-23
 
 import sys
 import experiment_code.experiment_block as exp_block
-import experiment_code.make_target as make_target
-from experiment_code.ttl_clock import TTLClock
 import constants as const
-import experiment_code.utils as ut
 
 def main(subj_id):
     """_summary_
-    change debug to False once you are sure everything is debugged
-    make sure that you have changed the screen_res to the res for the subject screen
-    display mode should also be in extend!
+    make sure you to adjust constanst.py file before running the experiment
+    (e.g., experiment_name, eye_tracker, screen, etc.)
 
     Args:
         subj_id (str): id of the subject
-        debug (bool, optional): Defaults to True for debugging
-        eye_flag (bool, optional): Do you want to do the eyetracking?. Defaults to False.
     """
     my_Exp = exp_block.Experiment(const, subj_id=subj_id)
 
@@ -29,4 +23,4 @@ def main(subj_id):
 
 if __name__ == "__main__":
     # main(sys.argv[1])
-    main('test')
+    main('sub_02')
