@@ -12,9 +12,9 @@ import glob
 from psychopy import visual, sound, core, event, constants, gui  # data, logging
 from psychopy.visual import ShapeStim
 
-import experiment_code.utils as ut
-from experiment_code.screen import Screen
-from experiment_code.ttl_clock import TTLClock
+import MultiTaskBattery.utils as ut
+from MultiTaskBattery.screen import Screen
+from MultiTaskBattery.ttl_clock import TTLClock
 
 from ast import literal_eval
 
@@ -39,13 +39,13 @@ class Task:
         self.ttl_clock       =  ttl_clock  # This is a reference to the clock of the run
         self.name        = info['task_name']
         self.code        = info['code']
-        self.target_file = info['target_file']
+        self.task_file = info['task_file']
 
     def init_task(self):
         """
         Initialize task - default is to read the target information into the trial_info dataframe
         """
-        self.trial_info = pd.read_csv(self.const.target_dir / self.name / self.target_file,sep='\t')
+        self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file,sep='\t')
 
     def display_instructions(self):
         """
@@ -194,7 +194,7 @@ class NBack(Task):
 
     def init_task(self):
         """Read the target file and get all the stimuli necessary"""
-        self.trial_info = pd.read_csv(self.const.target_dir / self.name / self.target_file,sep='\t')
+        self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file,sep='\t')
         self.stim=[]
         for stim in self.trial_info['stim']:
             stim_path = self.const.stim_dir / self.name / stim
@@ -260,7 +260,7 @@ class VerbGeneration(Task):
 
     def init_task(self):
         """ Initialize task-specific settings. """
-        self.trial_info = pd.read_csv(self.const.target_dir / self.name / self.target_file, sep='\t')
+        self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
         self.trial_info['noun'] = self.trial_info['stim'].str.strip()
 
     def display_instructions(self): # overriding the display instruction from the parent class
@@ -308,7 +308,7 @@ class TongueMovement(Task):
         super().__init__(info, screen, ttl_clock, const)
 
     def init_task(self):
-        self.trial_info = pd.read_csv(self.const.target_dir / self.name / self.target_file, sep='\t')
+        self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
 
     def display_instructions(self):
         self.instruction_text = f"{self.name} task \n\n Move your tongue left to right touching your upper premolar teeth"
@@ -343,7 +343,7 @@ class AuditoryNarrative(Task):
         super().__init__(info, screen, ttl_clock, const)
 
     def init_task(self):
-        self.trial_info = pd.read_csv(self.const.target_dir / self.name / self.target_file, sep='\t')
+        self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
 
     def display_instructions(self):
         self.instruction_text = f'{self.name} Task\n\nListen to the narrative attentively.'
@@ -409,7 +409,7 @@ class SpatialNavigation(Task):
         super().__init__(info, screen, ttl_clock, const)
 
     def init_task(self):
-        self.trial_info = pd.read_csv(self.const.target_dir / self.name / self.target_file, sep='\t')
+        self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
 
     def display_instructions(self):
         start_location = self.trial_info.iloc[0]['location_1']
@@ -441,7 +441,7 @@ class TheoryOfMind(Task):
 
     def init_task(self):
         """ Initialize task - read the target information into the trial_info dataframe """
-        self.trial_info = pd.read_csv(self.const.target_dir / self.name / self.target_file, sep='\t')
+        self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
 
     def display_instructions(self):
         """ Display the instructions for the Theory of Mind task """
@@ -492,7 +492,7 @@ class DegradedPassage(Task):
         super().__init__(info, screen, ttl_clock, const)
 
     def init_task(self):
-        self.trial_info = pd.read_csv(self.const.target_dir / self.name / self.target_file, sep='\t')
+        self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
 
     def display_instructions(self):
         self.instruction_text = f'{self.name} Task \n\nListen to the audio attentively.'
@@ -523,7 +523,7 @@ class IntactPassage(Task):
         super().__init__(info, screen, ttl_clock, const)
 
     def init_task(self):
-        self.trial_info = pd.read_csv(self.const.target_dir / self.name / self.target_file, sep='\t')
+        self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
 
     def display_instructions(self):
         self.instruction_text = f'{self.name} Task \n\nListen to the audio attentively.'
@@ -592,7 +592,7 @@ class DemandGridEasy(Task):
 
     def init_task(self):
         """Read the target file and get all the stimuli necessary"""
-        self.trial_info = pd.read_csv(self.const.target_dir / self.name / self.target_file, sep='\t')
+        self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
 
 
     def display_instructions(self):
@@ -691,7 +691,7 @@ class DemandGridHard(Task):
 
     def init_task(self):
         """Read the target file and get all the stimuli necessary"""
-        self.trial_info = pd.read_csv(self.const.target_dir / self.name / self.target_file, sep='\t')
+        self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
 
 
     def display_instructions(self):
@@ -800,7 +800,7 @@ class SentenceReading(Task):
         self.feedback_type = 'None'
 
     def init_task(self):
-        self.trial_info = pd.read_csv(self.const.target_dir / self.name / self.target_file, sep='\t')
+        self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
 
     def display_instructions(self):
         self.instruction_text = f'{self.name} Task \n\n Read each English word and press a button when the image of a hand pressing a button is displayed'
@@ -842,7 +842,7 @@ class NonwordReading(Task):
         super().__init__(info, screen, ttl_clock, const)
 
     def init_task(self):
-        self.trial_info = pd.read_csv(self.const.target_dir / self.name / self.target_file, sep='\t')
+        self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
 
     def display_instructions(self):
         self.instruction_text = f'{self.name} Task \n\n Read each nonword word and press a button when the image of a hand pressing a button is displayed'
@@ -885,7 +885,7 @@ class OddBall(Task):
         self.feedback_type = 'acc'
 
     def init_task(self):
-        self.trial_info = pd.read_csv(self.const.target_dir / self.name / self.target_file, sep='\t')
+        self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
 
     def display_instructions(self):
         self.instruction_text = f'{self.name} Task \n\n Press the button with your index finger when you see a red K'
@@ -940,7 +940,7 @@ class FlexionExtension(Task):
         self.feedback_type = 'None'
 
     def init_task(self):
-        self.trial_info = pd.read_csv(self.const.target_dir / self.name / self.target_file, sep='\t')
+        self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
 
     def display_instructions(self):
         self.instruction_text = f"{self.name} task \n\n Flex and extend your right and left toes"
