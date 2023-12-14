@@ -1,4 +1,4 @@
-mdtb_reduced
+Multi Task Battery 
 ============
 
 This project runs multi-task batteries developed by the diedrichsenlab.
@@ -13,7 +13,6 @@ Documentation is in the docs folder and on readthedocs shortly.
 # Installation
 
 - Clone the repository
-
 
 - Make sure you have python 3.8
 
