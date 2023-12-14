@@ -13,7 +13,7 @@ response_fingers = ['Pinky', 'Ring','Middle', 'Index']
 
 # Directory definitions for experiment
 exp_dir = Path(os.path.dirname(os.path.realpath(__file__)))   # where the experiment code is stored
-target_dir = exp_dir / "task_files"  # contains target files for the task
+task_dir = exp_dir / "task_files"  # contains target files for the task
 run_dir    = exp_dir / "run_files"     # contains run files for each session
 data_dir   = exp_dir / "data"          # This is where the result files are being saved
 

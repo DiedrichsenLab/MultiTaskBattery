@@ -1,4 +1,4 @@
-import MultiTaskBattery.make_target as mt
+import MultiTaskBattery.make_task_file as mt
 import MultiTaskBattery.utils as ut
 import constants as const
 import numpy as np
@@ -14,7 +14,7 @@ tasks = ['demand_grid_hard','n_back']
 #  check if dirs for the tasks and runs exist, if not, make them
 ut.dircheck(const.run_dir)
 for task in tasks:
-    ut.dircheck(const.target_dir / task)
+    ut.dircheck(const.task_dir / task)
 
 for r in range(1,9):
     tfiles = [f'{task}_{r:02d}.tsv' for task in tasks]
