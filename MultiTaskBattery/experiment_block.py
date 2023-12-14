@@ -9,10 +9,10 @@ import sys
 from pathlib import Path
 
 from psychopy import visual, core, event, gui # data, logging
-import experiment_code.utils as ut
-import experiment_code.task_blocks as tasks
-from experiment_code.ttl_clock import TTLClock
-from experiment_code.screen import Screen
+import MultiTaskBattery.utils as ut
+import MultiTaskBattery.task_blocks as tasks
+from MultiTaskBattery.ttl_clock import TTLClock
+from MultiTaskBattery.screen import Screen
 # from psychopy.hardware.emulator import launchScan
 from psychopy.hardware import keyboard
 # import pylink as pl # to connect to eyelink
@@ -131,13 +131,13 @@ class Experiment:
         shows the scoreboard for the tasks in the task_list
         """
         # get the data from the task files
-        
+
         correct_answers = 0
         total_answers = 0
 
         for task in task_list:
             task_file_path = self.const.data_dir / self.subj_id / f"{self.subj_id}_task-{task.code}.tsv"
-            
+
             #load the task data and then count number of "true" responses in the correct column
             task_file = pd.read_csv(task_file_path, sep='\t')
 
@@ -156,7 +156,7 @@ class Experiment:
             else:
                 pass
 
-    
+
         # calculate the percentage of correct answers
         score = correct_answers / total_answers
         score = score * 100

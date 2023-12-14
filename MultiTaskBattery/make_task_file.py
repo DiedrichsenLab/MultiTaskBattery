@@ -1,14 +1,11 @@
-# Create target file for different tasks
+# Create TaskFile file for different tasks
 # @ Ladan Shahshahani  - Maedbh King - Suzanne Witt March 30 2021
 from pathlib import Path
 from itertools import count
 import pandas as pd
 import numpy as np
-import os
 import random
-import glob
-import re
-import experiment_code.utils as ut
+import MultiTaskBattery.utils as ut
 
 
 
@@ -53,7 +50,7 @@ def make_run_file(task_list,
     indx = [np.where(ut.task_table['name']==t)[0][0] for t in task_list]
     R = {'task_name':task_list,
          'task_code':ut.task_table['code'].iloc[indx],
-         'target_file':tfiles,
+         'task_file':tfiles,
          'instruction_dur':[instruction_dur]*len(task_list)}
     R = pd.DataFrame(R)
     R = shuffle_rows(R)
@@ -71,17 +68,17 @@ def get_task_class(name):
     class_name = ut.task_table.iloc[index]['task_class']
     return class_name
 
-class Target():
+class TaskFile():
     def __init__(self, const) :
-        """ The Target class is class for creating target files for different tasks
+        """ The TaskFile class is class for creating TaskFile files for different tasks
         Args:
             const: module for constants
         """
         self.exp_name   = const.exp_name
-        self.target_dir = const.target_dir
+        self.task_dir = const.task_dir
         self.stim_dir   = const.stim_dir
 
-class NBack(Target):
+class NBack(TaskFile):
     def __init__(self, const):
         super().__init__(const)
         self.name = 'n_back'
@@ -130,17 +127,17 @@ class NBack(Target):
 
         trial_info = pd.DataFrame(trial_info)
         if file_name is not None:
-            trial_info.to_csv(self.target_dir / self.name / file_name,sep='\t',index=False)
+            trial_info.to_csv(self.task_dir / self.name / file_name,sep='\t',index=False)
         return trial_info
 
-class Rest(Target):
+class Rest(TaskFile):
     def __init__(self, const):
         super().__init__(const)
         self.name = 'rest'
 
     def make_trial_file(self,
                         task_dur =  30,
-                        file_name = None 
+                        file_name = None
                         ,run_number = None):
         trial = {}
         trial['trial_num'] = [1]
@@ -149,10 +146,10 @@ class Rest(Target):
         trial['end_time'] =  [task_dur]
         trial_info = pd.DataFrame(trial)
         if file_name is not None:
-            trial_info.to_csv(self.target_dir / self.name / file_name,sep='\t',index=False)
+            trial_info.to_csv(self.task_dir / self.name / file_name,sep='\t',index=False)
         return trial_info
-    
-class VerbGeneration(Target):
+
+class VerbGeneration(TaskFile):
     def __init__(self, const):
         super().__init__(const)
         self.name = 'verb_generation'
@@ -200,12 +197,12 @@ class VerbGeneration(Target):
 
         trial_info = pd.DataFrame(trial_info)
         if file_name is not None:
-            ut.dircheck(self.target_dir / self.name)
-            trial_info.to_csv(self.target_dir / self.name / file_name,sep='\t',index=False)
+            ut.dircheck(self.task_dir / self.name)
+            trial_info.to_csv(self.task_dir / self.name / file_name,sep='\t',index=False)
 
         return trial_info
-    
-class TongueMovement(Target):
+
+class TongueMovement(TaskFile):
     def __init__(self, const):
         super().__init__(const)
         self.name = 'tongue_movement'
@@ -240,10 +237,10 @@ class TongueMovement(Target):
 
         trial_info = pd.DataFrame(trial_info)
         if file_name is not None:
-            trial_info.to_csv(self.target_dir / self.name / file_name, sep='\t', index=False)
+            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
         return trial_info
 
-class AuditoryNarrative(Target):
+class AuditoryNarrative(TaskFile):
     def __init__(self, const):
         super().__init__(const)
         self.name = 'auditory_narrative'
@@ -272,11 +269,11 @@ class AuditoryNarrative(Target):
 
         trial_info = pd.DataFrame(trial_info)
         if file_name is not None:
-            trial_info.to_csv(self.target_dir / self.name / file_name, sep='\t', index=False)
+            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
 
         return trial_info
 
-class RomanceMovie(Target):
+class RomanceMovie(TaskFile):
     def __init__(self, const):
         super().__init__(const)
         self.name = 'romance_movie'
@@ -302,11 +299,11 @@ class RomanceMovie(Target):
 
         trial_info = pd.DataFrame(trial_info)
         if file_name is not None:
-            trial_info.to_csv(self.target_dir / self.name / file_name, sep='\t', index=False)
+            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
 
         return trial_info
 
-class SpatialNavigation(Target):
+class SpatialNavigation(TaskFile):
     def __init__(self, const):
         super().__init__(const)
         self.name = 'spatial_navigation'
@@ -319,7 +316,7 @@ class SpatialNavigation(Target):
 
         # Randomly select two different locations
         loc1, loc2 = random.sample(self.locations, 2)
-        
+
         t = 0
 
         for n in range(n_trials):
@@ -338,19 +335,19 @@ class SpatialNavigation(Target):
 
         trial_info = pd.DataFrame(trial_info)
         if file_name is not None:
-            trial_info.to_csv(self.target_dir / self.name / file_name, sep='\t', index=False)
+            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
 
         return trial_info
 
-class TheoryOfMind(Target):
+class TheoryOfMind(TaskFile):
     def __init__(self, const):
         super().__init__(const)
         self.name = 'theory_of_mind'
 
-    def make_trial_file(self, hand='right', run_number=None, task_dur=30, 
-                        trial_dur=14, iti_dur=1, story_dur=10, 
+    def make_trial_file(self, hand='right', run_number=None, task_dur=30,
+                        trial_dur=14, iti_dur=1, story_dur=10,
                         question_dur=4, file_name=None):
-        
+
         # count number of trials
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
@@ -372,8 +369,8 @@ class TheoryOfMind(Target):
             trial['hand'] = hand
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
-            trial['story'] = stim['story'][n] 
-            trial['question'] = stim['question'][n]  
+            trial['story'] = stim['story'][n]
+            trial['question'] = stim['question'][n]
             trial['condition'] = stim['condition'][n]
             trial['answer'] = stim['response'][n]
             trial['story_dur'] = story_dur
@@ -388,10 +385,10 @@ class TheoryOfMind(Target):
 
         trial_info = pd.DataFrame(trial_info)
         if file_name is not None:
-            trial_info.to_csv(self.target_dir / self.name / file_name, sep='\t', index=False)
+            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
         return trial_info
 
-class DegradedPassage(Target):
+class DegradedPassage(TaskFile):
     def __init__(self, const):
         super().__init__(const)
         self.name = 'degraded_passage'
@@ -421,11 +418,11 @@ class DegradedPassage(Target):
 
         trial_info = pd.DataFrame(trial_info)
         if file_name is not None:
-            trial_info.to_csv(self.target_dir / self.name / file_name, sep='\t', index=False)
+            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
 
         return trial_info
-    
-class IntactPassage(Target):
+
+class IntactPassage(TaskFile):
     def __init__(self, const):
         super().__init__(const)
         self.name = 'intact_passage'
@@ -455,11 +452,11 @@ class IntactPassage(Target):
 
         trial_info = pd.DataFrame(trial_info)
         if file_name is not None:
-            trial_info.to_csv(self.target_dir / self.name / file_name, sep='\t', index=False)
+            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
 
         return trial_info
-    
-class ActionObservation(Target):
+
+class ActionObservation(TaskFile):
     def __init__(self, const):
         super().__init__(const)
         self.name = 'action_observation'
@@ -497,11 +494,11 @@ class ActionObservation(Target):
 
         trial_info = pd.DataFrame(trial_info)
         if file_name is not None:
-            trial_info.to_csv(self.target_dir / self.name / file_name, sep='\t', index=False)
+            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
 
         return trial_info
-    
-class DemandGridEasy(Target):
+
+class DemandGridEasy(TaskFile):
     def __init__(self, const):
         super().__init__(const)
         self.name = 'demand_grid_easy'
@@ -538,7 +535,7 @@ class DemandGridEasy(Target):
             visited = set()
             while to_visit:
                 pos = to_visit.pop()
-                if pos in visited: 
+                if pos in visited:
                     continue
                 visited.add(pos)
                 to_visit.update({adj for adj in self.get_adjacent_positions(pos, grid_size) if adj in seq})
@@ -557,7 +554,7 @@ class DemandGridEasy(Target):
                 sequence_copy.append(random.choice(list(possible_moves)))
                 if is_connected(sequence_copy) and sequence_copy != sequence:
                     return sequence_copy  # Return the modified sequence if it's different and connected
-        
+
     def make_trial_file(self, hand = None, run_number=None, task_dur=30, trial_dur=7, question_dur=3, sequence_dur=4, iti_dur=0.5, grid_size=(3, 4), sequence_length=4, file_name=None):
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
@@ -581,10 +578,10 @@ class DemandGridEasy(Target):
 
         trial_info = pd.DataFrame(trial_info)
         if file_name is not None:
-            trial_info.to_csv(self.target_dir / self.name / file_name, sep='\t', index=False)
+            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
         return trial_info
-    
-class DemandGridHard(Target):
+
+class DemandGridHard(TaskFile):
     def __init__(self, const):
         super().__init__(const)
         self.name = 'demand_grid_hard'
@@ -621,7 +618,7 @@ class DemandGridHard(Target):
             visited = set()
             while to_visit:
                 pos = to_visit.pop()
-                if pos in visited: 
+                if pos in visited:
                     continue
                 visited.add(pos)
                 to_visit.update({adj for adj in self.get_adjacent_positions(pos, grid_size) if adj in seq})
@@ -640,7 +637,7 @@ class DemandGridHard(Target):
                 sequence_copy.append(random.choice(list(possible_moves)))
                 if is_connected(sequence_copy) and sequence_copy != sequence:
                     return sequence_copy  # Return the modified sequence if it's different and connected
-        
+
     def make_trial_file(self, hand = None, run_number=None, task_dur=30, trial_dur=7, question_dur=3, sequence_dur=4, iti_dur=0.5, grid_size=(3, 4), sequence_length=8, file_name=None):
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
@@ -664,10 +661,10 @@ class DemandGridHard(Target):
 
         trial_info = pd.DataFrame(trial_info)
         if file_name is not None:
-            trial_info.to_csv(self.target_dir / self.name / file_name, sep='\t', index=False)
+            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
         return trial_info
-    
-class SentenceReading(Target):
+
+class SentenceReading(TaskFile):
     def __init__(self, const):
         super().__init__(const)
         self.name = 'sentence_reading'
@@ -690,7 +687,7 @@ class SentenceReading(Target):
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
             trial['display_trial_feedback'] = False
-            sentence_index = (run_number - 1) * n_trials + n 
+            sentence_index = (run_number - 1) * n_trials + n
             trial['stim'] = df['sentence'][sentence_index]
             trial['start_time'] = t
             trial['end_time'] = t + trial_dur + iti_dur
@@ -701,11 +698,11 @@ class SentenceReading(Target):
 
         trial_info = pd.DataFrame(trial_info)
         if file_name is not None:
-            trial_info.to_csv(self.target_dir / self.name / file_name, sep='\t', index=False)
+            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
 
         return trial_info
-    
-class NonwordReading(Target):
+
+class NonwordReading(TaskFile):
     def __init__(self, const):
         super().__init__(const)
         self.name = 'nonword_reading'
@@ -728,7 +725,7 @@ class NonwordReading(Target):
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
             trial['display_trial_feedback'] = False
-            sentence_index = (run_number - 1) * n_trials + n 
+            sentence_index = (run_number - 1) * n_trials + n
             trial['stim'] = df['sentence'][sentence_index]
             trial['start_time'] = t
             trial['end_time'] = t + trial_dur + iti_dur
@@ -739,11 +736,11 @@ class NonwordReading(Target):
 
         trial_info = pd.DataFrame(trial_info)
         if file_name is not None:
-            trial_info.to_csv(self.target_dir / self.name / file_name, sep='\t', index=False)
+            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
 
         return trial_info
-    
-class OddBall(Target):
+
+class OddBall(TaskFile):
     def __init__(self, const):
         super().__init__(const)
         self.name = 'oddball'
@@ -762,7 +759,7 @@ class OddBall(Target):
         for n in range(len(stimuli)):
             trial = {}
             trial['trial_num'] = n
-            trial['hand'] = hand 
+            trial['hand'] = hand
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
             trial['display_trial_feedback'] = True
@@ -777,11 +774,11 @@ class OddBall(Target):
 
         trial_info = pd.DataFrame(trial_info)
         if file_name is not None:
-            trial_info.to_csv(self.target_dir / self.name / file_name, sep='\t', index=False)
+            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
 
         return trial_info
 
-class FlexionExtension(Target):
+class FlexionExtension(TaskFile):
     def __init__(self, const):
         super().__init__(const)
         self.name = 'flexion_extension'
@@ -818,10 +815,9 @@ class FlexionExtension(Target):
 
         trial_info = pd.DataFrame(trial_info)
         if file_name is not None:
-            trial_info.to_csv(self.target_dir / self.name / file_name, sep='\t', index=False)
+            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
         return trial_info
 
 
 
 
-    

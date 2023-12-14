@@ -2,7 +2,7 @@
 # Ladan Shahshahani, Bassel Arafat, Jorn Diedrichsen, Ince Hussain, 2021-23
 
 import sys
-import experiment_code.experiment_block as exp_block
+import MultiTaskBattery.experiment_block as exp_block
 import constants as const
 
 def main(subj_id):
