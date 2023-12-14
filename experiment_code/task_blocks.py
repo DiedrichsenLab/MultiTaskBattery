@@ -18,7 +18,6 @@ from experiment_code.ttl_clock import TTLClock
 
 from ast import literal_eval
 
-
 class Task:
     """
     Task: takes in inputs from run_experiment.py and methods
@@ -39,7 +38,7 @@ class Task:
         self.const   = const
         self.ttl_clock       =  ttl_clock  # This is a reference to the clock of the run
         self.name        = info['task_name']
-        self.code        = self.name[:4] # jorn, why are u using name when code was previously defined, this is problematic we should just use the code column
+        self.code        = info['code']
         self.target_file = info['target_file']
 
     def init_task(self):
@@ -177,68 +176,13 @@ class Task:
 
         return feedback
 
-
-    def get_task_response(self, all_trial_response):
-        """
-        get the responses made for the task and convert it to a dataframe
-        Args:
-            all_trial_response  -   responses made for all the trials in the task
-        Outputs:
-            response_df     -   dataframe containing the responses made for the task
-        """
-        # df for current data
-        response_df = pd.concat([self.target_file, pd.DataFrame.from_records(all_trial_response)], axis=1)
-        return response_df
-
-
-    ## get the current time in the trial
-    def get_current_trial_time(self):
-        """
-        gets the current time in the trial. The ttl_flag determines the timings.
-        """
-        # gets the current time based on ttl_flag
-        if self.ttl_flag:
-            t_current = ttl.clock.getTime()
-        else:
-            t_current = self.clock.getTime()
-
-        return t_current
-
-
-    # save the response for the task
-    def save_task_response(self, response_df, file_path):
-        """
-        gets the response dataframe and save it
-        Args:
-            response_df(pd dataframe) -   response dataframe
-            file_path                 -   path where response will be saved
-
-        """
-        # check if a task response file already exists and load it and then update it
-        if os.path.isfile(file_path):
-            target_file_results = pd.read_csv(file_path)
-            target_resp_df      = pd.concat([target_file_results, response_df], axis=0, sort=False)
-        else: # if there is no existing data, just save current data
-            target_resp_df = response_df
-        # save all data
-        target_resp_df.to_csv(file_path, index=None, header=True)
-
-    ### quits the screen
     def screen_quit(self):
+        """ Checks for quit or escape key presses and quits the experiment if necessary """
         keys = event.getKeys()
         for key in keys:
             if 'q' and 'esc' in key:
                 self.window.close()
                 core.quit()
-    ### shows fixation
-
-    def show_fixation(self, t0, delta_t):
-        if self.ttl_flag: # wait for ttl pulse
-            while ttl.clock.getTime()-t0 <= delta_t:
-                ttl.check()
-        else: # do not wait for ttl pulse
-            while self.clock.getTime()-t0 <= delta_t:
-                pass
 
 class NBack(Task):
     # def instruction_text(self):
@@ -283,7 +227,7 @@ class NBack(Task):
         # display trial feedback
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
         return trial
-    
+
 class Rest(Task):
     def __init__(self, info, screen, ttl_clock, const):
         super().__init__(info, screen, ttl_clock, const)
@@ -306,7 +250,7 @@ class Rest(Task):
         self.screen.fixation_cross()
         self.ttl_clock.wait_until(self.start_time + trial['trial_dur'])
         return trial
-    
+
 class VerbGeneration(Task):
     # def instruction_text(self):
     #     return "Verb Generation Task\n\nYou will read a series of nouns. For some nouns you will be asked to silently generate a verb.\n\nAnswer as quickly and as accurately as possible"
@@ -344,7 +288,7 @@ class VerbGeneration(Task):
         # Display word
         self.show_stim(trial['noun'])
 
-        # display GENERATE instruction at the halfway point (jorn check this plz, this replaces word 7 with generate) 
+        # display GENERATE instruction at the halfway point (jorn check this plz, this replaces word 7 with generate)
         if trial.name == len(self.trial_info) // 2:
             self.display_generate_instruction()
 
@@ -355,19 +299,19 @@ class VerbGeneration(Task):
         # display trial feedback
         self.display_trial_feedback(give_feedback= trial['display_trial_feedback'], correct_response = None)
         return trial
-    
+
 class TongueMovement(Task):
     """
     Tongue movement following Buckner et al., 2022! No particular feedback.
     """
     def __init__(self, info, screen, ttl_clock, const):
         super().__init__(info, screen, ttl_clock, const)
-    
+
     def init_task(self):
         self.trial_info = pd.read_csv(self.const.target_dir / self.name / self.target_file, sep='\t')
 
     def display_instructions(self):
-        self.instruction_text = f"{self.name} task \n\n Move your tongue left to right touching your upper premolar teeth"   
+        self.instruction_text = f"{self.name} task \n\n Move your tongue left to right touching your upper premolar teeth"
         instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
         instr_visual.draw()
         self.window.flip()
@@ -377,7 +321,7 @@ class TongueMovement(Task):
 
         # draw fixation cross without flipping
         self.screen.fixation_cross(flip=False)
-        
+
         # Check the trial_type and display the corresponding stimulus
         if trial['trial_type'] == 'right':
             # If trial_type is 'right', show the black circle around the fixation cross
@@ -393,7 +337,7 @@ class TongueMovement(Task):
         self.display_trial_feedback(give_feedback= trial['display_trial_feedback'], correct_response = None)
 
         return trial
-    
+
 class AuditoryNarrative(Task):
     def __init__(self, info, screen, ttl_clock, const):
         super().__init__(info, screen, ttl_clock, const)
@@ -427,7 +371,7 @@ class AuditoryNarrative(Task):
 class RomanceMovie(Task):
     def __init__(self, info, screen, ttl_clock, const):
         super().__init__(info, screen, ttl_clock, const)
-        self.name = 'romance_movie' 
+        self.name = 'romance_movie'
 
     def display_instructions(self):
         self.instruction_text = f"{self.name} Task\n\n You will watch short clips from a romance movie. Please keep your head still and pay attention to the screen."
@@ -459,7 +403,7 @@ class RomanceMovie(Task):
         self.display_trial_feedback(give_feedback= trial['display_trial_feedback'], correct_response = None)
 
         return trial
-    
+
 class SpatialNavigation(Task):
     def __init__(self, info, screen, ttl_clock, const):
         super().__init__(info, screen, ttl_clock, const)
@@ -478,7 +422,7 @@ class SpatialNavigation(Task):
         instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1],  wrapWidth=400)
         instr_visual.draw()
         self.window.flip()
-    
+
     def run_trial(self,trial):
         self.screen.fixation_cross()
 
@@ -489,7 +433,7 @@ class SpatialNavigation(Task):
         self.display_trial_feedback(give_feedback= trial['display_trial_feedback'], correct_response = None)
 
         return trial
-    
+
 class TheoryOfMind(Task):
     def __init__(self, info, screen, ttl_clock, const):
         super().__init__(info, screen, ttl_clock, const)
@@ -512,12 +456,12 @@ class TheoryOfMind(Task):
     def run_trial(self, trial):
         """ Runs a single trial of the Theory of Mind task """
         event.clearEvents()
-        
+
         # Display story
         story_stim = visual.TextStim(self.window, text=trial['story'], alignHoriz='center', wrapWidth=20, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg')
         story_stim.draw()
         self.window.flip()
-       
+
        # wait until story duration
         core.wait(trial['story_dur'])
 
@@ -573,7 +517,7 @@ class DegradedPassage(Task):
         self.display_trial_feedback(give_feedback= trial['display_trial_feedback'], correct_response = None)
 
         return trial
-    
+
 class IntactPassage(Task):
     def __init__(self, info, screen, ttl_clock, const):
         super().__init__(info, screen, ttl_clock, const)
@@ -604,7 +548,7 @@ class IntactPassage(Task):
         self.display_trial_feedback(give_feedback= trial['display_trial_feedback'], correct_response = None)
 
         return trial
-    
+
 class ActionObservation(Task):
     def __init__(self, info, screen, ttl_clock, const):
         super().__init__(info, screen, ttl_clock, const)
@@ -639,7 +583,7 @@ class ActionObservation(Task):
         self.display_trial_feedback(give_feedback= trial['display_trial_feedback'], correct_response = None)
 
         return trial
-    
+
 class DemandGridEasy(Task):
     def __init__(self, info, screen, ttl_clock, const):
         super().__init__(info, screen, ttl_clock, const)
@@ -654,7 +598,7 @@ class DemandGridEasy(Task):
     def display_instructions(self):
         self.instruction_text = (f"{self.name} Task \n\n"
                                 "Watch the sequence of boxes that light \n\n"
-                                "up and then choose the correct pattern")                             
+                                "up and then choose the correct pattern")
         instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1],  wrapWidth=400)
         instr_visual.draw()
         self.window.flip()
@@ -753,7 +697,7 @@ class DemandGridHard(Task):
     def display_instructions(self):
         self.instruction_text = (f"{self.name} Task \n\n"
                                 "Watch the sequence of boxes that light \n\n"
-                                "up and then choose the correct pattern")                             
+                                "up and then choose the correct pattern")
         instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1],  wrapWidth=400)
         instr_visual.draw()
         self.window.flip()
@@ -813,7 +757,7 @@ class DemandGridHard(Task):
             for pos in pair:
                 x, y = pos
                 self.grid[x][y].fillColor = 'blue'
-            
+
             for row in self.grid:
                 for rect in row:
                     rect.draw()
@@ -851,7 +795,7 @@ class DemandGridHard(Task):
 class SentenceReading(Task):
     def __init__(self, info, screen, ttl_clock, const):
         super().__init__(info, screen, ttl_clock, const)
-        self.feedback_type = 'None'  
+        self.feedback_type = 'None'
 
     def init_task(self):
         self.trial_info = pd.read_csv(self.const.target_dir / self.name / self.target_file, sep='\t')
@@ -864,7 +808,7 @@ class SentenceReading(Task):
 
     def run_trial(self, trial):
         """ Run a single trial of the sentence reading task. """
-  
+
         # get sentence and split into words by space
         sentence = trial['stim']
         words = sentence.split()
@@ -936,7 +880,7 @@ class NonwordReading(Task):
 class OddBall(Task):
     def __init__(self, info, screen, ttl_clock, const):
         super().__init__(info, screen, ttl_clock, const)
-        self.feedback_type = 'acc'  
+        self.feedback_type = 'acc'
 
     def init_task(self):
         self.trial_info = pd.read_csv(self.const.target_dir / self.name / self.target_file, sep='\t')
@@ -984,7 +928,7 @@ class OddBall(Task):
         # self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
 
         return trial
-    
+
 class FlexionExtension(Task):
     """
     Flexion extension of toes! No particular feedback.
@@ -992,12 +936,12 @@ class FlexionExtension(Task):
     def __init__(self, info, screen, ttl_clock, const):
         super().__init__(info, screen, ttl_clock, const)
         self.feedback_type = 'None'
-    
+
     def init_task(self):
         self.trial_info = pd.read_csv(self.const.target_dir / self.name / self.target_file, sep='\t')
 
     def display_instructions(self):
-        self.instruction_text = f"{self.name} task \n\n Flex and extend your right and left toes"   
+        self.instruction_text = f"{self.name} task \n\n Flex and extend your right and left toes"
         instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
         instr_visual.draw()
         self.window.flip()
@@ -1025,4 +969,3 @@ class FlexionExtension(Task):
 
         # No response is expected in this task, so return trial as is
         return trial
-    
