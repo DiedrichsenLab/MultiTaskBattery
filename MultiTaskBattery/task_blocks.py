@@ -91,11 +91,11 @@ class Task:
             start_time (float): the time the RT-period started
             max_wait_time (float): How long to wait maximally
         Returns:
-            key (str): the key that was pressed ('none' if no key was pressed)
+            key (str): the key that was pressed (1-4) (0 if no key was pressed)
             rt (float): the reaction time (nan if no key was pressed)
         """
         response_made = False
-        key = 'none'
+        key = 0
         rt = np.nan
 
         while (self.ttl_clock.get_time() - start_time <= max_wait_time) and not response_made:
@@ -103,7 +103,8 @@ class Task:
             keys=event.getKeys(keyList= self.const.response_keys, timeStamped=self.ttl_clock.clock)
             if len(keys)>0:
                 response_made = True
-                key = keys[0][0]
+                key_char = keys[0][0]
+                key = self.const.response_keys.index(key_char) + 1
                 rt = keys[0][1] - start_time
         return key, rt
 
