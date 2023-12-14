@@ -23,7 +23,7 @@ class Experiment:
     A general class with attributes common to experiments
     """
 
-    def __init__(self, const, subj_id, **kwargs):
+    def __init__(self, const, subj_id):
         """
             const (module):
                 local constants.py module (see pontine_7T/constants.py) as example
@@ -36,7 +36,6 @@ class Experiment:
         self.run_number = 0
         self.const = const
         self.ttl_clock = TTLClock()
-        self.__dict__.update(kwargs)
         self.set_const_defaults()
 
         # open screen and display fixation cross
@@ -53,7 +52,7 @@ class Experiment:
             ## to 100.1.1.2 and the subnet mask to 255.255.255.0
             self.tk = pl.EyeLink('100.1.1.1')
 
-    def set_const_defaults(self):
+    def set_const_defaults(self): # jorn, do we need this?
         """ Make sure all the necessary variables are set in the constant file - otherwise set them to default values"""
         # if not 'stim_dir' in dir(self.const):
         #     self.const.stim_dir = Path(os.path.dirname(os.path.dirname(__file__))) / 'stimuli'  # where the experiment code is stored
@@ -64,8 +63,6 @@ class Experiment:
         Presents a GUI to confirm the settings for the run:
 
         The following parameters will be set:
-        behav_trianing  - is it behavioral training or scanning?
-            ** behavioral training target/run files are always stored under behavioral and scanning files are under fmri
         run_number      - run number
         subj_id         - id assigned to the subject
         ttl_flag        - should the program wait for the ttl pulse or not? For scanning THIS FLAG HAS TO BE SET TO TRUE
@@ -113,9 +110,10 @@ class Experiment:
         self.task_obj_list = [] # a list containing task objects in the run
         for t_num, task_info in self.run_info.iterrows():
             # create a task object for the current task, reads the trial file, and append it to the list
-            t = ut.task_table[task_info.task_name]
+            t = ut.task_table[ut.task_table['name']== task_info.task_name]
             task_info['code'] = t.code
-            TaskClass = tasks.get_attr(t.task_class)
+            class_name = t.task_class.iloc[0]
+            TaskClass = getattr(tasks, class_name)
             Task_obj  = TaskClass(task_info,
                                  screen = self.screen,
                                  ttl_clock = self.ttl_clock,
@@ -160,7 +158,7 @@ class Experiment:
             task.display_instructions()
 
             # wait for a time period equal to instruction duration
-            self.ttl_clock.wait_until(r_data.start_time + r_data.instruct_dur)
+            self.ttl_clock.wait_until(r_data.start_time + r_data.instruction_dur)
 
             # Run the task (which saves its data to the target)
             task.start_time = self.ttl_clock.get_time()
@@ -188,6 +186,7 @@ class Experiment:
         end_experiment = visual.TextStim(self.screen.window, text=end_exper_text, color=[-1, -1, -1])
         end_experiment.draw()
         self.screen.window.flip()
+        core.wait(5)
 
 
     def start_eyetracker(self):
@@ -223,7 +222,7 @@ class Experiment:
         self.tk.close()
         return
 
-    def show_scoreboard(self, taskObjs, screen):
+    def show_scoreboard(self, taskObjs, screen): # jorn, do we need this?
         """
         Presents a score board in the end of the run
         Args:

@@ -26,14 +26,17 @@ class Screen:
                              color = self.color,
                              allowGUI = self.allowGUI)
 
-    def fixation_cross(self, color='white'):
-        #fixation cross
+    def fixation_cross(self, color='white', flip=True):
+        # Draw the fixation cross
         fixation = visual.ShapeStim(self.window,
             vertices=((0, -0.05), (0, 0.05), (0,0), (-0.03,0), (0.03, 0)),
             lineWidth=5,
             closeShape=False,
-            lineColor= color,
+            lineColor=color,
             units='norm'
         )
         fixation.draw()
-        self.window.flip()
+        
+        # Flip the screen only if flip is True
+        if flip:
+            self.window.flip()

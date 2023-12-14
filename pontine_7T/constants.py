@@ -15,15 +15,16 @@ exp_dir = Path(os.path.dirname(os.path.realpath(__file__)))   # where the experi
 target_dir = exp_dir / "target_files"  # contains target files for the task
 run_dir    = exp_dir / "run_files"     # contains run files for each session
 data_dir   = exp_dir / "data"          # This is where the result files are being saved
+stim_dir   = exp_dir /'..'/ "stimuli"       # This is where the stimuli are stored
 
 # is the Eye tracker being used
 eye_tracker = False                                     # do you want to do  eyetracking?
 
 # Running in debug mode?
-debug = True                                           # set to True for debugging
+debug = False                                           # set to True for debugging
 
 # Screen settings for subject display
 screen = {}
-screen['size'] = [800, 400]                             # screen resolution
+screen['size'] = [1100, 800]                             # screen resolution
 screen['fullscr'] = False                               # full screen?
 screen['number'] = 1                                    # 0 = main display, 1 = secondary display
