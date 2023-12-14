@@ -186,6 +186,7 @@ class Experiment:
         end_experiment = visual.TextStim(self.screen.window, text=end_exper_text, color=[-1, -1, -1])
         end_experiment.draw()
         self.screen.window.flip()
+        core.wait(5)
 
 
     def start_eyetracker(self):
