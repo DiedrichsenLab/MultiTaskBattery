@@ -25,5 +25,5 @@ for r in range(1,9):
     for task,tfile in zip(tasks, tfiles):
         cl = mt.get_task_class(task)
         myTask = getattr(mt,cl)(const)
-        myTask.make_trial_file(run_number = r, file_name = tfile)
+        myTask.make_task_file(file_name = tfile)
 
