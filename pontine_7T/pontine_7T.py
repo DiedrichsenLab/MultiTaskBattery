@@ -23,4 +23,4 @@ def main(subj_id):
 
 if __name__ == "__main__":
     # main(sys.argv[1])
-    main('sub_02')
+    main('test')
