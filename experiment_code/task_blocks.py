@@ -792,6 +792,8 @@ class DemandGridHard(Task):
         # Provide feedback if necessary
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
 
+        return trial
+
 class SentenceReading(Task):
     def __init__(self, info, screen, ttl_clock, const):
         super().__init__(info, screen, ttl_clock, const)
