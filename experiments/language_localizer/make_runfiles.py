@@ -1,5 +1,5 @@
-import experiment_code.make_target as mt
-import experiment_code.utils as ut
+import MultiTaskBattery.make_target as mt
+import MultiTaskBattery.utils as ut
 import constants as const
 import numpy as np
 

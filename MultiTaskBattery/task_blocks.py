@@ -12,9 +12,9 @@ import glob
 from psychopy import visual, sound, core, event, constants, gui  # data, logging
 from psychopy.visual import ShapeStim
 
-import experiment_code.utils as ut
-from experiment_code.screen import Screen
-from experiment_code.ttl_clock import TTLClock
+import MultiTaskBattery.utils as ut
+from MultiTaskBattery.screen import Screen
+from MultiTaskBattery.ttl_clock import TTLClock
 
 from ast import literal_eval
 
