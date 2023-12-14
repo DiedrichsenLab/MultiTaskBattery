@@ -1,4 +1,4 @@
-import MultiTaskBattery.task_files as mt
+import MultiTaskBattery.task_file as mt
 import MultiTaskBattery.utils as ut
 import constants as const
 import numpy as np
