@@ -126,6 +126,49 @@ class Experiment:
         ut.dircheck(subj_dir) # making sure the directory is created!
         self.run_data_file = self.const.data_dir / self.subj_id / f"{self.subj_id}.tsv"
 
+    def show_scoreboard(self, task_list):
+        """
+        shows the scoreboard for the tasks in the task_list
+        """
+        # get the data from the task files
+        
+        correct_answers = 0
+        total_answers = 0
+
+        for task in task_list:
+            task_file_path = self.const.data_dir / self.subj_id / f"{self.subj_id}_task-{task.code}.tsv"
+            
+            #load the task data and then count number of "true" responses in the correct column
+            task_file = pd.read_csv(task_file_path, sep='\t')
+
+            # check if correct column exists
+            if 'correct' in task_file.columns:
+                # check correct column for true responses
+                correct = task_file['correct']
+                correct = correct[correct == True]
+                correct = len(correct)
+                correct_answers += correct
+
+                # check total number of responses in correct column
+                total = task_file['correct']
+                total = len(total)
+                total_answers += total
+            else:
+                pass
+
+    
+        # calculate the percentage of correct answers
+        score = correct_answers / total_answers
+        score = score * 100
+
+        # display the score
+        score_text = f"Your score is {score}%"
+        score_display = visual.TextStim(self.screen.window, text=score_text, color=[-1, -1, -1])
+        score_display.draw()
+        self.screen.window.flip()
+        core.wait(5)
+        return
+
 
     def run(self):
         """
@@ -182,6 +225,9 @@ class Experiment:
         for task in self.task_obj_list:
             task.save_data(self.subj_id, self.run_number)
 
+        # show the scoreboard
+        self.show_scoreboard(self.task_obj_list)
+
         end_exper_text = f"End of run\n\nTake a break!"
         end_experiment = visual.TextStim(self.screen.window, text=end_exper_text, color=[-1, -1, -1])
         end_experiment.draw()
@@ -222,54 +268,3 @@ class Experiment:
         self.tk.close()
         return
 
-    def show_scoreboard(self, taskObjs, screen): # jorn, do we need this?
-        """
-        Presents a score board in the end of the run
-        Args:
-            taskObjs(list)        -   a list containing task objects
-            screen                -   screen object for display
-        """
-
-        subj_dir = consts.raw_dir/ self.study_name / 'raw' / self.subj_id
-        # loop over task objects and get the feedback
-        feedback_all = []
-        for obj in taskObjs:
-
-            # get the task name
-            t_name = obj.name
-
-            # get the response dataframe saved for the task
-            dataframe = pd.read_csv(glob.glob(os.path.join(subj_dir , f'*{t_name}*'))[0])
-
-            # get the feedback dictionary for the task
-            feedback = obj.get_task_feedback(dataframe, obj.feedback_type)
-
-            # get the corresponding text for the feedback and append it to the overal list
-            # feedback_text = f'{t_name}\n\nCurrent score: {feedback["curr"]} {feedback["measure"]}\n\nPrevious score: {feedback["prev"]} {feedback["measure"]}'
-            # feedback_all.append(feedback_text)
-
-            feedback_text = f'{t_name}\n\nCurrent score: {feedback["curr"]} {feedback["measure"]}'
-            feedback_all.append(feedback_text)
-
-        # display feedback table at the end of the run
-        ## position where the feedback for each task will be shown
-
-        positions = [(-9, -6), (0, -6), (9, -6),
-                    (-9, 0), (0, 0), (9, 0),
-                    (-9, 6), (0, 6), (9, 6)]
-        for position, feedback in zip(positions, feedback_all):
-            scoreboard = visual.TextStim(screen.window, text = feedback, color = [-1, -1, -1], pos = position, height = 0.7)
-            scoreboard.draw()
-
-        screen.window.flip()
-
-        event.waitKeys()
-        kb = keyboard.Keyboard()
-        # Listen for keypresses until escape is pressed
-        keys = kb.getKeys()
-        if '2' not in keys:
-            # quit screen and exit
-            event.waitKeys()
-            core.quit()
-
-        return

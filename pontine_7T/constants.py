@@ -21,7 +21,7 @@ stim_dir   = exp_dir /'..'/ "stimuli"       # This is where the stimuli are stor
 eye_tracker = False                                     # do you want to do  eyetracking?
 
 # Running in debug mode?
-debug = False                                           # set to True for debugging
+debug = True                                           # set to True for debugging
 
 # Screen settings for subject display
 screen = {}
