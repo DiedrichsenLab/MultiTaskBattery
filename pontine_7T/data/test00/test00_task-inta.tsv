@@ -1,3 +1,0 @@
-run_num	trial_num	hand	trial_dur	iti_dur	display_trial_feedback	stim	start_time	end_time	real_start_time	start_ttl	start_ttl_time
-1	0		14.5	0.5	False	intact_passage_1.wav	0.0	15.0	40.01004637504229	1	40.01005070802057
-1	1		14.5	0.5	False	intact_passage_2.wav	15.0	30.0	55.012130375020206	1	55.01213533303235
