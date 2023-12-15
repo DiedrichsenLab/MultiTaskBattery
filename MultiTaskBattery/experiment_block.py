@@ -5,7 +5,7 @@
 import pandas as pd
 import sys
 
-from psychopy import visual, core, gui 
+from psychopy import visual, core, gui, event
 import MultiTaskBattery.utils as ut
 import MultiTaskBattery.task_blocks as tasks
 from MultiTaskBattery.ttl_clock import TTLClock
@@ -121,49 +121,6 @@ class Experiment:
         ut.dircheck(subj_dir) # making sure the directory is created!
         self.run_data_file = self.const.data_dir / self.subj_id / f"{self.subj_id}.tsv"
 
-    def show_scoreboard(self, task_list):
-        """
-        shows the scoreboard for the tasks in the task_list
-        """
-        # get the data from the task files
-
-        correct_answers = 0
-        total_answers = 0
-
-        for task in task_list:
-            task_file_path = self.const.data_dir / self.subj_id / f"{self.subj_id}_task-{task.code}.tsv"
-
-            #load the task data and then count number of "true" responses in the correct column
-            task_file = pd.read_csv(task_file_path, sep='\t')
-
-            # check if correct column exists
-            if 'correct' in task_file.columns:
-                # check correct column for true responses
-                correct = task_file['correct']
-                correct = correct[correct == True]
-                correct = len(correct)
-                correct_answers += correct
-
-                # check total number of responses in correct column
-                total = task_file['correct']
-                total = len(total)
-                total_answers += total
-            else:
-                pass
-
-
-        # calculate the percentage of correct answers
-        score = correct_answers / total_answers
-        score = score * 100
-
-        # display the score
-        score_text = f"Your score is {score}%"
-        score_display = visual.TextStim(self.screen.window, text=score_text, color=[-1, -1, -1])
-        score_display.draw()
-        self.screen.window.flip()
-        core.wait(5)
-        return
-
 
     def run(self):
         """
@@ -200,11 +157,14 @@ class Experiment:
 
             # Run the task (which saves its data to the target)
             task.start_time = self.ttl_clock.get_time()
-            task.run()
+            r_data['acc'],r_data['rt'] = task.run()
 
             # Add the end time of the task
             r_data['real_end_time'] = self.ttl_clock.get_time()
             run_data.append(r_data)
+
+        # Wait for the last end time of run
+        self.ttl_clock.wait_until(r_data.end_time)
 
         # Stop the eyetracker
         if self.const.eye_tracker:
@@ -221,14 +181,25 @@ class Experiment:
             task.save_data(self.subj_id, self.run_number)
 
         # show the scoreboard
-        self.show_scoreboard(self.task_obj_list)
+        self.display_run_feedback(run_data)
 
-        end_exper_text = f"End of run\n\nTake a break!"
-        end_experiment = visual.TextStim(self.screen.window, text=end_exper_text, color=[-1, -1, -1])
-        end_experiment.draw()
+
+    def display_run_feedback(self, run_data):
+        """ Displays a score board for the tasks in the task_list
+
+            Args:
+                run_data (pd.DataFrame): a dataframe containing the run data
+        """
+        score_text = f"Run finished\nTask\tAcc\tRT\n"
+
+        for i,task in enumerate(self.task_obj_list):
+            if task.feedback_type!='none':
+                score_text += f"{task.name}\t{run_data['acc'][i]:.2f}\t{run_data['rt'][i]:.3f}\n"
+
+        score_display = visual.TextStim(self.screen.window, text=score_text, color=[-1, -1, -1])
+        score_display.draw()
         self.screen.window.flip()
-        core.wait(5)
-
+        event.waitKeys()
 
     def start_eyetracker(self):
         """
