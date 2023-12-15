@@ -1,7 +1,6 @@
-# Pontine 7T experiment - main script
-# Ladan Shahshahani, Bassel Arafat, Jorn Diedrichsen, Ince Hussain, 2021-23
+# Language_localzier experiment - main script
+# created 2023: Bassel Arafat, Jorn Diedrichsen
 
-import sys
 import MultiTaskBattery.experiment_block as exp_block
 import constants as const
 
@@ -22,5 +21,4 @@ def main(subj_id):
     return
 
 if __name__ == "__main__":
-    # main(sys.argv[1])
     main('test')

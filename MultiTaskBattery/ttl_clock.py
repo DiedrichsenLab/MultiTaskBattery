@@ -1,3 +1,4 @@
+# Created 2023: Bassel Arafat, Jorn Diedrichsen, Ince Hussain
 from psychopy import core, event
 
 class TTLClock:
