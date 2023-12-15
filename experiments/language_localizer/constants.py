@@ -1,11 +1,13 @@
+# created 2023: Bassel Arafat, Jorn Diedrichsen
 # constants.py defines parameters and settings for an experiment
 # it is passed to the Experiment class on initialization
+
 from pathlib import Path
 import os
 import MultiTaskBattery as mtb
 
 #Necessary definitions for the experiment:
-exp_name = 'pontine_7T'
+exp_name = 'language_localizer'
 
 # Response key assignment:
 response_keys    = ['a', 's', 'd', 'f']

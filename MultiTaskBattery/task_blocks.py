@@ -3,17 +3,11 @@
 # Revised 2023: Bassel Arafat, Jorn Diedrichsen, Ince Hussain
 
 from pathlib import Path
-import os
 import pandas as pd
 import numpy as np
-import glob
 
-from psychopy import visual, sound, core, event, constants, gui  # data, logging
-from psychopy.visual import ShapeStim
-
+from psychopy import visual, sound, core, event
 import MultiTaskBattery.utils as ut
-from MultiTaskBattery.screen import Screen
-from MultiTaskBattery.ttl_clock import TTLClock
 
 from ast import literal_eval
 

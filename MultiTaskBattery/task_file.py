@@ -1,7 +1,7 @@
 # Create TaskFile file for different tasks
-# @ Ladan Shahshahani  - Maedbh King - Suzanne Witt March 30 2021
-from pathlib import Path
-from itertools import count
+# March 2021: First version: Ladan Shahshahani  - Maedbh King - Suzanne Witt,
+# Revised 2023: Bassel Arafat, Jorn Diedrichsen, Ince Hussain
+
 import pandas as pd
 import numpy as np
 import random

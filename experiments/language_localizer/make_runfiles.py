@@ -1,15 +1,16 @@
+# created 2023: Bassel Arafat, Jorn Diedrichsen
 import MultiTaskBattery.task_file as mt
 import MultiTaskBattery.utils as ut
 import constants as const
-import numpy as np
 
 """ This is an example script to make the run files and trial files for an experiment"""
 
-tasks = ['demand_grid']
-
-# theory_of_mind','verb_generation','degraded_passage','intact_passage',\
+# all tasks that are going to be used in the experiment
+# tasks = ['demand_grid','theory_of_mind','verb_generation','degraded_passage','intact_passage',\
 #          'action_observation','rest','n_back','romance_movie','sentence_reading','nonword_reading','oddball',\
 #         'auditory_narrative','tongue_movement','spatial_navigation']
+
+tasks = ['demand_grid']
 
 #  check if dirs for the tasks and runs exist, if not, make them
 ut.dircheck(const.run_dir)

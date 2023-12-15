@@ -1,20 +1,15 @@
 # Defines the Experiment as a class
-# @ Ladan Shahshahani  - Maedbh King June 2021
+# March 2021: First version: Ladan Shahshahani  - Maedbh King - Suzanne Witt,
+# Revised 2023: Bassel Arafat, Jorn Diedrichsen, Ince Hussain
 
-# import libraries
-import os
 import pandas as pd
-import glob
 import sys
-from pathlib import Path
 
-from psychopy import visual, core, event, gui # data, logging
+from psychopy import visual, core, gui 
 import MultiTaskBattery.utils as ut
 import MultiTaskBattery.task_blocks as tasks
 from MultiTaskBattery.ttl_clock import TTLClock
 from MultiTaskBattery.screen import Screen
-# from psychopy.hardware.emulator import launchScan
-from psychopy.hardware import keyboard
 # import pylink as pl # to connect to eyelink
 
 
