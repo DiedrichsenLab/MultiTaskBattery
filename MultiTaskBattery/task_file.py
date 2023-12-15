@@ -159,7 +159,6 @@ class VerbGeneration(TaskFile):
         self.name = 'verb_generation'
 
     def make_task_file(self,
-                        hand = None,
                         task_dur =  30,
                         trial_dur = 2,
                         iti_dur   = 0.5,
@@ -167,8 +166,7 @@ class VerbGeneration(TaskFile):
         n_trials = int(np.floor(task_dur / (trial_dur+iti_dur)))
         trial_info = []
 
-        stim_path = self.stim_dir / 'verb_generation'
-        sitm_file = stim_path / 'verb_generation.csv'
+        sitm_file = self.stim_dir / 'verb_generation' / 'verb_generation.csv'
 
         #shuffle the stimuli
         stim = pd.read_csv(sitm_file)
@@ -186,7 +184,6 @@ class VerbGeneration(TaskFile):
                 trial['trial_type'] = 'read'
             else:
                 trial['trial_type'] = 'generate'
-            trial['hand'] = hand
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
             trial['start_time'] = t
@@ -211,7 +208,6 @@ class TongueMovement(TaskFile):
         self.name = 'tongue_movement'
 
     def make_task_file(self,
-                        hand = None,
                         task_dur =  30,
                         trial_dur = 1,
                         iti_dur   = 0,
@@ -224,7 +220,6 @@ class TongueMovement(TaskFile):
         for n in range(n_trials):
             trial = {}
             trial['trial_num'] = n
-            trial['hand'] = hand
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
             trial['display_trial_feedback'] = False
@@ -248,7 +243,6 @@ class AuditoryNarrative(TaskFile):
         self.name = 'auditory_narrative'
 
     def make_task_file(self,
-                       hand = None,
                        task_dur=30,
                        trial_dur=30,
                        iti_dur=0,
@@ -262,7 +256,6 @@ class AuditoryNarrative(TaskFile):
         for n in range(n_trials):
             trial = {}
             trial['trial_num'] = n
-            trial['hand'] = hand
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
             trial['display_trial_feedback'] = False
@@ -287,7 +280,6 @@ class RomanceMovie(TaskFile):
         self.name = 'romance_movie'
 
     def make_task_file(self,
-                       hand = None,
                        run_number = None ,
                        task_dur=30,
                        trial_dur=30,
@@ -301,7 +293,6 @@ class RomanceMovie(TaskFile):
         for n in range(n_trials):
             trial = {}
             trial['trial_num'] = n
-            trial['hand'] = hand
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
             trial['display_trial_feedback'] = False
@@ -365,7 +356,8 @@ class TheoryOfMind(TaskFile):
                        run_number=None,
                        task_dur=30,
                         trial_dur=14,
-                        iti_dur=1, story_dur=10,
+                        iti_dur=1, 
+                        story_dur=10,
                         question_dur=4, file_name=None):
 
         # count number of trials
@@ -373,9 +365,7 @@ class TheoryOfMind(TaskFile):
         trial_info = []
         t = 0
 
-
-        stim_path = self.stim_dir / 'theory_of_mind'
-        stim_file = stim_path / 'theory_of_mind.csv'
+        stim_file = self.stim_dir / 'theory_of_mind' / 'theory_of_mind.csv'
 
          # Read and slice the stimuli based on run number
         stim = pd.read_csv(stim_file)
@@ -413,7 +403,12 @@ class DegradedPassage(TaskFile):
         super().__init__(const)
         self.name = 'degraded_passage'
 
-    def make_task_file(self, hand= None, run_number = None, task_dur=30, trial_dur=14.5, iti_dur=0.5, file_name=None):
+    def make_task_file(self,
+                        run_number = None,
+                        task_dur=30,
+                        trial_dur=14.5,
+                        iti_dur=0.5,
+                        file_name=None):
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
 
@@ -422,7 +417,6 @@ class DegradedPassage(TaskFile):
         for n in range(n_trials):
             trial = {}
             trial['trial_num'] = n
-            trial['hand'] = hand
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
             trial['display_trial_feedback'] = False
@@ -447,7 +441,12 @@ class IntactPassage(TaskFile):
         super().__init__(const)
         self.name = 'intact_passage'
 
-    def make_task_file(self, run_number, task_dur=30, trial_dur=14.5, iti_dur=0.5, file_name=None):
+    def make_task_file(self,
+                        run_number,
+                        task_dur=30,
+                        trial_dur=14.5,
+                        iti_dur=0.5, 
+                        file_name=None):
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
 
@@ -456,7 +455,6 @@ class IntactPassage(TaskFile):
         for n in range(n_trials):
             trial = {}
             trial['trial_num'] = n
-            trial['hand'] = 'None'  # Hand is not used in this task
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
             trial['display_trial_feedback'] = False
@@ -489,7 +487,12 @@ class ActionObservation(TaskFile):
 
 
 
-    def make_task_file(self, hand = None, run_number = None, task_dur=30, trial_dur=14, iti_dur=1, file_name=None):
+    def make_task_file(self,
+                        run_number = None,
+                        task_dur=30,
+                        trial_dur=14,
+                        iti_dur=1,
+                        file_name=None):
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
 
@@ -575,7 +578,17 @@ class DemandGrid(TaskFile):
                 if is_connected(sequence_copy) and sequence_copy != sequence:
                     return sequence_copy  # Return the modified sequence if it's different and connected
 
-    def make_task_file(self, hand = None, run_number=None, task_dur=30, trial_dur=7, question_dur=3, sequence_dur=4, iti_dur=0.5, grid_size=(3, 4), sequence_length=8, file_name=None):
+    def make_task_file(self,
+                        hand = 'right',
+                        task_dur=30,
+                        trial_dur=7,
+                        question_dur=3,
+                        sequence_dur=4,
+                        iti_dur=0.5,
+                        grid_size=(3, 4),
+                        sequence_length=8,
+                        file_name=None):
+        
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
 
@@ -606,7 +619,12 @@ class SentenceReading(TaskFile):
         super().__init__(const)
         self.name = 'sentence_reading'
 
-    def make_task_file(self, hand = None, run_number = None, task_dur=30, trial_dur=5.8, iti_dur=0.2, file_name=None):
+    def make_task_file(self,
+                        run_number = None,
+                        task_dur=30,
+                        trial_dur=5.8,
+                        iti_dur=0.2,
+                        file_name=None):
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
 
@@ -620,7 +638,6 @@ class SentenceReading(TaskFile):
         for n in range(n_trials):
             trial = {}
             trial['trial_num'] = n
-            trial['hand'] = hand
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
             trial['display_trial_feedback'] = False
@@ -644,7 +661,13 @@ class NonwordReading(TaskFile):
         super().__init__(const)
         self.name = 'nonword_reading'
 
-    def make_task_file(self, hand = None, run_number = None, task_dur=30, trial_dur=5.8, iti_dur=0.2, file_name=None):
+    def make_task_file(self,
+                        run_number = None,
+                        task_dur=30,
+                        trial_dur=5.8,
+                        iti_dur=0.2,
+                        file_name=None):
+        
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
 
@@ -657,7 +680,6 @@ class NonwordReading(TaskFile):
         for n in range(n_trials):
             trial = {}
             trial['trial_num'] = n
-            trial['hand'] = hand
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
             trial['display_trial_feedback'] = False
@@ -681,7 +703,12 @@ class OddBall(TaskFile):
         super().__init__(const)
         self.name = 'oddball'
 
-    def make_task_file(self, hand = None, run_number = None, task_dur=30, trial_dur=0.15, iti_dur=0.85, file_name=None):
+    def make_task_file(self,
+                    hand = 'right',
+                    task_dur=30,
+                    trial_dur=0.15,
+                    iti_dur=0.85,
+                    file_name=None):
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
 
