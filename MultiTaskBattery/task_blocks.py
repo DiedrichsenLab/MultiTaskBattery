@@ -33,6 +33,7 @@ class Task:
         self.name        = info['task_name']
         self.code        = info['task_code']
         self.task_file = info['task_file']
+        self.feedback_type = 'None'
 
     def init_task(self):
         """
@@ -75,7 +76,14 @@ class Task:
             # Append the trial data
             self.trial_data.append(t_data)
         self.trial_data = pd.DataFrame(self.trial_data)
-
+        # Calculate the feedback for the run
+        acc = None
+        rt = None
+        if self.feedback_type[:3] == 'acc':
+            acc = self.trial_data['correct'].mean()
+        if self.feedback_type[-2:] == 'rt':
+            rt = self.trial_data['rt'].mean()
+        return acc,rt
 
     def wait_response(self, start_time, max_wait_time):
         """
@@ -130,46 +138,6 @@ class Task:
         trial_data_file = self.const.data_dir / subj_id / f"{subj_id}_task-{self.code}.tsv"
         ut.append_data_to_file(trial_data_file, self.trial_data)
 
-    # 8. Get the feedback for the task (the type of feedback is different across tasks)
-    def get_task_feedback(self, dataframe, feedback_type):
-        """
-        gets overall feedback of the task based on the feedback type
-        Args:
-            dataframe(pandas df)       -   response dataframe
-            feedback_type (str)        -   feedback type for the task
-        Returns:
-            feedback (dict)     -   a dictionary containing measured feedback
-        """
-
-        if feedback_type == 'rt':
-            fb = dataframe.query('corr_resp==True').groupby(['run_name', 'run_iter'])['rt'].agg('mean')
-
-            unit_mult = 1000 # multiplied by the calculated measure
-            unit_str  = 'ms' # string representing the unit measure
-
-        elif feedback_type == 'acc':
-            fb = dataframe.groupby(['run_name', 'run_iter'])['corr_resp'].agg('mean')
-
-            unit_mult = 100 # multiplied by the calculated measure
-            unit_str  = '%' # string representing the unit measure
-        else: # for flexion extension task
-            fb = pd.DataFrame()
-            unit_str = ''
-        # add other possible types of feedback here
-
-        fb_curr = None
-        fb_prev = None
-
-        if not fb.empty:
-            fb_curr = int(round(fb[-1] * unit_mult))
-            if len(fb)>1:
-                # get rt of prev. run if it exists
-                fb_prev = int(round(fb[-2] * unit_mult))
-
-        feedback = {'curr': fb_curr, 'prev': fb_prev, 'measure': unit_str}
-
-        return feedback
-
     def screen_quit(self):
         """ Checks for quit or escape key presses and quits the experiment if necessary """
         keys = event.getKeys()
@@ -184,7 +152,7 @@ class NBack(Task):
 
     def __init__(self, info, screen, ttl_clock, const):
         super().__init__(info, screen, ttl_clock, const)
-        self.feedback_type = 'acc'
+        self.feedback_type = 'acc+rt'
 
     def init_task(self):
         """Read the target file and get all the stimuli necessary"""
@@ -236,7 +204,7 @@ class NBack(Task):
 class Rest(Task):
     def __init__(self, info, screen, ttl_clock, const):
         super().__init__(info, screen, ttl_clock, const)
-        self.feedback_type = 'one'
+        self.feedback_type = 'none'
         self.name          = 'rest'
 
     def display_instructions(self): # overriding the display instruction routine from the parent
