@@ -1,4 +1,5 @@
-from psychopy import visual, core, logging, event, data, monitors
+# created 2023: Bassel Arafat, Jorn Diedrichsen, Ince Hussain
+from psychopy import visual, monitors
 
 class Screen:
     def __init__(self, const):
