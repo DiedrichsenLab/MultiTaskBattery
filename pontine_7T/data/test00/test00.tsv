@@ -1,7 +1,0 @@
-run_num	task_name	task_code	target_file	instruction_dur	start_time	end_time	real_start_time	start_ttl	start_ttl_time	real_end_time
-1	demand_grid_easy	dmgrdeas	demand_grid_easy_01.tsv	5	0	35	0.0006525830249302	1	0.0006576250307261	34.70638049999252
-1	demand_grid_hard	dmgrdhrd	demand_grid_hard_01.tsv	5	35	70	35.00009304197738	1	35.00009858299745	69.70565020799404
-2	demand_grid_easy	dmgrdeas	demand_grid_easy_01.tsv	5	0	35	0.0005217499565333	1	0.0005264999927021	34.710653624963015
-2	demand_grid_hard	dmgrdhrd	demand_grid_hard_01.tsv	5	35	70	35.00003633298911	1	35.00004212500062	69.7050166669651
-1	degraded_passage	degpass	degraded_passage_01.tsv	5	0	35	0.000578792009036988	1	0.0005836670170538127	34.51347558305133
-1	intact_passage	intpass	intact_passage_01.tsv	5	35	70	35.00010050000856	1	35.0001051670406	69.51402987504844
