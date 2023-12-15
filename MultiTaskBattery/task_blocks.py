@@ -1,20 +1,13 @@
-# Task Class defintions
+# Task Class definitions
 # March 2021: First version: Ladan Shahshahani  - Maedbh King - Suzanne Witt,
-# Revised 2023: Jorn Diedrichsen, Ince Hussain, Bassel Arafat
+# Revised 2023: Bassel Arafat, Jorn Diedrichsen, Ince Hussain
 
-# import libraries
 from pathlib import Path
-import os
 import pandas as pd
 import numpy as np
-import glob
 
-from psychopy import visual, sound, core, event, constants, gui  # data, logging
-from psychopy.visual import ShapeStim
-
+from psychopy import visual, sound, core, event
 import MultiTaskBattery.utils as ut
-from MultiTaskBattery.screen import Screen
-from MultiTaskBattery.ttl_clock import TTLClock
 
 from ast import literal_eval
 
@@ -38,8 +31,9 @@ class Task:
         self.const   = const
         self.ttl_clock       =  ttl_clock  # This is a reference to the clock of the run
         self.name        = info['task_name']
-        self.code        = info['code']
+        self.code        = info['task_code']
         self.task_file = info['task_file']
+        self.feedback_type = 'None'
 
     def init_task(self):
         """
@@ -82,7 +76,14 @@ class Task:
             # Append the trial data
             self.trial_data.append(t_data)
         self.trial_data = pd.DataFrame(self.trial_data)
-
+        # Calculate the feedback for the run
+        acc = None
+        rt = None
+        if self.feedback_type[:3] == 'acc':
+            acc = self.trial_data['correct'].mean()
+        if self.feedback_type[-2:] == 'rt':
+            rt = self.trial_data['rt'].mean()
+        return acc,rt
 
     def wait_response(self, start_time, max_wait_time):
         """
@@ -91,11 +92,11 @@ class Task:
             start_time (float): the time the RT-period started
             max_wait_time (float): How long to wait maximally
         Returns:
-            key (str): the key that was pressed ('none' if no key was pressed)
+            key (str): the key that was pressed (1-4) (0 if no key was pressed)
             rt (float): the reaction time (nan if no key was pressed)
         """
         response_made = False
-        key = 'none'
+        key = 0
         rt = np.nan
 
         while (self.ttl_clock.get_time() - start_time <= max_wait_time) and not response_made:
@@ -103,7 +104,8 @@ class Task:
             keys=event.getKeys(keyList= self.const.response_keys, timeStamped=self.ttl_clock.clock)
             if len(keys)>0:
                 response_made = True
-                key = keys[0][0]
+                key_char = keys[0][0]
+                key = self.const.response_keys.index(key_char) + 1
                 rt = keys[0][1] - start_time
         return key, rt
 
@@ -136,46 +138,6 @@ class Task:
         trial_data_file = self.const.data_dir / subj_id / f"{subj_id}_task-{self.code}.tsv"
         ut.append_data_to_file(trial_data_file, self.trial_data)
 
-    # 8. Get the feedback for the task (the type of feedback is different across tasks)
-    def get_task_feedback(self, dataframe, feedback_type):
-        """
-        gets overall feedback of the task based on the feedback type
-        Args:
-            dataframe(pandas df)       -   response dataframe
-            feedback_type (str)        -   feedback type for the task
-        Returns:
-            feedback (dict)     -   a dictionary containing measured feedback
-        """
-
-        if feedback_type == 'rt':
-            fb = dataframe.query('corr_resp==True').groupby(['run_name', 'run_iter'])['rt'].agg('mean')
-
-            unit_mult = 1000 # multiplied by the calculated measure
-            unit_str  = 'ms' # string representing the unit measure
-
-        elif feedback_type == 'acc':
-            fb = dataframe.groupby(['run_name', 'run_iter'])['corr_resp'].agg('mean')
-
-            unit_mult = 100 # multiplied by the calculated measure
-            unit_str  = '%' # string representing the unit measure
-        else: # for flexion extension task
-            fb = pd.DataFrame()
-            unit_str = ''
-        # add other possible types of feedback here
-
-        fb_curr = None
-        fb_prev = None
-
-        if not fb.empty:
-            fb_curr = int(round(fb[-1] * unit_mult))
-            if len(fb)>1:
-                # get rt of prev. run if it exists
-                fb_prev = int(round(fb[-2] * unit_mult))
-
-        feedback = {'curr': fb_curr, 'prev': fb_prev, 'measure': unit_str}
-
-        return feedback
-
     def screen_quit(self):
         """ Checks for quit or escape key presses and quits the experiment if necessary """
         keys = event.getKeys()
@@ -190,15 +152,29 @@ class NBack(Task):
 
     def __init__(self, info, screen, ttl_clock, const):
         super().__init__(info, screen, ttl_clock, const)
-        self.feedback_type = 'acc'
+        self.feedback_type = 'acc+rt'
 
     def init_task(self):
         """Read the target file and get all the stimuli necessary"""
         self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file,sep='\t')
+        # Use the response assignment from 1st trial as the response assignment for the whole run
+        self.corr_key = [self.trial_info['key_nomatch'].iloc[0],self.trial_info['key_match'].iloc[0]]
         self.stim=[]
         for stim in self.trial_info['stim']:
             stim_path = self.const.stim_dir / self.name / stim
             self.stim.append(visual.ImageStim(self.window, str(stim_path)))
+
+    def display_instructions(self):
+        """
+        displays the instruction for the task
+        """
+        str1 = f"Compare image to the one shown 2 previously"
+        str2 = f"if match, press {self.corr_key[1]}"
+        str3 = f"if no match, press {self.corr_key[0]}"
+        self.instruction_text = f"{self.name} task\n\n {str1} \n {str2} \n {str3}"
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
+        instr_visual.draw()
+        self.window.flip()
 
     def run_trial(self,trial):
         """Runs a single trial of the nback task (after it started)
@@ -217,12 +193,9 @@ class NBack(Task):
         self.stim[trial['trial_num']].draw()
         self.window.flip()
 
-        # collect responses
-        key,trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['trial_dur'])
-
-        # check if response is correct (jorn check plz, problematic for no feedback trials and for last trial if last task it can cause the run to be less than 30 secs)
-        trial['response'] = (key == self.const.response_keys[1])
-        trial['correct'] = (trial['response'] == trial['trial_type'])
+        # collect responses 0: no response 1-4: key pressed
+        trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['trial_dur'])
+        trial['correct'] = (trial['response'] == self.corr_key[trial['trial_type']])
 
         # display trial feedback
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
@@ -231,7 +204,7 @@ class NBack(Task):
 class Rest(Task):
     def __init__(self, info, screen, ttl_clock, const):
         super().__init__(info, screen, ttl_clock, const)
-        self.feedback_type = 'one'
+        self.feedback_type = 'none'
         self.name          = 'rest'
 
     def display_instructions(self): # overriding the display instruction routine from the parent
@@ -584,106 +557,7 @@ class ActionObservation(Task):
 
         return trial
 
-class DemandGridEasy(Task):
-    def __init__(self, info, screen, ttl_clock, const):
-        super().__init__(info, screen, ttl_clock, const)
-        self.grid_size = (3,4)
-        self.square_size = 1.5
-
-    def init_task(self):
-        """Read the target file and get all the stimuli necessary"""
-        self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
-
-
-    def display_instructions(self):
-        self.instruction_text = (f"{self.name} Task \n\n"
-                                "Watch the sequence of boxes that light \n\n"
-                                "up and then choose the correct pattern")
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1],  wrapWidth=400)
-        instr_visual.draw()
-        self.window.flip()
-
-    def create_grid(self, sequence=None, position='center'):
-        """Creates the grid of squares for the DemandGrid task, lighting up specific squares blue if a sequence is given,
-        and positions the grid left, right, or center."""
-
-        # Calculate offsets based on the desired position
-        if position == 'left':
-            offset_x = -10
-        elif position == 'right':
-            offset_x = 10
-        else:  # center
-            offset_x = 0
-
-        # Center the grid vertically
-        offset_y = 0
-
-        grid = []
-
-        # Create and draw the grid
-        for i in range(self.grid_size[0]):
-            row = []
-            for j in range(self.grid_size[1]):
-                # Calculate position with the offsets
-                square_x = (j - self.grid_size[0] / 2 + 0.5) * self.square_size + offset_x
-                square_y = (self.grid_size[1] / 2 - i - 0.5) * self.square_size + offset_y
-
-                # Determine the fill color based on the sequence
-                fill_color = 'blue' if sequence and (i, j) in sequence else 'white'
-
-                rect = visual.Rect(self.window, width=self.square_size, height=self.square_size,
-                                pos=(square_x, square_y), lineWidth=3,
-                                lineColor='black', fillColor=fill_color)
-                rect.draw()
-                row.append(rect)
-            grid.append(row)
-
-        return grid
-
-    def run_trial(self, trial):
-        """Runs a single trial of the DemandGrid task"""
-
-        # Draw the entire grid in its initial state
-        self.grid  = self.create_grid()
-        self.window.flip()
-
-        # Display the sequence
-        original_sequence = literal_eval(trial['grid_sequence'])
-        for pos in original_sequence:
-            x, y = pos
-            self.grid[x][y].fillColor = 'blue'
-            for row in self.grid:
-                for rect in row:
-                    rect.draw()
-            self.window.flip()
-            core.wait(1)  # Each box lights up for 1 second
-            self.grid[x][y].fillColor = 'white'
-
-         # Determine which side the correct sequence will be displayed
-        correct_side = trial['correct_side']
-
-
-        # # Display the original and modified sequence on the left or right side
-        modified_sequence = literal_eval(trial['modified_sequence'])
-
-        original_grid = self.create_grid(sequence=original_sequence, position=correct_side)
-        modified_grid = self.create_grid(sequence=modified_sequence, position='left' if correct_side == 'right' else 'right')
-        self.window.flip()
-
-        # collect responses
-        key,trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['question_dur'])
-
-        # Check if any key from the specified keys was pressed then check whether it was the correct response (jorn check plz)
-        if key in self.const.response_keys:
-            trial['response'] = 'left' if (key == self.const.response_keys[1]) else 'rights'
-            trial['correct'] = (trial['response'] == trial['correct_side'])
-        else:
-            trial['correct'] = False
-
-        # Provide feedback if necessary
-        self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
-
-class DemandGridHard(Task):
+class DemandGrid(Task):
     def __init__(self, info, screen, ttl_clock, const):
         super().__init__(info, screen, ttl_clock, const)
         self.grid_size = (3,4)
