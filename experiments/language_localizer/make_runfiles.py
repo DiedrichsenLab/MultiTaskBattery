@@ -5,7 +5,7 @@ import numpy as np
 
 """ This is an example script to make the run files and trial files for an experiment"""
 
-tasks = ['demand_grid_hard','n_back']
+tasks = ['demand_grid']
 
 # theory_of_mind','verb_generation','degraded_passage','intact_passage',\
 #          'action_observation','rest','n_back','romance_movie','sentence_reading','nonword_reading','oddball',\
@@ -25,5 +25,8 @@ for r in range(1,9):
     for task,tfile in zip(tasks, tfiles):
         cl = mt.get_task_class(task)
         myTask = getattr(mt,cl)(const)
-        myTask.make_trial_file(run_number = r, file_name = tfile)
 
+        if task == 'n_back' or task == 'rest' or task == 'verb_generation' or task == 'tongue_movement' or task == 'spatial_navigation' or task == 'oddball' or task == 'demand_grid':
+            myTask.make_task_file(file_name = tfile)
+        else:
+            myTask.make_task_file(file_name = tfile, run_number = r)

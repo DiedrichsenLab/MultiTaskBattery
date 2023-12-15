@@ -1,26 +1,17 @@
 name	task_class	code	description	reference
-visual_search	VisualSearch	viss		
 theory_of_mind	TheoryOfMind	tom		
 n_back	NBack	nbko		
-social_prediction	SocialPrediction	socpred		
-semantic_prediction	SemanticPrediction	sempred		
 action_observation	ActionObservation	actobs		
-finger_sequence	FingerSequence	fingseq		
-sternberg_order	SternbergOrder	sternord		
-visuospatial_order	VisuospatialOrder	visspord		
-foot_movement	Foot_movement	foot		
 verb_generation	VerbGeneration	verbgen	"Words presented, participants read the words. At halfpoint, ""GENERATE"" is shown, participants need to covertly generate verbs associated with words"	
 romance_movie	RomanceMovie	rommov	"30s clips of the movie ""up"", no audio no subtitles"	
-action_observation_knots	ActionObservationKnots	actobsk		
 rest	Rest	rest	Lie in scanner with a fixation cross	NA
 tongue_movement	TongueMovement	tongue	"move tongue from right to left, touching upper premolar teeth guided by a flashing black circle around a fixation crosshair, black circle means right no cirlce means left, 1s periods"	"A Third Somatomotor Representation in the Human Cerebellum (Bucknet et al., 2022)"
 flexion_extension	FlexionExtension	flexexten	alternating periods of flexing/extending toes	
 auditory_narrative	AuditoryNarrative	audnarr	30 second snippets of a moth radiohour story (wheretheressmoke)	Novel
 spatial_navigation	SpatialNavigation	spatialnav		
 degraded_passage	DegradedPassage	degpass		
-demand_grid_easy	DemandGridEasy	dmgrdeas		
 sentence_reading	SentenceReading	senread		
 nonword_reading	NonwordReading	nwdread		
 oddball	OddBall	odbal		
 intact_passage	IntactPassage	intpass		
-demand_grid_hard	DemandGridHard	dmgrdhrd		
+demand_grid	DemandGrid	dmgrd		
