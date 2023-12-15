@@ -1,3 +1,0 @@
-task_name	task_code	target_file	instruction_dur	start_time	end_time
-intact_passage	intpass	intact_passage_07.tsv	5	0	35
-degraded_passage	degpass	degraded_passage_07.tsv	5	35	70
