@@ -89,7 +89,7 @@ class NBack(TaskFile):
                         task_dur =  30,
                         trial_dur = 2,
                         iti_dur   = 0.5,
-                        stim = ['9.jpg','11.jpg','15.jpg','18.jpg','28.jpg'],
+                        stim = ['9.jpg','11.jpg','18.jpg','28.jpg'],
                         file_name = None ):
         n_trials = int(np.floor(task_dur / (trial_dur+iti_dur)))
         trial_info = []
@@ -110,9 +110,12 @@ class NBack(TaskFile):
                 trial['trial_type'] = 0
             else:
                 trial['trial_type'] = np.random.randint(0,2)
-            # Now choose the stimulus accordingly
+            # Now choose the stimulus accordingly: avoid any reps
             if trial['trial_type']==0:
-                trial['stim'] = stim[np.random.randint(0,len(stim))]
+                trial['stim'] = prev_stim[1]
+                while (trial['stim'] == prev_stim[0]) | (trial['stim'] == prev_stim[1]):
+                    trial['stim'] = stim[np.random.randint(0,len(stim))]
+                prev_stim[0]
             else:
                 trial['stim'] = prev_stim[1]
 

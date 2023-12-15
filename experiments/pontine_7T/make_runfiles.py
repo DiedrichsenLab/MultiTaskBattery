@@ -5,7 +5,7 @@ import numpy as np
 
 """ This is an example script to make the run files and trial files for an experiment"""
 
-tasks = ['demand_grid_hard','n_back']
+tasks = ['n_back','n_back']
 
 # theory_of_mind','verb_generation','degraded_passage','intact_passage',\
 #          'action_observation','rest','n_back','romance_movie','sentence_reading','nonword_reading','oddball',\

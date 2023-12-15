@@ -1,8 +1,7 @@
-# Task Class defintions
+# Task Class definitions
 # March 2021: First version: Ladan Shahshahani  - Maedbh King - Suzanne Witt,
-# Revised 2023: Jorn Diedrichsen, Ince Hussain, Bassel Arafat
+# Revised 2023: Bassel Arafat, Jorn Diedrichsen, Ince Hussain
 
-# import libraries
 from pathlib import Path
 import os
 import pandas as pd
@@ -38,7 +37,7 @@ class Task:
         self.const   = const
         self.ttl_clock       =  ttl_clock  # This is a reference to the clock of the run
         self.name        = info['task_name']
-        self.code        = info['code']
+        self.code        = info['task_code']
         self.task_file = info['task_file']
 
     def init_task(self):
@@ -196,10 +195,24 @@ class NBack(Task):
     def init_task(self):
         """Read the target file and get all the stimuli necessary"""
         self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file,sep='\t')
+        # Use the response assignment from 1st trial as the response assignment for the whole run
+        self.corr_key = [self.trial_info['key_nomatch'].iloc[0],self.trial_info['key_match'].iloc[0]]
         self.stim=[]
         for stim in self.trial_info['stim']:
             stim_path = self.const.stim_dir / self.name / stim
             self.stim.append(visual.ImageStim(self.window, str(stim_path)))
+
+    def display_instructions(self):
+        """
+        displays the instruction for the task
+        """
+        str1 = f"Compare image to the one shown 2 previously"
+        str2 = f"if match, press {self.corr_key[1]}"
+        str3 = f"if no match, press {self.corr_key[0]}"
+        self.instruction_text = f"{self.name} task\n\n {str1} \n {str2} \n {str3}"
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
+        instr_visual.draw()
+        self.window.flip()
 
     def run_trial(self,trial):
         """Runs a single trial of the nback task (after it started)
@@ -218,12 +231,9 @@ class NBack(Task):
         self.stim[trial['trial_num']].draw()
         self.window.flip()
 
-        # collect responses
-        key,trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['trial_dur'])
-
-        # check if response is correct (jorn check plz, problematic for no feedback trials and for last trial if last task it can cause the run to be less than 30 secs)
-        trial['response'] = (key == self.const.response_keys[1])
-        trial['correct'] = (trial['response'] == trial['trial_type'])
+        # collect responses 0: no response 1-4: key pressed
+        trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['trial_dur'])
+        trial['correct'] = (trial['response'] == self.corr_key[trial['trial_type']])
 
         # display trial feedback
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
