@@ -828,6 +828,9 @@ class FingerSequence(Task):
     def run_trial(self, trial):
         """ Run a single trial of the finger sequence task. """
 
+        #clear buffer
+        event.clearEvents()
+
          # Display the sequence
         sequence = trial['stim'].split()
 
@@ -852,7 +855,7 @@ class FingerSequence(Task):
 
         # Initialize the color for each digit in the sequence as black
         digit_colors = ['black'] * num_items
-        while self.ttl_clock.get_time() - sequence_start_time < trial['trial_dur']:
+        while self.ttl_clock.get_time() - sequence_start_time < trial['trial_dur'] and len(response_list) < len(sequence):
             self.ttl_clock.update()
 
             keys = event.getKeys(keyList=self.const.response_keys, timeStamped=self.ttl_clock.clock)
@@ -880,6 +883,10 @@ class FingerSequence(Task):
                 stim.draw()
 
             self.window.flip()
+
+        else:
+            # If the sequence is completed, wait until the end of the trial
+            self.ttl_clock.wait_until(sequence_start_time + trial['trial_dur'])
 
         # if any press is wrong trial['correct'] needs to be false
         if False in response_list or len(response_list) < len(sequence):
