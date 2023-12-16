@@ -312,24 +312,27 @@ class SpatialNavigation(TaskFile):
     def __init__(self, const):
         super().__init__(const)
         self.name = 'spatial_navigation'
-        self.locations = ["KITCHEN", "BEDROOM", "FRONT-DOOR", "WASHROOM", "LIVING-ROOM"]
+        self.location_pairs = [('FRONT-DOOR', 'LIVING-ROOM'), ('WASHROOM', 'LIVING-ROOM'), ('BEDROOM', 'LIVING-ROOM'),
+                        ('KITCHEN', 'LIVING-ROOM'), ('FRONT-DOOR', 'WASHROOM'), ('BEDROOM', 'FRONT-DOOR'),
+                        ('KITCHEN', 'FRONT-DOOR'), ('KITCHEN', 'BEDROOM'), ('KITCHEN', 'WASHROOM'),
+                        ('BEDROOM', 'WASHROOM')]
+
 
     def make_task_file(self,
                        task_dur=30,
                        trial_dur=30,
                        iti_dur=0,
-                       file_name=None):
+                       file_name=None,
+                       run_number=None):
 
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
-
-        # Randomly select two different locations
-        loc1, loc2 = random.sample(self.locations, 2)
 
         t = 0
 
         for n in range(n_trials):
             trial = {}
+            loc1, loc2 = self.location_pairs[run_number - 1]
             trial['trial_num'] = n
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
