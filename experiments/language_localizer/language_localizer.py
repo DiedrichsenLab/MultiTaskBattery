@@ -21,4 +21,4 @@ def main(subj_id):
     return
 
 if __name__ == "__main__":
-    main('test')
+    main('sub-01')
