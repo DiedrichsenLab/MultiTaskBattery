@@ -10,7 +10,7 @@ import constants as const
 #          'action_observation','rest','n_back','romance_movie','sentence_reading','nonword_reading','oddball',\
 #         'auditory_narrative','tongue_movement','spatial_navigation']
 
-tasks = ['demand_grid']
+tasks = ['theory_of_mind']
 
 #  check if dirs for the tasks and runs exist, if not, make them
 ut.dircheck(const.run_dir)

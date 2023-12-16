@@ -353,6 +353,7 @@ class TheoryOfMind(TaskFile):
         self.name = 'theory_of_mind'
 
     def make_task_file(self, hand='right',
+                       responses = [1,2], # 1 = True, 2 = False
                        run_number=None,
                        task_dur=30,
                         trial_dur=14,
@@ -375,6 +376,12 @@ class TheoryOfMind(TaskFile):
 
         for n in range(n_trials):
             trial = {}
+            trial['key_true'] = responses[0]
+            trial['key_false'] = responses[1]
+            if str(stim['answer'][n]) == 'True':
+                trial['trial_type'] = 1
+            else:
+                trial['trial_type'] = 0
             trial['trial_num'] = n
             trial['hand'] = hand
             trial['trial_dur'] = trial_dur
@@ -382,7 +389,7 @@ class TheoryOfMind(TaskFile):
             trial['story'] = stim['story'][n]
             trial['question'] = stim['question'][n]
             trial['condition'] = stim['condition'][n]
-            trial['answer'] = stim['response'][n]
+            trial['answer'] = stim['answer'][n]
             trial['story_dur'] = story_dur
             trial['question_dur'] = question_dur
             trial['display_trial_feedback'] = True
@@ -580,6 +587,7 @@ class DemandGrid(TaskFile):
 
     def make_task_file(self,
                         hand = 'right',
+                        responses = [1,2], # 1 = Left, 2 = Right
                         task_dur=30,
                         trial_dur=7,
                         question_dur=3,
@@ -594,12 +602,18 @@ class DemandGrid(TaskFile):
 
         for n in range(n_trials):
             trial = {}
+            trial['key_left'] = responses[0]
+            trial['key_right'] = responses[1]
+            trial['correct_side'] = random.choice(['left', 'right'])
+            if trial['correct_side'] == 'left':
+                trial['trial_type'] = 0
+            else:
+                trial['trial_type'] = 1
             trial['trial_num'] = n
             trial['hand'] = hand
             original_sequence = self.generate_sequence(grid_size, sequence_length)
             trial['grid_sequence'] = original_sequence
             trial['modified_sequence'] = self.modify_sequence(original_sequence, grid_size)
-            trial['correct_side'] = random.choice(['left', 'right'])
             trial['display_trial_feedback'] = True
             trial['trial_dur'] = trial_dur
             trial['sequence_dur'] = sequence_dur
