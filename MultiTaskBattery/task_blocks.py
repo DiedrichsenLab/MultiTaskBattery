@@ -750,9 +750,20 @@ class OddBall(Task):
 
     def init_task(self):
         self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
+        self.corr_key = [self.trial_info['key_one'].iloc[0],self.trial_info['key_two'].iloc[0]]
 
     def display_instructions(self):
         self.instruction_text = f'{self.name} Task \n\n Press the button with your index finger when you see a red K'
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
+        instr_visual.draw()
+        self.window.flip()
+
+    def display_instructions(self):
+        """
+        displays the instruction for the task
+        """
+        str1 = f"Press {self.corr_key[0]} when you see a red K"
+        self.instruction_text = f"{self.name} task\n\n {str1} \n"
         instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
         instr_visual.draw()
         self.window.flip()
@@ -776,8 +787,23 @@ class OddBall(Task):
         self.window.flip()
         self.ttl_clock.wait_until(self.ttl_clock.get_time() + trial['trial_dur'])
 
-        # Show fixation cross
-        self.screen.fixation_cross()
+        self.display_trial_feedback(trial['display_trial_feedback'], None)
+
+        # collect responses 0: no response 1-4: key pressed
+        trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['iti_dur'])
+        
+        # # method 1 for accuracy for oddball
+        # if trial['trial_type'] == 1:
+        #     trial['correct'] = True if trial['response']!= 0 else False
+        # elif trial['trial_type'] == 0:
+        #     trial['correct'] = True if trial['response']== 0 else False
+
+        # method 2 for accuracy for oddball
+        if trial['trial_type'] == 1:
+            trial['correct'] = True if trial['response']!= 0 else False
+        elif trial['trial_type'] == 0:
+            trial['correct'] = np.nan
+
 
         return trial
 
