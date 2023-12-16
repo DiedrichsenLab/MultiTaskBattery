@@ -661,7 +661,6 @@ class DemandGrid(Task):
 class SentenceReading(Task):
     def __init__(self, info, screen, ttl_clock, const):
         super().__init__(info, screen, ttl_clock, const)
-        self.feedback_type = 'None'
 
     def init_task(self):
         self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
