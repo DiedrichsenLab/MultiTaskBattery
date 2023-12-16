@@ -33,7 +33,7 @@ class Task:
         self.name        = info['task_name']
         self.code        = info['task_code']
         self.task_file = info['task_file']
-        self.feedback_type = 'None'
+        self.feedback_type = 'none'
 
     def init_task(self):
         """
@@ -147,8 +147,6 @@ class Task:
                 core.quit()
 
 class NBack(Task):
-    # def instruction_text(self):
-    #     return response dataframe
 
     def __init__(self, info, screen, ttl_clock, const):
         super().__init__(info, screen, ttl_clock, const)
@@ -204,7 +202,6 @@ class NBack(Task):
 class Rest(Task):
     def __init__(self, info, screen, ttl_clock, const):
         super().__init__(info, screen, ttl_clock, const)
-        self.feedback_type = 'none'
         self.name          = 'rest'
 
     def display_instructions(self): # overriding the display instruction routine from the parent
@@ -225,9 +222,6 @@ class Rest(Task):
         return trial
 
 class VerbGeneration(Task):
-    # def instruction_text(self):
-    #     return "Verb Generation Task\n\nYou will read a series of nouns. For some nouns you will be asked to silently generate a verb.\n\nAnswer as quickly and as accurately as possible"
-
     def __init__(self, info, screen, ttl_clock, const):
         super().__init__(info, screen, ttl_clock, const)
 
@@ -410,19 +404,22 @@ class SpatialNavigation(Task):
 class TheoryOfMind(Task):
     def __init__(self, info, screen, ttl_clock, const):
         super().__init__(info, screen, ttl_clock, const)
-        self.feedback_type = 'acc'
+        self.feedback_type = 'acc+rt'
 
     def init_task(self):
         """ Initialize task - read the target information into the trial_info dataframe """
         self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
+        self.corr_key = [self.trial_info['key_false'].iloc[0],self.trial_info['key_true'].iloc[0]]
 
     def display_instructions(self):
-        """ Display the instructions for the Theory of Mind task """
-        instructions = (f"{self.name} Task \n\nYou will read a story and decide if the answer to the question "
-                        "is True or False.\n\nIf the answer is True, press {}\n\nIf the answer is False, press {}\n\n"
-                        ).format(self.const.response_fingers[1], self.const.response_fingers[2])
-
-        instr_visual = visual.TextStim(self.window, text=instructions, color=[-1, -1, -1])
+        """
+        displays the instruction for the task
+        """
+        str1 = f"You will read a story and decide if the answer to the question is True or False"
+        str2 = f"if true, press {self.corr_key[1]}"
+        str3 = f"if false, press {self.corr_key[0]}"
+        self.instruction_text = f"{self.name} task\n\n {str1} \n {str2} \n {str3}"
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
         instr_visual.draw()
         self.window.flip()
 
@@ -444,18 +441,11 @@ class TheoryOfMind(Task):
         question_stim.draw()
         self.window.flip()
 
+        # collect responses 0: no response 1-4: key pressed
+        trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['question_dur'])
+        trial['correct'] = (trial['response'] == self.corr_key[trial['trial_type']])
 
-        # Collect response (after question display duration)
-        key, trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['question_dur'])
-
-        # Check if any key from the specified keys was pressed then check whether it was the correct response (jorn check plz)
-        if key in self.const.response_keys:
-            trial['response'] = (key == self.const.response_keys[1])
-            trial['correct'] = (trial['response'] == trial['answer'])
-        else:
-            trial['correct'] = False
-
-        # Provide feedback if necessary
+        # display trial feedback
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
 
         return trial
@@ -562,17 +552,23 @@ class DemandGrid(Task):
         super().__init__(info, screen, ttl_clock, const)
         self.grid_size = (3,4)
         self.square_size = 1.5
+        self.feedback_type = 'acc+rt'
 
     def init_task(self):
         """Read the target file and get all the stimuli necessary"""
         self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
+        self.corr_key = [self.trial_info['key_left'].iloc[0],self.trial_info['key_right'].iloc[0]]
 
 
     def display_instructions(self):
-        self.instruction_text = (f"{self.name} Task \n\n"
-                                "Watch the sequence of boxes that light \n\n"
-                                "up and then choose the correct pattern")
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1],  wrapWidth=400)
+        """
+        displays the instruction for the task
+        """
+        str1 = f"You will watch the sequence of boxes that light up and then choose the correct pattern"
+        str2 = f"if left, press {self.corr_key[0]}"
+        str3 = f"if right, press {self.corr_key[1]}"
+        self.instruction_text = f"{self.name} task\n\n {str1} \n {str2} \n {str3}"
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
         instr_visual.draw()
         self.window.flip()
 
@@ -653,15 +649,9 @@ class DemandGrid(Task):
         modified_grid = self.create_grid(sequence=modified_sequence, position='left' if correct_side == 'right' else 'right')
         self.window.flip()
 
-        # collect responses
-        key,trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['question_dur'])
-
-        # Check if any key from the specified keys was pressed then check whether it was the correct response (jorn check plz)
-        if key in self.const.response_keys:
-            trial['response'] = 'left' if (key == self.const.response_keys[1]) else 'rights'
-            trial['correct'] = (trial['response'] == trial['correct_side'])
-        else:
-            trial['correct'] = False
+        # collect responses 0: no response 1-4: key pressed
+        trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['question_dur'])
+        trial['correct'] = (trial['response'] == self.corr_key[trial['trial_type']])
 
         # Provide feedback if necessary
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
@@ -756,7 +746,7 @@ class NonwordReading(Task):
 class OddBall(Task):
     def __init__(self, info, screen, ttl_clock, const):
         super().__init__(info, screen, ttl_clock, const)
-        self.feedback_type = 'acc'
+        self.feedback_type = 'acc+rt'
 
     def init_task(self):
         self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
@@ -788,20 +778,6 @@ class OddBall(Task):
 
         # Show fixation cross
         self.screen.fixation_cross()
-
-        # (need to check with jorn, our feedback method clashes with the task)
-    #    # Collect response (after question display duration)
-    #     key, trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['iti_dur'])
-
-    #     # Check if any key from the specified keys was pressed then check whether it was the correct response (jorn check plz)
-    #     if key in self.const.response_keys:
-    #         trial['response'] = (key == self.const.response_keys[1])
-    #         trial['correct'] = (trial['response'] == trial['answer'])
-    #     else:
-    #         trial['correct'] = False
-
-        # # Provide feedback if necessary
-        # self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
 
         return trial
 
