@@ -6,7 +6,6 @@ verb_generation	VerbGeneration	verbgen	"Words presented, participants read the w
 romance_movie	RomanceMovie	rommov	"30s clips of the movie ""up"", no audio no subtitles"	
 rest	Rest	rest	Lie in scanner with a fixation cross	NA
 tongue_movement	TongueMovement	tongue	"move tongue from right to left, touching upper premolar teeth guided by a flashing black circle around a fixation crosshair, black circle means right no cirlce means left, 1s periods"	"A Third Somatomotor Representation in the Human Cerebellum (Bucknet et al., 2022)"
-flexion_extension	FlexionExtension	flexexten	alternating periods of flexing/extending toes	
 auditory_narrative	AuditoryNarrative	audnarr	30 second snippets of a moth radiohour story (wheretheressmoke)	Novel
 spatial_navigation	SpatialNavigation	spatialnav		
 degraded_passage	DegradedPassage	degpass		
@@ -15,3 +14,5 @@ nonword_reading	NonwordReading	nwdread
 oddball	OddBall	odbal		
 intact_passage	IntactPassage	intpass		
 demand_grid	DemandGrid	dmgrd		
+finger_sequence	FingerSequence	fingseq		
+flexion_extension	FlexionExtension	flexexten	alternating periods of flexing/extending toes	

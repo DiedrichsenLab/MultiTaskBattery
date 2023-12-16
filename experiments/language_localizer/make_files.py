@@ -8,11 +8,9 @@ import constants as const
 # all tasks that are going to be used in the experiment
 # tasks = ['demand_grid','theory_of_mind','verb_generation','degraded_passage','intact_passage',\
 #          'action_observation','rest','n_back','romance_movie','sentence_reading','nonword_reading','oddball',\
-#         'auditory_narrative','tongue_movement','spatial_navigation']
+#         'auditory_narrative','tongue_movement','spatial_navigation','finger_sequence']
 
-tasks = ['demand_grid','theory_of_mind','verb_generation','degraded_passage','intact_passage',\
-         'action_observation','rest','n_back','romance_movie','sentence_reading','nonword_reading','oddball',\
-        'auditory_narrative','tongue_movement','spatial_navigation']
+tasks = ['finger_sequence']
 
 #  check if dirs for the tasks and runs exist, if not, make them
 ut.dircheck(const.run_dir)
@@ -28,15 +26,22 @@ for r in range(1,9):
     # define task specific arguments
     task_args = {'demand_grid': {}, 'theory_of_mind': {'run_number' : r}, 'verb_generation': {}, 'degraded_passage': {'run_number' : r}, 'intact_passage': {'run_number' : r},\
          'action_observation': {'run_number' : r}, 'rest': {}, 'n_back': {}, 'romance_movie': {'run_number' : r}, 'sentence_reading': {'run_number' : r}, 'nonword_reading': {'run_number' : r}, 'oddball': {},\
-        'auditory_narrative': {'run_number' : r}, 'tongue_movement': {}, 'spatial_navigation': {'run_number' : r}}
+        'auditory_narrative': {'run_number' : r}, 'tongue_movement': {}, 'spatial_navigation': {'run_number' : r}, 'finger_sequence': {}}
     
-    # Define or update task specific arguments that depend on the run number
+    
+    # Define or update task specific arguments that depend on the run number (this is only for tasks that will require one hand presses)
     if r % 2 == 0:
         responses = [1, 2]
     else:
         responses = [3, 4]
 
     for task in ['demand_grid', 'theory_of_mind', 'n_back', 'oddball']:
+        task_args[task].update({'responses': responses})
+
+
+    # This is specific to tasks that will require presses using both hand across runs
+    for task in ['finger_sequence']:
+        responses = [1, 2, 3, 4]
         task_args[task].update({'responses': responses})
 
 

@@ -719,6 +719,7 @@ class OddBall(TaskFile):
     def __init__(self, const):
         super().__init__(const)
         self.name = 'oddball'
+        
 
     def make_task_file(self,
                     hand = 'right',
@@ -757,6 +758,52 @@ class OddBall(TaskFile):
 
         trial_info = pd.DataFrame(trial_info)
         if file_name is not None:
+            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
+
+        return trial_info
+    
+class FingerSequence(TaskFile):
+    def __init__(self, const):
+        super().__init__(const)
+        self.name = 'finger_sequence'
+        self.sequences = ['1 3 2 4 3 4', '2 1 3 4 3 1', 
+                        '3 2 4 1 4 2', '4 1 2 3 4 1',
+                        '1 4 3 2 1 3', '2 3 1 4 2 4',
+                        '3 4 2 1 3 2', '4 3 1 2 4 1']
+
+    def make_task_file(self,
+                        hand = 'bimanual',
+                        responses = [1,2,3,4], # 1 = Key_one, 2 = Key_two, 3 = Key_three, 4 = Key_four
+                        task_dur=30,
+                        trial_dur=3.25,
+                        iti_dur=0.5,
+                        file_name=None):
+        n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
+        trial_info = []
+
+        t = 0
+
+        for n in range(n_trials):
+            trial = {}
+            trial['key_one'] = responses[0]
+            trial['key_two'] = responses[1]
+            trial['key_three'] = responses[2]
+            trial['key_four'] = responses[3]
+            trial['trial_num'] = n
+            trial['hand'] = hand
+            trial['trial_dur'] = trial_dur
+            trial['iti_dur'] = iti_dur
+            trial['display_trial_feedback'] = True
+            # choose random sequence
+            trial['stim'] = random.choice(self.sequences)
+            trial['start_time'] = t
+            trial['end_time'] = t + trial_dur + iti_dur
+            trial_info.append(trial)
+            t = trial['end_time']
+
+        trial_info = pd.DataFrame(trial_info)
+        if file_name is not None:
+            ut.dircheck(self.task_dir / self.name)
             trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
 
         return trial_info

@@ -805,7 +805,96 @@ class OddBall(Task):
 
 
         return trial
+    
+class FingerSequence(Task):
+    """
+    Finger sequence taskck
+    """
+    def __init__(self, info, screen, ttl_clock, const):
+        super().__init__(info, screen, ttl_clock, const)
+        self.feedback_type = 'acc+rt'
 
+    def init_task(self):
+        self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
+        self.corr_key = [self.trial_info['key_one'].iloc[0],self.trial_info['key_two'].iloc[0],self.trial_info['key_three'].iloc[0],self.trial_info['key_four'].iloc[0]]
+
+    def display_instructions(self):
+        self.instruction_text = f"{self.name} task \n\n Using your four fingers, press the keys in the order shown on the screen"
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
+        instr_visual.draw()
+        self.window.flip()
+
+
+    def run_trial(self, trial):
+        """ Run a single trial of the finger sequence task. """
+
+         # Display the sequence
+        sequence = trial['stim'].split()
+
+        # Calculate positions for each number in the sequence
+        num_items = len(sequence)
+        spacing = 2.0  
+        start_x = -(num_items - 1) * spacing / 2
+
+        # Show the numbers in the sequence next to each other
+        for i, number in enumerate(sequence):
+            pos = (start_x + i * spacing, 0.0)  # Horizontal position is adjusted based on index
+            stim = visual.TextStim(self.window, text=number, pos=pos, color='black', units='deg', height=1.5)
+            stim.draw()
+
+        self.window.flip()
+
+        sequence_start_time = self.ttl_clock.get_time()
+        digit_start_time = sequence_start_time
+
+        rt_list = []
+        response_list = []
+
+        # Initialize the color for each digit in the sequence as black
+        digit_colors = ['black'] * num_items
+        while self.ttl_clock.get_time() - sequence_start_time < trial['trial_dur']:
+            self.ttl_clock.update()
+
+            keys = event.getKeys(keyList=self.const.response_keys, timeStamped=self.ttl_clock.clock)
+            if keys:
+                key_char, key_press_time = keys[0]
+                key = self.const.response_keys.index(key_char) + 1
+                rt = key_press_time - digit_start_time
+                rt_list.append(rt)
+                digit_start_time = key_press_time
+
+                # Determine the press iteration based on the length of the response list
+                press_iteration = len(response_list)
+
+                # Check if key pressed is correct
+                is_correct = key == int(sequence[press_iteration])
+                response_list.append(is_correct)
+
+                # Update color based on correctness
+                digit_colors[press_iteration] = 'green' if is_correct else 'red'
+
+            # Draw all digits with their current colors
+            for i, (number, color) in enumerate(zip(sequence, digit_colors)):
+                pos = (start_x + i * spacing, 0.0)
+                stim = visual.TextStim(self.window, text=number, pos=pos, color=color, units='deg', height=1.5)
+                stim.draw()
+
+            self.window.flip()
+
+        # if any press is wrong trial['correct'] needs to be false
+        if False in response_list or len(response_list) < len(sequence):
+            trial['correct'] = False
+        else:
+            trial['correct'] = True
+
+        # calculate mean rt across presses
+        trial['rt'] = np.mean(rt_list)
+
+        # display trial feedback
+        self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
+
+        return trial
+                           
 class FlexionExtension(Task):
     """
     Flexion extension of toes! No particular feedback.
