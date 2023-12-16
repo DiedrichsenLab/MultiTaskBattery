@@ -433,7 +433,7 @@ class TheoryOfMind(Task):
         self.window.flip()
 
        # wait until story duration
-        core.wait(trial['story_dur'])
+        self.ttl_clock.wait_until(self.ttl_clock.get_time() + trial['story_dur'])
 
 
         # Display question
@@ -632,7 +632,7 @@ class DemandGrid(Task):
                 for rect in row:
                     rect.draw()
             self.window.flip()
-            core.wait(1)  # Each pair of boxes lights up for 1 second
+            self.ttl_clock.wait_until(self.ttl_clock.get_time() + 1) # Wait for 1 second for each box/pair to light up
 
             for pos in pair:
                 x, y = pos
@@ -819,7 +819,7 @@ class FingerSequence(Task):
         self.corr_key = [self.trial_info['key_one'].iloc[0],self.trial_info['key_two'].iloc[0],self.trial_info['key_three'].iloc[0],self.trial_info['key_four'].iloc[0]]
 
     def display_instructions(self):
-        self.instruction_text = f"{self.name} task \n\n Using your four fingers, press the keys in the order shown on the screen"
+        self.instruction_text = f"{self.name} task \n\n Using your four fingers, press the keys in the order shown on the screen\n Use all four fingers for this task"
         instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
         instr_visual.draw()
         self.window.flip()
