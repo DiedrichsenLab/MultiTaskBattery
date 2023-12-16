@@ -834,12 +834,12 @@ class FingerSequence(Task):
          # Display the sequence
         sequence = trial['stim'].split()
 
-        # Calculate positions for each number in the sequence
+        # Calculate the start position for the sequence and determine the spacing between numbers
         num_items = len(sequence)
         spacing = 2.0  
         start_x = -(num_items - 1) * spacing / 2
 
-        # Show the numbers in the sequence next to each other
+        # Show the numbers in the sequence next to each other ( using the spacing and start_x calculated above)
         for i, number in enumerate(sequence):
             pos = (start_x + i * spacing, 0.0)  # Horizontal position is adjusted based on index
             stim = visual.TextStim(self.window, text=number, pos=pos, color='black', units='deg', height=1.5)
@@ -847,11 +847,12 @@ class FingerSequence(Task):
 
         self.window.flip()
 
-        sequence_start_time = self.ttl_clock.get_time()
-        digit_start_time = sequence_start_time
+        
+        sequence_start_time = self.ttl_clock.get_time() # Needed for knowing when to stop looking for key presses
+        digit_start_time = sequence_start_time # Updated with each key press for calculating RT
 
         rt_list = []
-        response_list = []
+        response_list = [] # List of booleans indicating whether each press was correct needed for overall trial accuracy
 
         # Initialize the color for each digit in the sequence as black
         digit_colors = ['black'] * num_items
@@ -876,7 +877,7 @@ class FingerSequence(Task):
                 # Update color based on correctness
                 digit_colors[press_iteration] = 'green' if is_correct else 'red'
 
-            # Draw all digits with their current colors
+            # Draw all digits with their adjusted colors
             for i, (number, color) in enumerate(zip(sequence, digit_colors)):
                 pos = (start_x + i * spacing, 0.0)
                 stim = visual.TextStim(self.window, text=number, pos=pos, color=color, units='deg', height=1.5)
