@@ -10,7 +10,7 @@ import constants as const
 #          'action_observation','rest','n_back','romance_movie','sentence_reading','nonword_reading','oddball',\
 #         'auditory_narrative','tongue_movement','spatial_navigation']
 
-tasks = ['oddball']
+tasks = ['spatial_navigation']
 
 #  check if dirs for the tasks and runs exist, if not, make them
 ut.dircheck(const.run_dir)
@@ -27,7 +27,7 @@ for r in range(1,9):
         cl = mt.get_task_class(task)
         myTask = getattr(mt,cl)(const)
 
-        if task == 'n_back' or task == 'rest' or task == 'verb_generation' or task == 'tongue_movement' or task == 'spatial_navigation' or task == 'oddball' or task == 'demand_grid':
+        if task == 'n_back' or task == 'rest' or task == 'verb_generation' or task == 'tongue_movement'  or task == 'oddball' or task == 'demand_grid':
             myTask.make_task_file(file_name = tfile)
         else:
             myTask.make_task_file(file_name = tfile, run_number = r)
