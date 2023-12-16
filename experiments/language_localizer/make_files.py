@@ -5,7 +5,7 @@ import constants as const
 
 """ This is an example script to make the run files and trial files for an experiment"""
 
-# this is a full list of the tasks that will be run for this localizer
+# this is a full list of the tasks that will be run for this localizer, do not change this list
 full_tasks = ['demand_grid','theory_of_mind','verb_generation','degraded_passage','intact_passage',\
          'action_observation','rest','n_back','romance_movie','sentence_reading','nonword_reading','oddball',\
         'auditory_narrative','tongue_movement','spatial_navigation','finger_sequence']
@@ -13,7 +13,7 @@ full_tasks = ['demand_grid','theory_of_mind','verb_generation','degraded_passage
 # this is a list of the tasks running while debugging and testing different combos and will be used when the final combo is ready (having both this list and the above
 #is necessary because I have the task_args list defined first then I am putting conditional statements for specific arguments,
 # for the script to run, the conditional stuff needs to run and for the conditional stuff to run all tasks (full_tasks)need to be inside task_args)
-running_tasks = ['finger_sequence']
+running_tasks = ['theory_of_mind','demand_grid']  # adjust this list as you like to test different combos
 
 #  check if dirs for the tasks and runs exist, if not, make them
 ut.dircheck(const.run_dir)
