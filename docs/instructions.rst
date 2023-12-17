@@ -144,7 +144,7 @@ Spatial Navigation
    
 In this task, you should imagine walking from room to room in childhood home. We will tell you which room you should start your walk in and which room to end in. Every time you do this task, you will start at a different room and end in a different room, so the path will be different. Try to really bring the image to life in your mind. What pictures you see on the walls, what furniture do you pass by, are there any people in the rooms, what does it smell like?
 
-N-Back (letter)
+N-Back
 ^^^^^^^^^^^^^^^
 .. image:: images/Slide5.png
    :width: 600
