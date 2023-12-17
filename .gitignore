@@ -7,3 +7,5 @@ experiments/*/task_files/*
 venv
 env/
 .vscode
+stimuli/.DS_Store
+MultiTaskBattery/task notes.md
