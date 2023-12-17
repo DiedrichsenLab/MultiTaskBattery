@@ -292,7 +292,7 @@ class TongueMovement(Task):
         # Check the trial_type and display the corresponding stimulus
         if trial['trial_type'] == 'right':
             # If trial_type is 'right', show the black circle around the fixation cross
-            circle_visual = visual.Circle(self.window, radius=1, edges= 32, fillColor=None, lineColor='black')
+            circle_visual = visual.Circle(self.window, radius=1, edges= 100, lineWidth = 20, fillColor=None, lineColor='black')
             circle_visual.draw()
 
         self.window.flip()
@@ -428,7 +428,7 @@ class TheoryOfMind(Task):
         event.clearEvents()
 
         # Display story
-        story_stim = visual.TextStim(self.window, text=trial['story'], alignHoriz='center', wrapWidth=20, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg')
+        story_stim = visual.TextStim(self.window, text=trial['story'], alignHoriz='center', wrapWidth=60, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg')
         story_stim.draw()
         self.window.flip()
 

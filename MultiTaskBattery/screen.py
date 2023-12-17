@@ -30,8 +30,8 @@ class Screen:
     def fixation_cross(self, color='white', flip=True):
         # Draw the fixation cross
         fixation = visual.ShapeStim(self.window,
-            vertices=((0, -0.05), (0, 0.05), (0,0), (-0.03,0), (0.03, 0)),
-            lineWidth=5,
+            vertices=((0, -0.06), (0, 0.06), (0,0), (-0.04,0), (0.04, 0)),
+            lineWidth=20,
             closeShape=False,
             lineColor=color,
             units='norm'
