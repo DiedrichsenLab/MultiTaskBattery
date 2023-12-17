@@ -24,6 +24,9 @@ As you are being moved into the scanner, at the beginning you can experience som
 
 Movement
 ^^^^^^^^^^^^^^^
+
+Importance of lying still
+"""""""""""""""""""""""""""
 .. image:: images/Slide17.png
    :width: 600
    
@@ -31,7 +34,7 @@ Please stay as still as possible in the scanner. The images we are collecting fr
 
 
 Tips for lying still in the scanner
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+""""""""""""""""""""""""""""""""""""""""
 .. image:: images/Slide18.png
    :width: 600
    
@@ -76,15 +79,71 @@ Toe Flexion
 .. image:: images/Slide4.png
    :width: 600
    
-This is another movement task. You will flex and extend your toes. Try to keep the rest of your body as still as possible while you do this so that you don’t move your head. Try also to match the pace of the instruction.
-
-Semantic Prediction
+This is a toe movement task. You will flex and extend your toes. When the screen says 'fled', then pull your toes towards you. When it says 'extend', extend your toes away from you, like you're tip-toeing. Try to keep the rest of your body as still as possible while you do this so that you don’t move your head. Try also to match the pace of the instruction.
+  
+Tongue Movement
 ^^^^^^^^^^^^^^^
-.. image:: images/Slide4.png
+.. image:: images/Slide21.png
    :width: 600
    
-This is the semantic prediction task. On the screen you will see a series of words that form a sentence. The last word will be missing. Try to complete the sentence with the last word in your head, but without saying or whispering the word.
-  
+This is a tongue movement task. You will move your tongue from left to right in your closed mouth. Your will either touch your left upper premolar teeth or your right upper premolar teeth. The premolar teeth are shown in the image. A black circle flashing on and off around the fixation cross while tell you when to touch left or right. When you see the black circle on, touch your right upper premolar teeth. When it is off, touch your left premolar teeth. Try to keep the rest of your body as still as possible while you do this so that you don’t move your head. 
+
+.. Sentence Prediction
+.. ^^^^^^^^^^^^^^^
+.. .. image:: images/SemanticPrediction.png
+..    :width: 600
+   
+.. This is the sentence prediction task. On the screen you will see a series of words that form a sentence. The last word will be missing. Try to complete the sentence with the last word in your head, but without saying it or moving your lips or tongue in any way.
+
+Verb Generation
+^^^^^^^^^^^^^^^
+.. image:: images/Slide22.png
+   :width: 600
+   
+This is the verb generation task. On the screen you will see a a noun. Try to think of a verb that is something you can do with the noun. For example, when seeing 'computer', think of 'type'. Or think of something that the noun does. For example when seeing 'lion' think of 'roar'. Think the first verb that comes to mind and try not to move your tongue or lips while you do this.
+
+NonWord Reading
+^^^^^^^^^^^^^^^
+.. image:: images/Slide23.png
+   :width: 600
+   
+This is the nonword reading task. On the screen you will see a series of words that don't exist in the English language. Read the words silently in your head, but without saying it or moving your lips or tongue in any way. Every few words we will ask you to press the button box to indicate that you are still paying attention. When you see the symbol on the right, press any button.
+
+Sentence Reading
+^^^^^^^^^^^^^^^^^^
+.. image:: images/Slide24.png
+   :width: 600
+   
+This is the sentence reading task. On the screen you will see a series of words that form a sentence. Read the sentence silently in your head, but without saying it or moving your lips or tongue in any way. After every sentence we will ask you to press the button box to indicate that you are still paying attention. When you see the symbol on the right, press any button.
+
+Auditory Narrative
+^^^^^^^^^^^^^^^^^^^
+.. image:: images/Slide25.png
+   :width: 600
+   
+This is the auditory narrative task. You will be listening to a story that is told to you via the headphones. Try to follow the story and imagine the scenes that are being described. Try to imagine the characters, the setting, the objects that are being described. Try to imagine the story as vividly as possible. In each run, you will hear a bit more of the story. Try to follow along the narrative across runs.
+
+Intact Passage
+^^^^^^^^^^^^^^^
+.. image:: images/Slide26.png
+   :width: 600
+   
+This is the intact passage task. You will be listening to passages of different stories or snippets of conversations. The conversations and stories will have nothing to do with each other. Listen attentively and try to understand what is being said.
+
+Degraded Passage
+^^^^^^^^^^^^^^^^^^^
+.. image:: images/Slide27.png
+   :width: 600
+   
+This is the degraded passage task. You will be listening to passages of different stories or snippets of conversations. The sound quality of the stories and conversations will be degraded. Listen attentively and try to understand what is being said.
+
+Spatial Navigation
+^^^^^^^^^^^^^^^^^^^
+.. image:: images/Slide28.png
+   :width: 600
+   
+In this task, you should imagine walking from room to room in childhood home. We will tell you which room you should start your walk in and which room to end in. Every time you do this task, you will start at a different room and end in a different room, so the path will be different. Try to really bring the image to life in your mind. What pictures you see on the walls, what furniture do you pass by, are there any people in the rooms, what does it smell like?
+
 N-Back (letter)
 ^^^^^^^^^^^^^^^
 .. image:: images/Slide5.png
@@ -93,8 +152,7 @@ N-Back (letter)
 .. image:: images/Slide6.png
    :width: 600
 
-This is the N-Back task. This is a task of working memory. On the screen you will be presented with a series of letters (either A, B or C). Whenever you see that the current letter on the screen is the same as the letter 2-letters ago, make your response. For example, you may see A, then B, then A again, when you see that second A make your response indicating that A matches the letter that you saw two trials ago. Finally, the first block of this run will be slower than normal to allow for familiarisation”.
-
+This is the N-Back task. This is a task of working memory. On the screen you will be presented with a series of letters (either A, B or C). Whenever you see that the current letter on the screen is the same as the letter 2-letters ago, make your response. For example, you may see A, then B, then A again, when you see that second A make your response indicating that A matches the letter that you saw two trials ago.
 
 Theory of Mind
 ^^^^^^^^^^^^^^^
@@ -114,7 +172,7 @@ Visual Search
 .. image:: images/Slide13.png
    :width: 600
    
-In this task, you will be asked to rapidly scan a number of letters and identify whether the target letter ‘L’ is present. Each trial will always multiple images of the letter ‘T’. However, on some trials, the letter ‘L’ will also be present among the distracting ‘T’ letters. On each trial, you will have to correctly identify whether the L is present. Finally, the first block of this run will be slower than normal to allow for familiarisation”.
+In this task, you will be asked to rapidly scan a number of letters and identify whether the target letter ‘L’ is present. Each trial will always multiple images of the letter ‘T’. However, on some trials, the letter ‘L’ will also be present among the distracting ‘T’ letters. On each trial, you will have to correctly identify whether the L is present. 
 
 Action Observation
 ^^^^^^^^^^^^^^^^^^^
@@ -138,8 +196,7 @@ Feedback
 For some of the tasks you will receive immediate feedback about your performance during the task. For correct responses, the fixation cross will turn green and when you made a mistake it will turn red. For other tasks you will see how you did at the end of the run. You will see a scoreboard with your performance on each task. You will also see a summary of your performance across all runs. Have a quick look at the scoreboard on the right and tell me if you have any questions about what it shows.
 
 
-
-Instructions for the experimenter:
+Instructions for the experimenter
 ----------------------------------
 1) The participant will be presented with feedback at the end of each run. By the end of the run, the participant should be scoring above 85% on each task. The theory of mind task is an exception to this rule. As there are only two trials in this task, a score of 50% is permissible.
 2) If you observe that the participant has scored poorly on certain tasks (i.e. no sign of improvement across blocks, below 85% at the end of the run) then you should ask the participant to practice the task again. Don’t forget to increase the run-number by one if you execute additional runs that not specified in the task design spreadsheet.
