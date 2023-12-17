@@ -239,13 +239,13 @@ class VerbGeneration(Task):
 
     def show_stim(self, noun):
         """ Display a word for a fixed time. """
-        stim = visual.TextStim(self.window, text=noun, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg')
+        stim = visual.TextStim(self.window, text=noun, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height=2)
         stim.draw()
         self.window.flip()
 
     def display_generate_instruction(self):
         """ Display the 'GENERATE' instruction. """
-        generate_instr = visual.TextStim(self.window, text='GENERATE', pos=(0.0, 0.0), color=(-1, -1, -1), units='deg')
+        generate_instr = visual.TextStim(self.window, text='GENERATE', pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height=2)
         generate_instr.draw()
         self.window.flip()
 
@@ -680,7 +680,7 @@ class SentenceReading(Task):
 
         #show words seqeuntially each for 450ms
         for word in words:
-            word_stim = visual.TextStim(self.window, text=word, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg')
+            word_stim = visual.TextStim(self.window, text=word, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height=2)
             word_stim.draw()
             self.window.flip()
             self.ttl_clock.wait_until(self.ttl_clock.get_time() + 0.45)
@@ -722,7 +722,7 @@ class NonwordReading(Task):
 
         #show words seqeuntially each for 450ms
         for word in words:
-            word_stim = visual.TextStim(self.window, text=word, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg')
+            word_stim = visual.TextStim(self.window, text=word, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height=2)
             word_stim.draw()
             self.window.flip()
             self.ttl_clock.wait_until(self.ttl_clock.get_time() + 0.45)
