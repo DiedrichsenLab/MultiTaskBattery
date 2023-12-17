@@ -190,16 +190,28 @@ class Experiment:
             Args:
                 run_data (pd.DataFrame): a dataframe containing the run data
         """
-        score_text = f"Run finished\nTask\tAcc\tRT\n"
+        score_text = "Your Scores:\n\n"
+        
+        # Define column headers
+        headers = ["Task", "Accuracy", "Reaction Time"]
+        header_text = "{:<15} {:<10} {:<13}\n".format(*headers)
+        score_text += header_text
+        
+        # Add each task's data to the score text
+        for i, task in enumerate(self.task_obj_list):
+            if task.feedback_type != 'none':
+                task_name = f"{task.name:<15}"
+                accuracy = f"   {run_data.acc[i]:<10.2f}"
+                rt = f"   {run_data.rt[i]:<13.3f}"
+                score_text += f"{task_name}{accuracy}{rt}\n"
 
-        for i,task in enumerate(self.task_obj_list):
-            if task.feedback_type!='none':
-                score_text += f"{task.name}\t{run_data['acc'][i]:.2f}\t{run_data['rt'][i]:.3f}\n"
-
-        score_display = visual.TextStim(self.screen.window, text=score_text, color=[-1, -1, -1])
+        # Create a visual.TextStim object for displaying the text
+        score_display = visual.TextStim(self.screen.window, text=score_text, font='Lucida Console', color=[-1, -1, -1], 
+                                        alignText='left', pos=[0, 0], wrapWidth=28, units='deg')
         score_display.draw()
         self.screen.window.flip()
         event.waitKeys()
+
 
     def start_eyetracker(self):
         """
