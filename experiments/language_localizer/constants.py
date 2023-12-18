@@ -31,6 +31,9 @@ debug = False                                           # set to True for debugg
 # Making real files or mock training files?
 training = True                                        # set to True for training
 
+# Same_files?
+same_files = True                                      # set to True if you want to use the same files for all runs (False if u have subject specific files)
+
 # Screen settings for subject display
 screen = {}
 screen['size'] = [1100, 800]                             # screen resolution
