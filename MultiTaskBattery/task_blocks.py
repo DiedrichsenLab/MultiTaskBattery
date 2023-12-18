@@ -440,6 +440,8 @@ class TheoryOfMind(Task):
        # wait until story duration
         self.ttl_clock.wait_until(self.ttl_clock.get_time() + trial['story_dur'])
 
+        # Flush any keys in buffer
+        event.clearEvents()
 
         # Display question
         question_stim = visual.TextStim(self.window, text=trial['question'], pos=(0.0, 0.0), color=(-1, -1, -1), units='deg')
@@ -643,6 +645,9 @@ class DemandGrid(Task):
                 x, y = pos
                 self.grid[x][y].fillColor = 'white'
 
+        # Flush any keys in buffer
+        event.clearEvents()
+
          # Determine which side the correct sequence will be displayed
         correct_side = trial['correct_side']
 
@@ -792,6 +797,9 @@ class OddBall(Task):
         self.ttl_clock.wait_until(self.ttl_clock.get_time() + trial['trial_dur'])
 
         self.display_trial_feedback(trial['display_trial_feedback'], None)
+
+        # Flush any keys in buffer
+        event.clearEvents()
 
         # collect responses 0: no response 1-4: key pressed
         trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['iti_dur'])
