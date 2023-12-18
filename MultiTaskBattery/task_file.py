@@ -488,10 +488,18 @@ class ActionObservation(TaskFile):
     def __init__(self, const):
         super().__init__(const)
         self.name = 'action_observation'
+        # good knot vids
         self.knot_names = ['Adage', 
                         'Brigand', 'Brocade', 'Casement',  'Cornice',\
                          'Flora', 'Frontage', 'Gadfly', 'Garret', \
                         'Mutton','Placard', 'Purser']
+        # Medium/bad knot vids
+        self.knot_names = [
+                            'Ampere', 'Arbor', 'Baron', 'Belfry', 'Bramble', 'Chamois', 'Coffer', 
+                            'Farthing', 'Fissure', 'Gentry', 'Henchman', 'Magnate', 'Perry', 'Phial', 'Polka', 
+                            'Rosin', 'Shilling', 'Simper', 'Spangle', 'Squire', 'Vestment', 'Wampum', 'Wicket'
+                        ]
+
 
     def make_task_file(self,
                         run_number = None,
