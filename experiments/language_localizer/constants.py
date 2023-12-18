@@ -29,10 +29,10 @@ eye_tracker = False                                     # do you want to do  eye
 debug = False                                           # set to True for debugging
 
 # Making real files or mock training files?
-training = True                                        # set to True for training
+training = False                                        # set to True for training
 
 # Same_files?
-same_files = True                                      # set to True if you want to use the same files for all runs (False if u have subject specific files)
+same_files = False                                      # set to True if you want to use the same files for all subs (False if u have subject specific files)
 
 # Screen settings for subject display
 screen = {}
