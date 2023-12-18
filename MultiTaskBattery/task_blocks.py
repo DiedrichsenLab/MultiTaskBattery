@@ -23,7 +23,7 @@ class Task:
     (VisualSearch, SemanticPrediction, NBack, SocialPrediction, ActionObservation).
     """
 
-    def __init__(self, info, screen, ttl_clock, const):
+    def __init__(self, info, screen, ttl_clock, const, subj_id):
 
         # Pointers to Screen and experimental constants
         self.screen  = screen
@@ -34,12 +34,17 @@ class Task:
         self.code        = info['task_code']
         self.task_file = info['task_file']
         self.feedback_type = 'none'
+        self.same_files = const.same_files
+        self.subj_id = subj_id
 
     def init_task(self):
         """
         Initialize task - default is to read the target information into the trial_info dataframe
         """
-        self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file,sep='\t')
+        if self.same_files:
+            self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
+        else:
+            self.trial_info = pd.read_csv(self.const.task_dir / self.subj_id / self.task_file, sep='\t')
 
     def display_instructions(self):
         """
@@ -148,8 +153,8 @@ class Task:
 
 class NBack(Task):
 
-    def __init__(self, info, screen, ttl_clock, const):
-        super().__init__(info, screen, ttl_clock, const)
+    def __init__(self, info, screen, ttl_clock, const, subj_id):
+        super().__init__(info, screen, ttl_clock, const, subj_id)
         self.feedback_type = 'acc+rt'
 
     def init_task(self):
@@ -200,8 +205,8 @@ class NBack(Task):
         return trial
 
 class Rest(Task):
-    def __init__(self, info, screen, ttl_clock, const):
-        super().__init__(info, screen, ttl_clock, const)
+    def __init__(self, info, screen, ttl_clock, const, subj_id):
+        super().__init__(info, screen, ttl_clock, const, subj_id)
         self.name          = 'rest'
 
     def display_instructions(self): # overriding the display instruction routine from the parent
@@ -222,8 +227,8 @@ class Rest(Task):
         return trial
 
 class VerbGeneration(Task):
-    def __init__(self, info, screen, ttl_clock, const):
-        super().__init__(info, screen, ttl_clock, const)
+    def __init__(self, info, screen, ttl_clock, const, subj_id):
+        super().__init__(info, screen, ttl_clock, const, subj_id)
 
     def init_task(self):
         """ Initialize task-specific settings. """
@@ -271,8 +276,8 @@ class TongueMovement(Task):
     """
     Tongue movement following Buckner et al., 2022! No particular feedback.
     """
-    def __init__(self, info, screen, ttl_clock, const):
-        super().__init__(info, screen, ttl_clock, const)
+    def __init__(self, info, screen, ttl_clock, const, subj_id):
+        super().__init__(info, screen, ttl_clock, const, subj_id)
 
     def init_task(self):
         self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
@@ -306,8 +311,8 @@ class TongueMovement(Task):
         return trial
 
 class AuditoryNarrative(Task):
-    def __init__(self, info, screen, ttl_clock, const):
-        super().__init__(info, screen, ttl_clock, const)
+    def __init__(self, info, screen, ttl_clock, const, subj_id):
+        super().__init__(info, screen, ttl_clock, const, subj_id)
 
     def init_task(self):
         self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
@@ -336,8 +341,8 @@ class AuditoryNarrative(Task):
         return trial
 
 class RomanceMovie(Task):
-    def __init__(self, info, screen, ttl_clock, const):
-        super().__init__(info, screen, ttl_clock, const)
+    def __init__(self, info, screen, ttl_clock, const, subj_id):
+        super().__init__(info, screen, ttl_clock, const, subj_id)
         self.name = 'romance_movie'
 
     def display_instructions(self):
@@ -372,8 +377,8 @@ class RomanceMovie(Task):
         return trial
 
 class SpatialNavigation(Task):
-    def __init__(self, info, screen, ttl_clock, const):
-        super().__init__(info, screen, ttl_clock, const)
+    def __init__(self, info, screen, ttl_clock, const, subj_id):
+        super().__init__(info, screen, ttl_clock, const, subj_id)
 
     def init_task(self):
         self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
@@ -402,8 +407,8 @@ class SpatialNavigation(Task):
         return trial
 
 class TheoryOfMind(Task):
-    def __init__(self, info, screen, ttl_clock, const):
-        super().__init__(info, screen, ttl_clock, const)
+    def __init__(self, info, screen, ttl_clock, const, subj_id):
+        super().__init__(info, screen, ttl_clock, const, subj_id)
         self.feedback_type = 'acc+rt'
 
     def init_task(self):
@@ -451,8 +456,8 @@ class TheoryOfMind(Task):
         return trial
 
 class DegradedPassage(Task):
-    def __init__(self, info, screen, ttl_clock, const):
-        super().__init__(info, screen, ttl_clock, const)
+    def __init__(self, info, screen, ttl_clock, const, subj_id):
+        super().__init__(info, screen, ttl_clock, const, subj_id)
 
     def init_task(self):
         self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
@@ -482,8 +487,8 @@ class DegradedPassage(Task):
         return trial
 
 class IntactPassage(Task):
-    def __init__(self, info, screen, ttl_clock, const):
-        super().__init__(info, screen, ttl_clock, const)
+    def __init__(self, info, screen, ttl_clock, const, subj_id):
+        super().__init__(info, screen, ttl_clock, const, subj_id)
 
     def init_task(self):
         self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
@@ -513,8 +518,8 @@ class IntactPassage(Task):
         return trial
 
 class ActionObservation(Task):
-    def __init__(self, info, screen, ttl_clock, const):
-        super().__init__(info, screen, ttl_clock, const)
+    def __init__(self, info, screen, ttl_clock, const, subj_id):
+        super().__init__(info, screen, ttl_clock, const, subj_id)
 
     def display_instructions(self): # overriding the display instruction from the parent class
         self.instruction_text = f"{self.name} Task \n\n Keep your head still while watching the two clips. \n\n Try and remember the knot shown."
@@ -548,8 +553,8 @@ class ActionObservation(Task):
         return trial
 
 class DemandGrid(Task):
-    def __init__(self, info, screen, ttl_clock, const):
-        super().__init__(info, screen, ttl_clock, const)
+    def __init__(self, info, screen, ttl_clock, const, subj_id):
+        super().__init__(info, screen, ttl_clock, const, subj_id)
         self.grid_size = (3,4)
         self.square_size = 1.5
         self.feedback_type = 'acc+rt'
@@ -659,8 +664,8 @@ class DemandGrid(Task):
         return trial
 
 class SentenceReading(Task):
-    def __init__(self, info, screen, ttl_clock, const):
-        super().__init__(info, screen, ttl_clock, const)
+    def __init__(self, info, screen, ttl_clock, const, subj_id):
+        super().__init__(info, screen, ttl_clock, const, subj_id)
 
     def init_task(self):
         self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
@@ -701,8 +706,8 @@ class SentenceReading(Task):
         return trial
 
 class NonwordReading(Task):
-    def __init__(self, info, screen, ttl_clock, const):
-        super().__init__(info, screen, ttl_clock, const)
+    def __init__(self, info, screen, ttl_clock, const, subj_id):
+        super().__init__(info, screen, ttl_clock, const, subj_id)
 
     def init_task(self):
         self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
@@ -743,8 +748,8 @@ class NonwordReading(Task):
         return trial
 
 class OddBall(Task):
-    def __init__(self, info, screen, ttl_clock, const):
-        super().__init__(info, screen, ttl_clock, const)
+    def __init__(self, info, screen, ttl_clock, const, subj_id):
+        super().__init__(info, screen, ttl_clock, const, subj_id)
         self.feedback_type = 'acc+rt'
 
     def init_task(self):
@@ -810,8 +815,8 @@ class FingerSequence(Task):
     """
     Finger sequence taskck
     """
-    def __init__(self, info, screen, ttl_clock, const):
-        super().__init__(info, screen, ttl_clock, const)
+    def __init__(self, info, screen, ttl_clock, const, subj_id):
+        super().__init__(info, screen, ttl_clock, const, subj_id)
         self.feedback_type = 'acc+rt'
 
     def init_task(self):
@@ -907,8 +912,8 @@ class FlexionExtension(Task):
     """
     Flexion extension of toes! No particular feedback.
     """
-    def __init__(self, info, screen, ttl_clock, const):
-        super().__init__(info, screen, ttl_clock, const)
+    def __init__(self, info, screen, ttl_clock, const, subj_id):
+        super().__init__(info, screen, ttl_clock, const, subj_id)
         self.feedback_type = 'None'
 
     def init_task(self):

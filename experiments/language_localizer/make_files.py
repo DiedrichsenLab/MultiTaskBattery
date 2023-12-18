@@ -2,6 +2,7 @@
 import MultiTaskBattery.task_file as mt
 import MultiTaskBattery.utils as ut
 import constants as const
+import shutil
 
 """ This is an example script to make the run files and trial files for an experiment"""
 
@@ -16,6 +17,14 @@ full_tasks = ['demand_grid','theory_of_mind','verb_generation','degraded_passage
 # for the script to run, the conditional stuff needs to run and for the conditional stuff to run all tasks (full_tasks)need to be inside task_args)
 running_tasks = ['intact_passage','romance_movie']  # adjust this list as you like to test different combos
 
+# make 30 subject numbers
+subj_list = ['sub-01','sub-02','sub-03','sub-04','sub-05','sub-06','sub-07','sub-08','sub-09','sub-10',\
+             'sub-11','sub-12','sub-13','sub-14','sub-15','sub-16','sub-17','sub-18','sub-19','sub-20',\
+            'sub-21','sub-22','sub-23','sub-24','sub-25','sub-26','sub-27','sub-28','sub-29','sub-30']
+
+if const.training:
+    subj_list = ['']
+
 
 
 #  check if dirs for the tasks and runs exist, if not, make them
@@ -23,59 +32,80 @@ ut.dircheck(const.run_dir)
 for task in running_tasks:
     ut.dircheck(const.task_dir / task)
 
-for r in range(1,9):
-    valid_run_file = False    
-    while not valid_run_file: # this is necessary to make sure that the run files are valid (i.e. no auditory narrative adjacent to intact or degraded passage)
-        # making the run files
-        tfiles = [f'{task}_{r:02d}.tsv' for task in running_tasks]
-        T  = mt.make_run_file(running_tasks,tfiles)
-
-        tasks = T['task_name'].tolist()
-        valid_run_file = True
 
 
-        for i in range(len(tasks) - 1):
-            if tasks[i] == 'auditory_narrative' and tasks[i + 1] in ['intact_passage', 'degraded_passage']:
-                valid_run_file = False
-                break
-            if tasks[i + 1] == 'auditory_narrative' and tasks[i] in ['intact_passage', 'degraded_passage']:
-                valid_run_file = False
-                break
+for subj in subj_list:
+    for r in range(1,9):
+        valid_run_file = False    
+        while not valid_run_file: # this is necessary to make sure that the run files are valid (i.e. no auditory narrative adjacent to intact or degraded passage)
+            # making the run files
+            tfiles = [f'{task}_{r:02d}.tsv' for task in running_tasks]
+            T  = mt.make_run_file(running_tasks,tfiles)
 
-        if not valid_run_file:
-            print(f'Run {r} is not valid. Trying again...')
-        else:
-            print(f'Run {r} is valid. Saving run file...')
+            tasks = T['task_name'].tolist()
+            valid_run_file = True
 
-        if valid_run_file:
-            T.to_csv(const.run_dir / f'run_{r:02d}.tsv', sep='\t', index=False)
-            break  # Valid run file found, exit the while loop
+
+            for i in range(len(tasks) - 1):
+                if tasks[i] == 'auditory_narrative' and tasks[i + 1] in ['intact_passage', 'degraded_passage']:
+                    valid_run_file = False
+                    break
+                if tasks[i + 1] == 'auditory_narrative' and tasks[i] in ['intact_passage', 'degraded_passage']:
+                    valid_run_file = False
+                    break
+
+            if not valid_run_file:
+                print(f'Run {r} is not valid. Trying again...')
+            else:
+                print(f'Run {r} is valid. Saving run file...')
+
+            if valid_run_file:
+                T.to_csv(const.run_dir / f'run_{r:02d}.tsv', sep='\t', index=False)
+                break  # Valid run file found, exit the while loop
+            
+        # rewrite task args but with empty dict for all tasks
+        task_args = {task: {} for task in full_tasks}
         
-    # rewrite task args but with empty dict for all tasks
-    task_args = {task: {} for task in full_tasks}
+        # Define tasks that need run_number as an argument
+        for task in ['theory_of_mind', 'degraded_passage', 'intact_passage', 'action_observation', 'romance_movie', 'sentence_reading', 'nonword_reading', 'auditory_narrative', 'spatial_navigation']:
+            task_args[task].update({'run_number': r})
+        
+        # Define or update task specific arguments that depend on the run number (this is only for tasks that will require one hand presses)
+        if r % 2 == 0:
+            responses = [1, 2]
+        else:
+            responses = [3, 4]
+
+        for task in ['demand_grid', 'theory_of_mind', 'n_back', 'oddball']:
+            task_args[task].update({'responses': responses})
+
+
+        # This is specific to tasks that will require presses using both hand across runs
+        for task in ['finger_sequence']:
+            responses = [1, 2, 3, 4]
+            task_args[task].update({'responses': responses})
+
+
+        # for each of the runs, make task files
+        for task,tfile in zip(running_tasks, tfiles):
+            cl = mt.get_task_class(task)
+            myTask = getattr(mt,cl)(const)
+            myTask.make_task_file(file_name = tfile, **task_args.get(task, {}))
+
+
+    if not const.training:
+        # make folder for subject inside run_files and task_files
+        ut.dircheck(const.task_dir / subj)
+        ut.dircheck(const.run_dir / subj)
+
+        # copy the run files to the subject folder using custom code not ut.copy_files 
+        for r in range(1,9):
+            shutil.copy(const.run_dir / f'run_{r:02d}.tsv', const.run_dir / subj / f'run_{r:02d}.tsv')
+
+        # copy the task files to the subject folder using custom code not ut.copy_files
+        for task in running_tasks:
+            for r in range(1,9):
+                shutil.copy(const.task_dir / task / f'{task}_{r:02d}.tsv', const.task_dir / subj / f'{task}_{r:02d}.tsv')
+
+        
     
-    # Define tasks that need run_number as an argument
-    for task in ['theory_of_mind', 'degraded_passage', 'intact_passage', 'action_observation', 'romance_movie', 'sentence_reading', 'nonword_reading', 'auditory_narrative', 'spatial_navigation']:
-        task_args[task].update({'run_number': r})
-    
-    # Define or update task specific arguments that depend on the run number (this is only for tasks that will require one hand presses)
-    if r % 2 == 0:
-        responses = [1, 2]
-    else:
-        responses = [3, 4]
-
-    for task in ['demand_grid', 'theory_of_mind', 'n_back', 'oddball']:
-        task_args[task].update({'responses': responses})
-
-
-    # This is specific to tasks that will require presses using both hand across runs
-    for task in ['finger_sequence']:
-        responses = [1, 2, 3, 4]
-        task_args[task].update({'responses': responses})
-
-
-    # for each of the runs, make task files
-    for task,tfile in zip(running_tasks, tfiles):
-        cl = mt.get_task_class(task)
-        myTask = getattr(mt,cl)(const)
-        myTask.make_task_file(file_name = tfile, **task_args.get(task, {}))

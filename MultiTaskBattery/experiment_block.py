@@ -32,6 +32,8 @@ class Experiment:
         self.const = const
         self.ttl_clock = TTLClock()
         self.set_const_defaults()
+        self.same_files = const.same_files
+        self.training = const.training
 
         # open screen and display fixation cross
         ### set the resolution of the subject screen here:
@@ -99,7 +101,10 @@ class Experiment:
         """
 
         # 1. get the run file info: creates self.run_info
-        self.run_info = pd.read_csv(self.const.run_dir / self.run_filename,sep='\t')
+        if self.same_files:
+            self.run_info = pd.read_csv(self.const.run_dir / self.run_filename,sep='\t')
+        else:
+            self.run_info = pd.read_csv(self.const.run_dir / self.subj_id / self.run_filename,sep='\t')
 
         # 2. Initialize the all tasks that we need
         self.task_obj_list = [] # a list containing task objects in the run
@@ -112,14 +117,16 @@ class Experiment:
             Task_obj  = TaskClass(task_info,
                                  screen = self.screen,
                                  ttl_clock = self.ttl_clock,
-                                 const = self.const)
+                                 const = self.const,
+                                 subj_id = self.subj_id)
             Task_obj.init_task()
             self.task_obj_list.append(Task_obj)
-
-        # 3. make subject folder in data/raw/<subj_id>
-        subj_dir = self.const.data_dir / self.subj_id
-        ut.dircheck(subj_dir) # making sure the directory is created!
-        self.run_data_file = self.const.data_dir / self.subj_id / f"{self.subj_id}.tsv"
+        
+        if not self.training:
+            # 3. make subject folder in data/raw/<subj_id>
+            subj_dir = self.const.data_dir / self.subj_id
+            ut.dircheck(subj_dir) # making sure the directory is created!
+            self.run_data_file = self.const.data_dir / self.subj_id / f"{self.subj_id}.tsv"
 
 
     def run(self):
@@ -171,14 +178,16 @@ class Experiment:
             self.stop_eyetracker()
             self.tk.receiveDataFile(self.tk_filename, self.tk_filename)
 
-        # save the run data to the run file
-        run_data = pd.DataFrame(run_data)
-        run_data.insert(0,'run_num',[self.run_number]*len(run_data))
-        ut.append_data_to_file(self.run_data_file, run_data )
+        if not self.training:
+            # save the run data to the run file
+            run_data = pd.DataFrame(run_data)
+            run_data.insert(0,'run_num',[self.run_number]*len(run_data))
+            ut.append_data_to_file(self.run_data_file, run_data )
 
-        # Save the trial data for each task
-        for task in self.task_obj_list:
-            task.save_data(self.subj_id, self.run_number)
+        if not self.training:
+            # Save the trial data for each task
+            for task in self.task_obj_list:
+                task.save_data(self.subj_id, self.run_number)
 
         # show the scoreboard
         self.display_run_feedback(run_data)
