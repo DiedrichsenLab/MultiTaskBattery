@@ -77,6 +77,7 @@ class TaskFile():
         self.exp_name   = const.exp_name
         self.task_dir = const.task_dir
         self.stim_dir   = const.stim_dir
+        self.training = const.training
 
 class NBack(TaskFile):
     def __init__(self, const):
@@ -166,7 +167,10 @@ class VerbGeneration(TaskFile):
         n_trials = int(np.floor(task_dur / (trial_dur+iti_dur)))
         trial_info = []
 
-        sitm_file = self.stim_dir / 'verb_generation' / 'verb_generation.csv'
+        if self.training:
+            sitm_file = self.stim_dir / 'verb_generation' / 'training_verb_generation.csv'
+        else:
+            sitm_file = self.stim_dir / 'verb_generation' / 'verb_generation.csv'
 
         #shuffle the stimuli
         stim = pd.read_csv(sitm_file)
@@ -260,7 +264,10 @@ class AuditoryNarrative(TaskFile):
             trial['iti_dur'] = iti_dur
             trial['display_trial_feedback'] = False
             # Select the appropriate audio file
-            trial['stim'] = f'narrative_{run_number:02d}.wav'
+            if self.training:
+                trial['stim'] = f'training_narrative_{run_number:02d}.wav'
+            else:
+                trial['stim'] = f'narrative_{run_number:02d}.wav'
             trial['start_time'] = t
             trial['end_time'] = t + trial_dur + iti_dur
             trial_info.append(trial)
@@ -296,7 +303,10 @@ class RomanceMovie(TaskFile):
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
             trial['display_trial_feedback'] = False
-            trial['stim'] = f'{run_number:02d}_romance.mov'
+            if self.training:
+                trial['stim'] = f'training_{run_number:02d}_romance.mov'
+            else:
+                trial['stim'] = f'{run_number:02d}_romance.mov'
             trial['start_time'] = t
             trial['end_time'] = t + trial_dur + iti_dur
             trial_info.append(trial)
@@ -369,7 +379,10 @@ class TheoryOfMind(TaskFile):
         trial_info = []
         t = 0
 
-        stim_file = self.stim_dir / 'theory_of_mind' / 'theory_of_mind.csv'
+        if self.training:
+            stim_file = self.stim_dir / 'theory_of_mind' / 'training_theory_of_mind.csv'
+        else:
+            stim_file = self.stim_dir / 'theory_of_mind' / 'theory_of_mind.csv'
 
          # Read and slice the stimuli based on run number
         stim = pd.read_csv(stim_file)
@@ -432,7 +445,10 @@ class DegradedPassage(TaskFile):
             trial['display_trial_feedback'] = False
             # Select the appropriate audio file
             audio_file_num = (run_number - 1) * n_trials + n + 1
-            trial['stim'] = f'degraded_passage_{audio_file_num}.wav'
+            if self.training:
+                trial['stim'] = f'training_degraded_passage_{audio_file_num}.wav'
+            else:
+                trial['stim'] = f'degraded_passage_{audio_file_num}.wav'
             trial['start_time'] = t
             trial['end_time'] = t + trial_dur + iti_dur
             trial_info.append(trial)
@@ -470,7 +486,10 @@ class IntactPassage(TaskFile):
             trial['display_trial_feedback'] = False
             # Select the appropriate audio file
             audio_file_num = (run_number - 1) * n_trials + n + 1
-            trial['stim'] = f'intact_passage_{audio_file_num}.wav'
+            if self.training:
+                trial['stim'] = f'training_intact_passage_{audio_file_num}.wav'
+            else:
+                trial['stim'] = f'intact_passage_{audio_file_num}.wav'
             trial['start_time'] = t
             trial['end_time'] = t + trial_dur + iti_dur
             trial_info.append(trial)
@@ -488,17 +507,20 @@ class ActionObservation(TaskFile):
     def __init__(self, const):
         super().__init__(const)
         self.name = 'action_observation'
-        # good knot vids
-        self.knot_names = ['Adage', 
-                        'Brigand', 'Brocade', 'Casement',  'Cornice',\
-                         'Flora', 'Frontage', 'Gadfly', 'Garret', \
-                        'Mutton','Placard', 'Purser']
-        # Medium/bad knot vids
-        self.knot_names = [
+        if self.training:
+                # Medium/bad knot vids
+            self.knot_names = [
                             'Ampere', 'Arbor', 'Baron', 'Belfry', 'Bramble', 'Chamois', 'Coffer', 
                             'Farthing', 'Fissure', 'Gentry', 'Henchman', 'Magnate', 'Perry', 'Phial', 'Polka', 
                             'Rosin', 'Shilling', 'Simper', 'Spangle', 'Squire', 'Vestment', 'Wampum', 'Wicket'
                         ]
+        else:
+            # good knot vids
+            self.knot_names = ['Adage', 
+                            'Brigand', 'Brocade', 'Casement',  'Cornice',\
+                            'Flora', 'Frontage', 'Gadfly', 'Garret', \
+                            'Mutton','Placard', 'Purser']
+        
 
 
     def make_task_file(self,
@@ -649,8 +671,10 @@ class SentenceReading(TaskFile):
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
 
-
-        sitm_file = self.stim_dir / 'sentence_reading' / 'sentences_shuffled.csv'
+        if self.training:
+            sitm_file = self.stim_dir / 'sentence_reading' / 'training_sentences_shuffled.csv'
+        else:
+            sitm_file = self.stim_dir / 'sentence_reading' / 'sentences_shuffled.csv'
 
         df = pd.read_csv(sitm_file)
 
@@ -692,7 +716,10 @@ class NonwordReading(TaskFile):
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
 
-        sitm_file = self.stim_dir / 'nonword_reading' / 'nonwords_shuffled.csv'
+        if self.training:
+            sitm_file = self.stim_dir / 'nonword_reading' / 'training_nonwords_shuffled.csv'
+        else:
+            sitm_file = self.stim_dir / 'nonword_reading' / 'nonwords_shuffled.csv'
 
         df = pd.read_csv(sitm_file)
 
