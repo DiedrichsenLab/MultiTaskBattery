@@ -15,14 +15,14 @@ full_tasks = ['demand_grid','theory_of_mind','verb_generation','degraded_passage
 # this is a list of the tasks running while debugging and testing different combos and will be used when the final combo is ready (having both this list and the above
 #is necessary because I have the task_args list defined first then I am putting conditional statements for specific arguments,
 # for the script to run, the conditional stuff needs to run and for the conditional stuff to run all tasks (full_tasks)need to be inside task_args)
-running_tasks = ['intact_passage','romance_movie']  # adjust this list as you like to test different combos
+running_tasks = ['theory_of_mind','n_back']  # adjust this list as you like to test different combos
 
 # make 30 subject numbers
 subj_list = ['sub-01','sub-02','sub-03','sub-04','sub-05','sub-06','sub-07','sub-08','sub-09','sub-10',\
              'sub-11','sub-12','sub-13','sub-14','sub-15','sub-16','sub-17','sub-18','sub-19','sub-20',\
             'sub-21','sub-22','sub-23','sub-24','sub-25','sub-26','sub-27','sub-28','sub-29','sub-30']
 
-if const.training:
+if const.same_files:
     subj_list = ['']
 
 
@@ -94,9 +94,10 @@ for subj in subj_list:
 
 
     if not const.training:
+        for task in running_tasks:
         # make folder for subject inside run_files and task_files
-        ut.dircheck(const.task_dir / subj)
-        ut.dircheck(const.run_dir / subj)
+            ut.dircheck(const.task_dir / subj/ task)
+            ut.dircheck(const.run_dir / subj)
 
         # copy the run files to the subject folder using custom code not ut.copy_files 
         for r in range(1,9):
@@ -105,7 +106,7 @@ for subj in subj_list:
         # copy the task files to the subject folder using custom code not ut.copy_files
         for task in running_tasks:
             for r in range(1,9):
-                shutil.copy(const.task_dir / task / f'{task}_{r:02d}.tsv', const.task_dir / subj / f'{task}_{r:02d}.tsv')
+                shutil.copy(const.task_dir / task / f'{task}_{r:02d}.tsv', const.task_dir / subj / task / f'{task}_{r:02d}.tsv')
 
         
     

@@ -36,7 +36,7 @@ same_files = True                                      # set to True if you want
 
 # Screen settings for subject display
 screen = {}
-screen['size'] = [1100, 800]                             # screen resolution
+screen['size'] = [1500, 1000]                             # screen resolution
 screen['fullscr'] = False                               # full screen?
 screen['number'] = 1                                    # 0 = main display, 1 = secondary display
 
