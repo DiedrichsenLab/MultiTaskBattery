@@ -178,9 +178,9 @@ class Experiment:
             self.stop_eyetracker()
             self.tk.receiveDataFile(self.tk_filename, self.tk_filename)
 
+        run_data = pd.DataFrame(run_data)
         if not self.training:
             # save the run data to the run file
-            run_data = pd.DataFrame(run_data)
             run_data.insert(0,'run_num',[self.run_number]*len(run_data))
             ut.append_data_to_file(self.run_data_file, run_data )
 
