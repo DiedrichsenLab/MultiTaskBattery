@@ -44,7 +44,7 @@ class Task:
         if self.same_files:
             self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
         else:
-            self.trial_info = pd.read_csv(self.const.task_dir / self.subj_id / self.task_file, sep='\t')
+            self.trial_info = pd.read_csv(self.const.task_dir / self.subj_id / self.name / self.task_file, sep='\t')
 
     def display_instructions(self):
         """
