@@ -29,7 +29,7 @@ eye_tracker = False                                     # do you want to do  eye
 debug = False                                           # set to True for debugging
 
 # Making real files or mock training files?
-training = False                                        # set to True for training
+training = True                                        # set to True for training
 
 # Screen settings for subject display
 screen = {}
