@@ -6,9 +6,7 @@ import numpy as np
 """ This is an example script to make the run files and trial files for an experiment"""
 
 tasks = [
-'theory_of_mind','verb_generation','degraded_passage','intact_passage',\
-         'action_observation','rest','n_back','romance_movie','sentence_reading','nonword_reading','oddball',\
-        'auditory_narrative','tongue_movement','spatial_navigation']
+'oddball','demand_grid','finger_sequence','n_back']
 
 #  check if dirs for the tasks and runs exist, if not, make them
 ut.dircheck(const.run_dir)
@@ -24,5 +22,5 @@ for r in range(1,9):
     for task,tfile in zip(tasks, tfiles):
         cl = mt.get_task_class(task)
         myTask = getattr(mt,cl)(const)
-        myTask.make_task_file(file_name = tfile, run_number=r)
+        myTask.make_task_file(file_name = tfile)
 
