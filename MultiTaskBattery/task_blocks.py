@@ -42,9 +42,11 @@ class Task:
         Initialize task - default is to read the target information into the trial_info dataframe
         """
         if self.same_files:
-            self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
+            trial_info_file = self.const.task_dir / self.name / self.task_file
         else:
-            self.trial_info = pd.read_csv(self.const.task_dir / self.subj_id / self.name / self.task_file, sep='\t')
+            trial_info_file = self.const.task_dir / self.subj_id / self.name / self.task_file
+
+        self.trial_info = pd.read_csv(trial_info_file, sep='\t')
 
     def display_instructions(self):
         """
@@ -158,14 +160,23 @@ class NBack(Task):
         self.feedback_type = 'acc+rt'
 
     def init_task(self):
-        """Read the target file and get all the stimuli necessary"""
-        self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file,sep='\t')
-        # Use the response assignment from 1st trial as the response assignment for the whole run
-        self.corr_key = [self.trial_info['key_nomatch'].iloc[0],self.trial_info['key_match'].iloc[0]]
+        """
+        Initialize task - default is to read the target information into the trial_info dataframe
+        """
+        if self.same_files:
+            trial_info_file = self.const.task_dir / self.name / self.task_file
+        else:
+            trial_info_file = self.const.task_dir / self.subj_id / self.name / self.task_file
+
+        self.trial_info = pd.read_csv(trial_info_file, sep='\t')
         self.stim=[]
         for stim in self.trial_info['stim']:
             stim_path = self.const.stim_dir / self.name / stim
             self.stim.append(visual.ImageStim(self.window, str(stim_path)))
+
+        self.corr_key = [self.trial_info['key_nomatch'].iloc[0],self.trial_info['key_match'].iloc[0]]
+
+
 
     def display_instructions(self):
         """
@@ -189,6 +200,7 @@ class NBack(Task):
             trial (pd.Series):
                 Row of trial_data with all response data added
         """
+
         # Flush any keys in buffer
         event.clearEvents()
 
@@ -231,8 +243,15 @@ class VerbGeneration(Task):
         super().__init__(info, screen, ttl_clock, const, subj_id)
 
     def init_task(self):
-        """ Initialize task-specific settings. """
-        self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
+        """
+        Initialize task - default is to read the target information into the trial_info dataframe
+        """
+        if self.same_files:
+            trial_info_file = self.const.task_dir / self.name / self.task_file
+        else:
+            trial_info_file = self.const.task_dir / self.subj_id / self.name / self.task_file
+
+        self.trial_info = pd.read_csv(trial_info_file, sep='\t')
         self.trial_info['noun'] = self.trial_info['stim'].str.strip()
 
     def display_instructions(self): # overriding the display instruction from the parent class
@@ -279,9 +298,6 @@ class TongueMovement(Task):
     def __init__(self, info, screen, ttl_clock, const, subj_id):
         super().__init__(info, screen, ttl_clock, const, subj_id)
 
-    def init_task(self):
-        self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
-
     def display_instructions(self):
         self.instruction_text = f"{self.name} task \n\n Move your tongue left to right touching your upper premolar teeth"
         instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
@@ -297,7 +313,7 @@ class TongueMovement(Task):
         # Check the trial_type and display the corresponding stimulus
         if trial['trial_type'] == 'right':
             # If trial_type is 'right', show the black circle around the fixation cross
-            circle_visual = visual.Circle(self.window, radius=1, edges= 100, lineWidth = 20, fillColor=None, lineColor='black')
+            circle_visual = visual.Circle(self.window, radius=3, edges= 100, lineWidth = 20, fillColor=None, lineColor='black')
             circle_visual.draw()
 
         self.window.flip()
@@ -313,9 +329,6 @@ class TongueMovement(Task):
 class AuditoryNarrative(Task):
     def __init__(self, info, screen, ttl_clock, const, subj_id):
         super().__init__(info, screen, ttl_clock, const, subj_id)
-
-    def init_task(self):
-        self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
 
     def display_instructions(self):
         self.instruction_text = f'{self.name} Task\n\nListen to the narrative attentively.'
@@ -380,8 +393,6 @@ class SpatialNavigation(Task):
     def __init__(self, info, screen, ttl_clock, const, subj_id):
         super().__init__(info, screen, ttl_clock, const, subj_id)
 
-    def init_task(self):
-        self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
 
     def display_instructions(self):
         start_location = self.trial_info.iloc[0]['location_1']
@@ -412,10 +423,19 @@ class TheoryOfMind(Task):
         self.feedback_type = 'acc+rt'
 
     def init_task(self):
-        """ Initialize task - read the target information into the trial_info dataframe """
-        self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
+        """
+        Initialize task - default is to read the target information into the trial_info dataframe
+        """
+        if self.same_files:
+            trial_info_file = self.const.task_dir / self.name / self.task_file
+        else:
+            trial_info_file = self.const.task_dir / self.subj_id / self.name / self.task_file
+
+        self.trial_info = pd.read_csv(trial_info_file, sep='\t')
+
         self.corr_key = [self.trial_info['key_false'].iloc[0],self.trial_info['key_true'].iloc[0]]
 
+        
     def display_instructions(self):
         """
         displays the instruction for the task
@@ -430,6 +450,7 @@ class TheoryOfMind(Task):
 
     def run_trial(self, trial):
         """ Runs a single trial of the Theory of Mind task """
+
         event.clearEvents()
 
         # Display story
@@ -461,9 +482,6 @@ class DegradedPassage(Task):
     def __init__(self, info, screen, ttl_clock, const, subj_id):
         super().__init__(info, screen, ttl_clock, const, subj_id)
 
-    def init_task(self):
-        self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
-
     def display_instructions(self):
         self.instruction_text = f'{self.name} Task \n\nListen to the audio attentively.'
         instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
@@ -491,9 +509,6 @@ class DegradedPassage(Task):
 class IntactPassage(Task):
     def __init__(self, info, screen, ttl_clock, const, subj_id):
         super().__init__(info, screen, ttl_clock, const, subj_id)
-
-    def init_task(self):
-        self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
 
     def display_instructions(self):
         self.instruction_text = f'{self.name} Task \n\nListen to the audio attentively.'
@@ -562,9 +577,17 @@ class DemandGrid(Task):
         self.feedback_type = 'acc+rt'
 
     def init_task(self):
-        """Read the target file and get all the stimuli necessary"""
-        self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
+        """
+        Initialize task - default is to read the target information into the trial_info dataframe
+        """
+        if self.same_files:
+            trial_info_file = self.const.task_dir / self.name / self.task_file
+        else:
+            trial_info_file = self.const.task_dir / self.subj_id / self.name / self.task_file
+
+        self.trial_info = pd.read_csv(trial_info_file, sep='\t')
         self.corr_key = [self.trial_info['key_left'].iloc[0],self.trial_info['key_right'].iloc[0]]
+
 
 
     def display_instructions(self):
@@ -618,7 +641,6 @@ class DemandGrid(Task):
 
     def run_trial(self, trial):
         """Runs a single trial of the DemandGrid task with two boxes lighting up at a time"""
-
         # Draw the entire grid in its initial state
         self.grid = self.create_grid()
         self.window.flip()
@@ -672,9 +694,6 @@ class SentenceReading(Task):
     def __init__(self, info, screen, ttl_clock, const, subj_id):
         super().__init__(info, screen, ttl_clock, const, subj_id)
 
-    def init_task(self):
-        self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
-
     def display_instructions(self):
         self.instruction_text = f'{self.name} Task \n\n Read each English word and press a button when the image of a hand pressing a button is displayed'
         instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
@@ -713,9 +732,6 @@ class SentenceReading(Task):
 class NonwordReading(Task):
     def __init__(self, info, screen, ttl_clock, const, subj_id):
         super().__init__(info, screen, ttl_clock, const, subj_id)
-
-    def init_task(self):
-        self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
 
     def display_instructions(self):
         self.instruction_text = f'{self.name} Task \n\n Read each nonword word and press a button when the image of a hand pressing a button is displayed'
@@ -758,14 +774,16 @@ class OddBall(Task):
         self.feedback_type = 'acc+rt'
 
     def init_task(self):
-        self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
-        self.corr_key = [self.trial_info['key_one'].iloc[0],self.trial_info['key_two'].iloc[0]]
+        """
+        Initialize task - default is to read the target information into the trial_info dataframe
+        """
+        if self.same_files:
+            trial_info_file = self.const.task_dir / self.name / self.task_file
+        else:
+            trial_info_file = self.const.task_dir / self.subj_id / self.name / self.task_file
 
-    def display_instructions(self):
-        self.instruction_text = f'{self.name} Task \n\n Press the button with your index finger when you see a red K'
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
-        instr_visual.draw()
-        self.window.flip()
+        self.trial_info = pd.read_csv(trial_info_file, sep='\t')  
+        self.corr_key = [self.trial_info['key_one'].iloc[0],self.trial_info['key_two'].iloc[0]]  
 
     def display_instructions(self):
         """
@@ -828,8 +846,17 @@ class FingerSequence(Task):
         self.feedback_type = 'acc+rt'
 
     def init_task(self):
-        self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
+        """
+        Initialize task - default is to read the target information into the trial_info dataframe
+        """
+        if self.same_files:
+            trial_info_file = self.const.task_dir / self.name / self.task_file
+        else:
+            trial_info_file = self.const.task_dir / self.subj_id / self.name / self.task_file
+
+        self.trial_info = pd.read_csv(trial_info_file, sep='\t')
         self.corr_key = [self.trial_info['key_one'].iloc[0],self.trial_info['key_two'].iloc[0],self.trial_info['key_three'].iloc[0],self.trial_info['key_four'].iloc[0]]
+
 
     def display_instructions(self):
         self.instruction_text = f"{self.name} task \n\n Using your four fingers, press the keys in the order shown on the screen\n Use all four fingers for this task"
@@ -840,7 +867,6 @@ class FingerSequence(Task):
 
     def run_trial(self, trial):
         """ Run a single trial of the finger sequence task. """
-
         #clear buffer
         event.clearEvents()
 
@@ -909,7 +935,10 @@ class FingerSequence(Task):
             trial['correct'] = True
 
         # calculate mean rt across presses
-        trial['rt'] = np.mean(rt_list)
+        if len(rt_list)>0:
+            trial['rt'] = np.mean(rt_list)
+        else:
+            trial['rt'] = np.nan
 
         # display trial feedback
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
