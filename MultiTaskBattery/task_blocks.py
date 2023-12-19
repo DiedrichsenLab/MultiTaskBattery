@@ -34,19 +34,12 @@ class Task:
         self.code        = info['task_code']
         self.task_file = info['task_file']
         self.feedback_type = 'none'
-        self.same_files = const.same_files
-        self.subj_id = subj_id
 
     def init_task(self):
         """
         Initialize task - default is to read the target information into the trial_info dataframe
         """
-        if self.same_files:
-            trial_info_file = self.const.task_dir / self.name / self.task_file
-        else:
-            trial_info_file = self.const.task_dir / self.subj_id / self.name / self.task_file
-
-        self.trial_info = pd.read_csv(trial_info_file, sep='\t')
+        self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
 
     def display_instructions(self):
         """
@@ -163,17 +156,12 @@ class NBack(Task):
         """
         Initialize task - default is to read the target information into the trial_info dataframe
         """
-        if self.same_files:
-            trial_info_file = self.const.task_dir / self.name / self.task_file
-        else:
-            trial_info_file = self.const.task_dir / self.subj_id / self.name / self.task_file
-
+        trial_info_file = self.const.task_dir / self.name / self.task_file
         self.trial_info = pd.read_csv(trial_info_file, sep='\t')
         self.stim=[]
         for stim in self.trial_info['stim']:
             stim_path = self.const.stim_dir / self.name / stim
             self.stim.append(visual.ImageStim(self.window, str(stim_path)))
-
         self.corr_key = [self.trial_info['key_nomatch'].iloc[0],self.trial_info['key_match'].iloc[0]]
 
 
@@ -246,11 +234,7 @@ class VerbGeneration(Task):
         """
         Initialize task - default is to read the target information into the trial_info dataframe
         """
-        if self.same_files:
-            trial_info_file = self.const.task_dir / self.name / self.task_file
-        else:
-            trial_info_file = self.const.task_dir / self.subj_id / self.name / self.task_file
-
+        trial_info_file = self.const.task_dir / self.name / self.task_file
         self.trial_info = pd.read_csv(trial_info_file, sep='\t')
         self.trial_info['noun'] = self.trial_info['stim'].str.strip()
 
@@ -426,13 +410,7 @@ class TheoryOfMind(Task):
         """
         Initialize task - default is to read the target information into the trial_info dataframe
         """
-        if self.same_files:
-            trial_info_file = self.const.task_dir / self.name / self.task_file
-        else:
-            trial_info_file = self.const.task_dir / self.subj_id / self.name / self.task_file
-
-        self.trial_info = pd.read_csv(trial_info_file, sep='\t')
-
+        self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
         self.corr_key = [self.trial_info['key_false'].iloc[0],self.trial_info['key_true'].iloc[0]]
 
         
@@ -580,11 +558,7 @@ class DemandGrid(Task):
         """
         Initialize task - default is to read the target information into the trial_info dataframe
         """
-        if self.same_files:
-            trial_info_file = self.const.task_dir / self.name / self.task_file
-        else:
-            trial_info_file = self.const.task_dir / self.subj_id / self.name / self.task_file
-
+        trial_info_file = self.const.task_dir / self.name / self.task_file
         self.trial_info = pd.read_csv(trial_info_file, sep='\t')
         self.corr_key = [self.trial_info['key_left'].iloc[0],self.trial_info['key_right'].iloc[0]]
 
@@ -777,11 +751,7 @@ class OddBall(Task):
         """
         Initialize task - default is to read the target information into the trial_info dataframe
         """
-        if self.same_files:
-            trial_info_file = self.const.task_dir / self.name / self.task_file
-        else:
-            trial_info_file = self.const.task_dir / self.subj_id / self.name / self.task_file
-
+        trial_info_file = self.const.task_dir / self.name / self.task_file
         self.trial_info = pd.read_csv(trial_info_file, sep='\t')  
         self.corr_key = [self.trial_info['key_one'].iloc[0],self.trial_info['key_two'].iloc[0]]  
 
@@ -849,11 +819,7 @@ class FingerSequence(Task):
         """
         Initialize task - default is to read the target information into the trial_info dataframe
         """
-        if self.same_files:
-            trial_info_file = self.const.task_dir / self.name / self.task_file
-        else:
-            trial_info_file = self.const.task_dir / self.subj_id / self.name / self.task_file
-
+        trial_info_file = self.const.task_dir / self.name / self.task_file
         self.trial_info = pd.read_csv(trial_info_file, sep='\t')
         self.corr_key = [self.trial_info['key_one'].iloc[0],self.trial_info['key_two'].iloc[0],self.trial_info['key_three'].iloc[0],self.trial_info['key_four'].iloc[0]]
 

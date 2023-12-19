@@ -26,9 +26,6 @@ eye_tracker = False                                     # do you want to do  eye
 # Running in debug mode?
 debug = False                                           # set to True for debugging
 
-# Making real files or mock training files?
-training = False                                        # set to True for training
-
 # Screen settings for subject display
 screen = {}
 screen['size'] = [1100, 800]                             # screen resolution
