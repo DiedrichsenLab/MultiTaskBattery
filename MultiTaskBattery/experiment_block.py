@@ -12,7 +12,6 @@ from MultiTaskBattery.ttl_clock import TTLClock
 from MultiTaskBattery.screen import Screen
 # import pylink as pl # to connect to eyelink
 
-
 class Experiment:
     """
     A general class with attributes common to experiments
