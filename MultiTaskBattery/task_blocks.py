@@ -830,33 +830,6 @@ class FingerSequence(Task):
         instr_visual.draw()
         self.window.flip()
 
-    def run(self):
-        """Loop over trials and collects data
-        Data will br stored in self.trial_data
-
-        Returns:
-            info (pd.DataFrame): _description_
-        """
-        self.trial_data = [] # an empty list which will be appended with the responses from each trial
-
-        for i,trial in self.trial_info.iterrows():
-            t_data = trial.copy()
-            # Wait for the the start of next trial
-            t_data['real_start_time'],t_data['start_ttl'],t_data['start_ttl_time'] = self.ttl_clock.wait_until(self.start_time + trial.start_time )
-            # Run the trial
-            t_data = self.run_trial(t_data)
-            # Append the trial data
-            self.trial_data.append(t_data)
-        self.trial_data = pd.DataFrame(self.trial_data)
-        # Calculate the feedback for the run
-        acc = None
-        rt = None
-        if self.feedback_type[:3] == 'acc':
-            acc = self.trial_data['correct_presses'].mean()
-        if self.feedback_type[-2:] == 'rt':
-            rt = self.trial_data['rt'].mean()
-        return acc,rt
-
 
     def run_trial(self, trial):
         """ Run a single trial of the finger sequence task. """
@@ -883,12 +856,12 @@ class FingerSequence(Task):
         sequence_start_time = self.ttl_clock.get_time() # Needed for knowing when to stop looking for key presses
         digit_start_time = sequence_start_time # Updated with each key press for calculating RT
 
-        rt_list = []
-        response_list = [] # List of booleans indicating whether each press was correct needed for overall trial accuracy
-
+        rt_list = np.full(num_items,np.nan)
+        correct_list = np.zeros((num_items,)) # List of booleans indicating whether each press was correct needed for overall trial accuracy
+        num_presses =0
         # Initialize the color for each digit in the sequence as black
         digit_colors = ['black'] * num_items
-        while self.ttl_clock.get_time() - sequence_start_time < trial['trial_dur'] and len(response_list) < len(sequence):
+        while self.ttl_clock.get_time() - sequence_start_time < trial['trial_dur'] and num_presses < num_items:
             self.ttl_clock.update()
 
             keys = event.getKeys(keyList=self.const.response_keys, timeStamped=self.ttl_clock.clock)
@@ -896,19 +869,16 @@ class FingerSequence(Task):
                 key_char, key_press_time = keys[0]
                 key = self.const.response_keys.index(key_char) + 1
                 rt = key_press_time - digit_start_time
-                rt_list.append(rt)
+                rt_list[num_presses]=rt
                 digit_start_time = key_press_time
 
-                # Determine the press iteration based on the length of the response list
-                press_iteration = len(response_list)
-
                 # Check if key pressed is correct
-                is_correct = key == int(sequence[press_iteration])
-                response_list.append(is_correct)
-
+                correct_list[num_presses] = key == int(sequence[num_presses])
+ 
                 # Update color based on correctness
-                digit_colors[press_iteration] = 'green' if is_correct else 'red'
+                digit_colors[num_presses] = 'green' if correct_list[num_presses] else 'red'
 
+                num_presses += 1
             # Draw all digits with their adjusted colors
             for i, (number, color) in enumerate(zip(sequence, digit_colors)):
                 pos = (start_x + i * spacing, 0.0)
@@ -922,25 +892,16 @@ class FingerSequence(Task):
             self.ttl_clock.wait_until(sequence_start_time + trial['trial_dur'])
 
         # if any press is wrong trial['correct'] needs to be false, this is for post trial feedback
-        if False in response_list or len(response_list) < len(sequence):
-            trial['correct'] = False
-        else:
-            trial['correct'] = True
-
-        if len(response_list)>0:
-            # now for each trial calculate number of correct presses over total presses, used in post run feedback
-            trial['correct_presses'] = sum(response_list)/len(response_list)
-        else:
-            trial['correct_presses'] = 0
+        trial['correct'] = correct_list.sum()/num_items
 
         # calculate mean rt across presses
-        if len(rt_list)>0:
-            trial['rt'] = np.mean(rt_list)
-        else:
+        try:
+            trial['rt'] = np.nanmean(rt_list)
+        except RuntimeWarning:
             trial['rt'] = np.nan
-
+ 
         # display trial feedback (for whole trial)
-        self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
+        self.display_trial_feedback(trial['display_trial_feedback'], trial['correct']== 1)
 
         return trial
                            

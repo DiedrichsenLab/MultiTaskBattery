@@ -10,7 +10,8 @@ import MultiTaskBattery as mtb
 exp_name = 'language_localizer'
 
 # Response key assignment:
-response_keys    = ['a', 's', 'd', 'f']
+# response_keys    = ['y', 'g', 'r', 'm'] # scanner keys
+response_keys    = ['a', 's', 'k', 'l'] # behavioral keys keys
 response_fingers = ['Pinky', 'Ring','Middle', 'Index']
 
 # Directory definitions for experiment
