@@ -164,6 +164,10 @@ class Experiment:
             r_data['real_end_time'] = self.ttl_clock.get_time()
             run_data.append(r_data)
 
+            # If last task wait until the end of the trial before showing fixation cross
+            if t_num == len(self.task_obj_list)-1:
+                self.ttl_clock.wait_until(task.start_time + task.trial_info.end_time.max())
+
         # Wait for the last end time of run
         self.screen.fixation_cross()
         self.ttl_clock.wait_until(r_data.end_time)
