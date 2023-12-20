@@ -830,6 +830,33 @@ class FingerSequence(Task):
         instr_visual.draw()
         self.window.flip()
 
+    def run(self):
+        """Loop over trials and collects data
+        Data will br stored in self.trial_data
+
+        Returns:
+            info (pd.DataFrame): _description_
+        """
+        self.trial_data = [] # an empty list which will be appended with the responses from each trial
+
+        for i,trial in self.trial_info.iterrows():
+            t_data = trial.copy()
+            # Wait for the the start of next trial
+            t_data['real_start_time'],t_data['start_ttl'],t_data['start_ttl_time'] = self.ttl_clock.wait_until(self.start_time + trial.start_time )
+            # Run the trial
+            t_data = self.run_trial(t_data)
+            # Append the trial data
+            self.trial_data.append(t_data)
+        self.trial_data = pd.DataFrame(self.trial_data)
+        # Calculate the feedback for the run
+        acc = None
+        rt = None
+        if self.feedback_type[:3] == 'acc':
+            acc = self.trial_data['correct_presses'].mean()
+        if self.feedback_type[-2:] == 'rt':
+            rt = self.trial_data['rt'].mean()
+        return acc,rt
+
 
     def run_trial(self, trial):
         """ Run a single trial of the finger sequence task. """
@@ -894,11 +921,14 @@ class FingerSequence(Task):
             # If the sequence is completed, wait until the end of the trial
             self.ttl_clock.wait_until(sequence_start_time + trial['trial_dur'])
 
-        # if any press is wrong trial['correct'] needs to be false
+        # if any press is wrong trial['correct'] needs to be false, this is for post trial feedback
         if False in response_list or len(response_list) < len(sequence):
             trial['correct'] = False
         else:
             trial['correct'] = True
+
+        # now for each trial calculate number of correct presses over total presses, used in post run feedback
+        trial['correct_presses'] = sum(response_list)/len(response_list)
 
         # calculate mean rt across presses
         if len(rt_list)>0:
@@ -906,7 +936,7 @@ class FingerSequence(Task):
         else:
             trial['rt'] = np.nan
 
-        # display trial feedback
+        # display trial feedback (for whole trial)
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
 
         return trial
