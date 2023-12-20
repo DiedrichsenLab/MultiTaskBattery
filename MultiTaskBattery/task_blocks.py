@@ -927,8 +927,11 @@ class FingerSequence(Task):
         else:
             trial['correct'] = True
 
-        # now for each trial calculate number of correct presses over total presses, used in post run feedback
-        trial['correct_presses'] = sum(response_list)/len(response_list)
+        if len(response_list)>0:
+            # now for each trial calculate number of correct presses over total presses, used in post run feedback
+            trial['correct_presses'] = sum(response_list)/len(response_list)
+        else:
+            trial['correct_presses'] = 0
 
         # calculate mean rt across presses
         if len(rt_list)>0:
