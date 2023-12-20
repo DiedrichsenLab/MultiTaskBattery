@@ -606,6 +606,8 @@ class DemandGrid(TaskFile):
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
 
+        t = 0
+
         for n in range(n_trials):
             trial = {}
             trial['key_left'] = responses[0]
@@ -625,9 +627,12 @@ class DemandGrid(TaskFile):
             trial['sequence_dur'] = sequence_dur
             trial['question_dur'] = question_dur
             trial['iti_dur'] = iti_dur
-            trial['start_time'] = n * (trial_dur + iti_dur)
-            trial['end_time'] = trial['start_time'] + trial_dur
+            trial['start_time'] = t
+            trial['end_time'] = t + trial_dur + iti_dur
             trial_info.append(trial)
+
+            # Update for next trial:
+            t = trial['end_time']
 
         trial_info = pd.DataFrame(trial_info)
         if file_name is not None:
