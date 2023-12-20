@@ -157,20 +157,23 @@ class VerbGeneration(TaskFile):
     def __init__(self, const):
         super().__init__(const)
         self.name = 'verb_generation'
+        
 
     def make_task_file(self,
                         task_dur =  30,
                         trial_dur = 2,
                         iti_dur   = 0.5,
-                        file_name = None):
+                        file_name = None,
+                        stim_file = None):
         n_trials = int(np.floor(task_dur / (trial_dur+iti_dur)))
         trial_info = []
 
-        sitm_file = self.stim_dir / 'verb_generation' / 'verb_generation.csv'
-
-        #shuffle the stimuli
-        stim = pd.read_csv(sitm_file)
-        stim = stim.sample(frac=1, random_state= 1).reset_index(drop=True)
+        if stim_file:
+            stim = pd.read_csv(stim_file)
+        else:
+            stim = pd.read_csv(self.stim_dir / 'verb_generation' / 'verb_generation.csv')
+        
+        stim = stim.sample(frac=1).reset_index(drop=True)
 
         t = 0
 
@@ -361,14 +364,18 @@ class TheoryOfMind(TaskFile):
                         trial_dur=14,
                         iti_dur=1, 
                         story_dur=10,
-                        question_dur=4, file_name=None):
+                        question_dur=4, file_name=None
+                        , stim_file=None):
 
         # count number of trials
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
         t = 0
 
-        stim_file = self.stim_dir / 'theory_of_mind' / 'theory_of_mind.csv'
+        if stim_file:
+            stim = pd.read_csv(stim_file)
+        else:
+            stim = pd.read_csv(self.stim_dir / 'theory_of_mind' / 'theory_of_mind.csv')
 
         # Read and slice the stimuli based on run number
         stim = pd.read_csv(stim_file)
@@ -495,17 +502,21 @@ class ActionObservation(TaskFile):
         #             ]
 
         # good knot vids
-        self.knot_names = ['Adage', 
-                        'Brigand', 'Brocade', 'Casement',  'Cornice',\
-                        'Flora', 'Frontage', 'Gadfly', 'Garret', \
-                        'Mutton','Placard', 'Purser']
+        # self.knot_names = ['Adage', 
+        #                 'Brigand', 'Brocade', 'Casement',  'Cornice',\
+        #                 'Flora', 'Frontage', 'Gadfly', 'Garret', \
+        #                 'Mutton','Placard', 'Purser']
 
     def make_task_file(self,
                         run_number = None,
                         task_dur=30,
                         trial_dur=14,
                         iti_dur=1,
-                        file_name=None):
+                        file_name=None,
+                        knot_names = ['Adage', 
+                        'Brigand', 'Brocade', 'Casement',  'Cornice',\
+                        'Flora', 'Frontage', 'Gadfly', 'Garret', \
+                        'Mutton','Placard', 'Purser']):
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
 
@@ -520,9 +531,9 @@ class ActionObservation(TaskFile):
             trial['display_trial_feedback'] = False
             knot_index = (run_number - 1)
             if n == 0:
-                trial['stim'] = f'knotAction{self.knot_names[knot_index]}.mov'
+                trial['stim'] = f'knotAction{knot_names[knot_index]}.mov'
             else:
-                trial['stim'] = f'knotControl{self.knot_names[knot_index]}.mov'
+                trial['stim'] = f'knotControl{knot_names[knot_index]}.mov'
             trial['start_time'] = t
             trial['end_time'] = t + trial_dur + iti_dur
             trial_info.append(trial)
@@ -649,13 +660,15 @@ class SentenceReading(TaskFile):
                         task_dur=30,
                         trial_dur=5.8,
                         iti_dur=0.2,
-                        file_name=None):
+                        file_name=None,
+                        stim_file=None):
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
 
-        sitm_file = self.stim_dir / 'sentence_reading' / 'sentences_shuffled.csv'
-
-        df = pd.read_csv(sitm_file)
+        if stim_file:
+            stim = pd.read_csv(stim_file)
+        else:
+            stim = pd.read_csv(self.stim_dir / 'sentence_reading' / 'sentences_shuffled.csv')
 
         t = 0
 
@@ -666,7 +679,7 @@ class SentenceReading(TaskFile):
             trial['iti_dur'] = iti_dur
             trial['display_trial_feedback'] = False
             sentence_index = (run_number - 1) * n_trials + n
-            trial['stim'] = df['sentence'][sentence_index]
+            trial['stim'] = stim['sentence'][sentence_index]
             trial['start_time'] = t
             trial['end_time'] = t + trial_dur + iti_dur
             trial_info.append(trial)
@@ -690,14 +703,16 @@ class NonwordReading(TaskFile):
                         task_dur=30,
                         trial_dur=5.8,
                         iti_dur=0.2,
-                        file_name=None):
+                        file_name=None,
+                        stim_file=None):
         
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
-
-        sitm_file = self.stim_dir / 'nonword_reading' / 'nonwords_shuffled.csv'
-
-        df = pd.read_csv(sitm_file)
+        
+        if stim_file:
+            stim = pd.read_csv(stim_file)
+        else:
+            stim = pd.read_csv(self.stim_dir / 'nonword_reading' / 'nonwords_shuffled.csv')
 
         t = 0
 
@@ -708,7 +723,7 @@ class NonwordReading(TaskFile):
             trial['iti_dur'] = iti_dur
             trial['display_trial_feedback'] = False
             sentence_index = (run_number - 1) * n_trials + n
-            trial['stim'] = df['sentence'][sentence_index]
+            trial['stim'] = stim['sentence'][sentence_index]
             trial['start_time'] = t
             trial['end_time'] = t + trial_dur + iti_dur
             trial_info.append(trial)
