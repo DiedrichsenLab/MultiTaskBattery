@@ -21,7 +21,7 @@ run_dir    = exp_dir / "run_files"     # contains run files for each session
 data_dir   = exp_dir / "data"          # This is where the result files are being saved
 
 # do run_file_name as a formated string
-default_run_filename = 'sub-01_run_{}.tsv'
+default_run_filename = 'training_02_run_{}.tsv'
 
 package_dir = Path(os.path.dirname(os.path.dirname(os.path.realpath(mtb.__file__))))
 stim_dir   = package_dir / "stimuli"       # This is where the stimuli are stored
@@ -35,6 +35,6 @@ debug = False                                           # set to True for debugg
 # Screen settings for subject display
 screen = {}
 screen['size'] = [1024, 768]                             # screen resolution
-screen['fullscr'] = False                               # full screen?
+screen['fullscr'] = True                               # full screen?
 screen['number'] = 1                                    # 0 = main display, 1 = secondary display
 
