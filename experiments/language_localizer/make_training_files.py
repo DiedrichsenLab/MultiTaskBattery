@@ -3,6 +3,7 @@ import MultiTaskBattery.task_file as tf
 import MultiTaskBattery.utils as ut
 import constants as const
 import shutil
+import pandas as pd
 
 """ This is an example script to make the run files and trial files for an experiment"""
 
@@ -15,10 +16,7 @@ full_tasks = ['demand_grid','theory_of_mind','verb_generation','degraded_passage
 # this is a list of the tasks running while debugging and testing different combos and will be used when the final combo is ready (having both this list and the above
 #is necessary because I have the task_args list defined first then I am putting conditional statements for specific arguments,
 # for the script to run, the conditional stuff needs to run and for the conditional stuff to run all tasks (full_tasks)need to be inside task_args)
-running_tasks = ['demand_grid','theory_of_mind','verb_generation','degraded_passage','intact_passage',\
-         'action_observation','rest','n_back','romance_movie','sentence_reading','nonword_reading','oddball',\
-        'auditory_narrative','tongue_movement','spatial_navigation','finger_sequence']  # adjust this list as you like to test different combos
-
+running_tasks = ['sentence_reading','nonword_reading'] # adjust this list as you like to test different combos
 
 
 #  check if dirs for the tasks and runs exist, if not, make them
@@ -27,7 +25,7 @@ for task in running_tasks:
     ut.dircheck(const.task_dir / task)
 
 
-for r in range(1,4):
+for r in range(1,9):
     valid_run_file = False    
     while not valid_run_file: # this is necessary to make sure that the run files are valid (i.e. no auditory narrative adjacent to intact or degraded passage)
         # making the run files
@@ -51,6 +49,11 @@ for r in range(1,4):
             print(f'Run {r} is valid. Saving run file...')
 
         if valid_run_file:
+            # shift everything in the run file by 5 seconds
+            T['start_time'] += 5
+            T['end_time'] += 5
+            # add 10 seconds to the end_time of the last task in the run
+            T.loc[T.index[-1], 'end_time'] += 10
             T.to_csv(const.run_dir / f'training_run_{r:02d}.tsv', sep='\t', index=False)
             break  # Valid run file found, exit the while loop
         
@@ -76,6 +79,16 @@ for r in range(1,4):
         responses = [1, 2, 3, 4]
         task_args[task].update({'responses': responses})
 
+    task_args['verb_generation'].update({'stim_file': const.stim_dir / 'verb_generation' / 'training_verb_generation.csv'})
+    task_args['theory_of_mind'].update({'stim_file': const.stim_dir / 'theory_of_mind' / 'training_theory_of_mind.csv'})
+    task_args['sentence_reading'].update({'stim_file': const.stim_dir / 'sentence_reading' / 'training_sentences_shuffled.csv'})
+    task_args['nonword_reading'].update({'stim_file': const.stim_dir / 'nonword_reading' / 'training_nonwords_shuffled.csv'})
+    task_args['action_observation'].update({'knot_names': [
+                        'Ampere', 'Arbor', 'Baron', 'Belfry', 'Bramble', 'Chamois', 'Coffer', 
+                        'Farthing', 'Fissure', 'Gentry', 'Henchman', 'Magnate', 'Perry', 'Phial', 'Polka', 
+                        'Rosin', 'Shilling', 'Simper', 'Spangle', 'Squire', 'Vestment', 'Wampum', 'Wicket']})
+
+
 
     # for each of the runs, make task files
     for task,tfile in zip(running_tasks, tfiles):
@@ -83,6 +96,12 @@ for r in range(1,4):
         myTask = getattr(tf,cl)(const)
         myTask.make_task_file(file_name = tfile, **task_args.get(task, {}))
 
+        # if task is romance movie or degraded passage add 'training' to all rows in the stim column of the task file
+        if task in ['romance_movie', 'degraded_passage','intact_passage','auditory_narrative']:
+            # load the tsv file with pandas
+            T = pd.read_csv(const.task_dir / task / tfile, sep='\t')
+            T['stim'] = 'training_' + T['stim']
+            T.to_csv(const.task_dir / task / tfile, sep='\t', index=False)
+
 
         
-    
