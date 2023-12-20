@@ -894,11 +894,12 @@ class FingerSequence(Task):
         # if any press is wrong trial['correct'] needs to be false, this is for post trial feedback
         trial['correct'] = correct_list.sum()/num_items
 
-        # calculate mean rt across presses
-        try:
-            trial['rt'] = np.nanmean(rt_list)
-        except RuntimeWarning:
+        if np.all(np.isnan(rt_list)):
+            # calculate mean rt across presses
             trial['rt'] = np.nan
+
+        else:
+            trial['rt'] = np.nanmean(rt_list)
  
         # display trial feedback (for whole trial)
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct']== 1)
