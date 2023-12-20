@@ -377,8 +377,6 @@ class TheoryOfMind(TaskFile):
         else:
             stim = pd.read_csv(self.stim_dir / 'theory_of_mind' / 'theory_of_mind.csv')
 
-        # Read and slice the stimuli based on run number
-        stim = pd.read_csv(stim_file)
         start_row = (run_number - 1) * 2
         end_row = run_number * 2 - 1
         stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
