@@ -15,7 +15,7 @@ full_tasks = ['demand_grid','theory_of_mind','verb_generation','degraded_passage
 # this is a list of the tasks running while debugging and testing different combos and will be used when the final combo is ready (having both this list and the above
 #is necessary because I have the task_args list defined first then I am putting conditional statements for specific arguments,
 # for the script to run, the conditional stuff needs to run and for the conditional stuff to run all tasks (full_tasks)need to be inside task_args)
-running_tasks = ['finger_sequence']  # adjust this list as you like to test different combos
+running_tasks = ['finger_sequence','n_back']  # adjust this list as you like to test different combos
 
 # make 30 subject numbers
 subj_list = ['sub-01','sub-02','sub-03','sub-04','sub-05','sub-06','sub-07','sub-08','sub-09','sub-10',\
@@ -54,6 +54,9 @@ for subj in subj_list:
                 print(f'Run {r} is valid. Saving run file...')
 
             if valid_run_file:
+                # shift everything in the run file by 5 seconds
+                T['start_time'] += 5
+                T['end_time'] += 5
                 # add 10 seconds to the end_time of the last task in the run
                 T.loc[T.index[-1], 'end_time'] += 10
                 T.to_csv(const.run_dir / f'{subj}_run_{r:02d}.tsv', sep='\t', index=False)
