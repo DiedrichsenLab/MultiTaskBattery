@@ -13,16 +13,17 @@ from MultiTaskBattery.screen import Screen
 # import pylink as pl # to connect to eyelink
 
 class Experiment:
-    """
-    A general class with attributes common to experiments
-    """
-
     def __init__(self, const, subj_id):
-        """
-            const (module):
-                local constants.py module (see pontine_7T/constants.py) as example
-            subj_id (str):
-                id for the subject
+        """    A general class with attributes common to experiments
+
+               Args: 
+                    const (module):
+                        local constants.py module (see pontine_7T/constants.py) as example
+                    subj_id (str):
+                        id for the subject
+                Returns:
+                    self (object):
+                        an instance of the Experiment class
         """
 
         self.exp_name   = const.exp_name
@@ -45,12 +46,6 @@ class Experiment:
             ## set the ip address of the EyeLink ethernet connection
             ## to 100.1.1.2 and the subnet mask to 255.255.255.0
             self.tk = pl.EyeLink('100.1.1.1')
-
-    def set_const_defaults(self): # jorn, do we need this?
-        """ Make sure all the necessary variables are set in the constant file - otherwise set them to default values"""
-        # if not 'stim_dir' in dir(self.const):
-        #     self.const.stim_dir = Path(os.path.dirname(os.path.dirname(__file__))) / 'stimuli'  # where the experiment code is stored
-        pass
 
     def confirm_run_info(self):
         """

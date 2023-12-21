@@ -15,11 +15,10 @@ Documentation
 
    installation.rst
    overview.rst
-   run_files.rst
    running_experiment.rst
+   eye_tracking.rst
    instructions.rst
    building_experiment.rst
-   eye_tracking.rst
    reference.rst
 
 Indices and tables
