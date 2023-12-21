@@ -329,8 +329,10 @@ class AuditoryNarrative(Task):
         audio_stim = sound.Sound(str(audio_path))
         audio_stim.play()
 
+        trial_dur = audio_stim.getDuration()
+
         # collect responses
-        key,trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['trial_dur'])
+        key,trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial_dur)
 
         # display trial feedback
         self.display_trial_feedback(give_feedback= trial['display_trial_feedback'], correct_response = None)
@@ -367,6 +369,7 @@ class RomanceMovie(Task):
         while movie_clip.status != visual.FINISHED:
             movie_clip.draw()
             self.window.flip()
+            self.ttl_clock.update()
 
         # Display trial feedback
         self.display_trial_feedback(give_feedback= trial['display_trial_feedback'], correct_response = None)
@@ -539,6 +542,7 @@ class ActionObservation(Task):
         while movie_clip.status != visual.FINISHED:
             movie_clip.draw()
             self.window.flip()
+            self.ttl_clock.update()
 
         self.screen.fixation_cross()
 
