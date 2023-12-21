@@ -9,11 +9,11 @@ The repository has the following Structure:
 | -experiment_code: Main Python classes for Experiment task
 | -stimuli: Stimuli used in the experiment
 |
-| -pontine_7T: Specific Experiment (exanple)
-|  |-pontine_7T.py: main program
-|  |-run_files: Files specifying which tasks are done in which run
-|  |-task_files: Files specifying which trials are done for each task block
-|  |-data: Data files for each subject
+| -pontine_7T: Specific Experiment (example)
+| -pontine_7T.py: main program
+| -run_files: Files specifying which tasks are done in which run
+| -task_files: Files specifying which trials are done for each task block
+| -data: Data files for each subject
 
 
 
