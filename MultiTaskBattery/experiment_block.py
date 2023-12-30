@@ -31,8 +31,6 @@ class Experiment:
         self.run_number = 0
         self.const = const
         self.ttl_clock = TTLClock()
-        self.set_const_defaults()
-
         # open screen and display fixation cross
         ### set the resolution of the subject screen here:
         self.screen = Screen(const.screen)
@@ -132,6 +130,9 @@ class Experiment:
             self.start_eyetracker()
 
         for t_num, task in enumerate(self.task_obj_list):
+            # clear keys in buffer
+            event.clearEvents()
+
             print(f"Starting: {task.name}")
 
             # Take the task data from the run_info dataframe
