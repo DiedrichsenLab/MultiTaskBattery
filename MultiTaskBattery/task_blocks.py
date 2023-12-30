@@ -267,9 +267,8 @@ class VerbGeneration(Task):
         if trial.name == len(self.trial_info) // 2:
             self.display_generate_instruction()
 
-        # collect responses
-        key,trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['trial_dur'])
-
+        # wait for trial duration
+        self.ttl_clock.wait_until(self.ttl_clock.get_time() + trial['trial_dur'])
 
         # display trial feedback
         self.display_trial_feedback(give_feedback= trial['display_trial_feedback'], correct_response = None)
@@ -302,8 +301,8 @@ class TongueMovement(Task):
 
         self.window.flip()
 
-        # collect responses
-        key,trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['trial_dur'])
+        # wait for trial duration
+        self.ttl_clock.wait_until(self.ttl_clock.get_time() + trial['trial_dur'])
 
         # display trial feedback
         self.display_trial_feedback(give_feedback= trial['display_trial_feedback'], correct_response = None)
@@ -331,8 +330,8 @@ class AuditoryNarrative(Task):
 
         trial_dur = audio_stim.getDuration()
 
-        # collect responses
-        key,trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial_dur)
+        # wait for trial duration
+        self.ttl_clock.wait_until(self.ttl_clock.get_time() + trial['trial_dur'])
 
         # display trial feedback
         self.display_trial_feedback(give_feedback= trial['display_trial_feedback'], correct_response = None)
@@ -396,8 +395,8 @@ class SpatialNavigation(Task):
     def run_trial(self,trial):
         self.screen.fixation_cross()
 
-        # collect responses
-        key,trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['trial_dur'])
+        # wait for trial duration
+        self.ttl_clock.wait_until(self.ttl_clock.get_time() + trial['trial_dur'])
 
         # display trial feedback
         self.display_trial_feedback(give_feedback= trial['display_trial_feedback'], correct_response = None)
@@ -479,8 +478,8 @@ class DegradedPassage(Task):
         audio_stim = sound.Sound(str(audio_path))
         audio_stim.play()
 
-        # collect responses
-        key,trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['trial_dur'])
+        # wait for trial duration
+        self.ttl_clock.wait_until(self.ttl_clock.get_time() + trial['trial_dur'])
 
         # display trial feedback
         self.display_trial_feedback(give_feedback= trial['display_trial_feedback'], correct_response = None)
@@ -507,8 +506,8 @@ class IntactPassage(Task):
         audio_stim = sound.Sound(str(audio_path))
         audio_stim.play()
 
-        # collect responses
-        key,trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['trial_dur'])
+        # wait for trial duration
+        self.ttl_clock.wait_until(self.ttl_clock.get_time() + trial['trial_dur'])
 
         # display trial feedback
         self.display_trial_feedback(give_feedback= trial['display_trial_feedback'], correct_response = None)
@@ -696,12 +695,15 @@ class SentenceReading(Task):
         button_stim = visual.ImageStim(self.window, image=str(self.const.stim_dir / self.name / 'hand_press_transparent.png'))
         button_stim.draw()
         self.window.flip()
-        self.ttl_clock.wait_until(self.ttl_clock.get_time() + 0.4)
+        trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), 0.4)
 
         # show blank_transparent image
         blank_stim = visual.ImageStim(self.window, image=str(self.const.stim_dir / self.name / 'blank_transparent.png'))
         blank_stim.draw()
         self.window.flip()
+
+        # flush any keys in buffer
+        event.clearEvents()
 
         # not displaying crosshair to replicate the localizer
 
@@ -735,12 +737,15 @@ class NonwordReading(Task):
         button_stim = visual.ImageStim(self.window, image=str(self.const.stim_dir / self.name / 'hand_press_transparent.png'))
         button_stim.draw()
         self.window.flip()
-        self.ttl_clock.wait_until(self.ttl_clock.get_time() + 0.4)
+        trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), 0.4)
 
         # show blank_transparent image
         blank_stim = visual.ImageStim(self.window, image=str(self.const.stim_dir / self.name / 'blank_transparent.png'))
         blank_stim.draw()
         self.window.flip()
+
+        # clear any keys in buffer
+        event.clearEvents()
 
         # not displaying crosshair to replicate the localizer
 
@@ -795,12 +800,6 @@ class OddBall(Task):
 
         # collect responses 0: no response 1-4: key pressed
         trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['iti_dur'])
-        
-        # # method 1 for accuracy for oddball
-        # if trial['trial_type'] == 1:
-        #     trial['correct'] = True if trial['response']!= 0 else False
-        # elif trial['trial_type'] == 0:
-        #     trial['correct'] = True if trial['response']== 0 else False
 
         # method 2 for accuracy for oddball
         if trial['trial_type'] == 1:
