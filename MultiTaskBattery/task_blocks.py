@@ -670,6 +670,7 @@ class DemandGrid(Task):
 class SentenceReading(Task):
     def __init__(self, info, screen, ttl_clock, const, subj_id):
         super().__init__(info, screen, ttl_clock, const, subj_id)
+        self.feedback_type = 'acc+rt'
 
     def display_instructions(self):
         self.instruction_text = f'{self.name} Task \n\n Read each English word and press a button when the image of a hand pressing a button is displayed'
@@ -712,6 +713,7 @@ class SentenceReading(Task):
 class NonwordReading(Task):
     def __init__(self, info, screen, ttl_clock, const, subj_id):
         super().__init__(info, screen, ttl_clock, const, subj_id)
+        self.feedback_type = 'acc+rt'
 
     def display_instructions(self):
         self.instruction_text = f'{self.name} Task \n\n Read each nonword word and press a button when the image of a hand pressing a button is displayed'
