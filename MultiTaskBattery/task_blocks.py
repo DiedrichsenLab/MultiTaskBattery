@@ -434,7 +434,7 @@ class TheoryOfMind(Task):
         event.clearEvents()
 
         # Display story
-        story_stim = visual.TextStim(self.window, text=trial['story'], alignHoriz='center', wrapWidth=30, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height= 1.5)
+        story_stim = visual.TextStim(self.window, text=trial['story'], alignHoriz='center', wrapWidth=30, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height= 1.25)
         story_stim.draw()
         self.window.flip()
 
@@ -445,7 +445,7 @@ class TheoryOfMind(Task):
         event.clearEvents()
 
         # Display question
-        question_stim = visual.TextStim(self.window, text=trial['question'], pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height= 1.5, wrapWidth=30)
+        question_stim = visual.TextStim(self.window, text=trial['question'], pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=30)
         question_stim.draw()
         self.window.flip()
 
@@ -690,6 +690,8 @@ class SentenceReading(Task):
             word_stim.draw()
             self.window.flip()
             self.ttl_clock.wait_until(self.ttl_clock.get_time() + 0.45)
+        
+        event.clearEvents()
 
         # show press button image
         button_stim = visual.ImageStim(self.window, image=str(self.const.stim_dir / self.name / 'hand_press_transparent.png'))
@@ -732,6 +734,8 @@ class NonwordReading(Task):
             word_stim.draw()
             self.window.flip()
             self.ttl_clock.wait_until(self.ttl_clock.get_time() + 0.45)
+
+        event.clearEvents()
 
         # show press button image
         button_stim = visual.ImageStim(self.window, image=str(self.const.stim_dir / self.name / 'hand_press_transparent.png'))
