@@ -790,6 +790,13 @@ class FingerSequence(TaskFile):
                         '3 2 4 1 4 2', '4 1 2 3 4 1',
                         '1 4 3 2 1 3', '2 3 1 4 2 4',
                         '3 4 2 1 3 2', '4 3 1 2 4 1']
+        
+    def generate_sequence():
+        sequence = [random.choice([1, 2, 3, 4])]
+        while len(sequence) < 6:
+            next_digit = random.choice([d for d in [1, 2, 3, 4] if d != sequence[-1]])
+            sequence.append(next_digit)
+        return ' '.join(map(str, sequence))
 
     def make_task_file(self,
                         hand = 'bimanual',
@@ -815,7 +822,7 @@ class FingerSequence(TaskFile):
             trial['iti_dur'] = iti_dur
             trial['display_trial_feedback'] = True
             # choose random sequence
-            trial['stim'] = random.choice(self.sequences)
+            trial['stim'] = self.generate_sequence()
             trial['start_time'] = t
             trial['end_time'] = t + trial_dur + iti_dur
             trial_info.append(trial)
