@@ -786,12 +786,8 @@ class FingerSequence(TaskFile):
     def __init__(self, const):
         super().__init__(const)
         self.name = 'finger_sequence'
-        self.sequences = ['1 3 2 4 3 4', '2 1 3 4 3 1', 
-                        '3 2 4 1 4 2', '4 1 2 3 4 1',
-                        '1 4 3 2 1 3', '2 3 1 4 2 4',
-                        '3 4 2 1 3 2', '4 3 1 2 4 1']
         
-    def generate_sequence():
+    def generate_sequence(self):
         sequence = [random.choice([1, 2, 3, 4])]
         while len(sequence) < 6:
             next_digit = random.choice([d for d in [1, 2, 3, 4] if d != sequence[-1]])
