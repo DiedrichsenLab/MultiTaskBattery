@@ -1,6 +1,6 @@
 # Task Class definitions
 # March 2021: First version: Ladan Shahshahani  - Maedbh King - Suzanne Witt,
-# Revised 2023: Bassel Arafat, Jorn Diedrichsen, Ince Hussain
+# Revised 2023: Bassel Arafat, Jorn Diedrichsen, Ince Husain
 
 from pathlib import Path
 import pandas as pd
