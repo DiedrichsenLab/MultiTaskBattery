@@ -1,6 +1,6 @@
 # Defines the Experiment as a class
 # March 2021: First version: Ladan Shahshahani  - Maedbh King - Suzanne Witt,
-# Revised 2023: Bassel Arafat, Jorn Diedrichsen, Ince Hussain
+# Revised 2023: Bassel Arafat, Jorn Diedrichsen, Ince Husain
 
 import pandas as pd
 import sys
@@ -246,4 +246,3 @@ class Experiment:
         # self.tk.receiveDataFile(self.tk_filename, self.tk_filename)
         self.tk.close()
         return
-
