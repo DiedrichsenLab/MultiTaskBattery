@@ -16,3 +16,4 @@ intact_passage	IntactPassage	intpass
 demand_grid	DemandGrid	dmgrd		
 finger_sequence	FingerSequence	fingseq		
 flexion_extension	FlexionExtension	flexexten	alternating periods of flexing/extending toes	
+semantic_prediction	SemanticPrediction	sempred	"sentence presented, participants decide if last word makes sense."
