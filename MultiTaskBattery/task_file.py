@@ -877,21 +877,20 @@ class SemanticPrediction(TaskFile):
                        responses = [1,2], # 1 = True, 2 = False
                        run_number=None,
                        task_dur=30,
-                        trial_dur=14,
-                        iti_dur=1, 
-                        story_dur=10,
-                        question_dur=4, file_name=None
+                        trial_dur=15,
+                        sentence_dur=2,
+                        file_name=None
                         , stim_file=None):
 
         # count number of trials
-        n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
+        n_trials = int(np.floor(task_dur / (trial_dur)))
         trial_info = []
         t = 0
 
         if stim_file:
             stim = pd.read_csv(stim_file)
         else:
-            stim = pd.read_csv(self.stim_dir / 'semantic_prediction' / 'semantic_prediction_logging_0.csv')
+            stim = pd.read_csv(self.stim_dir / 'semantic_prediction' / 'semantic_prediction.csv')
 
         start_row = (run_number - 1) * 2
         end_row = run_number * 2 - 1
@@ -901,23 +900,20 @@ class SemanticPrediction(TaskFile):
             trial = {}
             trial['key_true'] = responses[0]
             trial['key_false'] = responses[1]
-            if str(stim['answer'][n]) == 'True':
-                trial['trial_type'] = 1
+            if str(stim['last_word'][n]) == 'True':
+               trial['trial_type'] = 1
             else:
-                trial['trial_type'] = 0
+               trial['trial_type'] = 0
             trial['trial_num'] = n
             trial['hand'] = hand
             trial['trial_dur'] = trial_dur
-            trial['iti_dur'] = iti_dur
+            #trial['iti_dur'] = iti_dur
+            trial['sentence_dur'] = sentence_dur
             trial['sentence'] = stim['sentence'][n]
             trial['last_word'] = stim['last_word'][n]
-            trial['condition'] = stim['condition'][n]
-            trial['answer'] = stim['answer'][n]
-            trial['sentence_dur'] = sentence_dur
-            trial['last_word_dur'] = last_word_dur
             trial['display_trial_feedback'] = True
             trial['start_time'] = t
-            trial['end_time'] = t + trial_dur + iti_dur
+            trial['end_time'] = t + trial_dur 
             trial_info.append(trial)
 
             # Update for next trial:
@@ -927,6 +923,3 @@ class SemanticPrediction(TaskFile):
         if file_name is not None:
             trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
         return trial_info
-
-
-
