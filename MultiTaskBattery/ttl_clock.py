@@ -1,4 +1,4 @@
-# Created 2023: Bassel Arafat, Jorn Diedrichsen, Ince Hussain
+# Created 2023: Bassel Arafat, Jorn Diedrichsen, Ince Husain
 from psychopy import core, event
 
 class TTLClock:

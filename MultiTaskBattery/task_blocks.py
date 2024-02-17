@@ -983,27 +983,31 @@ class SemanticPrediction(Task):
 
     def run_trial(self, trial):
         """ Runs a single trial of the semantic prediction task """
-
+        
         event.clearEvents()
 
-        # Display sentence
-        story_stim = visual.TextStim(self.window, text=trial['sentence'], alignHoriz='center', wrapWidth=30, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height= 1.25)
-        story_stim.draw()
-        self.window.flip()
+        # get sentence and split into words by space
+        sentence = trial['sentence']
+        words = sentence.split('|')
 
-       # wait until sentence duration
-        self.ttl_clock.wait_until(self.ttl_clock.get_time() + trial['sentence_dur'])
+        #show words seqeuntially each for 700ms
+        for word in words:
+            word_stim = visual.TextStim(self.window, text=word, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height=2)
+            word_stim.draw()
+            self.window.flip()
+            self.ttl_clock.wait_until(self.ttl_clock.get_time() + 0.7)
 
-        # Flush any keys in buffer
         event.clearEvents()
 
         # Display last word
-        question_stim = visual.TextStim(self.window, text=trial['last_word'], pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=30)
-        question_stim.draw()
+        last_word_stim = visual.TextStim(self.window, text=trial['last_word'], pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=30)
+        last_word_stim.draw()
         self.window.flip()
 
+        event.clearEvents()
+
         # collect responses 0: no response 1-4: key pressed
-        trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['last_word_dur'])
+        trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['sentence_dur'])
         trial['correct'] = (trial['response'] == self.corr_key[trial['trial_type']])
 
         # display trial feedback
