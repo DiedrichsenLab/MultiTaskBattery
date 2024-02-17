@@ -8,7 +8,6 @@ import random
 import MultiTaskBattery.utils as ut
 
 
-
 def shuffle_rows(dataframe):
     """
     randomly shuffles rows of the dataframe
@@ -900,17 +899,17 @@ class SemanticPrediction(TaskFile):
             trial = {}
             trial['key_true'] = responses[0]
             trial['key_false'] = responses[1]
-            if str(stim['last_word'][n]) == 'True':
+            if str(stim['right_word'][n]) == 'spots':
                trial['trial_type'] = 1
             else:
                trial['trial_type'] = 0
             trial['trial_num'] = n
             trial['hand'] = hand
             trial['trial_dur'] = trial_dur
-            #trial['iti_dur'] = iti_dur
             trial['sentence_dur'] = sentence_dur
             trial['sentence'] = stim['sentence'][n]
-            trial['last_word'] = stim['last_word'][n]
+            trial['right_word'] = stim['right_word'][n]
+            trial['wrong_word'] = stim['wrong_word'][n]
             trial['display_trial_feedback'] = True
             trial['start_time'] = t
             trial['end_time'] = t + trial_dur 

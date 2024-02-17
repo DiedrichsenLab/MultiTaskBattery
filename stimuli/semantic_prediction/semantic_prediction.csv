@@ -1,4 +1,4 @@
-sentence,cloze_probability,dataset,CoRT_mean,CoRT_std,CoRT_descript,last_word,random_word,words,cloze_descript
+sentence,cloze_probability,dataset,CoRT_mean,CoRT_std,CoRT_descript,right_word,wrong_word,words,cloze_descript
 A|Dalmatian|dog|is|recognized|by|its|black|and|white,0.84,block_baldwin,1.1666666666666667,0.408248290463863,strong non-CoRT,spots,fate,10,high cloze
 A|black|European|crow|is|sometimes|called|a,0.42,peele,1.5,1.0,strong non-CoRT,raven,solution,8,low cloze
 "A|clumsy|toddler,|Serena|often|spilled|her",0.34,peele,4.2,0.8366600265340756,strong CoRT,milk,shell,7,low cloze
