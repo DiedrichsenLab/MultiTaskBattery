@@ -1,6 +1,6 @@
 # Create TaskFile file for different tasks
 # March 2021: First version: Ladan Shahshahani  - Maedbh King - Suzanne Witt,
-# Revised 2023: Bassel Arafat, Jorn Diedrichsen, Ince Hussain
+# Revised 2023: Bassel Arafat, Jorn Diedrichsen, Ince Husain
 
 import pandas as pd
 import numpy as np
@@ -878,8 +878,8 @@ class SemanticPrediction(TaskFile):
                        task_dur=30,
                         trial_dur=15,
                         sentence_dur=2,
-                        file_name=None
-                        , stim_file=None):
+                        file_name=None,
+                        stim_file=None):
 
         # count number of trials
         n_trials = int(np.floor(task_dur / (trial_dur)))
@@ -899,10 +899,6 @@ class SemanticPrediction(TaskFile):
             trial = {}
             trial['key_true'] = responses[0]
             trial['key_false'] = responses[1]
-            if str(stim['right_word'][n]) == 'spots':
-               trial['trial_type'] = 1
-            else:
-               trial['trial_type'] = 0
             trial['trial_num'] = n
             trial['hand'] = hand
             trial['trial_dur'] = trial_dur
@@ -913,6 +909,12 @@ class SemanticPrediction(TaskFile):
             trial['display_trial_feedback'] = True
             trial['start_time'] = t
             trial['end_time'] = t + trial_dur 
+            last_word = [trial['right_word'], trial['wrong_word']]
+            displayed_word = random.choice(last_word)
+            if str(stim['right_word'][n])==displayed_word:
+               trial['trial_type'] = 1
+            else:
+               trial['trial_type'] = 0
             trial_info.append(trial)
 
             # Update for next trial:

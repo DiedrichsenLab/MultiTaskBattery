@@ -991,12 +991,12 @@ class SemanticPrediction(Task):
         sentence = trial['sentence']
         words = sentence.split('|')
 
-        #show words seqeuntially each for 700ms
+        #show words seqeuntially each for 800ms
         for word in words:
             word_stim = visual.TextStim(self.window, text=word, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height=2)
             word_stim.draw()
             self.window.flip()
-            self.ttl_clock.wait_until(self.ttl_clock.get_time() + 0.7)
+            self.ttl_clock.wait_until(self.ttl_clock.get_time() + 0.8)
 
         event.clearEvents()
 
