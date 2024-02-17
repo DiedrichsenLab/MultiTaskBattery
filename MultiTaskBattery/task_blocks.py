@@ -5,6 +5,7 @@
 from pathlib import Path
 import pandas as pd
 import numpy as np
+import random 
 
 from psychopy import visual, sound, core, event
 import MultiTaskBattery.utils as ut
@@ -1000,7 +1001,12 @@ class SemanticPrediction(Task):
         event.clearEvents()
 
         # Display last word
-        last_word_stim = visual.TextStim(self.window, text=trial['last_word'], pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=30)
+
+        last_word = [trial['right_word'], trial['wrong_word']]
+
+        displayed_word = random.choice(last_word)
+
+        last_word_stim = visual.TextStim(self.window, text=displayed_word, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=30)
         last_word_stim.draw()
         self.window.flip()
 
