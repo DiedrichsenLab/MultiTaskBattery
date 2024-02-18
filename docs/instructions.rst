@@ -74,26 +74,12 @@ Finger Sequence
    
 This is a movement task. You will have 5 seconds to respond to a sequence of six numbers (comprised of 1,2,3,4).
   
-Toe Flexion
-^^^^^^^^^^^^^^^
-.. image:: images/Slide4.png
-   :width: 600
-   
-This is a toe movement task. You will flex and extend your toes. When the screen says 'fled', then pull your toes towards you. When it says 'extend', extend your toes away from you, like you're tip-toeing. Try to keep the rest of your body as still as possible while you do this so that you don’t move your head. Try also to match the pace of the instruction.
-  
 Tongue Movement
 ^^^^^^^^^^^^^^^
 .. image:: images/Slide21.png
    :width: 600
    
 This is a tongue movement task. You will move your tongue from left to right in your closed mouth. Your will either touch your left upper premolar teeth or your right upper premolar teeth. The premolar teeth are shown in the image. A black circle flashing on and off around the fixation cross while tell you when to touch left or right. When you see the black circle on, touch your right upper premolar teeth. When it is off, touch your left premolar teeth. Try to keep the rest of your body as still as possible while you do this so that you don’t move your head. 
-
-.. Sentence Prediction
-.. ^^^^^^^^^^^^^^^
-.. .. image:: images/SemanticPrediction.png
-..    :width: 600
-   
-.. This is the sentence prediction task. On the screen you will see a series of words that form a sentence. The last word will be missing. Try to complete the sentence with the last word in your head, but without saying it or moving your lips or tongue in any way.
 
 Verb Generation
 ^^^^^^^^^^^^^^^
@@ -102,19 +88,19 @@ Verb Generation
    
 This is the verb generation task. On the screen you will see a a noun. Try to think of a verb that is something you can do with the noun. For example, when seeing 'computer', think of 'type'. Or think of something that the noun does. For example when seeing 'lion' think of 'roar'. Think the first verb that comes to mind and try not to move your tongue or lips while you do this.
 
-NonWord Reading
-^^^^^^^^^^^^^^^
-.. image:: images/Slide23.png
-   :width: 600
-   
-This is the nonword reading task. On the screen you will see a series of words that don't exist in the English language. Read the words silently in your head, but without saying it or moving your lips or tongue in any way. Every few words we will ask you to press the button box to indicate that you are still paying attention. When you see the symbol on the right, press any button.
-
 Sentence Reading
 ^^^^^^^^^^^^^^^^^^
 .. image:: images/Slide24.png
    :width: 600
    
 This is the sentence reading task. On the screen you will see a series of words that form a sentence. Read the sentence silently in your head, but without saying it or moving your lips or tongue in any way. After every sentence we will ask you to press the button box to indicate that you are still paying attention. When you see the symbol on the right, press any button.
+
+NonWord Reading
+^^^^^^^^^^^^^^^
+.. image:: images/Slide23.png
+   :width: 600
+   
+This is the nonword reading task. On the screen you will see a series of words that don't exist in the English language. Read the words silently in your head, but without saying it or moving your lips or tongue in any way. Every few words we will ask you to press the button box to indicate that you are still paying attention. When you see the symbol on the right, press any button.
 
 Auditory Narrative
 ^^^^^^^^^^^^^^^^^^^
@@ -164,16 +150,6 @@ Theory of Mind
    
 In this task, you will read two stories and answer a question after each story presentation. You will have 10 seconds to read the story and 5 seconds to answer a ‘true’ or ‘false’ question about the story. There is a particular strategy to answering these questions, which you will learn with practice”.
 
-Visual Search
-^^^^^^^^^^^^^^^
-.. image:: images/Slide12.png
-   :width: 600
-   
-.. image:: images/Slide13.png
-   :width: 600
-   
-In this task, you will be asked to rapidly scan a number of letters and identify whether the target letter ‘L’ is present. Each trial will always multiple images of the letter ‘T’. However, on some trials, the letter ‘L’ will also be present among the distracting ‘T’ letters. On each trial, you will have to correctly identify whether the L is present. 
-
 Action Observation
 ^^^^^^^^^^^^^^^^^^^
 .. image:: images/Slide14.png
@@ -187,6 +163,45 @@ Romance Movie
    :width: 600
    
 You are not required to make any response (overt or covert) in this task. You will watch short video clips of of an animated movie.
+
+Demand Grid
+^^^^^^^^^^^^^^^^^^^
+.. image:: images/Slide29.png
+   :width: 600
+   
+In this task, you will see 4 pairs of squares light up in a 3x4 grid.  You will need the choose the grid that represents the combination of all 4 pairs.
+
+Oddball
+^^^^^^^^^^^^^^^^^^^
+.. image:: images/Slide30.png
+   :width: 600
+   
+In this task, you will a red "K", black "K", red "O" or black "O".  You will need to press when you see a red "K".
+
+Toe Flexion
+^^^^^^^^^^^^^^^
+.. image:: images/Slide4.png
+   :width: 600
+   
+This is a toe movement task. You will flex and extend your toes. When the screen says 'fled', then pull your toes towards you. When it says 'extend', extend your toes away from you, like you're tip-toeing. Try to keep the rest of your body as still as possible while you do this so that you don’t move your head. Try also to match the pace of the instruction.
+
+Visual Search
+^^^^^^^^^^^^^^^
+.. image:: images/Slide12.png
+   :width: 600
+   
+.. image:: images/Slide13.png
+   :width: 600
+   
+In this task, you will be asked to rapidly scan a number of letters and identify whether the target letter ‘L’ is present. Each trial will always multiple images of the letter ‘T’. However, on some trials, the letter ‘L’ will also be present among the distracting ‘T’ letters. On each trial, you will have to correctly identify whether the L is present. 
+
+
+.. Sentence Prediction
+.. ^^^^^^^^^^^^^^^
+.. .. image:: images/SemanticPrediction.png
+..    :width: 600
+   
+.. This is the sentence prediction task. On the screen you will see a series of words that form a sentence. The last word will be missing. Try to complete the sentence with the last word in your head, but without saying it or moving your lips or tongue in any way.
 
 Feedback
 ^^^^^^^^^^^^^^^^^^^
