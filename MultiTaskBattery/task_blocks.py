@@ -1023,7 +1023,7 @@ class SemanticPrediction(Task):
 
         return trial
     
-    #visual search doesn't run yet
+    #visual search runs (need to add more than one shape on screen at a time)
     
 class VisualSearch(Task):
 
