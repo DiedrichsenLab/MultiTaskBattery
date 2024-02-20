@@ -389,7 +389,7 @@ class SpatialNavigation(Task):
                                     f"Imagine walking around your childhood home\n"
                                     f"Start in the {start_location} – end in the {end_location}\n"
                                     f"Focus on the fixation cross")
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1],  wrapWidth=400)
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1],  wrapWidth=25)
         instr_visual.draw()
         self.window.flip()
 
@@ -435,7 +435,7 @@ class TheoryOfMind(Task):
         event.clearEvents()
 
         # Display story
-        story_stim = visual.TextStim(self.window, text=trial['story'], alignHoriz='center', wrapWidth=30, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height= 1.25)
+        story_stim = visual.TextStim(self.window, text=trial['story'], alignHoriz='center', wrapWidth=25, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height= 1.25)
         story_stim.draw()
         self.window.flip()
 
@@ -446,7 +446,7 @@ class TheoryOfMind(Task):
         event.clearEvents()
 
         # Display question
-        question_stim = visual.TextStim(self.window, text=trial['question'], pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=30)
+        question_stim = visual.TextStim(self.window, text=trial['question'], pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=25)
         question_stim.draw()
         self.window.flip()
 
@@ -583,9 +583,9 @@ class DemandGrid(Task):
         and positions the grid left, right, or center."""
         # Calculate offsets based on the desired position
         if position == 'left':
-            offset_x = -10
+            offset_x = -5
         elif position == 'right':
-            offset_x = 10
+            offset_x = 5
         else:  # center
             offset_x = 0
 
