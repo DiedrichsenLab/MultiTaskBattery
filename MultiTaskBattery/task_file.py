@@ -928,7 +928,7 @@ class SemanticPrediction(TaskFile):
 class VisualSearch(TaskFile):
     def __init__(self, const):
         super().__init__(const)
-        self.name = 'vis_search'
+        self.name = 'visual_search'
 
     def make_task_file(self,
                         hand = 'right',
@@ -936,6 +936,35 @@ class VisualSearch(TaskFile):
                         task_dur =  30,
                         trial_dur = 2,
                         iti_dur   = 0.5,
-                        stim = ['90.png','180.jpg','270.jpg','360.jpg'],
+                        stim = ['90.png','180.png','270.png','360.png'],
                         file_name = None ):
         n_trials = int(np.floor(task_dur / (trial_dur+iti_dur)))
+        trial_info = []
+        t = 0 
+
+        for n in range(n_trials):
+            trial = {}
+            trial['key_true'] = responses[0]
+            trial['key_false'] = responses[1]
+            trial['trial_num'] = n
+            trial['hand'] = hand
+            trial['trial_dur'] = trial_dur
+            trial['iti_dur'] = iti_dur
+            trial['display_trial_feedback'] = True 
+            trial['stim'] = stim[np.random.randint(0,len(stim))]
+            if trial['stim'] == '90.png':
+                trial['trial_type']=1
+            else:
+                trial['trial_type']=0
+            trial['feedback_type'] = 'acc'
+            trial['start_time'] = t
+            trial['end_time'] = t + trial_dur 
+            trial_info.append(trial)
+
+        trial_info = pd.DataFrame(trial_info)
+        if file_name is not None:
+            trial_info.to_csv(self.task_dir / self.name / file_name,sep='\t',index=False)
+        return trial_info
+
+
+     
