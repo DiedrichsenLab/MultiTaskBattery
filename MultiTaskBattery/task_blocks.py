@@ -1020,3 +1020,58 @@ class SemanticPrediction(Task):
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
 
         return trial
+    
+    class VisualSearch(Task):
+
+         """
+    Look at a screen filled with geometric shapes and identify whether an "L" is present. Click "3" if the "L" is present; click "4" if not. Be as accurate and fast as possible.
+    """
+
+    def __init__(self, info, screen, ttl_clock, const, subj_id):
+        super().__init__(info, screen, ttl_clock, const, subj_id)
+        self.feedback_type = 'acc'
+
+    def init_task(self):
+        """
+        Initialize task - default is to read the target information into the trial_info dataframe
+        """
+        trial_info_file = self.const.task_dir / self.name / self.task_file
+        self.trial_info = pd.read_csv(trial_info_file, sep='\t')
+        self.stim=[]
+        for stim in self.trial_info['stim']:
+            stim_path = self.const.stim_dir / self.name / stim
+            self.stim.append(visual.ImageStim(self.window, str(stim_path)))
+        self.corr_key = [self.trial_info['key_false'].iloc[0],self.trial_info['key_true'].iloc[0]]
+
+    def display_instructions(self):
+        """
+        displays the instruction for the task
+        """
+        str1 = f"You will survey a series of shapes and identify whether the letter ‘L’ is present."
+        str2 = f"If 'L' is present, press {self.corr_key[1]}"
+        str3 = f"if 'L' is not present, press {self.corr_key[0]}"
+        self.instruction_text = f"{self.name} task\n\n {str1} \n {str2} \n {str3}"
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
+        instr_visual.draw()
+        self.window.flip()
+    
+    def run_trial(self,trial):
+        """Runs a single trial of visual search task
+        """
+
+        # Flush any keys in buffer
+        event.clearEvents()
+
+        # display stimulus
+        self.stim[trial['trial_num']].draw()
+        self.window.flip()
+
+        # collect responses 0: no response 1-4: key pressed
+        trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['trial_dur'])
+        trial['correct'] = (trial['response'] == self.corr_key[trial['trial_type']])
+
+        # display trial feedback
+        
+        self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
+
+        return trial

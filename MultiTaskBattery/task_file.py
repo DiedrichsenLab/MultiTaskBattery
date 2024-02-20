@@ -924,3 +924,18 @@ class SemanticPrediction(TaskFile):
         if file_name is not None:
             trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
         return trial_info
+
+class VisualSearch(TaskFile):
+    def __init__(self, const):
+        super().__init__(const)
+        self.name = 'vis_search'
+
+    def make_task_file(self,
+                        hand = 'right',
+                        responses = [1,2], # 1 = match, 2 = no match
+                        task_dur =  30,
+                        trial_dur = 2,
+                        iti_dur   = 0.5,
+                        stim = ['90.png','180.jpg','270.jpg','360.jpg'],
+                        file_name = None ):
+        n_trials = int(np.floor(task_dur / (trial_dur+iti_dur)))
