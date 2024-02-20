@@ -1,6 +1,6 @@
 # Task Class definitions
 # March 2021: First version: Ladan Shahshahani  - Maedbh King - Suzanne Witt,
-# Revised 2023: Bassel Arafat, Jorn Diedrichsen, Ince Husain
+# Revised 2023: Bassel Arafat, Jorn Diedrichsen, Incé Husain
 
 from pathlib import Path
 import pandas as pd
@@ -1028,7 +1028,7 @@ class SemanticPrediction(Task):
 class VisualSearch(Task):
 
     """
-    Look at a screen filled with geometric shapes and identify whether an "L" is present. Click "3" if the "L" is present; click "4" if not. Be as accurate and fast as possible.
+    Look at a screen filled with shapes and identify whether an "L" is present. Click "3" if the "L" is present; click "4" if not. Be as accurate and fast as possible.
     """
 
     def __init__(self, info, screen, ttl_clock, const, subj_id):
@@ -1039,7 +1039,12 @@ class VisualSearch(Task):
         """
         Initialize task - default is to read the target information into the trial_info dataframe
         """
-        self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
+        trial_info_file = self.const.task_dir / self.name / self.task_file
+        self.trial_info = pd.read_csv(trial_info_file, sep='\t')
+        self.stim=[]
+        for stim in self.trial_info['stim']:
+            stim_path = self.const.stim_dir / self.name / stim
+            self.stim.append(visual.ImageStim(self.window, str(stim_path)))
         self.corr_key = [self.trial_info['key_false'].iloc[0],self.trial_info['key_true'].iloc[0]]
 
     def display_instructions(self):
@@ -1074,3 +1079,4 @@ class VisualSearch(Task):
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
 
         return trial
+    
