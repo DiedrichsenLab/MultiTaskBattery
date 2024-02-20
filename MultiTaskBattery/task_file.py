@@ -951,20 +951,21 @@ class VisualSearch(TaskFile):
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
             trial['display_trial_feedback'] = True 
-            trial['stim'] = stim[np.random.randint(0,len(stim))]
+            trial['stim'] = stim[np.random.randint(0, len(stim))]
             if trial['stim'] == '90.png':
                 trial['trial_type']=1
             else:
                 trial['trial_type']=0
+            trial['display_trial_feedback'] = True
             trial['feedback_type'] = 'acc'
             trial['start_time'] = t
-            trial['end_time'] = t + trial_dur 
+            trial['end_time'] = t + trial_dur + iti_dur
             trial_info.append(trial)
+
+            # Update for next trial:
+            t = trial['end_time']
 
         trial_info = pd.DataFrame(trial_info)
         if file_name is not None:
             trial_info.to_csv(self.task_dir / self.name / file_name,sep='\t',index=False)
         return trial_info
-
-
-     
