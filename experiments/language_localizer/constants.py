@@ -10,8 +10,8 @@ import MultiTaskBattery as mtb
 exp_name = 'language_localizer'
 
 # Response key assignment:
-# response_keys    = ['y', 'g', 'r', 'm'] # scanner keys
-response_keys    = ['a', 's', 'k', 'l'] # behavioral keys keys
+response_keys    = ['y', 'g', 'r', 'm'] # scanner keys
+# response_keys    = ['a', 's', 'k', 'l'] # behavioral keys keys
 response_fingers = ['Pinky', 'Ring','Middle', 'Index']
 
 # Directory definitions for experiment
@@ -35,6 +35,6 @@ debug = False                                           # set to True for debugg
 # Screen settings for subject display
 screen = {}
 screen['size'] = [1024, 768]                             # screen resolution
-screen['fullscr'] = False                               # full screen?
+screen['fullscr'] = True                               # full screen?
 screen['number'] = 1                                    # 0 = main display, 1 = secondary display
 
