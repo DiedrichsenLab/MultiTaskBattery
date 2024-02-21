@@ -7,7 +7,6 @@ import numpy as np
 import random
 import MultiTaskBattery.utils as ut
 
-
 def shuffle_rows(dataframe):
     """
     randomly shuffles rows of the dataframe
@@ -930,13 +929,19 @@ class VisualSearch(TaskFile):
         super().__init__(const)
         self.name = 'visual_search'
 
+        #first 5 trials are of one display, with target being there or not; keep fixation cross in the center
+        #generate displays dynamically
+        #task file: how many items in dispaly and whether iteme is present 
+        #array with xyz positions of where image is displayed and what image it is. 
+        #easy, medium, hard have a fixed item number: but each level will be in the task. 
+
     def make_task_file(self,
                         hand = 'right',
                         responses = [1,2], # 1 = match, 2 = no match
                         task_dur =  30,
                         trial_dur = 2,
                         iti_dur   = 0.5,
-                        stim = ['90.png','180.png','270.png','360.png'],
+                        stim = ['90.png','180.png','270.png','360.png', 'T.png'],
                         file_name = None ):
         n_trials = int(np.floor(task_dur / (trial_dur+iti_dur)))
         trial_info = []

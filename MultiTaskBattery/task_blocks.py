@@ -956,6 +956,7 @@ class FlexionExtension(Task):
     #semantic prediction runs (slight bug for response feedback: last word is not synced with last word in task_file..)
 
 class SemanticPrediction(Task):
+
     """
     Read a sentence and decide if the last word of the sentence makes sense. Click "3" if the last word makes sense; click "4" if not. Be as accurate and fast as possible.
     """
@@ -971,7 +972,6 @@ class SemanticPrediction(Task):
         self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
         self.corr_key = [self.trial_info['key_false'].iloc[0],self.trial_info['key_true'].iloc[0]]
 
-        
     def display_instructions(self):
         """
         displays the instruction for the task
@@ -1025,6 +1025,7 @@ class SemanticPrediction(Task):
     
     #visual search runs (need to add more than one shape on screen at a time)
     
+
 class VisualSearch(Task):
 
     """
@@ -1034,6 +1035,7 @@ class VisualSearch(Task):
     def __init__(self, info, screen, ttl_clock, const, subj_id):
         super().__init__(info, screen, ttl_clock, const, subj_id)
         self.feedback_type = 'acc'
+
 
     def init_task(self):
         """
@@ -1046,6 +1048,7 @@ class VisualSearch(Task):
             stim_path = self.const.stim_dir / self.name / stim
             self.stim.append(visual.ImageStim(self.window, str(stim_path)))
         self.corr_key = [self.trial_info['key_false'].iloc[0],self.trial_info['key_true'].iloc[0]]
+
 
     def display_instructions(self):
         """
@@ -1062,7 +1065,7 @@ class VisualSearch(Task):
     def run_trial(self,trial):
         """Runs a single trial of visual search task
         """
-
+        
         # Flush any keys in buffer
         event.clearEvents()
 
@@ -1070,13 +1073,10 @@ class VisualSearch(Task):
         self.stim[trial['trial_num']].draw()
         self.window.flip()
 
-        # collect responses 0: no response 1-4: key pressed
+        # collect responses 
         trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['trial_dur'])
         trial['correct'] = (trial['response'] == self.corr_key[trial['trial_type']])
-
-        # display trial feedback
         
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
 
         return trial
-    
