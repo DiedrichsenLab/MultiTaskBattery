@@ -970,7 +970,7 @@ class SemanticPrediction(Task):
         Initialize task - default is to read the target information into the trial_info dataframe
         """
         self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
-        self.corr_key = [self.trial_info['key_false'].iloc[0],self.trial_info['key_true'].iloc[0]]
+        self.corr_key = [self.trial_info['key_false'].iloc[0],self.trial_info['key_true'].iloc[0]] 
 
     def display_instructions(self):
         """
@@ -983,10 +983,12 @@ class SemanticPrediction(Task):
         instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
         instr_visual.draw()
         self.window.flip()
-
+    
     def run_trial(self, trial):
         """ Runs a single trial of the semantic prediction task """
         
+        height_word = 2 
+
         event.clearEvents()
 
         # get sentence and split into words by space
@@ -995,7 +997,7 @@ class SemanticPrediction(Task):
 
         #show words seqeuntially each for 800ms
         for word in words:
-            word_stim = visual.TextStim(self.window, text=word, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height=2)
+            word_stim = visual.TextStim(self.window, text=word, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height=height_word)
             word_stim.draw()
             self.window.flip()
             self.ttl_clock.wait_until(self.ttl_clock.get_time() + 0.8)
@@ -1003,12 +1005,7 @@ class SemanticPrediction(Task):
         event.clearEvents()
 
         # Display last word
-
-        last_word = [trial['right_word'], trial['wrong_word']]
-
-        displayed_word = random.choice(last_word)
-
-        last_word_stim = visual.TextStim(self.window, text=displayed_word, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=30)
+        last_word_stim = visual.TextStim(self.window, text=trial['last_word'], pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height= height_word, wrapWidth=30)
         last_word_stim.draw()
         self.window.flip()
 
@@ -1024,7 +1021,6 @@ class SemanticPrediction(Task):
         return trial
     
     #visual search runs (need to add more than one shape on screen at a time)
-    
 
 class VisualSearch(Task):
 
@@ -1035,7 +1031,6 @@ class VisualSearch(Task):
     def __init__(self, info, screen, ttl_clock, const, subj_id):
         super().__init__(info, screen, ttl_clock, const, subj_id)
         self.feedback_type = 'acc'
-
 
     def init_task(self):
         """

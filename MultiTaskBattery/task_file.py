@@ -6,6 +6,8 @@ import pandas as pd
 import numpy as np
 import random
 import MultiTaskBattery.utils as ut
+import subprocess
+
 
 def shuffle_rows(dataframe):
     """
@@ -104,6 +106,7 @@ class NBack(TaskFile):
             trial['key_match'] = responses[0]
             trial['key_nomatch'] = responses[1]
             # Determine if this should be N-2 repetition trial
+    
             if n<2:
                 trial['trial_type'] = 0
             else:
@@ -894,7 +897,7 @@ class SemanticPrediction(TaskFile):
         end_row = run_number * 2 - 1
         stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
 
-        for n in range(n_trials):
+        for n in range(n_trials):        
             trial = {}
             trial['key_true'] = responses[0]
             trial['key_false'] = responses[1]
@@ -903,17 +906,13 @@ class SemanticPrediction(TaskFile):
             trial['trial_dur'] = trial_dur
             trial['sentence_dur'] = sentence_dur
             trial['sentence'] = stim['sentence'][n]
-            trial['right_word'] = stim['right_word'][n]
-            trial['wrong_word'] = stim['wrong_word'][n]
+            trial['trial_type'] = random.choice([0,1]) 
+            last_word = [stim['wrong_word'][n], stim['right_word'][n]]
+            trial['last_word'] = last_word[trial['trial_type']]
             trial['display_trial_feedback'] = True
             trial['start_time'] = t
             trial['end_time'] = t + trial_dur 
-            last_word = [trial['right_word'], trial['wrong_word']]
-            displayed_word = random.choice(last_word)
-            if str(stim['right_word'][n])==displayed_word:
-               trial['trial_type'] = 1
-            else:
-               trial['trial_type'] = 0
+
             trial_info.append(trial)
 
             # Update for next trial:
