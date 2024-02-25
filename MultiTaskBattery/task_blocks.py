@@ -1038,18 +1038,36 @@ class VisualSearch(Task):
         """
         trial_info_file = self.const.task_dir / self.name / self.task_file
         self.trial_info = pd.read_csv(trial_info_file, sep='\t')
+
+        # Define aperture size and positions
+        aperture_radius = 400  # Adjust as needed
+        aperture_positions = [(-5, 0), (5, 0)]  # creates two apertures 
+
+        # Create circular apertures 
+        self.apertures = []
+        for pos in aperture_positions:
+            aperture = visual.Aperture(self.window, size=aperture_radius * 2, shape='circle', pos=pos, units='pix')
+            self.apertures.append(aperture)
+
+    def generate_trial_stimuli(self):
         self.stim=[]
-        for stim in self.trial_info['stim']:
+
+        for stim, aperture in zip(self.trial_info['stim'], self.apertures):
             stim_path = self.const.stim_dir / self.name / stim
-            random_x = random.uniform(-5,5)  # Random x-coordinate within screen width
-            random_y = random.uniform(-5,5)  # Random y-coordinate within screen height
-            self.stim.append(visual.ImageStim(self.window, str(stim_path), pos=(random_x, random_y)))
-        self.corr_key = [self.trial_info['key_false'].iloc[0],self.trial_info['key_true'].iloc[0]]
+            aperture_radius = aperture.size[0]/2
+            random_x = random.uniform(-aperture_radius/100, aperture_radius/100)  # Random x-coordinate within screen width
+            random_y = random.uniform(-aperture_radius/100, aperture_radius/100)  # Random y-coordinate within screen height
+            stimulus = visual.ImageStim(self.window, str(stim_path), pos=(random_x, random_y))
+            stimulus.setPos([random_x + aperture.pos[0], random_y + aperture.pos[1]])
+            self.stim.append((stimulus, aperture))
 
     def display_instructions(self):
         """
         displays the instruction for the task
         """
+
+        self.corr_key = [self.trial_info['key_false'].iloc[0],self.trial_info['key_true'].iloc[0]]
+
         str1 = f"You will survey a series of shapes and identify whether the letter ‘L’ is present."
         str2 = f"If 'L' is present, press {self.corr_key[1]}"
         str3 = f"if 'L' is not present, press {self.corr_key[0]}"
@@ -1065,8 +1083,12 @@ class VisualSearch(Task):
         # Flush any keys in buffer
         event.clearEvents()
 
+        self.generate_trial_stimuli()
+
         # display stimulus
-        self.stim[trial['trial_num']].draw()
+        for stimulus, aperture in self.stim:
+            stimulus.draw()  # Draw the stimulus within the aperture
+            stimulus.setPos(aperture.pos)
         self.window.flip()
 
         # collect responses 
