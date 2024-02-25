@@ -1041,9 +1041,10 @@ class VisualSearch(Task):
         self.stim=[]
         for stim in self.trial_info['stim']:
             stim_path = self.const.stim_dir / self.name / stim
-            self.stim.append(visual.ImageStim(self.window, str(stim_path)))
+            random_x = random.uniform(-5,5)  # Random x-coordinate within screen width
+            random_y = random.uniform(-5,5)  # Random y-coordinate within screen height
+            self.stim.append(visual.ImageStim(self.window, str(stim_path), pos=(random_x, random_y)))
         self.corr_key = [self.trial_info['key_false'].iloc[0],self.trial_info['key_true'].iloc[0]]
-
 
     def display_instructions(self):
         """
@@ -1056,7 +1057,7 @@ class VisualSearch(Task):
         instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
         instr_visual.draw()
         self.window.flip()
-    
+
     def run_trial(self,trial):
         """Runs a single trial of visual search task
         """

@@ -25,7 +25,7 @@ class Screen:
                              fullscr = self.fullscr,
                              units = self.units,
                              color = self.color,
-                             allowGUI = self.allowGUI)
+                             allowGUI = self.allowGUI, allowStencil=True)
 
     def fixation_cross(self, color='white', flip=True):
         # Draw the fixation cross
