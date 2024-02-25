@@ -940,7 +940,7 @@ class VisualSearch(TaskFile):
                         task_dur =  30,
                         trial_dur = 2,
                         iti_dur   = 0.5,
-                        stim = ['90.png','180.png','270.png','360.png', 'T.png'],
+                        stim = ['90.png','180.png','270.png','360.png'],
                         file_name = None ):
         n_trials = int(np.floor(task_dur / (trial_dur+iti_dur)))
         trial_info = []
@@ -973,3 +973,5 @@ class VisualSearch(TaskFile):
         if file_name is not None:
             trial_info.to_csv(self.task_dir / self.name / file_name,sep='\t',index=False)
         return trial_info
+
+
