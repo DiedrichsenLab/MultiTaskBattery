@@ -1039,11 +1039,11 @@ class VisualSearch(Task):
         trial_info_file = self.const.task_dir / self.name / self.task_file
         self.trial_info = pd.read_csv(trial_info_file, sep='\t')
 
-        # Define aperture size and positions
+        # Define easy aperture size and positions
         easy_aperture_radius = 530  
         easy_aperture_positions = [(-5, 0), (0,0), (5, 0), (10,0)]  # creates four apertures 
 
-        # Create circular apertures 
+        # Create easy circular apertures 
         self.easy_apertures = []
         for pos in easy_aperture_positions:
             easy_aperture = visual.Aperture(self.window, size=easy_aperture_radius * 2, shape='circle', pos=pos, units='pix')
