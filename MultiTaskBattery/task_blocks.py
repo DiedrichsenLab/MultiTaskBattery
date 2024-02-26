@@ -1113,7 +1113,7 @@ class VisualSearch(Task):
             self.generate_hard_trial_stimuli()
             stimuli = self.hard_stim
 
-        self.screen.fixation_cross(flip=False)  # Display fixation cross for 1 second
+        self.screen.fixation_cross(flip=False)  #show fixation cross in center of screen
 
         # Display stimuli
         for stimulus, aperture in stimuli:
