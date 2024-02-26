@@ -1103,10 +1103,10 @@ class VisualSearch(Task):
         
         # Flush any keys in buffer
         event.clearEvents()
-
-        is_easy_trial = random.choice([True, False])
         
-        if is_easy_trial:
+        trial_difficulty = self.trial_info.loc[trial['trial_num'], 'difficulty']        
+        
+        if trial_difficulty == 'easy':
             self.generate_easy_trial_stimuli()
             stimuli = self.easy_stim
         else:
