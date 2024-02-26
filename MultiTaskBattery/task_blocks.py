@@ -1043,23 +1043,44 @@ class VisualSearch(Task):
         easy_aperture_radius = 530  
         easy_aperture_positions = [(-5, 0), (0,0), (5, 0), (10,0)]  # creates four apertures 
 
+        hard_aperture_radius = 530
+        hard_aperture_positions = [(-10,0), (-8,0), (-6,0), (-4,0), (-2,0), (0,0), (2,0), (4,0), (6,0), (8,0)] #creates 10 apertures 
+       
         # Create easy circular apertures 
         self.easy_apertures = []
         for pos in easy_aperture_positions:
             easy_aperture = visual.Aperture(self.window, size=easy_aperture_radius * 2, shape='circle', pos=pos, units='pix')
             self.easy_apertures.append(easy_aperture)
 
+        #create hard circular apertures
+        self.hard_apertures = []
+        for pos in hard_aperture_positions:
+            hard_aperture = visual.Aperture(self.window, size=hard_aperture_radius*2, shape='circle', pos=pos, units='pix')
+            self.hard_apertures.append(hard_aperture)
+
     def generate_easy_trial_stimuli(self):
         self.stim=[]
 
         for stim, easy_aperture in zip(self.trial_info['stim'], self.easy_apertures):
             stim_path = self.const.stim_dir / self.name / stim
-            aperture_radius = easy_aperture.size[0]/2
-            random_x = random.uniform(-aperture_radius/250, aperture_radius/250)  # Random x-coordinate within screen width
-            random_y = random.uniform(-aperture_radius/250, aperture_radius/250)  # Random y-coordinate within screen height
+            easy_aperture_radius = easy_aperture.size[0]/2
+            random_x = random.uniform(-easy_aperture_radius/250, easy_aperture_radius/250)  # Random x-coordinate within screen width
+            random_y = random.uniform(-easy_aperture_radius/250, easy_aperture_radius/250)  # Random y-coordinate within screen height
             stimulus = visual.ImageStim(self.window, str(stim_path), pos=(random_x, random_y), size=(0.8,0.8))
             stimulus.setPos([random_x + easy_aperture.pos[0], random_y + easy_aperture.pos[1]])
             self.stim.append((stimulus, easy_aperture))
+
+    def generate_hard_trial_stimuli(self):
+        self.stim=[]
+
+        for stim, hard_aperture in zip(self.trial_info['stim'], self.hard_apertures):
+            stim_path = self.const.stim_dir / self.name / stim
+            hard_aperture_radius = hard_aperture.size[0]/2
+            random_x = random.uniform(-hard_aperture_radius/600, hard_aperture_radius/600)  # Random x-coordinate within screen width
+            random_y = random.uniform(-hard_aperture_radius/100, hard_aperture_radius/100)  # Random y-coordinate within screen height
+            stimulus = visual.ImageStim(self.window, str(stim_path), pos=(random_x, random_y), size=(0.8,0.8))
+            stimulus.setPos([random_x + hard_aperture.pos[0], random_y + hard_aperture.pos[1]])
+            self.stim.append((stimulus, hard_aperture))
 
     def display_instructions(self):
         """
@@ -1083,7 +1104,7 @@ class VisualSearch(Task):
         # Flush any keys in buffer
         event.clearEvents()
 
-        self.generate_easy_trial_stimuli()
+        self.generate_hard_trial_stimuli()
 
         # display stimulus
         for stimulus, easy_aperture in self.stim:
