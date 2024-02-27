@@ -951,7 +951,7 @@ class VisualSearch(TaskFile):
             trial['iti_dur'] = iti_dur
             trial['display_trial_feedback'] = True 
             trial['trial_type'] = random.choice([0,1]) 
-            trial['stim'] = stim[np.random.randint(0, len(stim))]
+            trial['stim'] = stim
             trial['difficulty'] = 'easy' if random.random() < easy_prob else 'hard'  # Randomly select difficulty
             trial['display_trial_feedback'] = True
             trial['feedback_type'] = 'acc'
@@ -966,5 +966,3 @@ class VisualSearch(TaskFile):
         if file_name is not None:
             trial_info.to_csv(self.task_dir / self.name / file_name,sep='\t',index=False)
         return trial_info
-
-
