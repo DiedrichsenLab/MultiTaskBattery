@@ -951,12 +951,20 @@ class VisualSearch(TaskFile):
             trial['iti_dur'] = iti_dur
             trial['display_trial_feedback'] = True 
             trial['trial_type'] = random.choice([0,1]) 
-            trial['stim'] = stim
+            trial['stim'] = stim[np.random.randint(0, len(stim))]
             trial['difficulty'] = 'easy' if random.random() < easy_prob else 'hard'  # Randomly select difficulty
             trial['display_trial_feedback'] = True
             trial['feedback_type'] = 'acc'
             trial['start_time'] = t
             trial['end_time'] = t + trial_dur + iti_dur
+
+             # Determine the number of stimuli to display based on trial difficulty
+            num_stimuli = 4 if trial['difficulty'] == 'easy' else 8
+
+            # Randomly select stimuli indices
+            displayed_stim_indices = np.random.choice(len(stim), num_stimuli, replace=True)
+            displayed_stim = [stim[i] for i in displayed_stim_indices]
+            trial['displayed_stim'] = displayed_stim
             trial_info.append(trial)
 
             # Update for next trial:
