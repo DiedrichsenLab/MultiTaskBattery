@@ -1109,12 +1109,15 @@ class VisualSearch(Task):
         event.clearEvents()
         
         trial_difficulty = self.trial_info.loc[trial['trial_num'], 'difficulty']        
+
+        displayed_stim = self.trial_info.loc[trial['trial_num'], 'displayed_stim']
+
         
         if trial_difficulty == 'easy':
-            self.generate_easy_trial_stimuli()
+            self.generate_easy_trial_stimuli(displayed_stim)
             stimuli = self.easy_stim
         else:
-            self.generate_hard_trial_stimuli()
+            self.generate_hard_trial_stimuli() #fix this line
             stimuli = self.hard_stim
 
         self.screen.fixation_cross(flip=False)  #show fixation cross in center of screen
