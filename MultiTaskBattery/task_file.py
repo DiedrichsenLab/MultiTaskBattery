@@ -964,6 +964,7 @@ class VisualSearch(TaskFile):
             # Randomly select stimuli indices
             displayed_stim_indices = np.random.choice(len(stim), num_stimuli, replace=True)
             displayed_stim = [stim[i] for i in displayed_stim_indices]
+            
             trial['displayed_stim'] = displayed_stim
             trial_info.append(trial)
 
