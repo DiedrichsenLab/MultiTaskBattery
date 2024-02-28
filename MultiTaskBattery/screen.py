@@ -1,4 +1,4 @@
-# created 2023: Bassel Arafat, Jorn Diedrichsen, Ince Hussain
+# created 2023: Bassel Arafat, Jorn Diedrichsen, Ince Husain
 from psychopy import visual, monitors
 
 class Screen:

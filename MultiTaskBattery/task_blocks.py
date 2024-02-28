@@ -1020,8 +1020,6 @@ class SemanticPrediction(Task):
 
         return trial
     
-    #visual search runs (need to add more than one shape on screen at a time)
-
 class VisualSearch(Task):
 
     """
@@ -1114,7 +1112,7 @@ class VisualSearch(Task):
 
         
         if trial_difficulty == 'easy':
-            self.generate_easy_trial_stimuli(displayed_stim)
+            self.generate_easy_trial_stimuli()
             stimuli = self.easy_stim
         else:
             self.generate_hard_trial_stimuli() #fix this line
@@ -1136,3 +1134,154 @@ class VisualSearch(Task):
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
 
         return trial
+    
+
+    
+
+
+    ##### ALTERNATE VISUAL SEARCH CODE ATTEMPT 
+
+    #class VisualSearch(Task):
+
+    #"""
+    #Look at a screen filled with shapes and identify whether an "L" is present. Click "3" if the "L" is present; click "4" if not. Be as accurate and fast as possible.
+    #"""
+
+    #def __init__(self, info, screen, ttl_clock, const, subj_id):
+     #   super().__init__(info, screen, ttl_clock, const, subj_id)
+      #  self.feedback_type = 'acc'
+
+   # def init_task(self):
+    #    """
+     #   Initialize task - default is to read the target information into the trial_info dataframe
+      #  """
+       # trial_info_file = self.const.task_dir / self.name / self.task_file
+        #self.trial_info = pd.read_csv(trial_info_file, sep='\t')
+
+        #self.display_instructions()      
+        #core.wait(3.5)
+
+        #Defines 24 apertures 
+        #screen_width = 1100
+        #screen_height = 800
+
+        #define number of rows + col to split screen into 24 apertures
+        #num_rows = 4
+        #num_cols = 6
+
+        #Define aperture sizes + positions 
+        #aperture_width = screen_width / num_cols
+        #aperture_height = screen_height / num_rows
+
+        #positions_x = np.linspace(-screen_width / 2 + aperture_width / 2, screen_width / 2 - aperture_width / 2, num_cols)
+        #positions_y = np.linspace(-screen_height / 2 + aperture_height / 2, screen_height / 2 - aperture_height / 2, num_rows)
+
+        #store 24 apertures in list 
+        #self.apertures = []
+
+        # Create apertures at each position
+
+        #aperture_positions = []
+
+        #for x in positions_x:
+         #   for y in positions_y:
+          #      aperture = visual.Aperture(self.window, size=(aperture_width, aperture_height), pos=(x, y))
+           #     self.apertures.append(aperture)
+            #    aperture_positions.append((x, y))
+
+    #def display_instructions(self):
+      #  """
+     #   displays the instruction for the task
+       # """
+
+        #self.corr_key = [self.trial_info['key_false'].iloc[0],self.trial_info['key_true'].iloc[0]]
+
+        #str1 = f"You will survey a series of shapes and identify whether the letter ‘L’ is present."
+        #str2 = f"If 'L' is present, press {self.corr_key[1]}"
+        #str3 = f"if 'L' is not present, press {self.corr_key[0]}"
+        #self.instruction_text = f"{self.name} task\n\n {str1} \n {str2} \n {str3}"
+        #instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
+
+      #  instr_visual.draw()
+      #  self.window.flip()
+
+    #def generate_easy_trial_stimuli(self):
+
+        #places each randomly chosen stimulus in a randomly chosen aperture 
+
+     #   easy_stimulus_list = []
+                
+        #this generates 12 stimuli 
+
+      #  for stim in self.trial_info['stim']:
+       #     stim_path = self.const.stim_dir / self.name / stim
+        #    stimulus = visual.ImageStim(self.window, str(stim_path), size=(0.8, 0.8))
+         #   easy_stimulus_list.append(stimulus)
+
+        #selected_stimuli = random.sample(easy_stimulus_list, 4)
+        #shuffled_apertures = random.sample(self.apertures, len(self.apertures))
+
+        #self.easy_displayed_stimuli = []
+
+        #stim_pos_in_aperture = []
+
+        #for stimulus, aperture in zip(selected_stimuli, shuffled_apertures):
+         #   stim_pos_in_aperture.append(aperture.pos)
+          #  self.easy_displayed_stimuli.append((stimulus, aperture.pos))
+
+    #def generate_hard_trial_stimuli(self):
+        
+     #   hard_stimulus_list = []
+                
+      #  for stim in self.trial_info['stim']:
+       #     stim_path = self.const.stim_dir / self.name / stim
+        #    stimulus = visual.ImageStim(self.window, str(stim_path), size=(0.8, 0.8))
+         #   hard_stimulus_list.append(stimulus)
+
+        #selected_stimuli = random.sample(hard_stimulus_list, 8)
+        #shuffled_apertures = random.sample(self.apertures, len(self.apertures))
+
+        #self.hard_displayed_stimuli = []
+
+        #stim_pos_in_aperture = []
+
+        #for stimulus, aperture in zip(selected_stimuli, shuffled_apertures):
+        #    stim_pos_in_aperture.append(aperture.pos)
+         #   self.hard_displayed_stimuli.append((stimulus, aperture.pos))
+
+    #def run_trial(self,trial):
+     #   """Runs a single trial of visual search task
+      #  """
+        
+        # Flush any keys in buffer
+       # event.clearEvents()
+        
+       # trial_difficulty = self.trial_info.loc[trial['trial_num'], 'difficulty']  
+
+        #displayed_stim = self.trial_info.loc[trial['trial_num'], 'displayed_stim']
+        
+       # if trial_difficulty == 'easy':
+        #    self.generate_easy_trial_stimuli()
+         #   stimuli = self.easy_displayed_stimuli 
+       # else:
+        #    self.generate_hard_trial_stimuli() #fix this line
+         #   stimuli = self.hard_displayed_stimuli
+
+        #self.screen.fixation_cross(flip=False)  #show fixation cross in center of screen
+            
+
+        # Display stimuli
+            
+        #for stimulus, aperture in stimuli:
+         #   stimulus.setPos(aperture.pos)  
+          #  stimulus.draw()  # Draw the stimulus at the specified position
+            
+        #self.window.flip()
+
+        # collect responses 
+        #trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['trial_dur'])
+        #trial['correct'] = (trial['response'] == self.corr_key[trial['trial_type']])
+        
+        #self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
+
+        #return trial
