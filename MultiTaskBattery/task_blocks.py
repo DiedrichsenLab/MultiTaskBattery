@@ -1080,10 +1080,10 @@ class VisualSearch(Task):
 
         self.trial_counter+=1
 
-        random_apertures = random.sample(self.apertures, num_stimuli)
-        random_apertures = random.sample(self.apertures, num_stimuli)
+        randomly_select_apertures = random.sample(self.apertures, num_stimuli)
+        randomly_select_apertures = random.sample(self.apertures, num_stimuli)
 
-        for aperture in random_apertures:
+        for aperture in randomly_select_apertures:
             if is_target:
                 stim_current = stim_images[0] #sets a display with at least one target 
                 is_target = False 
@@ -1118,7 +1118,7 @@ class VisualSearch(Task):
         # Flush any keys in buffer
         event.clearEvents()
         
-        num_stimuli = self.trial_info.loc[trial['trial_num'], 'num_stimuli']        
+        num_stimuli = self.trial_info.loc[trial['trial_num'], 'num_stimuli']  #indicates if trial is easy (4 stimuli) or hard (8 stimuli) 
 
         self.generate_trial_stimuli(num_stimuli)
 
