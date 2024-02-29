@@ -1037,53 +1037,65 @@ class VisualSearch(Task):
         trial_info_file = self.const.task_dir / self.name / self.task_file
         self.trial_info = pd.read_csv(trial_info_file, sep='\t')
 
-        # Defines 4 easy condition apertures size and positions
-        easy_aperture_radius = 530  
-        easy_aperture_positions = [(-10, 0), (-5,0), (5, 0), (10,0)]  
-
-        # Defines 8 hard condition apertures size and positions
-
-        hard_aperture_radius = 530
-        hard_aperture_positions = [(-8,0), (-6,0), (-4,0), (-2,0), (2,0), (4,0), (6,0), (8,0)] #creates 8 apertures 
-       
-        # Creates 4 easy condition circular apertures 
-        self.easy_apertures = []
-        for pos in easy_aperture_positions:
-            easy_aperture = visual.Aperture(self.window, size=easy_aperture_radius * 2, shape='circle', pos=pos, units='pix')
-            self.easy_apertures.append(easy_aperture)
-
-        #creates 8 hard condition circular apertures
-        self.hard_apertures = []
-        for pos in hard_aperture_positions:
-            hard_aperture = visual.Aperture(self.window, size=hard_aperture_radius*2, shape='circle', pos=pos, units='pix')
-            self.hard_apertures.append(hard_aperture)
-
-    def generate_easy_trial_stimuli(self):
-        self.easy_stim=[]
-
-        #places each stimulus in an easy condition aperture at a random position for each trial 
-
-        for stim, easy_aperture in zip(self.trial_info['stim'], self.easy_apertures):
-            stim_path = self.const.stim_dir / self.name / stim
-            easy_aperture_radius = easy_aperture.size[0]/2
-            random_x = random.uniform(-easy_aperture_radius/250, easy_aperture_radius/250)  # Random x-coordinate within aperture
-            random_y = random.uniform(-easy_aperture_radius/250, easy_aperture_radius/250)  # Random y-coordinate within aperture
-            stimulus = visual.ImageStim(self.window, str(stim_path), pos=(random_x, random_y), size=(0.8,0.8))
-            stimulus.setPos([random_x + easy_aperture.pos[0], random_y + easy_aperture.pos[1]])
-            self.easy_stim.append((stimulus, easy_aperture))
-
-    def generate_hard_trial_stimuli(self):
-        self.hard_stim=[]
-
-        for stim, hard_aperture in zip(self.trial_info['stim'], self.hard_apertures):
-            stim_path = self.const.stim_dir / self.name / stim
-            hard_aperture_radius = hard_aperture.size[0]/2
-            random_x = random.uniform(-hard_aperture_radius/650, hard_aperture_radius/650) 
-            random_y = random.uniform(-hard_aperture_radius/100, hard_aperture_radius/100)  
-            stimulus = visual.ImageStim(self.window, str(stim_path), pos=(random_x, random_y), size=(0.8,0.8))
-            stimulus.setPos([random_x + hard_aperture.pos[0], random_y + hard_aperture.pos[1]])
-            self.hard_stim.append((stimulus, hard_aperture))
+        #counter initialized in order to read whether trial_type is true or not for each trial; used in generate_trial_stimuli 
+        self.trial_counter = 0 
         
+        #width and height determined by trial and error: x extremity of window is 14; y extremity is 10 
+        screen_width = 28
+        screen_height = 20
+
+        #define number of rows + col to split screen into 24 apertures
+        num_rows = 4
+        num_cols = 6
+
+        #Define aperture sizes + positions 
+        aperture_width = screen_width / num_cols
+        aperture_height = screen_height / num_rows
+
+        positions_x = np.linspace(-screen_width / 2 + aperture_width / 2, screen_width / 2 - aperture_width / 2, num_cols)
+        positions_y = np.linspace(-screen_height / 2 + aperture_height / 2, screen_height / 2 - aperture_height / 2, num_rows)
+
+        aperture_positions = []
+
+        for y in positions_y:
+            for x in positions_x:
+                aperture_positions.append((x, y))
+        
+        self.apertures = []
+        for pos in aperture_positions:
+            apertures = visual.Aperture(self.window, size=40, shape = 'rectangle', pos=pos, units='norm')
+            self.apertures.append(apertures)
+
+    def generate_trial_stimuli(self, num_stimuli):
+
+        stim_images = ['90.png','180.png','270.png','360.png']
+
+        self.stim = []
+        
+        is_target = True #determines whether target will appear on screen 
+
+        if self.trial_info['trial_type'][self.trial_counter] == 0: 
+            stim_images.remove('90.png') #sets a display with no target 
+            is_target = False 
+
+        self.trial_counter+=1
+
+        random_apertures = random.sample(self.apertures, num_stimuli)
+        random_apertures = random.sample(self.apertures, num_stimuli)
+
+        for aperture in random_apertures:
+            if is_target:
+                stim_current = stim_images[0] #sets a display with at least one target 
+                is_target = False 
+            else: 
+                stim_random_idx = random.randint(0, len(stim_images)-1)  #chooses random stimuli from stim_images list 
+                stim_current = stim_images[stim_random_idx]
+
+            stim_path = self.const.stim_dir/ self.name / stim_current
+            stimulus = visual.ImageStim(self.window, str(stim_path), size=(0.8,0.8))
+            stimulus.setPos([aperture.pos[0], aperture.pos[1]]) #puts stimuli within apertures 
+            self.stim.append(stimulus) #creates list of all randomly selected stimuli 
+
     def display_instructions(self):
         """
         displays the instruction for the task
@@ -1106,24 +1118,15 @@ class VisualSearch(Task):
         # Flush any keys in buffer
         event.clearEvents()
         
-        trial_difficulty = self.trial_info.loc[trial['trial_num'], 'difficulty']        
+        num_stimuli = self.trial_info.loc[trial['trial_num'], 'num_stimuli']        
 
-        displayed_stim = self.trial_info.loc[trial['trial_num'], 'displayed_stim']
-
-        
-        if trial_difficulty == 'easy':
-            self.generate_easy_trial_stimuli()
-            stimuli = self.easy_stim
-        else:
-            self.generate_hard_trial_stimuli() #fix this line
-            stimuli = self.hard_stim
+        self.generate_trial_stimuli(num_stimuli)
 
         self.screen.fixation_cross(flip=False)  #show fixation cross in center of screen
 
         # Display stimuli
-        for stimulus, aperture in stimuli:
+        for stimulus in self.stim:
             stimulus.draw()
-            stimulus.setPos(aperture.pos)
 
         self.window.flip()
 
@@ -1134,154 +1137,3 @@ class VisualSearch(Task):
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
 
         return trial
-    
-
-    
-
-
-    ##### ALTERNATE VISUAL SEARCH CODE ATTEMPT 
-
-    #class VisualSearch(Task):
-
-    #"""
-    #Look at a screen filled with shapes and identify whether an "L" is present. Click "3" if the "L" is present; click "4" if not. Be as accurate and fast as possible.
-    #"""
-
-    #def __init__(self, info, screen, ttl_clock, const, subj_id):
-     #   super().__init__(info, screen, ttl_clock, const, subj_id)
-      #  self.feedback_type = 'acc'
-
-   # def init_task(self):
-    #    """
-     #   Initialize task - default is to read the target information into the trial_info dataframe
-      #  """
-       # trial_info_file = self.const.task_dir / self.name / self.task_file
-        #self.trial_info = pd.read_csv(trial_info_file, sep='\t')
-
-        #self.display_instructions()      
-        #core.wait(3.5)
-
-        #Defines 24 apertures 
-        #screen_width = 1100
-        #screen_height = 800
-
-        #define number of rows + col to split screen into 24 apertures
-        #num_rows = 4
-        #num_cols = 6
-
-        #Define aperture sizes + positions 
-        #aperture_width = screen_width / num_cols
-        #aperture_height = screen_height / num_rows
-
-        #positions_x = np.linspace(-screen_width / 2 + aperture_width / 2, screen_width / 2 - aperture_width / 2, num_cols)
-        #positions_y = np.linspace(-screen_height / 2 + aperture_height / 2, screen_height / 2 - aperture_height / 2, num_rows)
-
-        #store 24 apertures in list 
-        #self.apertures = []
-
-        # Create apertures at each position
-
-        #aperture_positions = []
-
-        #for x in positions_x:
-         #   for y in positions_y:
-          #      aperture = visual.Aperture(self.window, size=(aperture_width, aperture_height), pos=(x, y))
-           #     self.apertures.append(aperture)
-            #    aperture_positions.append((x, y))
-
-    #def display_instructions(self):
-      #  """
-     #   displays the instruction for the task
-       # """
-
-        #self.corr_key = [self.trial_info['key_false'].iloc[0],self.trial_info['key_true'].iloc[0]]
-
-        #str1 = f"You will survey a series of shapes and identify whether the letter ‘L’ is present."
-        #str2 = f"If 'L' is present, press {self.corr_key[1]}"
-        #str3 = f"if 'L' is not present, press {self.corr_key[0]}"
-        #self.instruction_text = f"{self.name} task\n\n {str1} \n {str2} \n {str3}"
-        #instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
-
-      #  instr_visual.draw()
-      #  self.window.flip()
-
-    #def generate_easy_trial_stimuli(self):
-
-        #places each randomly chosen stimulus in a randomly chosen aperture 
-
-     #   easy_stimulus_list = []
-                
-        #this generates 12 stimuli 
-
-      #  for stim in self.trial_info['stim']:
-       #     stim_path = self.const.stim_dir / self.name / stim
-        #    stimulus = visual.ImageStim(self.window, str(stim_path), size=(0.8, 0.8))
-         #   easy_stimulus_list.append(stimulus)
-
-        #selected_stimuli = random.sample(easy_stimulus_list, 4)
-        #shuffled_apertures = random.sample(self.apertures, len(self.apertures))
-
-        #self.easy_displayed_stimuli = []
-
-        #stim_pos_in_aperture = []
-
-        #for stimulus, aperture in zip(selected_stimuli, shuffled_apertures):
-         #   stim_pos_in_aperture.append(aperture.pos)
-          #  self.easy_displayed_stimuli.append((stimulus, aperture.pos))
-
-    #def generate_hard_trial_stimuli(self):
-        
-     #   hard_stimulus_list = []
-                
-      #  for stim in self.trial_info['stim']:
-       #     stim_path = self.const.stim_dir / self.name / stim
-        #    stimulus = visual.ImageStim(self.window, str(stim_path), size=(0.8, 0.8))
-         #   hard_stimulus_list.append(stimulus)
-
-        #selected_stimuli = random.sample(hard_stimulus_list, 8)
-        #shuffled_apertures = random.sample(self.apertures, len(self.apertures))
-
-        #self.hard_displayed_stimuli = []
-
-        #stim_pos_in_aperture = []
-
-        #for stimulus, aperture in zip(selected_stimuli, shuffled_apertures):
-        #    stim_pos_in_aperture.append(aperture.pos)
-         #   self.hard_displayed_stimuli.append((stimulus, aperture.pos))
-
-    #def run_trial(self,trial):
-     #   """Runs a single trial of visual search task
-      #  """
-        
-        # Flush any keys in buffer
-       # event.clearEvents()
-        
-       # trial_difficulty = self.trial_info.loc[trial['trial_num'], 'difficulty']  
-
-        #displayed_stim = self.trial_info.loc[trial['trial_num'], 'displayed_stim']
-        
-       # if trial_difficulty == 'easy':
-        #    self.generate_easy_trial_stimuli()
-         #   stimuli = self.easy_displayed_stimuli 
-       # else:
-        #    self.generate_hard_trial_stimuli() #fix this line
-         #   stimuli = self.hard_displayed_stimuli
-
-        #self.screen.fixation_cross(flip=False)  #show fixation cross in center of screen
-            
-
-        # Display stimuli
-            
-        #for stimulus, aperture in stimuli:
-         #   stimulus.setPos(aperture.pos)  
-          #  stimulus.draw()  # Draw the stimulus at the specified position
-            
-        #self.window.flip()
-
-        # collect responses 
-        #trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['trial_dur'])
-        #trial['correct'] = (trial['response'] == self.corr_key[trial['trial_type']])
-        
-        #self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
-
-        #return trial
