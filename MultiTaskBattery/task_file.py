@@ -934,7 +934,6 @@ class VisualSearch(TaskFile):
                         task_dur =  30,
                         trial_dur = 2,
                         iti_dur   = 0.5,
-                        stim = ['90.png','180.png','270.png','360.png'],
                         easy_prob=0.5,
                         file_name = None ):
         n_trials = int(np.floor(task_dur / (trial_dur+iti_dur)))
@@ -951,21 +950,15 @@ class VisualSearch(TaskFile):
             trial['iti_dur'] = iti_dur
             trial['display_trial_feedback'] = True 
             trial['trial_type'] = random.choice([0,1]) 
-            trial['stim'] = stim[np.random.randint(0, len(stim))]
-            trial['difficulty'] = 'easy' if random.random() < easy_prob else 'hard'  # Randomly select difficulty
+            trial['num_stimuli'] = '4' if random.random() < easy_prob else '8'  # Randomly select difficulty
             trial['display_trial_feedback'] = True
             trial['feedback_type'] = 'acc'
             trial['start_time'] = t
             trial['end_time'] = t + trial_dur + iti_dur
 
              # Determine the number of stimuli to display based on trial difficulty
-            num_stimuli = 4 if trial['difficulty'] == 'easy' else 8
+            num_stimuli = 4 if trial['num_stimuli'] == '4' else 8
 
-            # Randomly select stimuli indices
-            displayed_stim_indices = np.random.choice(len(stim), num_stimuli, replace=True)
-            displayed_stim = [stim[i] for i in displayed_stim_indices]
-            
-            trial['displayed_stim'] = displayed_stim
             trial_info.append(trial)
 
             # Update for next trial:
