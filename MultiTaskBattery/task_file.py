@@ -84,7 +84,7 @@ class NBack(TaskFile):
         self.name = 'n_back'
 
     def make_task_file(self,
-                        hand = 'right',
+                        hand = 'left',
                         responses = [1,2], # 1 = match, 2 = no match
                         task_dur =  30,
                         trial_dur = 2,
@@ -358,7 +358,7 @@ class TheoryOfMind(TaskFile):
         super().__init__(const)
         self.name = 'theory_of_mind'
 
-    def make_task_file(self, hand='right',
+    def make_task_file(self, hand='left',
                        responses = [1,2], # 1 = True, 2 = False
                        run_number=None,
                        task_dur=30,
@@ -874,7 +874,7 @@ class SemanticPrediction(TaskFile):
         super().__init__(const)
         self.name = 'semantic_prediction'
 
-    def make_task_file(self, hand='right',
+    def make_task_file(self, hand='left',
                        responses = [1,2], # 1 = True, 2 = False
                        run_number=None,
                        task_dur=30,
@@ -929,7 +929,7 @@ class VisualSearch(TaskFile):
         self.name = 'visual_search'
 
     def make_task_file(self,
-                        hand = 'right',
+                        hand = 'left',  #to recode for alternating hands: put left here, and put 3,4 in responses
                         responses = [1,2], # 1 = match, 2 = no match
                         task_dur =  30,
                         trial_dur = 2,

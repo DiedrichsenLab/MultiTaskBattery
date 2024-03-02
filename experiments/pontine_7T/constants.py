@@ -8,7 +8,18 @@ import MultiTaskBattery as mtb
 exp_name = 'pontine_7T'
 
 # Response key assignment:
+
+# Response key assignment:
+
+#UNCOMMENT THIS FOR SCANNING 
+#response_keys    = ['y', 'g', 'r', 'm'] # scanner keys
+
+
+#COMMENT THIS FOR SCANNING 
+
 response_keys    = ['a', 's', 'd', 'f']
+
+#not used
 response_fingers = ['Pinky', 'Ring','Middle', 'Index']
 
 # Directory definitions for experiment
