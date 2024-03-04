@@ -10,7 +10,7 @@ A|gas|lamp|is|always|a|good|source|of,0.89,peele,1.75,0.9574271077563381,strong 
 A|good|combination|of|flavors|can|be|sweet|and,0.51,peele,1.0,0.0,strong non-CoRT,sour,steak,9,medium cloze
 A|good|way|to|exercise|is|to|ride|a,0.9,block_baldwin,3.0,1.4142135623730951,ambiguous,bike,wall,9,high cloze
 "A|hasty|person,|Andre|was|known|for|his|brisk",0.38,peele,2.3333333333333335,1.505545305418162,ambiguous,walk,cough,9,low cloze
-A|large|stone|blocked|the|entrance|to|the,0.36,block_baldwin,1.6666666666666667,1.0327955589886446,strong non-CoRT,cave,back,8,low cloze
+A|large|stone|blocked|the|entrance|to|the,0.36,block_baldwin,1.6666666666666667,1.0327955589886446,strong non-CoRT,cave,lemon,8,low cloze
 "A|natural|leader,|Eve|was|a|great|hospital",0.31,peele,1.8,1.7888543819998317,strong non-CoRT,administrator,tub,8,low cloze
 A|nearby|woman|sprayed|the|robber|with,0.8,peele,4.0,0.7071067811865476,strong CoRT,acid,budge,7,high cloze
 A|pirate's|favorite|alcoholic|drink|is|aged,0.57,peele,1.75,0.9574271077563381,strong non-CoRT,rum,late,7,medium cloze
