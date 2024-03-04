@@ -16,5 +16,7 @@ intact_passage	IntactPassage	intpass
 demand_grid	DemandGrid	dmgrd		
 finger_sequence	FingerSequence	fingseq		
 flexion_extension	FlexionExtension	flexexten	alternating periods of flexing/extending toes	
+sencoding	Sencoding	Sencod		
+sencoding_probe	SencodingProbe	Sencodeprob		
 semantic_prediction	SemanticPrediction	sempred	"sentence presented, participants decide if last word makes sense."
 visual_search	VisualSearch	visearch	"geometric shapes presented on screen, participants must identify if 'L' is present."
