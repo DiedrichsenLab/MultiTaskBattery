@@ -359,7 +359,7 @@ class TheoryOfMind(TaskFile):
         self.name = 'theory_of_mind'
 
     def make_task_file(self, hand='left',
-                       responses = [4,3], # 4 = True, 3 = False
+                       responses = [4,3], # 1 = True, 2 = False
                        run_number=None,
                        task_dur=30,
                         trial_dur=14,

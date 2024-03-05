@@ -1094,7 +1094,9 @@ class SemanticPrediction(Task):
         event.clearEvents()
 
         # Display last word
-        last_word_stim = visual.TextStim(self.window, text=trial['last_word'], pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height= height_word, wrapWidth=30)
+        str_period = f"."
+        last_word_with_period = trial['last_word'] + str_period 
+        last_word_stim = visual.TextStim(self.window, text=last_word_with_period, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height= height_word, wrapWidth=30)
         last_word_stim.draw()
         self.window.flip()
 
