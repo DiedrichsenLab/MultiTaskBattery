@@ -4,11 +4,11 @@ from psychopy import visual, monitors
 class Screen:
     def __init__(self, const):
         self.fullscr  = const['fullscr']
-        self.units    = 'deg'
+        self.units    = 'deg'               
         self.color    = '#808080'
         self.size     = const['size'] #[800, 800] #[1440, 900]
-        self.distance = 57.0
-        self.width    = 30.0
+        self.distance = 57.0 
+        self.width    = 30.0 
         self.allowGUI = True
         self.screen_number = const['number']
         self.monitor  = monitors.Monitor(

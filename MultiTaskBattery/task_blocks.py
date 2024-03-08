@@ -1154,7 +1154,7 @@ class VisualSearch(Task):
         
         self.apertures = []
         for pos in aperture_positions:
-            apertures = visual.Aperture(self.window, size=40, shape = 'rectangle', pos=pos, units='norm')
+            apertures = visual.Aperture(self.window, size=40, shape = 'rectangle', pos=pos, units='norm')  #units should be in degrees.. 
             self.apertures.append(apertures)
 
     def generate_trial_stimuli(self, num_stimuli):
