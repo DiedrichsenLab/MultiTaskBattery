@@ -8,7 +8,6 @@ import random
 import MultiTaskBattery.utils as ut
 import subprocess
 
-
 def shuffle_rows(dataframe):
     """
     randomly shuffles rows of the dataframe

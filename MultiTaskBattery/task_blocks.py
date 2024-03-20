@@ -175,7 +175,7 @@ class NBack(Task):
         str2 = f"if match, press {self.corr_key[1]}"
         str3 = f"if no match, press {self.corr_key[0]}"
         self.instruction_text = f"{self.name} task\n\n {str1} \n {str2} \n {str3}"
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1], height=1.2)
         instr_visual.draw()
         self.window.flip()
 
@@ -212,7 +212,7 @@ class Rest(Task):
 
     def display_instructions(self): # overriding the display instruction routine from the parent
         self.instruction_text = 'Rest: Fixate on the cross'
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1], height = 1.3)
         # instr.size = 0.8
         instr_visual.draw()
         self.window.flip()
@@ -346,7 +346,7 @@ class RomanceMovie(Task):
 
     def display_instructions(self):
         self.instruction_text = f"{self.name} Task\n\n You will watch short clips from a romance movie. Please keep your head still and pay attention to the screen."
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1], height=1.2)
         instr_visual.draw()
         self.window.flip()
 
@@ -425,7 +425,7 @@ class TheoryOfMind(Task):
         str2 = f"if true, press {self.corr_key[1]}"
         str3 = f"if false, press {self.corr_key[0]}"
         self.instruction_text = f"{self.name} task\n\n {str1} \n {str2} \n {str3}"
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1], height =1.2)
         instr_visual.draw()
         self.window.flip()
 
@@ -521,7 +521,7 @@ class ActionObservation(Task):
 
     def display_instructions(self): # overriding the display instruction from the parent class
         self.instruction_text = f"{self.name} Task \n\n Keep your head still while watching the two clips. \n\n Try and remember the knot shown."
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1], height =1.2)
         instr_visual.draw()
         self.window.flip()
 
@@ -832,7 +832,7 @@ class FingerSequence(Task):
 
     def display_instructions(self):
         self.instruction_text = f"{self.name} task \n\n Using your four fingers, press the keys in the order shown on the screen\n Use all four fingers for this task"
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1], height = 1.2)
         instr_visual.draw()
         self.window.flip()
 
@@ -1014,7 +1014,7 @@ class FlexionExtension(Task):
 
     def display_instructions(self):
         self.instruction_text = f"{self.name} task \n\n Flex and extend your right and left toes"
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1], height=1.2)
         instr_visual.draw()
         self.window.flip()
 
@@ -1069,7 +1069,7 @@ class SemanticPrediction(Task):
         str2 = f"If it makes sense, press {self.corr_key[1]}"
         str3 = f"if it doesn't make sense, press {self.corr_key[0]}"
         self.instruction_text = f"{self.name} task\n\n {str1} \n {str2} \n {str3}"
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1], height = 1.2)
         instr_visual.draw()
         self.window.flip()
     
@@ -1198,7 +1198,7 @@ class VisualSearch(Task):
         str2 = f"If 'L' is present, press {self.corr_key[1]}"
         str3 = f"if 'L' is not present, press {self.corr_key[0]}"
         self.instruction_text = f"{self.name} task\n\n {str1} \n {str2} \n {str3}"
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1], height=1.2)
         instr_visual.draw()
         self.window.flip()
 

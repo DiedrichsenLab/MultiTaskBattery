@@ -9,11 +9,8 @@ exp_name = 'pontine_7T'
 
 # Response key assignment:
 
-# Response key assignment:
-
 #UNCOMMENT THIS FOR SCANNING 
 #response_keys    = ['y', 'g', 'r', 'm'] # scanner keys
-
 
 #COMMENT THIS FOR SCANNING 
 
@@ -44,6 +41,6 @@ debug = False                                           # set to True for debugg
 
 # Screen settings for subject display
 screen = {}
-screen['size'] = [800, 500]                             # screen resolution
-screen['fullscr'] = True                               # full screen?
+screen['size'] = [1024, 1000]                             # screen resolution
+screen['fullscr'] = False                               # full screen?
 screen['number'] = 1                                    # 0 = main display, 1 = secondary display
