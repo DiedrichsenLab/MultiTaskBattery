@@ -41,6 +41,6 @@ debug = False                                           # set to True for debugg
 
 # Screen settings for subject display
 screen = {}
-screen['size'] = [1024, 1000]                             # screen resolution
-screen['fullscr'] = False                               # full screen?
+screen['size'] = [1440, 900]                             # screen resolution
+screen['fullscr'] = False                                 # full screen?
 screen['number'] = 1                                    # 0 = main display, 1 = secondary display

@@ -5,14 +5,18 @@ import numpy as np
 
 """ This is an example script to make the run files and trial files for an experiment"""
 
-tasks = ['finger_sequence', 'theory_of_mind', 'romance_movie', 'action_observation', 'semantic_prediction', 'rest', 'visual_search', 'n_back', 'flexion_extension']
+tasks = ['finger_sequence', 'theory_of_mind', 'semantic_prediction', 'visual_search', 'n_back', 'flexion_extension', 'romance_movie', 'rest', 'action_observation']
+
+
+#for session 1: runs 1-4 should be with the right hand
+#runs 5-9 should be with the left hand 
 
 #  check if dirs for the tasks and runs exist, if not, make them
 ut.dircheck(const.run_dir)
 for task in tasks:
     ut.dircheck(const.task_dir / task)
 
-for r in range(5,9):
+for r in range (1,5):
     tfiles = [f'{task}_{r:02d}.tsv' for task in tasks]
     T  = mt.make_run_file(tasks,tfiles)
     T['start_time'] += 5
@@ -25,7 +29,7 @@ for r in range(5,9):
     task_args = {task: {} for task in tasks}
 
 #for semantic_prediction, romance_movie, action_observation, theory_of_mind 
-    for task in ['romance_movie', 'action_observation', 'theory_of_mind', 'semantic_prediction']:
+    for task in ['theory_of_mind', 'semantic_prediction', 'action_observation', 'romance_movie']:
             task_args[task].update({'run_number': r})
 
     # for each of the runs, make a target file
