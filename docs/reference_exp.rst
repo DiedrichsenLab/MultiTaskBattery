@@ -1,8 +1,6 @@
-API reference
--------------
+Experiment Class
+----------------
 
-Dataset Functions
------------------
 .. autoclass:: experiment_block.Experiment
 
 
