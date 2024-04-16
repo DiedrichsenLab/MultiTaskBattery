@@ -6,7 +6,7 @@ Repository Structure
 
 The repository has the following Structure:
 
-| -experiment_code: Main Python classes for Experiment task
+| -MultiTaskBattery: Main Python modules and classes
 | -stimuli: Stimuli used in the experiment
 |
 | -pontine_7T: Specific Experiment (example)
