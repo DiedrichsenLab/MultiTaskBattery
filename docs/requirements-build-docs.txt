@@ -8,4 +8,5 @@ ipykernel
 nbsphinx
 scipy
 seaborn
+psychopy
 sphinx-rtd-theme
