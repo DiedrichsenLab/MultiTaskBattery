@@ -1,6 +1,7 @@
-Utility functions
------------------
+Utils module
+------------
 
 .. automodule:: MultiTaskBattery.utils
+    :members:
 
 
