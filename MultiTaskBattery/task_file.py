@@ -967,3 +967,19 @@ class VisualSearch(TaskFile):
         if file_name is not None:
             trial_info.to_csv(self.task_dir / self.name / file_name,sep='\t',index=False)
         return trial_info
+
+
+class RMET(TaskFile):
+    def __init__(self, const):
+        super().__init__(const)
+        self.name = 'rmet'
+
+    def make_task_file(self, hand='right',
+                        responses = [1,2,3,4],
+                        run_number=None,
+                        task_dur=30,
+                        trial_dur=6,
+                        iti_dur=1, 
+                        file_name=None,
+                        stim_file=None):
+        pass
