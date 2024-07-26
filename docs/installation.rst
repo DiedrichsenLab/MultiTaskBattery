@@ -4,17 +4,18 @@ Installation
 Cloning this Repository
 -----------------------
 
-1. Copy the git repo URL. Click the "Clone or Download" button and copy the link (`https://github.com/diedrichsenlab/mdtb_reduced.git`).
+1. Copy the git repo URL. Click the "Clone or Download" button and copy the link (`https://github.com/diedrichsenlab/MultiTaskBattery.git`).
 2. Go to your terminal and navigate (using `cd` and `ls` commands) to the directory where you want to clone the repository.
 3. Use `git clone` to download the entire folder to your computer:
 
 ```
-git clone https://github.com/diedrichsenlab/mdtb_reduced.git
+git clone https://github.com/diedrichsenlab/MultiTaskBattery.git
 ```
 
 Or use Gitdesktop to clone the repository.
 
-### Installing the Required Python Version
+Installing the Required Python Version
+--------------------------------------
 
 This project requires **python version >3.7.0**. Please ensure it is installed globally on your local machine.
 

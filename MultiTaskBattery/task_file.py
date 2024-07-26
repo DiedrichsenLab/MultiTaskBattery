@@ -6,7 +6,6 @@ import pandas as pd
 import numpy as np
 import random
 import MultiTaskBattery.utils as ut
-import subprocess
 
 
 def shuffle_rows(dataframe):
