@@ -1,8 +1,7 @@
-API reference
--------------
+Experiment_block module
+-----------------------
 
-Dataset Functions
------------------
 .. autoclass:: experiment_block.Experiment
+    :members:
 
 
