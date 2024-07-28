@@ -981,5 +981,46 @@ class RMET(TaskFile):
                         trial_dur=6,
                         iti_dur=1, 
                         file_name=None,
-                        stim_file=None):
-        pass
+                        stim_file = None):
+        
+
+        # count number of trials
+        n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
+        trial_info = []
+        t = 0
+
+        if stim_file:
+            stim = pd.read_csv(stim_file)
+        else:
+            stim = pd.read_csv(self.stim_dir / 'rmet' / 'rmet.csv')
+
+        start_row = (run_number - 1) * n_trials
+        end_row = run_number * n_trials - 1
+        stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
+
+        for n in range(n_trials):
+            trial = {}
+            trial['key_one'] = responses[0]
+            trial['key_two'] = responses[1]
+            trial['key_three'] = responses[2]
+            trial['key_four'] = responses[3]
+            trial['trial_num'] = n
+            trial['hand'] = hand
+            trial['trial_dur'] = trial_dur
+            trial['iti_dur'] = iti_dur
+            trial['stim'] = stim['picture'][n]
+            trial['options'] = stim['options'][n]
+            trial['condition'] = stim['condition'][n]
+            trial['answer'] = stim['answer'][n]
+            trial['display_trial_feedback'] = True
+            trial['start_time'] = t
+            trial['end_time'] = t + trial_dur + iti_dur
+            trial_info.append(trial)
+
+            # Update for next trial:
+            t = trial['end_time']
+
+        trial_info = pd.DataFrame(trial_info)
+        if file_name is not None:
+            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
+        return trial_info

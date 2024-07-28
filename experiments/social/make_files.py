@@ -7,7 +7,8 @@ import shutil
 """ Script to make the social cognition run files and trial files"""
 
 # this is a full list of the tasks that will be run for this localizer, do not change this list
-tasks = ['rmet', 'theory_of_mind','n_back', 'spatial_navigation']
+# tasks = ['rmet', 'theory_of_mind','n_back', 'spatial_navigation']
+tasks = ['rmet']
 tasks_without_run_number = ['n_back']
 # make 30 subject numbers
 subj_list = ['sub-04']
@@ -23,7 +24,7 @@ ut.dircheck(const.run_dir)
 for task in tasks:
     ut.dircheck(const.task_dir / task)
 
-for r in range(1,10):
+for r in range(1,2):
     tfiles = [f'{task}_{r:02d}.tsv' for task in tasks]
     T  = tf.make_run_file(tasks,tfiles)
     T.to_csv(const.run_dir / f'run_{r:02d}.tsv',sep='\t',index=False)

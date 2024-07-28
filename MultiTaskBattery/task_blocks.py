@@ -1,6 +1,7 @@
 # Task Class definitions
 # March 2021: First version: Ladan Shahshahani  - Maedbh King - Suzanne Witt,
 # Revised 2023: Bassel Arafat, Jorn Diedrichsen, Incé Husain
+# Revised 2024: Caroline Nettekoven
 
 from pathlib import Path
 import pandas as pd
@@ -164,8 +165,6 @@ class NBack(Task):
             stim_path = self.const.stim_dir / self.name / stim
             self.stim.append(visual.ImageStim(self.window, str(stim_path)))
         self.corr_key = [self.trial_info['key_nomatch'].iloc[0],self.trial_info['key_match'].iloc[0]]
-
-
 
     def display_instructions(self):
         """
@@ -1225,4 +1224,70 @@ class VisualSearch(Task):
         
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
 
+        return trial
+
+
+
+class RMET(Task):
+    def __init__(self, info, screen, ttl_clock, const, subj_id):
+        super().__init__(info, screen, ttl_clock, const, subj_id)
+        self.feedback_type = 'acc+rt'
+
+    def init_task(self):
+        """
+        Initialize task - default is to read the target information into the trial_info dataframe
+        """
+        trial_info_file = self.const.task_dir / self.name / self.task_file
+        self.trial_info = pd.read_csv(trial_info_file, sep='\t')
+        self.corr_key = [self.trial_info['key_one'].iloc[0],self.trial_info['key_two'].iloc[0],self.trial_info['key_three'].iloc[0],self.trial_info['key_four'].iloc[0]]
+
+    def display_instructions(self):
+        self.instruction_text = f"{self.name} task \n\n For each set of eyes, choose which word best describes what the person in the picture is thinking or feeling. \n\nUse buttons 1-4 to select the word, with 1=index finger, 2=middle finger, 3=ring finger & 4=pinky"
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
+        instr_visual.draw()
+        self.window.flip()
+
+    def run_trial(self, trial):
+        """ Runs a single trial of the Reading the Mind in the Eye (RMET) task """
+        
+        # Flush any keys in buffer
+        event.clearEvents()
+
+        # --- Eyes ---
+        # Get the file name
+        picture_file_name = trial['stim']
+        # Construct the picture file path
+        picture_path = Path(self.const.stim_dir) / self.name / 'pictures' / picture_file_name
+        # Convert Path object to string for compatibility
+        picture_path_str = str(picture_path)
+        # Create an ImageStim object
+        picture = visual.ImageStim(self.window, str(picture_path_str))
+
+        # --- Answers ---
+        # Get the answer options
+        answer_options = trial['options']
+        # Separate them into four strings
+        answer_options = answer_options.split(',')
+        # Create TextStim objects for each answer option
+        answer_stims = []
+        for i, option in enumerate(answer_options):
+            # 0 and 1 should be on the left and right of the top line (y position 7 and x positions -7 and 7)
+            # 2 and 3 should be on the left and right of the bottom line (y position -7 and x positions -7 and 7)
+            x = -7 if i % 2 == 0 else 7
+            y = 7 if i < 2 else -7
+            answer_stim = visual.TextStim(self.window, text=f'{i+1}. {option}', pos=(x, y), color=[-1, -1, -1], height=1.3, alignHoriz='center')
+            answer_stims.append(answer_stim)
+
+        # Display stimuli
+        picture.draw()
+        for answer_stim in answer_stims:
+            answer_stim.draw()
+        self.window.flip()
+
+        # collect responses 0: no response 1-4: key pressed
+        trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['trial_dur'])
+        trial['correct'] = (trial['response'] == answer_options.index(trial['answer']))
+        
+        # display trial feedback
+        self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
         return trial

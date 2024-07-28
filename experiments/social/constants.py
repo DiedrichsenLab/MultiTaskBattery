@@ -10,8 +10,8 @@ import MultiTaskBattery as mtb
 exp_name = 'social'
 
 # Response key assignment:
-response_keys    = ['y', 'g', 'r', 'm'] # scanner keys
-# response_keys    = ['a', 's', 'k', 'l'] # behavioral keys keys
+# response_keys    = ['y', 'g', 'r', 'm'] # scanner keys
+response_keys    = ['1', '2', '3', '4'] # behavioral keys
 response_fingers = ['Pinky', 'Ring','Middle', 'Index']
 
 # Directory definitions for experiment
