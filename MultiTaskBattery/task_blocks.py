@@ -62,7 +62,7 @@ class Task:
 
     def run(self):
         """Loop over trials and collects data
-        Data will br stored in self.trial_data
+        Data will be stored in self.trial_data
 
         Returns:
             info (pd.DataFrame): _description_
