@@ -19,6 +19,7 @@ Documentation
    eye_tracking.rst
    instructions.rst
    building_experiment.rst
+   creating_tasks.rst
    reference.rst
 
 Indices and tables
