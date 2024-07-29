@@ -1242,8 +1242,8 @@ class RMET(Task):
         self.corr_key = [self.trial_info['key_one'].iloc[0],self.trial_info['key_two'].iloc[0],self.trial_info['key_three'].iloc[0],self.trial_info['key_four'].iloc[0]]
 
     def display_instructions(self):
-        self.instruction_text = f"{self.name} task \n\n For each set of eyes, choose which word best describes what the person in the picture is thinking or feeling. \n\nUse buttons 1-4 to select the word, with 1=index finger, 2=middle finger, 3=ring finger & 4=pinky"
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
+        self.instruction_text = f"{self.name.capitalize()} task \n\n Choose which word best describes what the person in the picture is feeling. \n\nButtons: \n1. index finger \t2. middle finger\n3. ring finger\t\t\t\t4. pinky"
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1], wrapWidth=20)
         instr_visual.draw()
         self.window.flip()
 
