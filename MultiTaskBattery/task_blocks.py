@@ -1286,7 +1286,7 @@ class RMET(Task):
 
         # collect responses 0: no response 1-4: key pressed
         trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['trial_dur'])
-        trial['correct'] = (trial['response'] == answer_options.index(trial['answer']))
+        trial['correct'] = (trial['response'] == answer_options.index(trial['answer'])+1)
         
         # display trial feedback
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
