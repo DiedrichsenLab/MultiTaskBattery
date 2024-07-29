@@ -24,7 +24,7 @@ ut.dircheck(const.run_dir)
 for task in tasks:
     ut.dircheck(const.task_dir / task)
 
-for r in range(1,2):
+for r in range(1,10):
     tfiles = [f'{task}_{r:02d}.tsv' for task in tasks]
     T  = tf.make_run_file(tasks,tfiles)
     T.to_csv(const.run_dir / f'run_{r:02d}.tsv',sep='\t',index=False)

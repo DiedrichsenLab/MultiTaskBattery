@@ -192,23 +192,23 @@ class Experiment:
                 run_data (pd.DataFrame): a dataframe containing the run data
         """
         score_text = "Your Scores:\n\n"
-        
+
         # Define column headers
-        headers = ["Task", "Accuracy", "Reaction Time"]
-        header_text = "{:<15} {:<10} {:<13}\n".format(*headers)
+        headers = ["", "Correct", "Reaction Time"]
+        header_text = "{:<15}\t\t{:<10}\t\t{:<13}\n".format(*headers)
         score_text += header_text
-        
+
         # Add each task's data to the score text
         for i, task in enumerate(self.task_obj_list):
             if task.feedback_type != 'none':
                 task_name = f"{task.name:<15}"
-                accuracy = f"   {run_data.acc[i]:<10.2f}"
-                rt = f"   {run_data.rt[i]:<13.3f}"
-                score_text += f"{task_name}{accuracy}{rt}\n"
+                accuracy = f"{int(run_data.acc[i]*100)} %"
+                rt = f"{int(run_data.rt[i] * 1000):d} ms"
+                score_text += f"{task_name.capitalize()}\t{accuracy}\t\t\t{rt}\n"
 
         # Create a visual.TextStim object for displaying the text
         score_display = visual.TextStim(self.screen.window, text=score_text, font='Lucida Console', color=[-1, -1, -1], 
-                                        alignText='left', pos=[0, 0], wrapWidth=28, units='deg')
+                                        alignText='centre', pos=[5, 0], wrapWidth=28, units='deg')
         score_display.draw()
         self.screen.window.flip()
         event.waitKeys()
