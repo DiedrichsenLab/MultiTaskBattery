@@ -57,7 +57,7 @@ Each task file should contain the following columns:
 - iti_dur: Inter-trial interval duration (in seconds)
 - stim: Stimulus presented
 - display_trial_feedback: Whether to display feedback after each trial
-- - start_time: Start time of the trial (in seconds)
+- start_time: Start time of the trial (in seconds)
 - end_time: End time of the trial (in seconds)
 
   
