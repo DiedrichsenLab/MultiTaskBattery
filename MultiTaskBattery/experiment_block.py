@@ -4,6 +4,7 @@
 
 import pandas as pd
 import sys
+import numpy as np
 
 from psychopy import visual, core, gui, event
 import MultiTaskBattery.utils as ut
@@ -201,9 +202,12 @@ class Experiment:
         # Add each task's data to the score text
         for i, task in enumerate(self.task_obj_list):
             if task.feedback_type != 'none':
-                task_name = f"{task.name:<15}"
+                task_name = f"{task.code:<15}"
                 accuracy = f"{int(run_data.acc[i]*100)} %"
-                rt = f"{int(run_data.rt[i] * 1000):d} ms"
+                if np.isnan(run_data.rt[i]):
+                    rt = "N/A"
+                else:
+                    rt = f"{int(run_data.rt[i] * 1000):d} ms"
                 score_text += f"{task_name.capitalize()}\t{accuracy}\t\t\t{rt}\n"
 
         # Create a visual.TextStim object for displaying the text
