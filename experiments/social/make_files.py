@@ -7,8 +7,8 @@ import shutil
 """ Script to make the social cognition run files and trial files"""
 
 # this is a full list of the tasks that will be run for this localizer, do not change this list
-# tasks = ['rmet', 'theory_of_mind','n_back', 'spatial_navigation']
-tasks = ['rmet']
+tasks = ['rmet', 'theory_of_mind','n_back', 'spatial_navigation']
+# tasks = ['rmet']
 tasks_without_run_number = ['n_back']
 # make 30 subject numbers
 subj_list = ['sub-04']
