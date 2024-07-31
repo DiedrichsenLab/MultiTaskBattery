@@ -1251,9 +1251,6 @@ class RMET(Task):
     def run_trial(self, trial):
         """ Runs a single trial of the Reading the Mind in the Eye (RMET) task """
         
-        # Flush any keys in buffer
-        event.clearEvents()
-
         # --- Eyes ---
         # Get the file name
         picture_file_name = trial['stim']
@@ -1284,6 +1281,9 @@ class RMET(Task):
         for answer_stim in answer_stims:
             answer_stim.draw()
         self.window.flip()
+
+        # Flush any keys in buffer
+        event.clearEvents()
 
         # collect responses 0: no response 1-4: key pressed
         trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['trial_dur'])
