@@ -11,9 +11,9 @@ alltasks = ['theory_of_mind', 'n_back', 'action_observation', 'verb_generation',
              'nonword_reading', 'oddball', 'intact_passage', 'demand_grid', 
              'finger_sequence', 'flexion_extension', 'semantic_prediction', 
              'visual_search', 'rmet']
-tasks=alltasks
+# tasks=alltasks
 
-# tasks = ['rmet', 'theory_of_mind','n_back', 'spatial_navigation']
+tasks = ['rmet', 'theory_of_mind','demand_grid']
 # tasks = ['rmet']
 
 # make 30 subject numbers
