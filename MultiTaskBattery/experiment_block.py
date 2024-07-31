@@ -100,6 +100,7 @@ class Experiment:
             # create a task object for the current task, reads the trial file, and append it to the list
             t = ut.task_table[ut.task_table['name']== task_info.task_name]
             task_info['code'] = t.code
+            task_info['descriptive_name'] = t.descriptive_name.iloc[0].capitalize()
             class_name = t.task_class.iloc[0]
             TaskClass = getattr(tasks, class_name)
             Task_obj  = TaskClass(task_info,
@@ -192,28 +193,51 @@ class Experiment:
             Args:
                 run_data (pd.DataFrame): a dataframe containing the run data
         """
-        score_text = "Your Scores:\n\n"
+        
 
         # Define column headers
-        headers = ["", "Correct", "Reaction Time"]
-        header_text = "{:<15}\t\t{:<10}\t\t{:<13}\n".format(*headers)
-        score_text += header_text
-
+        scores = [["Your Score:", "", ""], ["", "Correct", "Reaction Time"]]
         # Add each task's data to the score text
         for i, task in enumerate(self.task_obj_list):
-            if task.feedback_type != 'none':
-                task_name = f"{task.code:<15}"
+            if task.feedback_type.lower() != 'none':
+                task_name = f"{task.descriptive_name}"
                 accuracy = f"{int(run_data.acc[i]*100)} %"
                 if np.isnan(run_data.rt[i]):
-                    rt = "N/A"
+                    rt = "-"
                 else:
                     rt = f"{int(run_data.rt[i] * 1000):d} ms"
-                score_text += f"{task_name.capitalize()}\t{accuracy}\t\t\t{rt}\n"
+                scores.append([task_name, accuracy, rt])
+        
+        # Display settings
+        height = 1.3 # Height of the text elements
+        gap = [8,1.6] # Gap between entries for the score column [gap_between_columns, gap_between_rows]
+        cols=len(scores[0])
+        rws=len(scores)
 
-        # Create a visual.TextStim object for displaying the text
-        score_display = visual.TextStim(self.screen.window, text=score_text, font='Lucida Console', color=[-1, -1, -1], 
-                                        alignText='centre', pos=[5, 0], wrapWidth=28, units='deg')
-        score_display.draw()
+        # flatten scores
+        scores_flat = [item for sublist in scores for item in sublist]
+
+        # Generate position points
+        points = np.array([[(1 + i - (cols + 1) / 2) * gap[0], (1 + j - (rws + 1) / 2) * gap[1]] 
+                        for j in range(rws) for i in range(cols)])
+        # Reverse the order of the rows (to run from top to bottom)
+        points = points.reshape(rws, cols, 2)[::-1].reshape(-1, 2)
+
+        # Make the score display elements
+        elements = []
+        for Idx in range(len(scores_flat)):
+            element = visual.TextStim(win=self.screen.window, 
+                        text = str(scores_flat[Idx]), # Variable text
+                        font = 'Lucida Console',
+                        pos = points[Idx],
+                        height = height, 
+                        wrapWidth = 100, 
+                        color=[-1, -1, -1],
+                        ori = 0,
+                        units='deg')
+            elements.append(element)
+        # Draw the scores
+        [el.draw() for el in elements]
         self.screen.window.flip()
         event.waitKeys()
 
