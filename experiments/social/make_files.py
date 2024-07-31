@@ -5,11 +5,17 @@ import constants as const
 import shutil
 
 """ Script to make the social cognition run files and trial files"""
+alltasks = ['theory_of_mind', 'n_back', 'action_observation', 'verb_generation',
+             'romance_movie', 'rest', 'tongue_movement', 'auditory_narrative',
+             'spatial_navigation', 'degraded_passage', 'sentence_reading', 
+             'nonword_reading', 'oddball', 'intact_passage', 'demand_grid', 
+             'finger_sequence', 'flexion_extension', 'semantic_prediction', 
+             'visual_search', 'rmet']
+tasks=alltasks
 
-# this is a full list of the tasks that will be run for this localizer, do not change this list
-tasks = ['rmet', 'theory_of_mind','n_back', 'spatial_navigation']
+# tasks = ['rmet', 'theory_of_mind','n_back', 'spatial_navigation']
 # tasks = ['rmet']
-tasks_without_run_number = ['n_back']
+
 # make 30 subject numbers
 subj_list = ['sub-04']
 
@@ -32,14 +38,15 @@ for r in range(1,10):
     task_args = {task: {} for task in tasks}
 
     # Define tasks that need run_number as an argument
-    tasks_with_run_number = [task for task in tasks if task not in tasks_without_run_number]
-    for task in tasks_with_run_number:
-        task_args[task].update({'run_number': r})
+    for task in tasks:
+        if task not in ut.tasks_without_run_number:
+            task_args[task].update({'run_number': r})
 
     # for each of the runs, make a target file
     for task,tfile in zip(tasks, tfiles):
          cl = tf.get_task_class(task)
          myTask = getattr(tf,cl)(const)
+         print(task)
          myTask.make_task_file(file_name = tfile, **task_args.get(task, {}))
 
     
