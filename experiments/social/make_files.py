@@ -13,7 +13,8 @@ alltasks = ['theory_of_mind', 'n_back', 'action_observation', 'verb_generation',
              'visual_search', 'rmet']
 # tasks=alltasks
 
-tasks = ['rmet', 'theory_of_mind','demand_grid']
+# tasks = ['rmet', 'theory_of_mind','demand_grid']
+tasks = [('rmet', 'rmet_age'), ('rmet', 'rmet_emot'), 'theory_of_mind','demand_grid']
 # tasks = ['rmet']
 
 # make 30 subject numbers
@@ -30,6 +31,7 @@ ut.dircheck(const.run_dir)
 for task in tasks:
     ut.dircheck(const.task_dir / task)
 
+task_list, cond_list = zip(*[(task[0], task[1]) if isinstance(task, tuple) else (task, None) for task in tasks])
 for r in range(1,10):
     tfiles = [f'{task}_{r:02d}.tsv' for task in tasks]
     T  = tf.make_run_file(tasks,tfiles)

@@ -45,9 +45,15 @@ def make_run_file(task_list,
     """
     Make a single run file
     """
+    tasks = [task[0] if isinstance(task, tuple) else task for task in task_list]
+    conds = [task[1] if isinstance(task, tuple) else None for task in task_list]
     # Get rows of the task_table corresponding to the task_list
-    indx = [np.where(ut.task_table['name']==t)[0][0] for t in task_list]
-    R = {'task_name':task_list,
+    indx = [np.where(ut.task_table['name']==t)[0][0] for t in tasks]
+    # For those tasks that have conditions specified, replace with the corresponding rows
+    for i, cond in enumerate(conds):
+        if cond:
+            indx[i] = np.where(ut.task_table['code']==cond)[0][0]
+    R = {'task_name':tasks,
          'task_code':ut.task_table['code'].iloc[indx],
          'task_file':tfiles,
          'instruction_dur':[instruction_dur]*len(task_list)}
