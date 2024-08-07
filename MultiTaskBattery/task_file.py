@@ -41,19 +41,18 @@ def make_run_file(task_list,
                   tfiles,
                   offset = 0,
                   instruction_dur = 5,
-                  task_dur = 30):
+                  task_dur = 30,
+                  conditions=None):
     """
     Make a single run file
     """
-    tasks = [task[0] if isinstance(task, tuple) else task for task in task_list]
-    conds = [task[1] if isinstance(task, tuple) else None for task in task_list]
     # Get rows of the task_table corresponding to the task_list
-    indx = [np.where(ut.task_table['name']==t)[0][0] for t in tasks]
+    indx = [np.where(ut.task_table['name']==t)[0][0] for t in task_list]
     # For those tasks that have conditions specified, replace with the corresponding rows
-    for i, cond in enumerate(conds):
+    for i, cond in enumerate(conditions):
         if cond:
             indx[i] = np.where(ut.task_table['code']==cond)[0][0]
-    R = {'task_name':tasks,
+    R = {'task_name':task_list,
          'task_code':ut.task_table['code'].iloc[indx],
          'task_file':tfiles,
          'instruction_dur':[instruction_dur]*len(task_list)}
@@ -370,8 +369,10 @@ class TheoryOfMind(TaskFile):
                         trial_dur=14,
                         iti_dur=1, 
                         story_dur=10,
-                        question_dur=4, file_name=None
-                        , stim_file=None):
+                        question_dur=4,
+                        file_name=None,
+                        stim_file=None,
+                        condition=None):
 
         # count number of trials
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
@@ -383,6 +384,9 @@ class TheoryOfMind(TaskFile):
         else:
             stim = pd.read_csv(self.stim_dir / 'theory_of_mind' / 'theory_of_mind.csv')
 
+        if condition:
+            stim = stim[stim['condition'] == condition]
+            
         start_row = (run_number - 1) * 2
         end_row = run_number * 2 - 1
         stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
@@ -987,7 +991,8 @@ class RMET(TaskFile):
                         trial_dur=6,
                         iti_dur=1, 
                         file_name=None,
-                        stim_file = None):
+                        stim_file = None,
+                        condition=None):
         
 
         # count number of trials
@@ -996,9 +1001,12 @@ class RMET(TaskFile):
         t = 0
 
         if stim_file:
-            stim = pd.read_csv(stim_file)
+            stim = pd.read_csv(self.stim_dir / 'rmet' / stim_file)
         else:
             stim = pd.read_csv(self.stim_dir / 'rmet' / 'rmet.csv')
+
+        if condition:
+            stim = stim[stim['condition'] == condition]
 
         start_row = (run_number - 1) * n_trials
         end_row = run_number * n_trials - 1

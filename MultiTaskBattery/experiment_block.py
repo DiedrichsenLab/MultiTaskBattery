@@ -193,14 +193,17 @@ class Experiment:
             Args:
                 run_data (pd.DataFrame): a dataframe containing the run data
         """
-        
+        # Optional: Summarize the behavioural data from different conditions of the same task
+        if True:
+            # Ignore Nans
+            run_data = run_data.groupby('task_name', as_index=False).agg({'acc': lambda x: x.mean(skipna=True), 'rt': lambda x: x.mean(skipna=True)})
 
         # Define column headers
         scores = [["Your Score:", "", ""], ["", "Correct", "Reaction Time"]]
         # Add each task's data to the score text
-        for i, task in enumerate(self.task_obj_list):
-            if task.feedback_type.lower() != 'none':
-                task_name = f"{task.descriptive_name}"
+        for i, task in enumerate(run_data.task_name.values):
+            if self.task_obj_list[i].feedback_type.lower() != 'none':
+                task_name = f"{self.task_obj_list[i].descriptive_name}"
                 accuracy = f"{int(run_data.acc[i]*100)} %"
                 if np.isnan(run_data.rt[i]):
                     rt = "-"
