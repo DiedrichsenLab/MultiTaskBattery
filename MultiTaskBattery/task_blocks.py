@@ -124,9 +124,9 @@ class Task:
         """
         if give_feedback:
             if correct_response:
-                self.screen.fixation_cross('green')
+                self.screen.check_mark('green')
             else:
-                self.screen.fixation_cross('red')
+                self.screen.error_cross('red')
         else:
             self.screen.fixation_cross('white')
 
@@ -1243,7 +1243,9 @@ class RMET(Task):
         self.corr_key = [self.trial_info['key_one'].iloc[0],self.trial_info['key_two'].iloc[0],self.trial_info['key_three'].iloc[0],self.trial_info['key_four'].iloc[0]]
 
     def display_instructions(self):
-        self.instruction_text = f"{self.name.capitalize()} task \n\n Choose which word best describes what the person in the picture is feeling. \n\nButtons: \n1. index finger \t2. middle finger\n3. ring finger\t\t\t\t4. pinky"
+        self.instruction_text = f"{self.descriptive_name.capitalize()} task"
+        self.instruction_text += "\n\n Choose which words best describes what the person is feeling. " if self.code == 'rmet_emotion' else "\n\n Choose what age the person is."
+        self.instruction_text += "\n\nButtons: \n1. index finger \t2. middle finger\n3. ring finger\t\t\t\t4. pinky"
         instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1], wrapWidth=20)
         instr_visual.draw()
         self.window.flip()
@@ -1256,7 +1258,7 @@ class RMET(Task):
         picture_file_name = trial['stim']
         # Construct the picture file path
         picture_path = Path(self.const.stim_dir) / self.name / 'pictures' / picture_file_name
-        # Convert Path object to string for compatibility
+        # Convert Pathself object to string for compatibility
         picture_path_str = str(picture_path)
         # Create an ImageStim object
         picture = visual.ImageStim(self.window, str(picture_path_str))
