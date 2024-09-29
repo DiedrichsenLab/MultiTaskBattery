@@ -9,6 +9,8 @@ The main code and classes, including the implementation of all the tasks, is in 
 
 The repository has the following Structure:
 
+::
+
 |-MultiTaskBattery: Main Python modules and classes
 |-Stimuli: Stimuli used in the experiment
    |-n_back: Stimuli for n_back tasks
