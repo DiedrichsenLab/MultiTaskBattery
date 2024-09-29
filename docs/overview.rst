@@ -4,18 +4,23 @@ Overview
 Repository Structure
 --------------------
 
+The main code and classes, including the implementation of all the tasks, is in modules in the folder ``MultiTaskBattery``.  Stimuli are defined in the folder ``stimuli``, with a separate subfolder for each task. To develop and run your own experiment, we will create a new subfolder in the ``experiments`` folder. The ``pontine_7T`` experiment that is included in the main branch of the repository serves as an example of how to set up your own study.
+
+
 The repository has the following Structure:
 
-| -MultiTaskBattery: Main Python modules and classes
-| -stimuli: Stimuli used in the experiment
-|
-| -pontine_7T: Specific Experiment (example)
-| -pontine_7T.py: main program
-| -run_files: Files specifying which tasks are done in which run
-| -task_files: Files specifying which trials are done for each task block
-| -data: Data files for each subject
-
-
+|-MultiTaskBattery: Main Python modules and classes
+|-Stimuli: Stimuli used in the experiment
+   |-n_back: Stimuli for n_back tasks
+   |- ...
+|-experiments: Folder for each experiment
+   |- pontine_7T: Specific Experiment (example)
+      |-pontine_7T.py: Your main Pyhton program
+      |-constants.py: Constants for the experiment / scanner
+      |-make_files.py: Script to pre-randomize task and run files
+      |-run_files: Files specifying which tasks are done in which run (and which order)
+      |-task_files: Files specifying which trials are done for each task block
+      |-data: Data files for each subject
 
 Program Structure
 -----------------
