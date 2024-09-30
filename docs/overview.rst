@@ -49,7 +49,7 @@ Your ``main`` program will create and ``Experiment`` object - with all settings 
 Implemented tasks
 -----------------
 
-The task that are implemented in the repository are listed in the ``task_table.tsv`` file. This is also where new task have to be added and linked to a task class, so the program knows which class to instantiate when creating the task objects. Each class has an official name and a short code, which is used in the data files.
+The task that are implemented in the repository are listed in the ``task_table.tsv`` file. This is also where new task have to be added and linked to a task class, so the program knows which class to instantiate when creating the task objects. Each class has an official name and a short code, which is used in the data files. For full description of the tasks, see `ref:tasks_instructions
 
 .. csv-table:: List of tasks
    :file: task_table_for_docs.csv
