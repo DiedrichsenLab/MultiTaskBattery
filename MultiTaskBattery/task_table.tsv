@@ -1,7 +1,7 @@
 name	task_class	cond	code	description	reference
 theory_of_mind	TheoryOfMind	ToM	tom		
 n_back	NBack	n_back	nbko		
-action_observation	ActionObservation	VideoAct-VideoKnot	acva-acvk		
+action_observation	ActionObservation	VideoAct-VideoKnots	acva-acvk		
 verb_generation	VerbGeneration	VerbGen-WordRead	vrbgn-wrdrd	"Words presented, participants read the words. At halfpoint, ""GENERATE"" is shown, participants need to covertly generate verbs associated with words"	
 romance_movie	RomanceMovie	RomanceMovie	rommov	"30s clips of the movie ""up"", no audio no subtitles"	
 rest	Rest	rest	rest	Lie in scanner with a fixation cross	NA
@@ -18,7 +18,7 @@ finger_sequence	FingerSequence	FingerSeq	fingseq
 flexion_extension	FlexionExtension	flexion_extension	flexexten	alternating periods of flexing/extending toes	
 sencoding	Sencoding	sencoding	Sencod		
 sencoding_probe	SencodingProbe	sencoding_probe	Sencodeprob		
-semantic_prediction	SemanticPrediction	semantic_prediction	sempred	"sentence presented, participants decide if last word makes sense."	
+semantic_prediction	SemanticPrediction	Prediction-PredictViol-PredictScram	sempred-semviol-semscram	"sentence presented, participants decide if last word makes sense."	
 visual_search	VisualSearch	VisualSearchSmall-VisualSearchMed-VisualSearchLarge	visrchsml-visrchmed-visrchlrg	"geometric shapes presented on screen, participants must identify if 'L' is present."	
 go_no_go	Na	NoGo-Go	nogo-go		
 affective	Na	UnpleasantScenes-PleasantScenes	unpscen-pscen		
