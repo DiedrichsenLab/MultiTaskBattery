@@ -5,4 +5,5 @@ This project runs multi-task batteries developed by the diedrichsenlab.
 #### Authors: Diedrichsenlab (Bassel Arafat, Ince Husain, Caroline Nettekoven, Ladan Shahshahani, Suzanne Witt, Maedbh King, Jorn Diedrichsen)
 
 
-Documentation is in the docs folder and on readthedocs shortly.
+Full documentation can be found at: https://multitaskbattery.readthedocs.io/
+
