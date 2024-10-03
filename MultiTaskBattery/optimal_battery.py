@@ -85,7 +85,6 @@ def align_conditions(Ya, Yb, info_a, info_b):
 
     return combined_data, combined_info
 
-
 def find_optimal_battery(task_matrix, task_names, num_tasks=4, function='trace', top_n=1, sample_size=1000, average_across_subjects=True):
 
     """
@@ -145,11 +144,15 @@ def find_optimal_battery(task_matrix, task_names, num_tasks=4, function='trace',
         G_group = np.nanmean(G_matrices_stacked, axis=0)  # Averaged across subjects
 
         
-    eye_matrix = 0.00004 * np.eye(num_tasks)
+    eye_matrix = 0.0001 * np.eye(num_tasks)
     ones_vector = np.ones((num_tasks, num_tasks))
     centering_matrix = np.eye(num_tasks) - ones_vector / num_tasks
 
-    top_results = [(-float('inf'), None)] * top_n if function == 'trace' else [(float('inf'), None)] * top_n
+    # Initialize top results based on function
+    if function in ['trace', 'determinant']:
+        top_results = [(-float('inf'), None)] * top_n
+    elif function == 'inverse_trace':
+        top_results = [(float('inf'), None)] * top_n
 
 
     for i, comb in enumerate(sampled_combinations):
@@ -161,11 +164,18 @@ def find_optimal_battery(task_matrix, task_names, num_tasks=4, function='trace',
         centered_varcov = centering_matrix @ subset_varcov @ centering_matrix.T
         centered_varcov = centered_varcov + eye_matrix
 
+        eigenvalues, _ = np.linalg.eigh(centered_varcov)
+
         # Compute trace or inverse trace
-        if function == 'inverse_trace':
-            function_result = np.trace(np.linalg.inv(centered_varcov))
-        elif function == 'trace':
-            function_result = np.trace(centered_varcov)
+        if function == 'trace':
+            function_result = np.sum(eigenvalues)
+        elif function == 'inverse_trace':
+            inverse_eigenvalues = 1.0 / eigenvalues
+            function_result = np.sum(inverse_eigenvalues)
+        elif function == 'determinant':
+            function_result = np.prod(eigenvalues)
+        else:
+            raise ValueError("Invalid function argument")
 
         function_result_value = function_result.item()
 
@@ -179,7 +189,7 @@ def find_optimal_battery(task_matrix, task_names, num_tasks=4, function='trace',
                 top_results[-1] = (function_result_value,comb)
 
         # Sort only after an update
-        top_results.sort(reverse=(function == 'trace'))
+        top_results.sort(reverse=(function in ['trace', 'determinant']))
 
     return top_results
 
