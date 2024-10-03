@@ -86,7 +86,7 @@ def align_conditions(Ya, Yb, info_a, info_b):
 
     return combined_data, combined_info
 
-def find_optimal_battery(task_matrix, task_names, num_tasks=4, function='trace', top_n=1, sample_size=1000, average_across_subjects=True):
+def find_optimal_battery(task_matrix, task_names, num_tasks=4, function='trace', top_n=1, sample_size=1000, average_across_subjects=True,offset=0):
 
     """
     Finds the top N combinations of tasks based on a specified function, either on the group-averaged second moment matrix or by averaging matrices across subjects.
@@ -144,12 +144,12 @@ def find_optimal_battery(task_matrix, task_names, num_tasks=4, function='trace',
         G_matrices_stacked = np.stack(G_matrices, 0)
         G_group = np.nanmean(G_matrices_stacked, axis=0)  # Averaged across subjects
 
-        
+    eye_matrix = offset * np.eye(num_tasks)
     ones_vector = np.ones((num_tasks, num_tasks))
     centering_matrix = np.eye(num_tasks) - ones_vector / num_tasks
 
     # Initialize top results based on function
-    if function in ['trace', 'determinant']:
+    if function in ['trace', 'determinant','maximize_lowest_eigenvalue']:
         top_results = [(-float('inf'), None)] * top_n
     elif function == 'inverse_trace':
         top_results = [(float('inf'), None)] * top_n
@@ -162,6 +162,7 @@ def find_optimal_battery(task_matrix, task_names, num_tasks=4, function='trace',
         # Extract subset covariance for the averaged data
         subset_varcov = G_group[comb, :][:, comb]
         centered_varcov = centering_matrix @ subset_varcov @ centering_matrix.T
+        centered_varcov = centered_varcov + eye_matrix
 
         eigenvalues, _ = np.linalg.eigh(centered_varcov)
 
@@ -179,6 +180,8 @@ def find_optimal_battery(task_matrix, task_names, num_tasks=4, function='trace',
             function_result = np.sum(inverse_eigenvalues)
         elif function == 'determinant':
             function_result = np.prod(eigenvalues)
+        elif function == 'maximize_lowest_eigenvalue':
+            function_result = eigenvalues[-1]
         else:
             raise ValueError("Invalid function argument")
 
@@ -194,7 +197,7 @@ def find_optimal_battery(task_matrix, task_names, num_tasks=4, function='trace',
                 top_results[-1] = (function_result_value,comb)
 
         # Sort only after an update
-        top_results.sort(reverse=(function in ['trace', 'determinant']))
+        top_results.sort(reverse=(function in ['trace', 'determinant','maximize_lowest_eigenvalue']))
 
     return top_results
 
