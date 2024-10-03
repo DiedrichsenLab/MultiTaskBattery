@@ -5,9 +5,7 @@
 import numpy as np
 import pandas as pd
 from itertools import combinations_with_replacement
-import PcmPy as pcm
-
-
+from PcmPy.util import est_G_crossval
 def align_conditions(Ya, Yb, info_a, info_b):
     """
     Align two datasets based on shared conditions, align all conditions to the mean of shared conditions,
@@ -132,19 +130,18 @@ def find_optimal_battery(task_matrix, task_names, num_tasks=4, function='trace',
     # If we are averaging across subjects, average task_matrix across subjects (dim=0)
     if average_across_subjects:
         avg_task_matrix = np.nanmean(task_matrix, axis=0)  # Averaged across subjects
-        G_group,E = pcm.util.est_G_crossval(avg_task_matrix,cond_vec,part_vec)
+        G_group,E = est_G_crossval(avg_task_matrix,cond_vec,part_vec)
 
     else:
         # Compute the covariance matrix for each subject individually
         G_matrices = []
         for subj in range(task_matrix.shape[0]): 
-            G_s,E_s = pcm.util.est_G_crossval(task_matrix[subj], cond_vec, part_vec)
+            G_s,E_s = est_G_crossval(task_matrix[subj], cond_vec, part_vec)
             G_matrices.append(G_s)
         G_matrices_stacked = np.stack(G_matrices, 0)
         G_group = np.nanmean(G_matrices_stacked, axis=0)  # Averaged across subjects
 
         
-    eye_matrix = 0.0001 * np.eye(num_tasks)
     ones_vector = np.ones((num_tasks, num_tasks))
     centering_matrix = np.eye(num_tasks) - ones_vector / num_tasks
 
@@ -162,9 +159,14 @@ def find_optimal_battery(task_matrix, task_names, num_tasks=4, function='trace',
         # Extract subset covariance for the averaged data
         subset_varcov = G_group[comb, :][:, comb]
         centered_varcov = centering_matrix @ subset_varcov @ centering_matrix.T
-        centered_varcov = centered_varcov + eye_matrix
 
         eigenvalues, _ = np.linalg.eigh(centered_varcov)
+
+        # sort the eigenvalues descendingly
+        eigenvalues = np.sort(eigenvalues)[::-1]
+
+        # exclude the last
+        eigenvalues = eigenvalues[:-1]
 
         # Compute trace or inverse trace
         if function == 'trace':
