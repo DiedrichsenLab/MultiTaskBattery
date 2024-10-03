@@ -6,6 +6,9 @@ import numpy as np
 import pandas as pd
 from itertools import combinations_with_replacement
 from PcmPy.util import est_G_crossval
+import PcmPy as pcm
+from numpy.linalg import eigh
+
 def align_conditions(Ya, Yb, info_a, info_b):
     """
     Align two datasets based on shared conditions, align all conditions to the mean of shared conditions,
@@ -195,7 +198,51 @@ def find_optimal_battery(task_matrix, task_names, num_tasks=4, function='trace',
 
     return top_results
 
+def eigenval_crit(G,center=True,offset=[1e-6,1e-3,1e-1]):
+    """ Computes various criteria based on the eigenvalues of a matrix G.
+    assumes that G is symmetric"""
 
+    N = G.shape[0]
+    # Center
+    if center: 
+        H = pcm.matrix.centering(N)
+        Gs = H @ G @ H
+    else:
+        Gs = G
+    l,V = eigh(Gs)
+    l = l[::-1] # reverse order 
+    if center:
+        l = l[:-1]
+    l[l<0]=0 # remove negative eigenvalues for cross-validated matrices 
+
+    off = np.array(offset).reshape(-1,1)
+    lex = l + off   # Expanded eigenvalues, one row per offset 
+    d = {'offset':offset,
+         'max_var':np.sum(lex,axis=1),
+         'min_est':np.sum(1/lex,axis=1),
+         'log_det':np.sum(np.log(lex),axis=1)}
+    return d
+
+def build_combinations(G_lib, strategy='random',n_iter=1000,n_tasks=4): 
+    """ Builds a set of task-batteries and evalates them 
+    G_lib: second moment matrices of task-library
+    strategy: 'random' or 'exhaustive'
+    n_iter: number of iterations for random strategy
+    """
+    D=pd.DataFrame()
+    offs = [1e-6,1e-3,1e-1]
+    n_lib_task = G_lib.shape[0]
+    if strategy == 'random':
+        comb = np.random.choice(n_lib_task,size=(n_iter,n_tasks),replace=True)
+    elif strategy == 'exhaustive':
+        pass 
+    else:
+        raise ValueError('Invalid strategy')
+    for i in range(comb.shape[0]):
+        d = eigenval_crit(G_lib[comb[i],:][:,comb[i]],center=True,offset=offs)
+        d['combination'] = [comb[i]]*len(offs)
+        D = pd.concat([D,pd.DataFrame(d)],axis=0,ignore_index=True)
+    return D 
 
 # def genetic_algorithm(task_matrix, task_names, num_tasks=4, function='trace', population_size=100, generations=50, mutation_rate=0.1, top_n=1):
 #         """evolution based algorithm to find the best combination of tasks."""
@@ -272,3 +319,10 @@ def find_optimal_battery(task_matrix, task_names, num_tasks=4, function='trace',
 #         population = new_population
     
 #     return top_combinations
+
+if __name__ == "__main__":
+    N = 8 
+    U = np.random.normal(0,1,(N,10))
+    G = U @ U.T
+    D = build_combinations(G, strategy='random',n_iter=100,n_tasks=4)
+    pass
