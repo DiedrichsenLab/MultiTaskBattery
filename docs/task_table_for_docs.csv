@@ -1,22 +1,20 @@
-name,task_class,code,description
-theory_of_mind,TheoryOfMind,tom,"Read 2-sentence stories about other people, answer short questions "
-n_back,NBack,nbko,Judge if the current stimulus is the same presented 2 serial positions back
-action_observation,ActionObservation,actobs,Watch videos of people tying knots - remember knot name 
-verb_generation,VerbGeneration,verbgen,"Words presented, participants read the words. At halfpoint, ""GENERATE"" is shown, participants need to covertly generate verbs associated with words"
-romance_movie,RomanceMovie,rommov,"30s clips of the movie ""up"", no audio no subtitles"
-rest,Rest,rest,Lie in scanner with a fixation cross
-tongue_movement,TongueMovement,tongue,Move tongue from right to left at 1Hz
-auditory_narrative,AuditoryNarrative,audnarr,Listen passively to a 30 second snippets of a moth radiohour story
-spatial_navigation,SpatialNavigation,spatialnav,
-degraded_passage,DegradedPassage,degpass,
-sentence_reading,SentenceReading,senread,
-nonword_reading,NonwordReading,nwdread,
-oddball,OddBall,odbal,
-intact_passage,IntactPassage,intpass,
-demand_grid,DemandGrid,dmgrd,
-finger_sequence,FingerSequence,fingseq,Type out random sequences of 4 finger digits (control: single finger movements) 
-flexion_extension,FlexionExtension,flexexten,alternating periods of flexing/extending toes
-sencoding,Sencoding,Sencod,
-sencoding_probe,SencodingProbe,Sencodeprob,
-semantic_prediction,SemanticPrediction,sempred,"sentence presented, participants decide if last word makes sense."
-visual_search,VisualSearch,visearch,"geometric shapes presented on screen, participants must identify if 'L' is present."
+name,code,description
+theory_of_mind,tom,"Read 2-sentence stories about other people, answer short questions "
+n_back,nbko,Judge if the current stimulus is the same presented 2 serial positions back
+action_observation,actobs,Watch videos of people tying knots - remember knot name 
+verb_generation,verbgen,Read nouns or generate an associated verb
+romance_movie,rommov,"30s clips of the movie ""up"", no audio no subtitles"
+rest,rest,Lie in scanner with a fixation cross
+tongue_movement,tongue,Move tongue from right to left at 1Hz
+auditory_narrative,audnarr,Listen to a narrative (moth radiohour)
+spatial_navigation,spatialnav,Imagine navigating in childhood home
+degraded_passage,degpass,Listen to muffled sentences
+intact_passage,intpass,Listen to audible sentences
+sentence_reading,senread,Read sentences
+nonword_reading,nwdread,Read nonwords
+oddball,odbal,Identify red 'K' from red or black 'K' or 'O'
+demand_grid,dmgrd,Solve complex spatial grid
+finger_sequence,fingseq,Type out random sequences of 4 finger digits (control: single finger movements) 
+flexion_extension,flexexten,alternating periods of flexing/extending toes
+semantic_prediction,sempred,"sentence presented, participants decide if last word makes sense."
+visual_search,visearch,"geometric shapes presented on screen, participants must identify if 'L' is present."
