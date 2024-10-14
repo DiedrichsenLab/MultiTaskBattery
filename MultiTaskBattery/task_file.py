@@ -41,12 +41,17 @@ def make_run_file(task_list,
                   tfiles,
                   offset = 0,
                   instruction_dur = 5,
-                  task_dur = 30):
+                  task_dur = 30,
+                  conditions=None):
     """
     Make a single run file
     """
     # Get rows of the task_table corresponding to the task_list
     indx = [np.where(ut.task_table['name']==t)[0][0] for t in task_list]
+    # For those tasks that have conditions specified, replace with the corresponding rows
+    for i, cond in enumerate(conditions):
+        if cond:
+            indx[i] = np.where(ut.task_table['code']==cond)[0][0]
     R = {'task_name':task_list,
          'task_code':ut.task_table['code'].iloc[indx],
          'task_file':tfiles,
@@ -364,8 +369,10 @@ class TheoryOfMind(TaskFile):
                         trial_dur=14,
                         iti_dur=1, 
                         story_dur=10,
-                        question_dur=4, file_name=None
-                        , stim_file=None):
+                        question_dur=4,
+                        file_name=None,
+                        stim_file=None,
+                        condition=None):
 
         # count number of trials
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
@@ -377,6 +384,9 @@ class TheoryOfMind(TaskFile):
         else:
             stim = pd.read_csv(self.stim_dir / 'theory_of_mind' / 'theory_of_mind.csv')
 
+        if condition:
+            stim = stim[stim['condition'] == condition]
+            
         start_row = (run_number - 1) * 2
         end_row = run_number * 2 - 1
         stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
@@ -966,4 +976,65 @@ class VisualSearch(TaskFile):
         trial_info = pd.DataFrame(trial_info)
         if file_name is not None:
             trial_info.to_csv(self.task_dir / self.name / file_name,sep='\t',index=False)
+        return trial_info
+
+
+class RMET(TaskFile):
+    def __init__(self, const):
+        super().__init__(const)
+        self.name = 'rmet'
+
+    def make_task_file(self, hand='right',
+                        responses = [1,2,3,4],
+                        run_number=None,
+                        task_dur=30,
+                        trial_dur=6,
+                        iti_dur=1, 
+                        file_name=None,
+                        stim_file = None,
+                        condition=None):
+        
+
+        # count number of trials
+        n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
+        trial_info = []
+        t = 0
+
+        if stim_file:
+            stim = pd.read_csv(self.stim_dir / 'rmet' / stim_file)
+        else:
+            stim = pd.read_csv(self.stim_dir / 'rmet' / 'rmet.csv')
+
+        if condition:
+            stim = stim[stim['condition'] == condition]
+
+        start_row = (run_number - 1) * n_trials
+        end_row = run_number * n_trials - 1
+        stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
+
+        for n in range(n_trials):
+            trial = {}
+            trial['key_one'] = responses[0]
+            trial['key_two'] = responses[1]
+            trial['key_three'] = responses[2]
+            trial['key_four'] = responses[3]
+            trial['trial_num'] = n
+            trial['hand'] = hand
+            trial['trial_dur'] = trial_dur
+            trial['iti_dur'] = iti_dur
+            trial['stim'] = stim['picture'][n]
+            trial['options'] = stim['options'][n]
+            trial['condition'] = stim['condition'][n]
+            trial['answer'] = stim['answer'][n]
+            trial['display_trial_feedback'] = True
+            trial['start_time'] = t
+            trial['end_time'] = t + trial_dur + iti_dur
+            trial_info.append(trial)
+
+            # Update for next trial:
+            t = trial['end_time']
+
+        trial_info = pd.DataFrame(trial_info)
+        if file_name is not None:
+            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
         return trial_info
