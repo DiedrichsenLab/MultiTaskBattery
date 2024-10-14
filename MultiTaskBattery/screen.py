@@ -41,3 +41,42 @@ class Screen:
         # Flip the screen only if flip is True
         if flip:
             self.window.flip()
+
+    def check_mark(self, color='green', flip=True):
+        # Draw the check mark
+        check = visual.ShapeStim(self.window,
+            vertices=((-0.04,0), (0, -0.06), (0.04, 0.06)),
+            lineWidth=20,
+            closeShape=False,
+            lineColor=color,
+            units='norm'
+        )
+        check.draw()
+
+        # Flip the screen only if flip is True
+        if flip:
+            self.window.flip()
+
+    def error_cross(self, color='red', flip=True):
+        # Draw the fixation cross
+        cross_leg1 = visual.ShapeStim(self.window,
+            vertices=((-0.04, -0.06), (0.04, 0.06)),
+            lineWidth=20,
+            closeShape=False,
+            lineColor=color,
+            units='norm'
+        )
+        cross_leg1.draw()
+
+        cross_leg2 = visual.ShapeStim(self.window,
+            vertices=((-0.04, 0.06), (0.04, -0.06)),
+            lineWidth=20,
+            closeShape=False,
+            lineColor=color,
+            units='norm'
+        )
+        cross_leg2.draw()
+
+        # Flip the screen only if flip is True
+        if flip:
+            self.window.flip()
