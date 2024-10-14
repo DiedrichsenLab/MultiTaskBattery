@@ -1,23 +1,41 @@
-name	task_class	code	descriptive_name	description	reference
-theory_of_mind	TheoryOfMind	tom	story		
-n_back	NBack	nbko	memory		
-action_observation	ActionObservation	actobs	knot		
-verb_generation	VerbGeneration	verbgen	verb	"Words presented, participants read the words. At halfpoint, ""GENERATE"" is shown, participants need to covertly generate verbs associated with words"	
-romance_movie	RomanceMovie	rommov	pixar	"30s clips of the movie ""up"", no audio no subtitles"	
+name	task_class	cond	code	description	reference
+theory_of_mind	TheoryOfMind	ToM	tom		
+n_back	NBack	n_back	nbko		
+action_observation	ActionObservation	VideoAct-VideoKnots	acva-acvk		
+verb_generation	VerbGeneration	VerbGen-WordRead	vrbgn-wrdrd	"Words presented, participants read the words. At halfpoint, ""GENERATE"" is shown, participants need to covertly generate verbs associated with words"	
+romance_movie	RomanceMovie	RomanceMovie	rommov	"30s clips of the movie ""up"", no audio no subtitles"	
 rest	Rest	rest	rest	Lie in scanner with a fixation cross	NA
-tongue_movement	TongueMovement	tongue	tongue	"move tongue from right to left, touching upper premolar teeth guided by a flashing black circle around a fixation crosshair, black circle means right no cirlce means left, 1s periods"	"Saadon-grosman, N. et al. (2022) ‘A Third Somatomotor Representation in the Human Cerebellum’, pp. 1–35."
-auditory_narrative	AuditoryNarrative	audnarr	narrative	30 second snippets of a moth radiohour story (wheretheressmoke)	Novel
-spatial_navigation	SpatialNavigation	spatialnav	imagination		
-degraded_passage	DegradedPassage	degpass	noise		
-sentence_reading	SentenceReading	senread	reading		
-nonword_reading	NonwordReading	nwdread	nonword		
-oddball	OddBall	odbal	detection		
-intact_passage	IntactPassage	intpass	listening		
-demand_grid	DemandGrid	dmgrd	grid		
-finger_sequence	FingerSequence	fingseq	finger		
-flexion_extension	FlexionExtension	flexexten	toe	alternating periods of flexing/extending toes	
-sencoding	Sencoding	Sencod	sentence		
-sencoding_probe	SencodingProbe	Sencodeprob	probe		
-semantic_prediction	SemanticPrediction	sempred	prediction	"sentence presented, participants decide if last word makes sense."
-visual_search	VisualSearch	visearch	search	"geometric shapes presented on screen, participants must identify if 'L' is present."
-rmet	RMET	rmet	eyes	"pictures of faces with different emotions presented (eyes only) along with four attribute words, participants must identify which attribute describes person best."	"Kim, H.A. et al. (2024) ‘Multiracial Reading the Mind in the Eyes Test (MRMET): An inclusive version of an influential measure’, Behavior Research Methods. Revised from Baron-Cohen, Wheelwright, Hill, Raste, & Plumb, 2001"
+tongue_movement	TongueMovement	tongue_movement	tongue	"move tongue from right to left, touching upper premolar teeth guided by a flashing black circle around a fixation crosshair, black circle means right no cirlce means left, 1s periods"	"A Third Somatomotor Representation in the Human Cerebellum (Bucknet et al., 2022)"
+auditory_narrative	AuditoryNarrative	auditory_narrative	audnarr	30 second snippets of a moth radiohour story (wheretheressmoke)	Novel
+spatial_navigation	SpatialNavigation	SpatialNavigation	spatialnav		
+degraded_passage	DegradedPassage	degraded_passage	degpass		
+sentence_reading	SentenceReading	sentence_reading	senread		
+nonword_reading	NonwordReading	nonword_reading	nwdread		
+oddball	OddBall	oddball	odbal		
+intact_passage	IntactPassage	intact_passage	intpass		
+demand_grid	DemandGrid	demand_grid	dmgrd		
+finger_sequence	FingerSequence	FingerSeq	fingseq		
+flexion_extension	FlexionExtension	flexion_extension	flexexten	alternating periods of flexing/extending toes	
+sencoding	Sencoding	sencoding	Sencod		
+sencoding_probe	SencodingProbe	sencoding_probe	Sencodeprob		
+semantic_prediction	SemanticPrediction	Prediction-PredictViol-PredictScram	sempred-semviol-semscram	"sentence presented, participants decide if last word makes sense."	
+visual_search	VisualSearch	VisualSearchSmall-VisualSearchMed-VisualSearchLarge	visrchsml-visrchmed-visrchlrg	"geometric shapes presented on screen, participants must identify if 'L' is present."	
+go_no_go	Na	NoGo-Go	nogo-go		
+affective	Na	UnpleasantScenes-PleasantScenes	unpscen-pscen		
+arithmetic	Na	Math-DigitJudgement	math-digjudg		
+checkerBoard	Na	CheckerBoard	chckbrd		
+emotional	Na	SadFaces-HappyFaces	sdfac-hpface		
+interval_timing	Na	IntervalTiming	inttim		
+finger_simple	Na	FingerSimple	fngsmp		
+n_back_verbal	Na	Verbal0Back-Verbal2Back	vrbbck0-vrbbck2		
+n_back_pic	Na	Object0Back-Object2Back	objbck0-objbck2		
+stroop	Na	StroopIncon-StroopCon	strpincon-strpcon		
+CPRO	Na	CPRO	crpo		
+motor_imagery	Na	MotorImagery	mtrimg		
+spatial_map	Na	SpatialMapEasy-SpatialMapMed-SpatialMedDiff	smeas-smmed-smdif		
+nature_movie	Na	NatureMovie	natmov		
+landscape_movie	Na	LandscapeMovie	lndmov		
+mental_rotation	Na	MentalRotEasy-MentalRotMed-MentalRotDiff	mreas-mrmed-mrdif		
+emotionProcess	Na	BodyMotionIntact-BodyMotionScram	bmintac-bmscram		
+respAlt	Na	RespAltEasy-RespAltMed-RespAltDiff	raeas-ramed-radif		
+rmet	RMET	rmet	"pictures of faces with different emotions presented (eyes only) along with four attribute words, participants must identify which attribute describes person best."	"Kim, H.A. et al. (2024) ‘Multiracial Reading the Mind in the Eyes Test (MRMET): An inclusive version of an influential measure’, Behavior Research Methods. Revised from Baron-Cohen, Wheelwright, Hill, Raste, & Plumb, 2001"
