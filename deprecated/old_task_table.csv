@@ -1,0 +1,25 @@
+
+name	task_class	code	descriptive_name	description	reference
+theory_of_mind	TheoryOfMind	tom	story		
+n_back	NBack	nbko	memory		
+action_observation	ActionObservation	actobs	knot		
+verb_generation	VerbGeneration	verbgen	verb	"Words presented, participants read the words. At halfpoint, ""GENERATE"" is shown, participants need to covertly generate verbs associated with words"	
+romance_movie	RomanceMovie	rommov	pixar	"30s clips of the movie ""up"", no audio no subtitles"	
+rest	Rest	rest	rest	Lie in scanner with a fixation cross	NA
+tongue_movement	TongueMovement	tongue	tongue	"move tongue from right to left, touching upper premolar teeth guided by a flashing black circle around a fixation crosshair, black circle means right no cirlce means left, 1s periods"	"Saadon-grosman, N. et al. (2022) ‘A Third Somatomotor Representation in the Human Cerebellum’, pp. 1–35."
+auditory_narrative	AuditoryNarrative	audnarr	narrative	30 second snippets of a moth radiohour story (wheretheressmoke)	Novel
+spatial_navigation	SpatialNavigation	spatialnav	imagination		
+degraded_passage	DegradedPassage	degpass	noise		
+sentence_reading	SentenceReading	senread	reading		
+nonword_reading	NonwordReading	nwdread	nonword		
+oddball	OddBall	odbal	detection		
+intact_passage	IntactPassage	intpass	listening		
+demand_grid	DemandGrid	dmgrd	grid		
+finger_sequence	FingerSequence	fingseq	finger		
+flexion_extension	FlexionExtension	flexexten	toe	alternating periods of flexing/extending toes	
+sencoding	Sencoding	Sencod	sentence		
+sencoding_probe	SencodingProbe	Sencodeprob	probe		
+semantic_prediction	SemanticPrediction	sempred	prediction	"sentence presented, participants decide if last word makes sense."
+visual_search	VisualSearch	visearch	search	"geometric shapes presented on screen, participants must identify if 'L' is present."
+rmet	RMET	rmet	eyes	"pictures of faces with different emotions presented (eyes only) along with four attribute words, participants must identify which attribute describes person best."	"Kim, H.A. et al. (2024) ‘Multiracial Reading the Mind in the Eyes Test (MRMET): An inclusive version of an influential measure’, Behavior Research Methods. Revised from Baron-Cohen, Wheelwright, Hill, Raste, & Plumb, 2001"
+=======
