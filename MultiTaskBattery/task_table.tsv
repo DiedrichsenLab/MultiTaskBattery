@@ -38,4 +38,4 @@ landscape_movie	Na	LandscapeMovie	lndmov
 mental_rotation	Na	MentalRotEasy-MentalRotMed-MentalRotDiff	mreas-mrmed-mrdif		
 emotionProcess	Na	BodyMotionIntact-BodyMotionScram	bmintac-bmscram		
 respAlt	Na	RespAltEasy-RespAltMed-RespAltDiff	raeas-ramed-radif		
-rmet	RMET	rmet	"pictures of faces with different emotions presented (eyes only) along with four attribute words, participants must identify which attribute describes person best."	"Kim, H.A. et al. (2024) ‘Multiracial Reading the Mind in the Eyes Test (MRMET): An inclusive version of an influential measure’, Behavior Research Methods. Revised from Baron-Cohen, Wheelwright, Hill, Raste, & Plumb, 2001"
+rmet	RMET	RmetAge-RmetEmotion	rmetage-rmetemot	"pictures of faces with different emotions presented (eyes only) along with four attribute words, participants must identify which attribute describes person best."	"Kim, H.A. et al. (2024) ‘Multiracial Reading the Mind in the Eyes Test (MRMET): An inclusive version of an influential measure’, Behavior Research Methods. Revised from Baron-Cohen, Wheelwright, Hill, Raste, & Plumb, 2001"
