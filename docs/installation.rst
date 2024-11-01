@@ -17,7 +17,7 @@ Or use Gitdesktop to clone the repository.
 Installing the Required Python Version
 --------------------------------------
 
-This project requires **python version >3.7.0**. Please ensure it is installed globally on your local machine.
+This project requires **python version >3.9.0**. Please ensure it is installed globally on your local machine.
 
 If you are running Mac OS X or Linux, it is recommended to use [`pyenv`](https://github.com/pyenv/pyenv)
 for python version management. The full installation instructions can be found [here](https://github.com/pyenv/pyenv#installation).
@@ -36,15 +36,16 @@ Add `pyenv init` to your shell:
 
 Install the required version of python:
 
-    $ pyenv install 3.7.0
+    $ pyenv install 3.9.0
 
 Installing the Required Python Packages
 ---------------------------------------
 
 It is a good idea to create a virtual environment, and install the dependencies in this environment. This can be done using `pipenv`, or to make it more convient virtualenvwrapper.
 
-required packages:
-pip install psychopy 
-pip install psychopy-mri-emulator
+Install the required packages into your virtual environment:
+```pip install -r requirements.txt```
 
-Installs the required packages in the virtual environment with requirements. 
+Make sure you have updated your pip to the latest version, otherwise you will see several errors. Upgrade pip with:
+```pip install --upgrade pip```
+
