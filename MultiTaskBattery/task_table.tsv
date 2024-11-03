@@ -26,7 +26,6 @@ arithmetic	Na	math	math
 checkerBoard	Na	checker	chckbrd		
 emotional	Na	faces	sdfac		
 interval_timing	Na	timing	inttim		
-finger_simple	Na	finger	fngsmp		
 n_back_verbal	Na	memory_verbal	vrbbck		
 n_back_pic	Na	memory_object	objbck		
 stroop	Na	stroop	strp		
