@@ -8,8 +8,6 @@ tasks_without_run_number = ['n_back', 'verb_generation', 'rest', 'tongue_movemen
                             'oddball', 'demand_grid', 'finger_sequence', 'flexion_extension',
                             'visual_search']
 
-
-
 def dircheck(path2dir):
     """
     Checks if a directory exists! if it does not exist, it creates it
