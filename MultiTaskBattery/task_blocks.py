@@ -389,7 +389,7 @@ class SpatialNavigation(Task):
                                     f"Imagine walking around your childhood home\n"
                                     f"Start in the {start_location} – end in the {end_location}\n"
                                     f"Focus on the fixation cross")
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1],  wrapWidth=25)
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1],  wrapWidth=20)
         instr_visual.draw()
         self.window.flip()
 
@@ -435,7 +435,7 @@ class TheoryOfMind(Task):
         event.clearEvents()
 
         # Display story
-        story_stim = visual.TextStim(self.window, text=trial['story'], alignHoriz='center', wrapWidth=25, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height= 1.25)
+        story_stim = visual.TextStim(self.window, text=trial['story'], alignHoriz='center', wrapWidth=20, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height= 1.25)
         story_stim.draw()
         self.window.flip()
 
@@ -1242,15 +1242,25 @@ class RMET(Task):
         self.corr_key = [self.trial_info['key_one'].iloc[0],self.trial_info['key_two'].iloc[0],self.trial_info['key_three'].iloc[0],self.trial_info['key_four'].iloc[0]]
 
     def display_instructions(self):
-        self.instruction_text = f"{self.descriptive_name.capitalize()} task"
-        self.instruction_text += "\n\n Choose which words best describes what the person is feeling. " if self.code == 'rmet_emotion' else "\n\n Choose what age the person is."
-        self.instruction_text += "\n\nButtons: \n1. index finger \t2. middle finger\n3. ring finger\t\t\t\t4. pinky"
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1], wrapWidth=20)
+        task_name_stim = visual.TextStim(self.window, text=f'{self.descriptive_name.capitalize()}', color=[-1, -1, -1], bold=True, pos=(0, 3))
+        task_name_stim.draw()
+        self.instruction_text = ""
+        if 'age' in self.task_file:
+            self.instruction_text += "\n\n Choose what AGE the person is."
+        elif 'emotion' in self.task_file:
+            self.instruction_text += "\n\n Choose what FEELING the person has."
+        else:
+            self.instruction_text += "\n\n Choose which AGE or FEELING best describes the person." # General instruction for both age and emotion
+        self.instruction_text += "\n\n\n1. index finger \t2. middle finger\n3. ring finger\t\t\t\t4. pinky"
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1], wrapWidth=20, pos=(0, 0))
         instr_visual.draw()
         self.window.flip()
 
     def run_trial(self, trial):
         """ Runs a single trial of the Reading the Mind in the Eye (RMET) task """
+        
+        # Flush any keys in buffer
+        event.clearEvents()
         
         # --- Eyes ---
         # Get the file name
@@ -1274,7 +1284,7 @@ class RMET(Task):
             # 2 and 3 should be on the left and right of the bottom line (y position -7 and x positions -7 and 7)
             x = -7 if i % 2 == 0 else 7
             y = 7 if i < 2 else -7
-            answer_stim = visual.TextStim(self.window, text=f'{i+1}. {option}', pos=(x, y), color=[-1, -1, -1], height=1.3, alignHoriz='center')
+            answer_stim = visual.TextStim(self.window, text=f'{option}', pos=(x, y), color=[-1, -1, -1], height=1.3, alignHoriz='center')
             answer_stims.append(answer_stim)
 
         # Display stimuli
@@ -1283,13 +1293,14 @@ class RMET(Task):
             answer_stim.draw()
         self.window.flip()
 
-        # Flush any keys in buffer
-        event.clearEvents()
-
         # collect responses 0: no response 1-4: key pressed
         trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['trial_dur'])
         trial['correct'] = (trial['response'] == answer_options.index(str(trial['answer']))+1)
         
         # display trial feedback
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
+
+        # Flush any keys in buffer
+        event.clearEvents()
+
         return trial

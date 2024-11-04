@@ -199,7 +199,7 @@ class Experiment:
             run_data = run_data.groupby('task_name', as_index=False).agg({'acc': lambda x: x.mean(skipna=True), 'rt': lambda x: x.mean(skipna=True)})
 
         # Define column headers
-        scores = [["Your Score:", "", ""], ["", "Correct", "Reaction Time"]]
+        scores = [["Score:", "", ""], ["", "Correct", "Time"]]
         # Add each task's data to the score text
         for i, task in enumerate(run_data.task_name.values):
             if self.task_obj_list[i].feedback_type.lower() != 'none':
@@ -208,7 +208,7 @@ class Experiment:
                 if np.isnan(run_data.rt[i]):
                     rt = "-"
                 else:
-                    rt = f"{int(run_data.rt[i] * 1000):d} ms"
+                    rt = f"{run_data.rt[i]:.2f} s"
                 scores.append([task_name, accuracy, rt])
         
         # Display settings
