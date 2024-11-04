@@ -435,7 +435,7 @@ class TheoryOfMind(Task):
         event.clearEvents()
 
         # Display story
-        story_stim = visual.TextStim(self.window, text=trial['story'], alignHoriz='center', wrapWidth=25, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height= 1.25)
+        story_stim = visual.TextStim(self.window, text=trial['story'], alignHoriz='center', wrapWidth=20, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height= 1.25)
         story_stim.draw()
         self.window.flip()
 
