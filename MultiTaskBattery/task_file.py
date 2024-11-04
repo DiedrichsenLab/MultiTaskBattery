@@ -73,9 +73,11 @@ class TaskFile():
         Args:
             const: module for constants
         """
-        self.exp_name   = const.exp_name
-        self.task_dir = const.task_dir
-        self.stim_dir   = const.stim_dir
+        self.exp_name           = const.exp_name
+        self.task_dir           = const.task_dir
+        self.stim_dir           = const.stim_dir
+        self.matching_stimuli   = True # whether the stimuli are matching between the control and active condition or not
+
 
 class NBack(TaskFile):
     def __init__(self, const):
@@ -356,6 +358,7 @@ class TheoryOfMind(TaskFile):
     def __init__(self, const):
         super().__init__(const)
         self.name = 'theory_of_mind'
+        self.matching_stimuli = False # stimuli for active condition (belief) are different from stimuli for passive condition (photo)
 
     def make_task_file(self, hand='right',
                        responses = [1,2], # 1 = True, 2 = False
@@ -497,7 +500,9 @@ class ActionObservation(TaskFile):
     def __init__(self, const):
         super().__init__(const)
         self.name = 'action_observation'
-                # Medium/bad knot vids
+        self.matching_stimuli = False # stimuli for active condition (knot tying) are different from stimuli for passive condition (knot watching)
+
+        # Medium/bad knot vids
         # self.knot_names = [
         #                 'Ampere', 'Arbor', 'Baron', 'Belfry', 'Bramble', 'Chamois', 'Coffer', 
         #                 'Farthing', 'Fissure', 'Gentry', 'Henchman', 'Magnate', 'Perry', 'Phial', 'Polka', 
@@ -791,6 +796,7 @@ class FingerSequence(TaskFile):
     def __init__(self, const):
         super().__init__(const)
         self.name = 'finger_sequence'
+        self.matching_stimuli = False # sequence of numbers are different for easy and hard sequence condition
         
     def generate_sequence(self):
         sequence = [random.choice([1, 2, 3, 4])]
@@ -978,6 +984,8 @@ class RMET(TaskFile):
     def __init__(self, const):
         super().__init__(const)
         self.name = 'rmet'
+        self.matching_stimuli = True # stimuli are matched for the active condition (determine emotion) and passive condition (determine age)
+
 
     def make_task_file(self, hand='right',
                         responses = [1,2,3,4],
