@@ -1228,7 +1228,6 @@ class VisualSearch(Task):
         return trial
 
 
-
 class RMET(Task):
     def __init__(self, info, screen, ttl_clock, const, subj_id):
         super().__init__(info, screen, ttl_clock, const, subj_id)
@@ -1289,7 +1288,7 @@ class RMET(Task):
 
         # collect responses 0: no response 1-4: key pressed
         trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['trial_dur'])
-        trial['correct'] = (trial['response'] == answer_options.index(trial['answer'])+1)
+        trial['correct'] = (trial['response'] == answer_options.index(str(trial['answer']))+1)
         
         # display trial feedback
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
