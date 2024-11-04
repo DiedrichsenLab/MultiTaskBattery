@@ -37,6 +37,7 @@ class Task:
         self.code               = info['task_code']
         self.task_file          = info['task_file']
         self.feedback_type      = 'none'
+        self.matching_stimuli   = True # whether the stimuli are matching between the control and active condition or not
 
     def init_task(self):
         """
@@ -408,6 +409,7 @@ class TheoryOfMind(Task):
     def __init__(self, info, screen, ttl_clock, const, subj_id):
         super().__init__(info, screen, ttl_clock, const, subj_id)
         self.feedback_type = 'acc+rt'
+        self.matching_stimuli = False # stimuli for active condition (belief) are different from stimuli for passive condition (photo)
 
     def init_task(self):
         """
@@ -518,6 +520,7 @@ class IntactPassage(Task):
 class ActionObservation(Task):
     def __init__(self, info, screen, ttl_clock, const, subj_id):
         super().__init__(info, screen, ttl_clock, const, subj_id)
+        self.matching_stimuli = False # stimuli for active condition (knot tying) are different from stimuli for passive condition (knot watching)
 
     def display_instructions(self): # overriding the display instruction from the parent class
         self.instruction_text = f"{self.descriptive_name} Task \n\n Keep your head still while watching the two clips. \n\n Try and remember the knot shown."
@@ -820,6 +823,7 @@ class FingerSequence(Task):
     def __init__(self, info, screen, ttl_clock, const, subj_id):
         super().__init__(info, screen, ttl_clock, const, subj_id)
         self.feedback_type = 'acc+rt'
+        self.matching_stimuli = False # sequence of numbers are different for easy and hard sequence condition
 
     def init_task(self):
         """
@@ -1228,11 +1232,11 @@ class VisualSearch(Task):
         return trial
 
 
-
 class RMET(Task):
     def __init__(self, info, screen, ttl_clock, const, subj_id):
         super().__init__(info, screen, ttl_clock, const, subj_id)
         self.feedback_type = 'acc+rt'
+        self.matching_stimuli = True # stimuli are matched for the active condition (determine emotion) and passive condition (determine age)
 
     def init_task(self):
         """
