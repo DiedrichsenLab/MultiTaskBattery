@@ -1170,7 +1170,7 @@ class ActionPrediction(TaskFile):
         return trial_info
 
 
-class RomanceMovie(TaskFile):
+class NatureMovie(TaskFile):
     def __init__(self, const):
         super().__init__(const)
         self.name = 'nature_movie'
@@ -1192,7 +1192,7 @@ class RomanceMovie(TaskFile):
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
             trial['display_trial_feedback'] = False
-            trial['stim'] = f'{run_number:02d}_romance.mov'
+            trial['stim'] = f'{run_number:02d}_nature.mov'
             trial['start_time'] = t
             trial['end_time'] = t + trial_dur + iti_dur
             trial_info.append(trial)
@@ -1203,3 +1203,5 @@ class RomanceMovie(TaskFile):
             trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
 
         return trial_info
+    
+
