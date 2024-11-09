@@ -3,7 +3,6 @@ theory_of_mind	TheoryOfMind	story	tom
 n_back	NBack	memory	nbko		
 action_observation	ActionObservation	knot	acva-acvk		
 verb_generation	VerbGeneration	verb	vrbgn-wrdrd	"Words presented, participants read the words. At halfpoint, ""GENERATE"" is shown, participants need to covertly generate verbs associated with words"	
-romance_movie	RomanceMovie	pixar	rommov	"30s clips of the movie ""up"", no audio no subtitles"	
 rest	Rest	rest	rest	Lie in scanner with a fixation cross	NA
 tongue_movement	TongueMovement	tongue	tongue	"move tongue from right to left, touching upper premolar teeth guided by a flashing black circle around a fixation crosshair, black circle means right no cirlce means left, 1s periods"	"A Third Somatomotor Representation in the Human Cerebellum (Bucknet et al., 2022)"
 auditory_narrative	AuditoryNarrative	radio	audnarr	30 second snippets of a moth radiohour story (wheretheressmoke)	Novel
@@ -32,9 +31,12 @@ stroop	Na	stroop	strp
 CPRO	Na	CPRO	crpo		
 motor_imagery	Na	motor_imagery	mtrimg		
 spatial_map	Na	spatial_map	spatmp		
-nature_movie	Na	nature	natmov		
 landscape_movie	Na	landscape	lndmov		
 mental_rotation	Na	rotation	mntrlrt		
 emotionProcess	Na	motion	biomot		
 respAlt	Na	response_alternative	respalt		
 rmet	RMET	eyes	rmet	"pictures of faces with different emotions presented (eyes only) along with four attribute words, participants must identify which attribute describes person best."	"Kim, H.A. et al. (2024) ‘Multiracial Reading the Mind in the Eyes Test (MRMET): An inclusive version of an influential measure’, Behavior Research Methods. Revised from Baron-Cohen, Wheelwright, Hill, Raste, & Plumb, 2001"
+picture_sequence	PictureSequence	cartoon	picture_sequence	"4 cartoon pictures are presented, participants must order them chronologically."	"Heleven, E., van Dun, K. and Van Overwalle, F. (2019) ‘The posterior Cerebellum is involved in constructing Social Action Sequences: An fMRI Study’, Scientific Reports, 9(1), pp. 1–11. Available at: https://doi.org/10.1038/s41598-019-46962-7."
+action_prediction	ActionPrediction	prediction	action_prediction	"An action video is shown where an actor is either taking a penalty shot or greeting a person, participants must predict if the ball lands left or right or if the person greets with a handshake or hug."	"King, M. (2022). Investigating cortico-cerebellar contributions to cognition. UC Berkeley. ProQuest ID: King_berkeley_0028E_21350. Merritt ID: ark:/13030/m5wb6kvd. Retrieved from https://escholarship.org/uc/item/61w6t6sk"
+romance_movie	RomanceMovie	pixar	rommov	"30s clips of the movie ""up"", no audio no subtitles"	
+nature_movie	NatureMovie	nature	natmov	"30s clips of planet earth documentary movie, no audio no subtitles"	
