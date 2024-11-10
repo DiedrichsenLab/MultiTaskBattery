@@ -278,40 +278,6 @@ class AuditoryNarrative(TaskFile):
 
         return trial_info
 
-class RomanceMovie(TaskFile):
-    def __init__(self, const):
-        super().__init__(const)
-        self.name = 'romance_movie'
-
-    def make_task_file(self,
-                       run_number = None ,
-                       task_dur=30,
-                       trial_dur=30,
-                       iti_dur=0,
-                       file_name=None):
-        n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
-        trial_info = []
-
-        t = 0
-
-        for n in range(n_trials):
-            trial = {}
-            trial['trial_num'] = n
-            trial['trial_dur'] = trial_dur
-            trial['iti_dur'] = iti_dur
-            trial['display_trial_feedback'] = False
-            trial['stim'] = f'{run_number:02d}_romance.mov'
-            trial['start_time'] = t
-            trial['end_time'] = t + trial_dur + iti_dur
-            trial_info.append(trial)
-            t = trial['end_time']
-
-        trial_info = pd.DataFrame(trial_info)
-        if file_name is not None:
-            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
-
-        return trial_info
-
 class SpatialNavigation(TaskFile):
     def __init__(self, const):
         super().__init__(const)
@@ -1180,21 +1146,41 @@ class ActionPrediction(TaskFile):
         return trial_info
 
 
-class NatureMovie(TaskFile):
+class Movie(TaskFile):
     def __init__(self, const):
         super().__init__(const)
-        self.name = 'nature_movie'
+        self.name = 'movie'
+        self.matching_stimuli = False # Romance movie clips are different from nature movie clips and landscape movie clips
 
     def make_task_file(self,
                        run_number = None ,
                        task_dur=30,
                        trial_dur=30,
                        iti_dur=0,
-                       file_name=None):
+                       file_name=None,
+                       stim_file=None,
+                       condition=None):
+
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
 
         t = 0
+
+        if stim_file:
+            stim = pd.read_csv(self.stim_dir / self.name / stim_file)
+        else:
+            stim = pd.read_csv(self.stim_dir / self.name / f'{self.name}.csv')
+
+        if condition:
+            stim = stim[stim['condition'] == condition]
+
+        start_row = (run_number - 1) * n_trials
+        end_row = run_number * n_trials - 1
+        stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
+
+        # Display a warning for romance clip 09 and up: The clips are repeated clips 1-8
+        if run_number >= 9:
+            Warning('Romance condition clips 9-10 are duplicates. They are the same as clips 1-8')
 
         for n in range(n_trials):
             trial = {}
@@ -1202,7 +1188,8 @@ class NatureMovie(TaskFile):
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
             trial['display_trial_feedback'] = False
-            trial['stim'] = f'{run_number:02d}_nature.mov'
+            trial['stim'] = stim['video'][n]
+            trial['condition'] = stim['condition'][n]
             trial['start_time'] = t
             trial['end_time'] = t + trial_dur + iti_dur
             trial_info.append(trial)
@@ -1214,4 +1201,6 @@ class NatureMovie(TaskFile):
 
         return trial_info
     
+
+
 

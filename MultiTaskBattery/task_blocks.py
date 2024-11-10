@@ -340,45 +340,6 @@ class AuditoryNarrative(Task):
 
         return trial
 
-
-
-class RomanceMovie(Task):
-    def __init__(self, info, screen, ttl_clock, const, subj_id):
-        super().__init__(info, screen, ttl_clock, const, subj_id)
-        self.name = 'romance_movie'
-
-    def display_instructions(self):
-        self.instruction_text = f"{self.descriptive_name} Task\n\n You will watch short clips from a movie. Please keep your head still and pay attention to the screen."
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
-        instr_visual.draw()
-        self.window.flip()
-
-    def run_trial(self, trial):
-        # Get the file name
-        movie_file_name = trial['stim']
-
-        # Construct the movie file path
-        movie_path = Path(self.const.stim_dir) / self.name / 'clips' / movie_file_name
-
-        # Convert Path object to string for compatibility
-        movie_path_str = str(movie_path)
-
-        # Create a MovieStim3 object
-        movie_clip = visual.MovieStim3(self.window, movie_path_str, loop=False)
-
-        movie_clip.draw()
-        self.window.flip()
-
-        while movie_clip.status != visual.FINISHED:
-            movie_clip.draw()
-            self.window.flip()
-            self.ttl_clock.update()
-
-        # Display trial feedback
-        self.display_trial_feedback(give_feedback= trial['display_trial_feedback'], correct_response = None)
-
-        return trial
-
 class SpatialNavigation(Task):
     def __init__(self, info, screen, ttl_clock, const, subj_id):
         super().__init__(info, screen, ttl_clock, const, subj_id)
@@ -1542,13 +1503,11 @@ class ActionPrediction(Task):
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
 
         return trial
-    
 
-
-class NatureMovie(Task):
+class Movie(Task):
     def __init__(self, info, screen, ttl_clock, const, subj_id):
         super().__init__(info, screen, ttl_clock, const, subj_id)
-        self.name = 'nature_movie'
+        self.name = 'movie'
 
     def display_instructions(self):
         self.instruction_text = f"{self.descriptive_name} Task\n\n You will watch short clips from a movie. Please keep your head still and pay attention to the screen."
