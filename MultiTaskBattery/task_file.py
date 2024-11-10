@@ -6,7 +6,7 @@ import pandas as pd
 import numpy as np
 import random
 import MultiTaskBattery.utils as ut
-
+import itertools
 
 def shuffle_rows(dataframe):
     """
@@ -1010,6 +1010,16 @@ class RMET(TaskFile):
 
         if condition:
             stim = stim[stim['condition'] == condition]
+        else:
+            # Alternate between emotion and age conditions
+            stim_emotion = stim[stim['condition'] == 'emotion']
+            stim_age = stim[stim['condition'] == 'age']
+            # Split each condition into halves
+            first_half = zip(stim_emotion.iloc[:len(stim_emotion) // 2].iterrows(),
+                            stim_age.iloc[len(stim_age) // 2:].iterrows())
+            second_half = zip(stim_emotion.iloc[len(stim_emotion) // 2:].iterrows(),
+                            stim_age.iloc[:len(stim_age) // 2].iterrows())
+            stim = pd.concat([pd.concat([row1[1], row2[1]], axis=1).T for row1, row2 in itertools.chain(first_half, second_half)], ignore_index=True)
 
         start_row = (run_number - 1) * n_trials
         end_row = run_number * n_trials - 1
