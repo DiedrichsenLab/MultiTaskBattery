@@ -1510,8 +1510,11 @@ class Movie(Task):
         self.name = 'movie'
 
     def display_instructions(self):
-        self.instruction_text = f"{self.descriptive_name} Task\n\n You will watch short clips from a movie. Please keep your head still and pay attention to the screen."
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
+        task_name = visual.TextStim(self.window, text=f'{self.descriptive_name.capitalize()}', color=[-1, -1, -1], bold=True, pos=(0, 3))
+        task_name.draw()
+
+        self.instruction_text = f"\n\n You will watch short clips from a movie. Please keep your head still and pay attention to the screen."
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1], wrapWidth=20, pos=(0, 0))
         instr_visual.draw()
         self.window.flip()
 
@@ -1535,8 +1538,75 @@ class Movie(Task):
             movie_clip.draw()
             self.window.flip()
             self.ttl_clock.update()
+        
+        return trial
+    
 
-        # Display trial feedback
-        self.display_trial_feedback(give_feedback= trial['display_trial_feedback'], correct_response = None)
+class StrangeStories(Task):
+    def __init__(self, info, screen, ttl_clock, const, subj_id):
+        super().__init__(info, screen, ttl_clock, const, subj_id)
+        self.name = 'strange_stories'
+
+    def display_instructions(self):
+        task_name = visual.TextStim(self.window, text=f'{self.descriptive_name.capitalize()}', color=[-1, -1, -1], bold=True, pos=(0, 3))
+        task_name.draw()
+
+        self.instruction_text = f"\n\n You will watch a short clip about a couple."
+        # self.instruction_text += " They live and work together. Each clip is self-contained and there is no story running from one clip to another."
+        # self.instruction_text += "\n\n You will be asked a question about the clip. Imagine your answer as soon as you see the question. When you see the answer options, press the button that corresponds most to the answer you thought of. Some questions do not have a right or wrong answer."
+        self.instruction_text += "\n\n Imagine your answer to the question. \nChoose the best match from the answer options. \nSome questions have no right answer."
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1], wrapWidth=20, pos=(0, 0))
+        instr_visual.draw()
+        self.window.flip()
+
+    def run_trial(self, trial):
+        # Get the file name
+        movie_file_name = trial['stim']
+
+        # Construct the movie file path
+        movie_path = Path(self.const.stim_dir) / self.name / 'clips' / movie_file_name
+
+        # Convert Path object to string for compatibility
+        movie_path_str = str(movie_path)
+
+        # Create a MovieStim3 object
+        movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False)
+
+        movie_clip.draw()
+        self.window.flip()
+
+        while movie_clip.status != visual.FINISHED:
+            movie_clip.draw()
+            self.window.flip()
+            self.ttl_clock.update()
+
+        movie_clip.draw()
+        self.window.flip()
+
+        while movie_clip.status != visual.FINISHED:
+            movie_clip.draw()
+            self.window.flip()
+            self.ttl_clock.update()
+            # core.wait(1)  # Freeze the video for a moment
+
+        # Flush any keys in buffer
+        event.clearEvents()
+
+        # Display question
+        question = trial['question']
+        question_stim = visual.TextStim(self.window, text=question, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=25)
+        question_stim.draw()
+        self.window.flip()
+        # Wait for 5 seconds
+        self.ttl_clock.wait_until(self.ttl_clock.get_time() + 5)
+
+
+        question += f"\n\n\n{trial['options'].split(',')[0]}: {self.corr_key[0]} \n{trial['options'].split(',')[1]}: {self.corr_key[1]} \n{trial['options'].split(',')[2]}: {self.corr_key[2]}"
+        question_stim = visual.TextStim(self.window, text=question, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=25)
+        question_stim.draw()
+        self.window.flip()
+
+        # collect responses 0: no response 1-4: key pressed
+        trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['question_dur'])
 
         return trial
