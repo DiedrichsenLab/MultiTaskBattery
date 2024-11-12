@@ -738,6 +738,7 @@ class OddBall(TaskFile):
             trial = {}
             trial['key_one'] = responses[0]
             trial['key_two'] = responses[1]
+            trial['key_three'] = responses[2]
             trial['trial_num'] = n
             trial['hand'] = hand
             trial['trial_dur'] = trial_dur
@@ -1202,7 +1203,6 @@ class Movie(TaskFile):
         return trial_info
     
 
-
 class StrangeStories(TaskFile):
     def __init__(self, const):
         super().__init__(const)
@@ -1210,10 +1210,13 @@ class StrangeStories(TaskFile):
         self.matching_stimuli = True
 
     def make_task_file(self,
+                       hand='right',
+                       responses = [1,2,3],
                        run_number = None ,
                        task_dur=30,
                        trial_dur=30,
                        iti_dur=0,
+                       question_dur=5,
                        file_name=None,
                        stim_file=None,
                        condition=None):
@@ -1238,10 +1241,15 @@ class StrangeStories(TaskFile):
         for n in range(n_trials):
             trial = {}
             trial['trial_num'] = n
+            trial['key_one'] = responses[0]
+            trial['key_two'] = responses[1]
+            trial['key_three'] = responses[2]
+            trial['hand'] = hand
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
             trial['display_trial_feedback'] = False
             trial['stim'] = stim['video'][n]
+            trial['question_dur'] = question_dur
             trial['question'] = stim['question'][n]
             trial['options'] = stim['options'][n]
             trial['condition'] = stim['condition'][n]
