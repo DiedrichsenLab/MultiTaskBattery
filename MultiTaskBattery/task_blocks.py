@@ -503,7 +503,7 @@ class ActionObservation(Task):
         movie_path_str = str(movie_path)
 
         # Create a MovieStim3 object
-        movie_clip = visual.MovieStim3(self.window, movie_path_str, loop=False)
+        movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False)
 
         while movie_clip.isFinished == False:
             movie_clip.draw()
@@ -1261,7 +1261,7 @@ class RMET(Task):
 
         # collect responses 0: no response 1-4: key pressed
         trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['trial_dur'])
-        trial['correct'] = (trial['response'] == answer_options.index(str(trial['answer']))+1)
+        trial['correct'] = (trial['response'] == answer_options.index(trial['answer'])+1)
         
         # display trial feedback
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
@@ -1314,7 +1314,7 @@ class PictureSequence(Task):
                 progress=1-(seconds_left/show_last_seconds),
                 size=(width, height),
                 pos=(x_pos, y_pos),
-                backColor='green',
+                backColor='blue',
                 barColor='black',
                 borderColor='black',
                 lineWidth=5,
@@ -1333,7 +1333,7 @@ class PictureSequence(Task):
         """
         #Add a black border around the selected images
         for p, pressed_key in enumerate(pressed_keys):
-            color = 'green' if p == len(pressed_keys) - 1 and not self.ttl_clock.get_time() - last_key_press_time > 1  else 'black' #Add a green border around the last selected image if the last key press was less than 2 seconds ago
+            color = 'blue' if p == len(pressed_keys) - 1 and not self.ttl_clock.get_time() - last_key_press_time > 1  else 'black' #Add a green border around the last selected image if the last key press was less than 2 seconds ago
             visual.Rect(self.window, size=(width, height), pos=positions[pressed_key-1], lineColor=color, lineWidth=line_width).draw()
         
     def run_trial(self, trial):
@@ -1389,7 +1389,7 @@ class PictureSequence(Task):
         correct_list = np.zeros((num_items,)) # List of booleans indicating whether each press was correct needed for overall trial accuracy
         num_presses =0
         pressed_keys = []
-        line_width = 10
+        line_width = 15
         
         while self.ttl_clock.get_time() - sequence_start_time < trial['trial_dur']:
             self.ttl_clock.update()
@@ -1427,7 +1427,7 @@ class PictureSequence(Task):
             trial['rt'] = np.nanmean(rt_list)
  
         # display trial feedback (for whole trial)
-        self.display_trial_feedback(trial['display_trial_feedback'], trial['correct']== 1)
+        self.display_trial_feedback(trial['display_trial_feedback'], trial['correct']==1)
 
         return trial
 
@@ -1473,7 +1473,7 @@ class ActionPrediction(Task):
         # Display video        
         movie_path = Path(self.const.stim_dir) / self.name / 'modified_clips' / f"{trial['stim']}.mp4"
         movie_path_str = str(movie_path)
-        movie_clip = visual.MovieStim3(self.window, movie_path_str, loop=False, noAudio=True, size=(stim_width, stim_height), pos=(0, 0))
+        movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False, noAudio=True, size=(stim_width, stim_height), pos=(0, 0))
 
         movie_clip.draw()
         self.window.flip()
@@ -1489,7 +1489,7 @@ class ActionPrediction(Task):
 
         # Display question
         question = trial['question']
-        question += f"\n\n\n{trial['options'].split(',')[0]}: {self.corr_key[0]} \t\t\t{trial['options'].split(',')[1]}: {self.corr_key[1]}"
+        question += f"\n\n\n{self.corr_key[0]}. {trial['options'].split(',')[0]} \t\t\t{self.corr_key[1]}. {trial['options'].split(',')[1]}"
         question_stim = visual.TextStim(self.window, text=question, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=25)
         question_stim.draw()
         self.window.flip()
@@ -1528,7 +1528,7 @@ class Movie(Task):
         movie_path_str = str(movie_path)
 
         # Create a MovieStim3 object
-        movie_clip = visual.MovieStim3(self.window, movie_path_str, loop=False)
+        movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False)
 
         movie_clip.draw()
         self.window.flip()
