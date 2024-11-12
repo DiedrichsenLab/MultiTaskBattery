@@ -7,12 +7,12 @@ from pathlib import Path
 import pandas as pd
 import numpy as np
 import random 
-
 from psychopy import visual, sound, core, event
 import MultiTaskBattery.utils as ut
-
 from ast import literal_eval
-import warnings
+from copy import deepcopy
+import re
+
 
 class Task:
     """
@@ -503,9 +503,9 @@ class ActionObservation(Task):
         movie_path_str = str(movie_path)
 
         # Create a MovieStim3 object
-        movie_clip = visual.MovieStim3(self.window, movie_path_str, loop=False)
+        movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False)
 
-        while movie_clip.status != visual.FINISHED:
+        while movie_clip.isFinished == False:
             movie_clip.draw()
             self.window.flip()
             self.ttl_clock.update()
@@ -1261,7 +1261,7 @@ class RMET(Task):
 
         # collect responses 0: no response 1-4: key pressed
         trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['trial_dur'])
-        trial['correct'] = (trial['response'] == answer_options.index(str(trial['answer']))+1)
+        trial['correct'] = (trial['response'] == answer_options.index(trial['answer'])+1)
         
         # display trial feedback
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
@@ -1314,7 +1314,7 @@ class PictureSequence(Task):
                 progress=1-(seconds_left/show_last_seconds),
                 size=(width, height),
                 pos=(x_pos, y_pos),
-                backColor='green',
+                backColor='blue',
                 barColor='black',
                 borderColor='black',
                 lineWidth=5,
@@ -1333,7 +1333,7 @@ class PictureSequence(Task):
         """
         #Add a black border around the selected images
         for p, pressed_key in enumerate(pressed_keys):
-            color = 'green' if p == len(pressed_keys) - 1 and not self.ttl_clock.get_time() - last_key_press_time > 1  else 'black' #Add a green border around the last selected image if the last key press was less than 2 seconds ago
+            color = 'blue' if p == len(pressed_keys) - 1 and not self.ttl_clock.get_time() - last_key_press_time > 1  else 'black' #Add a green border around the last selected image if the last key press was less than 2 seconds ago
             visual.Rect(self.window, size=(width, height), pos=positions[pressed_key-1], lineColor=color, lineWidth=line_width).draw()
         
     def run_trial(self, trial):
@@ -1389,7 +1389,7 @@ class PictureSequence(Task):
         correct_list = np.zeros((num_items,)) # List of booleans indicating whether each press was correct needed for overall trial accuracy
         num_presses =0
         pressed_keys = []
-        line_width = 10
+        line_width = 15
         
         while self.ttl_clock.get_time() - sequence_start_time < trial['trial_dur']:
             self.ttl_clock.update()
@@ -1427,7 +1427,7 @@ class PictureSequence(Task):
             trial['rt'] = np.nanmean(rt_list)
  
         # display trial feedback (for whole trial)
-        self.display_trial_feedback(trial['display_trial_feedback'], trial['correct']== 1)
+        self.display_trial_feedback(trial['display_trial_feedback'], trial['correct']==1)
 
         return trial
 
@@ -1440,7 +1440,6 @@ class ActionPrediction(Task):
     def init_task(self):
         self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
         self.corr_key = [self.trial_info['key_one'].iloc[0],self.trial_info['key_two'].iloc[0]]
-
         
     def display_instructions(self):
         """
@@ -1464,22 +1463,22 @@ class ActionPrediction(Task):
 
 
     def run_trial(self, trial):
-        """ Runs a single trial of the Theory of Mind task """
+        """ Runs a single trial of the Action Prediction task """
 
         event.clearEvents()
-        window_width, window_height = self.window.size
+        window_width, _ = self.window.size
         stim_width = int(window_width * 0.7) # Make the video 70% of the window width
         stim_height = int(stim_width  * 476 / 846)  # 846x476 is the original size of the video given in width x height
 
         # Display video        
         movie_path = Path(self.const.stim_dir) / self.name / 'modified_clips' / f"{trial['stim']}.mp4"
         movie_path_str = str(movie_path)
-        movie_clip = visual.MovieStim3(self.window, movie_path_str, loop=False, noAudio=True, size=(stim_width, stim_height), pos=(0, 0))
+        movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False, noAudio=True, size=(stim_width, stim_height), pos=(0, 0))
 
         movie_clip.draw()
         self.window.flip()
 
-        while movie_clip.status != visual.FINISHED:
+        while movie_clip.isFinished == False:
             movie_clip.draw()
             self.window.flip()
             self.ttl_clock.update()
@@ -1490,7 +1489,7 @@ class ActionPrediction(Task):
 
         # Display question
         question = trial['question']
-        question += f"\n\n\n{trial['options'].split(',')[0]}: {self.corr_key[0]} \t\t\t{trial['options'].split(',')[1]}: {self.corr_key[1]}"
+        question += f"\n\n\n{self.corr_key[0]}. {trial['options'].split(',')[0]} \t\t\t{self.corr_key[1]}. {trial['options'].split(',')[1]}"
         question_stim = visual.TextStim(self.window, text=question, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=25)
         question_stim.draw()
         self.window.flip()
@@ -1529,12 +1528,12 @@ class Movie(Task):
         movie_path_str = str(movie_path)
 
         # Create a MovieStim3 object
-        movie_clip = visual.MovieStim3(self.window, movie_path_str, loop=False)
+        movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False)
 
         movie_clip.draw()
         self.window.flip()
 
-        while movie_clip.status != visual.FINISHED:
+        while movie_clip.isFinished == False:
             movie_clip.draw()
             self.window.flip()
             self.ttl_clock.update()
@@ -1546,6 +1545,10 @@ class StrangeStories(Task):
     def __init__(self, info, screen, ttl_clock, const, subj_id):
         super().__init__(info, screen, ttl_clock, const, subj_id)
         self.name = 'strange_stories'
+    
+    def init_task(self):
+        self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
+        self.corr_key = [self.trial_info['key_one'].iloc[0],self.trial_info['key_two'].iloc[0], self.trial_info['key_three'].iloc[0]]
 
     def display_instructions(self):
         task_name = visual.TextStim(self.window, text=f'{self.descriptive_name.capitalize()}', color=[-1, -1, -1], bold=True, pos=(0, 3))
@@ -1554,12 +1557,17 @@ class StrangeStories(Task):
         self.instruction_text = f"\n\n You will watch a short clip about a couple."
         # self.instruction_text += " They live and work together. Each clip is self-contained and there is no story running from one clip to another."
         # self.instruction_text += "\n\n You will be asked a question about the clip. Imagine your answer as soon as you see the question. When you see the answer options, press the button that corresponds most to the answer you thought of. Some questions do not have a right or wrong answer."
-        self.instruction_text += "\n\n Imagine your answer to the question. \nChoose the best match from the answer options. \nSome questions have no right answer."
+        self.instruction_text += "\n\n Imagine your answer to the question. \nChoose the best match from the answers. \nSome questions have no right answer."
         instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1], wrapWidth=20, pos=(0, 0))
         instr_visual.draw()
         self.window.flip()
 
     def run_trial(self, trial):
+        window_width, _ = self.window.size
+        stim_width = int(window_width * 0.4) # Make the video 70% of the window width
+        stim_height = int(stim_width  * 720 / 1280)  # 1280x720 is the original size of the video given in width x height
+        wrapWidth = 25
+        
         # Get the file name
         movie_file_name = trial['stim']
 
@@ -1569,44 +1577,53 @@ class StrangeStories(Task):
         # Convert Path object to string for compatibility
         movie_path_str = str(movie_path)
 
-        # Create a MovieStim3 object
-        movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False)
+        # Create a MovieStim object
+        movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False, size=(stim_width, stim_height), pos=(0, 0))
 
-        movie_clip.draw()
-        self.window.flip()
-
-        while movie_clip.status != visual.FINISHED:
+        # Play through the movie frame by frame
+        while movie_clip.isFinished == False:
             movie_clip.draw()
             self.window.flip()
             self.ttl_clock.update()
-
-        movie_clip.draw()
-        self.window.flip()
-
-        while movie_clip.status != visual.FINISHED:
-            movie_clip.draw()
-            self.window.flip()
-            self.ttl_clock.update()
-            # core.wait(1)  # Freeze the video for a moment
 
         # Flush any keys in buffer
         event.clearEvents()
 
-        # Display question
+        # Initialize question
         question = trial['question']
-        question_stim = visual.TextStim(self.window, text=question, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=25)
-        question_stim.draw()
+
+        # Initialize answer options
+        options_orig = [answer_option.strip() for answer_option in trial['options'].split(',')]
+        options_shuffled = deepcopy(options_orig)
+        random.shuffle(options_shuffled) # Randomize the order of the answer options
+        if trial['condition'] == 'control': # Only the first option is correct (2 points)
+            scores_orig = [2,0,0]
+        elif trial['condition'] == 'social': # First option gets 2 points, second option gets 1 point, third option gets 0 points
+            scores_orig = [2,1,0]            
+        scores_shuffled = [scores_orig[options_orig.index(option)] for option in options_shuffled]
+
+        answers = f"\n\n\n{self.corr_key[0]}. {options_shuffled[0]} \n{self.corr_key[1]}. {options_shuffled[1]} \n{self.corr_key[2]}. {options_shuffled[2]}"
+
+        # Display question
+        stim_question = visual.TextStim(self.window, text = question, pos=(0, 4), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=wrapWidth)
+        stim_question.draw()
         self.window.flip()
-        # Wait for 5 seconds
-        self.ttl_clock.wait_until(self.ttl_clock.get_time() + 5)
-
-
-        question += f"\n\n\n{trial['options'].split(',')[0]}: {self.corr_key[0]} \n{trial['options'].split(',')[1]}: {self.corr_key[1]} \n{trial['options'].split(',')[2]}: {self.corr_key[2]}"
-        question_stim = visual.TextStim(self.window, text=question, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=25)
-        question_stim.draw()
+        # Wait for the question duration, then display the answers too
+        self.ttl_clock.wait_until(self.ttl_clock.get_time() + trial['question_dur'])
+        # Align the answers with the middle of the question if the answers are shorter than half of the question
+        answer_lengths = [len(answer) for answer in options_shuffled]
+        if max(answer_lengths) < wrapWidth and max(answer_lengths) < len(question):
+            left_position = 0-max(answer_lengths)/2  # Answer options are shorter than questions and shorter than wrapWidth
+            align='left'
+        elif max(answer_lengths) > wrapWidth:
+            left_position = 0
+            align='center'
+        stim_answers = visual.TextStim(self.window, text=answers, pos=(left_position, 0), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=wrapWidth, alignHoriz=align)
+        stim_question.draw()
+        stim_answers.draw()
         self.window.flip()
 
         # collect responses 0: no response 1-4: key pressed
         trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['question_dur'])
-
+        trial['score'] = scores_shuffled[trial['response']-1]
         return trial
