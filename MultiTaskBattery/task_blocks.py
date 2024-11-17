@@ -88,8 +88,32 @@ class Task:
         if self.feedback_type[-2:] == 'rt':
             rt = self.trial_data['rt'].mean()
         return acc,rt
+    
 
-    def wait_response(self, start_time, max_wait_time):
+    def show_progress(self, seconds_left, show_last_seconds=5, height=1, width=10, x_pos=-5, y_pos=8):
+        """ Displays a progress bar for the Picture Sequence task
+        Args:
+            trial (dict): The current trial
+            start_time (float): The start time of the trial
+            height (float): The height of the progress bar
+            width (float): The width of the progress bar
+            y_pos (float): The y position of the progress bar
+        """
+        # If we are in the last five seconds of the trial, display the remaining time
+        if seconds_left < show_last_seconds:
+            progress = visual.Progress(
+                win=self.window, 
+                progress=1-(seconds_left/show_last_seconds),
+                size=(width, height),
+                pos=(x_pos, y_pos),
+                backColor='blue',
+                barColor='black',
+                borderColor='black',
+                lineWidth=5,
+            )
+            progress.draw()
+
+    def wait_response(self, start_time, max_wait_time, show_last_seconds=None, current_stimuli=None):
         """
         waits for a response to be made and then returns the response
         Args:
@@ -105,6 +129,13 @@ class Task:
 
         while (self.ttl_clock.get_time() - start_time <= max_wait_time) and not response_made:
             self.ttl_clock.update()
+            if show_last_seconds is not None:
+                current_stimuli.draw()
+                seconds_left = max_wait_time - (self.ttl_clock.get_time() - start_time)
+                self.show_progress(seconds_left,
+                                show_last_seconds=show_last_seconds,
+                                y_pos=5)
+                self.window.flip()
             keys=event.getKeys(keyList= self.const.response_keys, timeStamped=self.ttl_clock.clock)
             if len(keys)>0:
                 response_made = True
@@ -1293,33 +1324,6 @@ class PictureSequence(Task):
         instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1], wrapWidth=20, pos=(0, 0))
         instr_visual.draw()
         self.window.flip()
-
-    def show_progress(self, trial, start_time, height=1, width=10, x_pos=-5, y_pos=8):
-        """ Displays a progress bar for the Picture Sequence task
-        Args:
-            trial (dict): The current trial
-            start_time (float): The start time of the trial
-            height (float): The height of the progress bar
-            width (float): The width of the progress bar
-            y_pos (float): The y position of the progress bar
-        """
-        # If we are in the last five seconds of the trial, display the remaining time
-        current_time = self.ttl_clock.get_time()  
-        # current_time = 16
-        seconds_left = trial['trial_dur'] - (current_time - start_time)
-        show_last_seconds = 5
-        if seconds_left < show_last_seconds:
-            progress = visual.Progress(
-                win=self.window, 
-                progress=1-(seconds_left/show_last_seconds),
-                size=(width, height),
-                pos=(x_pos, y_pos),
-                backColor='blue',
-                barColor='black',
-                borderColor='black',
-                lineWidth=5,
-            )
-            progress.draw()
         
     def show_presses(self, pressed_keys, positions, last_key_press_time, width=1.4, height=7, line_width=10):
         """ Displays the presses on the screen
@@ -1376,8 +1380,6 @@ class PictureSequence(Task):
             answer_stim = visual.TextStim(self.window, text=f'{option}', pos=(x, y), color=[-1, -1, -1], height=1.3, alignHoriz='center')
             answer_stims.append(answer_stim)
 
-        
-
         # Calculate the start position for the sequence and determine the spacing between numbers
         num_items = len(sequence)
         
@@ -1398,7 +1400,14 @@ class PictureSequence(Task):
                 picture.draw()
             for answer_stim in answer_stims:
                 answer_stim.draw()
-            self.show_progress(trial, sequence_start_time, height=1, width=width, x_pos=0-width*0.5, y_pos=y_pos+height*0.5+1)
+            
+            seconds_left = trial['trial_dur'] - (self.ttl_clock.get_time() - sequence_start_time)
+            self.show_progress(seconds_left,
+                               show_last_seconds=5,
+                               height=1,
+                               width=width,
+                               x_pos=0-width*0.5,
+                               y_pos=y_pos+height*0.5+1)
             self.show_presses(pressed_keys, positions, digit_start_time, width, height, line_width)
             self.window.flip()
 
@@ -1626,4 +1635,75 @@ class StrangeStories(Task):
         # collect responses 0: no response 1-4: key pressed
         trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['question_dur'])
         trial['score'] = scores_shuffled[trial['response']-1]
+        return trial
+    
+
+class FauxPas(Task):
+    def __init__(self, info, screen, ttl_clock, const, subj_id):
+        super().__init__(info, screen, ttl_clock, const, subj_id)
+        self.feedback_type = 'acc+rt'
+
+    def init_task(self):
+        """
+        Initialize task - default is to read the target information into the trial_info dataframe
+        """
+        self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
+        self.corr_key = [self.trial_info['key_yes'].iloc[0],self.trial_info['key_no'].iloc[0]]
+
+        
+    def display_instructions(self):
+        """
+        displays the instruction for the task
+        """
+        task_name = visual.TextStim(self.window, text=f'{self.descriptive_name.capitalize()}', color=[-1, -1, -1], bold=True, pos=(0, 3))
+        task_name.draw()
+        self.instruction_text = "\n\nRead the story and answer the Yes/No question."
+        if 'social' in self.task_file:
+            self.instruction_text += f"\n\n{self.corr_key[0]}. Yes \t{self.corr_key[1]}. No\n"
+            self.instruction_text += "\n\nFocus on the SOCIAL content of the story"
+        elif 'control' in self.task_file:
+            self.instruction_text += f"\n\n{self.corr_key[0]}. Yes \t{self.corr_key[1]}. No\n"
+            self.instruction_text += "\n\nFocus on the FACTS of the story."
+        else:
+            self.instruction_text += f"\n{self.corr_key[0]}. Yes \t{self.corr_key[1]}. No\n"
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1], wrapWidth=25, pos=(0, 0))
+        instr_visual.draw()
+        self.window.flip()
+
+    def run_trial(self, trial):
+        """ Runs a single trial of the Theory of Mind task """
+
+        event.clearEvents()
+
+        # Display story
+        story_stim = visual.TextStim(self.window, text=trial['story'], alignHoriz='center', wrapWidth=20, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height= 1.25)
+        story_stim.draw()
+        self.window.flip()
+
+        # wait until story duration
+        self.ttl_clock.wait_until(self.ttl_clock.get_time() + trial['story_dur'])
+
+        # Flush any keys in buffer
+        event.clearEvents()
+
+        # Display question
+        question = trial['question']
+        # Display answers
+        options = [option.strip(' ') for option in trial['options'].split(',')]
+        question += f"\n\n\n{self.corr_key[0]}. {trial['options'].split(',')[0]} \t\t\t{self.corr_key[1]}. {trial['options'].split(',')[1]}"
+        question_stim = visual.TextStim(self.window, text=question, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=25)
+        question_stim.draw()
+        self.window.flip()
+
+        # collect responses 0: no response 1-4: key pressed
+        trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(),
+                                                           trial['question_dur'],
+                                                           show_last_seconds=3,
+                                                           current_stimuli=question_stim)
+        trial['correct'] = (trial['response'] == self.corr_key[trial['trial_type']])
+
+
+        # display trial feedback
+        self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
+
         return trial
