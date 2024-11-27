@@ -1707,3 +1707,87 @@ class FauxPas(Task):
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
 
         return trial
+    
+
+class FrithHappe(Task):
+    def __init__(self, info, screen, ttl_clock, const, subj_id):
+        super().__init__(info, screen, ttl_clock, const, subj_id)
+        self.name = 'frith_happe'
+    
+    def init_task(self):
+        self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
+        self.corr_key = [self.trial_info['key_one'].iloc[0],self.trial_info['key_two'].iloc[0], self.trial_info['key_three'].iloc[0]]
+
+    def display_instructions(self):
+        task_name = visual.TextStim(self.window, text=f'{self.descriptive_name.capitalize()}', color=[-1, -1, -1], bold=True, pos=(0, 3))
+        task_name.draw()
+
+        self.instruction_text = f"\n\n You will watch a short animation with two triangles."
+        self.instruction_text += "\n\n At the end of the clip, decide if the triangles were not interacting (Random), interacting physically (Physical) or interacting mentally (Mental)."
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1], wrapWidth=20, pos=(0, 0))
+        instr_visual.draw()
+        self.window.flip()
+
+    def run_trial(self, trial):
+        window_width, _ = self.window.size
+        stim_width = int(window_width * 0.4) # Make the video 70% of the window width
+        stim_height = int(stim_width  * 720 / 1280)  # 1280x720 is the original size of the video given in width x height
+        wrapWidth = 25
+        
+        # Get the file name
+        movie_file_name = trial['stim']
+        # Construct the movie file path
+        movie_path = Path(self.const.stim_dir) / self.name / 'clips' / movie_file_name
+        # Convert Path object to string for compatibility
+        movie_path_str = str(movie_path)
+        # Create a MovieStim object
+        movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False, size=(stim_width, stim_height), pos=(0, 0))
+
+        # Play through the movie frame by frame
+        while movie_clip.isFinished == False:
+            movie_clip.draw()
+            self.window.flip()
+            self.ttl_clock.update()
+
+        # Flush any keys in buffer
+        event.clearEvents()
+
+        # Initialize question
+        question = trial['question']
+
+        # Initialize answer options
+        options_orig = [answer_option.strip() for answer_option in trial['options'].split(',')]
+        options_shuffled = deepcopy(options_orig)
+        random.shuffle(options_shuffled) # Randomize the order of the answer options
+        if trial['condition'] == 'control': # Only the first option is correct (2 points)
+            scores_orig = [2,0,0]
+        elif trial['condition'] == 'social': # First option gets 2 points, second option gets 1 point, third option gets 0 points
+            scores_orig = [2,1,0]            
+        scores_shuffled = [scores_orig[options_orig.index(option)] for option in options_shuffled]
+
+        answers = f"\n\n\n{self.corr_key[0]}. {options_shuffled[0]} \n{self.corr_key[1]}. {options_shuffled[1]} \n{self.corr_key[2]}. {options_shuffled[2]}"
+
+        # Display question
+        stim_question = visual.TextStim(self.window, text = question, pos=(0, 4), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=wrapWidth)
+        stim_question.draw()
+        self.window.flip()
+        # Wait for the question duration, then display the answers too
+        self.ttl_clock.wait_until(self.ttl_clock.get_time() + trial['question_dur'])
+        # Align the answers with the middle of the question if the answers are shorter than half of the question
+        answer_lengths = [len(answer) for answer in options_shuffled]
+        if max(answer_lengths) < wrapWidth and max(answer_lengths) < len(question):
+            left_position = 0-max(answer_lengths)/2  # Answer options are shorter than questions and shorter than wrapWidth
+            align='left'
+        elif max(answer_lengths) > wrapWidth:
+            left_position = 0
+            align='center'
+        stim_answers = visual.TextStim(self.window, text=answers, pos=(left_position, 0), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=wrapWidth, alignHoriz=align)
+        stim_question.draw()
+        stim_answers.draw()
+        self.window.flip()
+
+        # collect responses 0: no response 1-4: key pressed
+        trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['question_dur'])
+        trial['score'] = scores_shuffled[trial['response']-1]
+        return trial
+    
