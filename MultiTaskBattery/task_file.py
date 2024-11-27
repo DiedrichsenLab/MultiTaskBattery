@@ -329,7 +329,7 @@ class TheoryOfMind(TaskFile):
     def make_task_file(self, hand='right',
                        responses = [1,2], # 1 = True, 2 = False
                        run_number=None,
-                       task_dur=30,
+                        task_dur=30,
                         trial_dur=14,
                         iti_dur=1, 
                         story_dur=10,
@@ -1036,7 +1036,7 @@ class PictureSequence(TaskFile):
                         run_number=None,
                         task_dur=30,
                         trial_dur=14,
-                        iti_dur=0.5,
+                        iti_dur=1,
                         file_name=None,
                         stim_file = None,
                         condition=None):
@@ -1095,7 +1095,7 @@ class ActionPrediction(TaskFile):
                         run_number=None,
                         task_dur=30,
                         trial_dur=6,
-                        iti_dur=2, 
+                        iti_dur=1, 
                         question_dur=4,
                         file_name=None,
                         stim_file = None,
@@ -1265,7 +1265,133 @@ class StrangeStories(TaskFile):
         return trial_info
     
 
+class FauxPas(TaskFile):
+    def __init__(self, const):
+        super().__init__(const)
+        self.name = 'faux_pas'
+        self.matching_stimuli = True
 
+    def make_task_file(self, hand='right',
+                       responses = [1,2], # 1 = True, 2 = False
+                       run_number=None,
+                       task_dur=30,
+                        trial_dur=14,
+                        iti_dur=1, 
+                        story_dur=10,
+                        question1_dur=4,
+                        file_name=None,
+                        stim_file=None,
+                        condition=None):
+
+        # count number of trials
+        n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
+        trial_info = []
+        t = 0
+
+        if stim_file:
+            stim = pd.read_csv(stim_file)
+        else:
+            stim = pd.read_csv(self.stim_dir / self.name / f'{self.name}.csv')
+
+        if condition:
+            stim = stim[stim['condition'] == condition]
+            
+        start_row = (run_number - 1) * 2
+        end_row = run_number * 2 - 1
+        stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
+
+        for n in range(n_trials):
+            trial = {}
+            trial['key_yes'] = responses[0]
+            trial['key_no'] = responses[1]
+            trial['trial_num'] = n
+            trial['hand'] = hand
+            trial['trial_dur'] = trial_dur
+            trial['iti_dur'] = iti_dur
+            trial['story'] = stim['story'][n]
+            trial['question'] = stim['question1'][n]
+            trial['options'] = stim['options1'][n]
+            if str(stim['answer1'][n]) == 'Yes':
+                trial['trial_type'] = 1
+            else:
+                trial['trial_type'] = 0
+            trial['condition'] = stim['condition'][n]
+            trial['story_dur'] = story_dur
+            trial['question_dur'] = question1_dur
+            trial['display_trial_feedback'] = True
+            trial['start_time'] = t
+            trial['end_time'] = t + trial_dur + iti_dur
+            trial_info.append(trial)
+
+            # Update for next trial:
+            t = trial['end_time']
+
+        trial_info = pd.DataFrame(trial_info)
+        if file_name is not None:
+            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
+        return trial_info
+    
+
+
+class FrithHappe(TaskFile):
+    def __init__(self, const):
+        super().__init__(const)
+        self.name = 'frith_happe'
+        self.matching_stimuli = False
+
+    def make_task_file(self,
+                       hand='right',
+                       responses = [1,2,3],
+                       run_number = None,
+                       task_dur=30,
+                       trial_dur=29,
+                       iti_dur=1,
+                       question_dur=8,
+                       file_name=None,
+                       stim_file=None,
+                       condition=None):
+
+        n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
+        trial_info = []
+
+        t = 0
+
+        if stim_file:
+            stim = pd.read_csv(self.stim_dir / self.name / stim_file)
+        else:
+            stim = pd.read_csv(self.stim_dir / self.name / f'{self.name}.csv')
+
+        if condition:
+            stim = stim[stim['condition'] == condition]
+
+        start_row = (run_number - 1) * n_trials
+        end_row = run_number * n_trials - 1
+        stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
+
+        for n in range(n_trials):
+            trial = {}
+            trial['trial_num'] = n
+            trial['key_one'] = responses[0]
+            trial['key_two'] = responses[1]
+            trial['key_three'] = responses[2]
+            trial['hand'] = hand
+            trial['trial_dur'] = trial_dur
+            trial['iti_dur'] = iti_dur
+            trial['display_trial_feedback'] = False
+            trial['stim'] = stim['video'][n]
+            trial['question_dur'] = question_dur
+            trial['condition'] = stim['condition'][n]
+            trial['start_time'] = t
+            trial['end_time'] = t + trial_dur + iti_dur
+            trial_info.append(trial)
+            t = trial['end_time']
+
+        trial_info = pd.DataFrame(trial_info)
+        if file_name is not None:
+            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
+
+        return trial_info
+    
 
 
 
