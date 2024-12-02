@@ -1527,6 +1527,10 @@ class Movie(Task):
         self.window.flip()
 
     def run_trial(self, trial):
+        window_width, _ = self.window.size
+        stim_width = int(window_width * 0.8) # Make the video fraction of the window width
+        stim_height = int(stim_width  * 360 / 640)  # Original size of the video is 640x360
+        
         # Get the file name
         movie_file_name = trial['stim']
 
@@ -1537,7 +1541,7 @@ class Movie(Task):
         movie_path_str = str(movie_path)
 
         # Create a MovieStim3 object
-        movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False)
+        movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False, size=(stim_width, stim_height), pos=(0, 0))
 
         movie_clip.draw()
         self.window.flip()
@@ -1573,7 +1577,7 @@ class StrangeStories(Task):
 
     def run_trial(self, trial):
         window_width, _ = self.window.size
-        stim_width = int(window_width * 0.4) # Make the video 70% of the window width
+        stim_width = int(window_width * 0.4) # Make the video 40% of the window width
         stim_height = int(stim_width  * 720 / 1280)  # 1280x720 is the original size of the video given in width x height
         wrapWidth = 25
         
@@ -1713,7 +1717,8 @@ class FrithHappe(Task):
     def __init__(self, info, screen, ttl_clock, const, subj_id):
         super().__init__(info, screen, ttl_clock, const, subj_id)
         self.name = 'frith_happe'
-    
+        self.feedback_type = 'acc+rt'
+
     def init_task(self):
         self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
         self.corr_key = [self.trial_info['key_yes'].iloc[0],self.trial_info['key_no'].iloc[0]]
@@ -1730,8 +1735,8 @@ class FrithHappe(Task):
 
     def run_trial(self, trial):
         window_width, _ = self.window.size
-        stim_width = int(window_width * 0.4) # Make the video 70% of the window width
-        stim_height = int(stim_width  * 720 / 1280)  # 1280x720 is the original size of the video given in width x height
+        stim_width = int(window_width * 0.7) # Make the video 70% of the window width
+        stim_height = int(stim_width  * 1080 / 1440)  # 1280x720 is the original size of the video given in width x height
         wrapWidth = 20
         
         # Get the file name
@@ -1766,5 +1771,8 @@ class FrithHappe(Task):
         # collect responses 0: no response 1-4: key pressed
         trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['question_dur'])
         trial['correct'] = (trial['response'] == trial['trial_type'])
+
+        # display trial feedback
+        self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
         return trial
     
