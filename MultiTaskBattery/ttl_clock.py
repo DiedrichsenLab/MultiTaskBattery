@@ -29,7 +29,7 @@ class TTLClock:
         self.ttl_time = 0
 
     def wait_until(self,time):
-        """waits until the given  time since the beginning of the run
+        """waits until the given time since the beginning of the run
         Args:
             time (float):
                 time in seconds

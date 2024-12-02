@@ -350,6 +350,8 @@ class TheoryOfMind(TaskFile):
 
         if condition:
             stim = stim[stim['condition'] == condition]
+        else:
+            stim = stim[stim['condition'] != 'practice']
             
         start_row = (run_number - 1) * 2
         end_row = run_number * 2 - 1
@@ -978,6 +980,8 @@ class RMET(TaskFile):
         if condition:
             stim = stim[stim['condition'] == condition]
         else:
+            stim = stim[stim['condition'] != 'practice']
+        
             # Alternate between emotion and age conditions
             stim_emotion = stim[stim['condition'] == 'emotion']
             stim_age = stim[stim['condition'] == 'age']
@@ -1052,6 +1056,8 @@ class PictureSequence(TaskFile):
 
         if condition:
             stim = stim[stim['condition'] == condition]
+        else:
+            stim = stim[stim['condition'] != 'practice']
 
         start_row = (run_number - 1) * n_trials
         end_row = run_number * n_trials - 1
@@ -1114,6 +1120,8 @@ class ActionPrediction(TaskFile):
 
         if condition:
             stim = stim[stim['condition'] == condition]
+        else:
+            stim = stim[stim['condition'] != 'practice']
 
         start_row = (run_number - 1) * n_trials
         end_row = run_number * n_trials - 1
@@ -1174,6 +1182,8 @@ class Movie(TaskFile):
 
         if condition:
             stim = stim[stim['condition'] == condition]
+        else:
+            stim = stim[stim['condition'] != 'practice']
 
         start_row = (run_number - 1) * n_trials
         end_row = run_number * n_trials - 1
@@ -1233,6 +1243,8 @@ class StrangeStories(TaskFile):
 
         if condition:
             stim = stim[stim['condition'] == condition]
+        else:
+            stim = stim[stim['condition'] != 'practice']
 
         start_row = (run_number - 1) * n_trials
         end_row = run_number * n_trials - 1
@@ -1295,6 +1307,8 @@ class FauxPas(TaskFile):
 
         if condition:
             stim = stim[stim['condition'] == condition]
+        else:
+            stim = stim[stim['condition'] != 'practice']
             
         start_row = (run_number - 1) * 2
         end_row = run_number * 2 - 1
@@ -1341,12 +1355,12 @@ class FrithHappe(TaskFile):
 
     def make_task_file(self,
                        hand='right',
-                       responses = [1,2,3],
+                       responses = [1,2],
                        run_number = None,
                        task_dur=30,
-                       trial_dur=29,
-                       iti_dur=1,
-                       question_dur=8,
+                       trial_dur=28,
+                       iti_dur=2,
+                       question_dur=6,
                        file_name=None,
                        stim_file=None,
                        condition=None):
@@ -1363,6 +1377,8 @@ class FrithHappe(TaskFile):
 
         if condition:
             stim = stim[stim['condition'] == condition]
+        else:
+            stim = stim[stim['condition'] != 'practice']
 
         start_row = (run_number - 1) * n_trials
         end_row = run_number * n_trials - 1
@@ -1371,13 +1387,16 @@ class FrithHappe(TaskFile):
         for n in range(n_trials):
             trial = {}
             trial['trial_num'] = n
-            trial['key_one'] = responses[0]
-            trial['key_two'] = responses[1]
-            trial['key_three'] = responses[2]
+            trial['key_yes'] = responses[0]
+            trial['key_no'] = responses[1]
+            if str(stim['condition'][n]) == 'tom':
+                trial['trial_type'] = 1
+            else:
+                trial['trial_type'] = 2
             trial['hand'] = hand
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
-            trial['display_trial_feedback'] = False
+            trial['display_trial_feedback'] = True
             trial['stim'] = stim['video'][n]
             trial['question_dur'] = question_dur
             trial['condition'] = stim['condition'][n]
