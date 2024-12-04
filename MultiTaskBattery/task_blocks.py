@@ -1564,10 +1564,14 @@ class StrangeStories(Task):
         self.corr_key = [self.trial_info['key_one'].iloc[0],self.trial_info['key_two'].iloc[0], self.trial_info['key_three'].iloc[0]]
 
     def display_instructions(self):
-        task_name = visual.TextStim(self.window, text=f'{self.descriptive_name.capitalize()}', color=[-1, -1, -1], bold=True, pos=(0, 3))
+        task_name = visual.TextStim(self.window, text=f'{self.descriptive_name.capitalize()}', color=[-1, -1, -1], bold=True, pos=(0, 4))
         task_name.draw()
 
-        self.instruction_text = f"\n\n You will watch a short clip about a couple."
+        self.instruction_text = f"\n\nYou will watch a clip about a couple and answer a question "
+        if 'social' in self.task_file:
+            self.instruction_text += "about their SOCIAL INTERACTION."
+        elif 'control' in self.task_file:
+            self.instruction_text += "about the FACTS."
         # self.instruction_text += " They live and work together. Each clip is self-contained and there is no story running from one clip to another."
         # self.instruction_text += "\n\n You will be asked a question about the clip. Imagine your answer as soon as you see the question. When you see the answer options, press the button that corresponds most to the answer you thought of. Some questions do not have a right or wrong answer."
         self.instruction_text += "\n\n Imagine your answer to the question. \nChoose the best match from the answers. \nSome questions have no right answer."
@@ -1577,7 +1581,7 @@ class StrangeStories(Task):
 
     def run_trial(self, trial):
         window_width, _ = self.window.size
-        stim_width = int(window_width * 0.4) # Make the video 40% of the window width
+        stim_width = int(window_width * 0.8) # Make the video 40% of the window width
         stim_height = int(stim_width  * 720 / 1280)  # 1280x720 is the original size of the video given in width x height
         wrapWidth = 25
         
@@ -1621,8 +1625,8 @@ class StrangeStories(Task):
         stim_question = visual.TextStim(self.window, text = question, pos=(0, 4), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=wrapWidth)
         stim_question.draw()
         self.window.flip()
-        # Wait for the question duration, then display the answers too
-        self.ttl_clock.wait_until(self.ttl_clock.get_time() + trial['question_dur'])
+        # Display the question until X seconds before trial is over (answer_dur), to make the 'buffer' zone for the trial, i.e. the time of variable length, the time where the participant deliberates about their answer
+        self.ttl_clock.wait_until(self.ttl_clock.get_time() + (trial['trial_dur'] - trial['answer_dur']))
         # Align the answers with the middle of the question if the answers are shorter than half of the question
         answer_lengths = [len(answer) for answer in options_shuffled]
         if max(answer_lengths) < wrapWidth and max(answer_lengths) < len(question):
@@ -1637,7 +1641,7 @@ class StrangeStories(Task):
         self.window.flip()
 
         # collect responses 0: no response 1-4: key pressed
-        trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['question_dur'])
+        trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['answer_dur'])
         trial['score'] = scores_shuffled[trial['response']-1]
         return trial
     
@@ -1661,16 +1665,13 @@ class FauxPas(Task):
         """
         task_name = visual.TextStim(self.window, text=f'{self.descriptive_name.capitalize()}', color=[-1, -1, -1], bold=True, pos=(0, 3))
         task_name.draw()
-        self.instruction_text = "\n\nRead the story and answer the Yes/No question."
+        self.instruction_text = "\n\nRead the story and answer the Yes/No question "
         if 'social' in self.task_file:
-            self.instruction_text += f"\n\n{self.corr_key[0]}. Yes \t{self.corr_key[1]}. No\n"
-            self.instruction_text += "\n\nFocus on the SOCIAL content of the story"
+            self.instruction_text += "about the SOCIAL INTERACTION."
         elif 'control' in self.task_file:
-            self.instruction_text += f"\n\n{self.corr_key[0]}. Yes \t{self.corr_key[1]}. No\n"
-            self.instruction_text += "\n\nFocus on the FACTS of the story."
-        else:
-            self.instruction_text += f"\n{self.corr_key[0]}. Yes \t{self.corr_key[1]}. No\n"
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1], wrapWidth=25, pos=(0, 0))
+            self.instruction_text += "about the FACTS."
+        self.instruction_text += f"\n\n{self.corr_key[0]}. Yes \t{self.corr_key[1]}. No\n"
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1], wrapWidth=20, pos=(0, 0))
         instr_visual.draw()
         self.window.flip()
 
@@ -1694,7 +1695,7 @@ class FauxPas(Task):
         question = trial['question']
         # Display answers
         options = [option.strip(' ') for option in trial['options'].split(',')]
-        question += f"\n\n\n{self.corr_key[0]}. {trial['options'].split(',')[0]} \t\t\t{self.corr_key[1]}. {trial['options'].split(',')[1]}"
+        question += f"\n\n\n{self.corr_key[0]}. {options[0]} \t\t\t{self.corr_key[1]}. {options[1]}"
         question_stim = visual.TextStim(self.window, text=question, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=25)
         question_stim.draw()
         self.window.flip()
@@ -1704,7 +1705,7 @@ class FauxPas(Task):
                                                            trial['question_dur'],
                                                            show_last_seconds=3,
                                                            current_stimuli=question_stim)
-        trial['correct'] = (trial['response'] == self.corr_key[trial['trial_type']])
+        trial['correct'] = (trial['response'] == trial['trial_type'])
 
 
         # display trial feedback

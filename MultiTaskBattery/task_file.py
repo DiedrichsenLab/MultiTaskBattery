@@ -964,7 +964,8 @@ class RMET(TaskFile):
                         iti_dur=1, 
                         file_name=None,
                         stim_file = None,
-                        condition=None):
+                        condition=None,
+                        half=None):
         
 
         # count number of trials
@@ -981,7 +982,6 @@ class RMET(TaskFile):
             stim = stim[stim['condition'] == condition]
         else:
             stim = stim[stim['condition'] != 'practice']
-        
             # Alternate between emotion and age conditions
             stim_emotion = stim[stim['condition'] == 'emotion']
             stim_age = stim[stim['condition'] == 'age']
@@ -991,6 +991,9 @@ class RMET(TaskFile):
             second_half = zip(stim_emotion.iloc[len(stim_emotion) // 2:].iterrows(),
                             stim_age.iloc[:len(stim_age) // 2].iterrows())
             stim = pd.concat([pd.concat([row1[1], row2[1]], axis=1).T for row1, row2 in itertools.chain(first_half, second_half)], ignore_index=True)
+
+        if half: # Selects different stimuli for the emotion and age condition, to enable showing each pair of eyes only once for each participant (assigns half 1 or 2)
+            stim = stim[stim['half'] == half]
 
         start_row = (run_number - 1) * n_trials
         end_row = run_number * n_trials - 1
@@ -1218,18 +1221,20 @@ class StrangeStories(TaskFile):
         super().__init__(const)
         self.name = 'strange_stories'
         self.matching_stimuli = True
+        self.half_assigned = True
 
     def make_task_file(self,
                        hand='right',
                        responses = [1,2,3],
-                       run_number = None ,
+                       run_number = None,
                        task_dur=30,
                        trial_dur=30,
                        iti_dur=0,
-                       question_dur=5,
+                       answer_dur=5,
                        file_name=None,
                        stim_file=None,
-                       condition=None):
+                       condition=None,
+                       half=None):
 
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
@@ -1246,6 +1251,9 @@ class StrangeStories(TaskFile):
         else:
             stim = stim[stim['condition'] != 'practice']
 
+        if half: # Selects different stimuli for the social and control condition, to enable showing each video only once for each participant (assign half the subjects one type of video as social and the other the other half of the videos as social)
+            stim = stim[stim['half'] == half]
+
         start_row = (run_number - 1) * n_trials
         end_row = run_number * n_trials - 1
         stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
@@ -1261,7 +1269,8 @@ class StrangeStories(TaskFile):
             trial['iti_dur'] = iti_dur
             trial['display_trial_feedback'] = False
             trial['stim'] = stim['video'][n]
-            trial['question_dur'] = question_dur
+            trial['video_dur'] = stim['duration'][n]
+            trial['answer_dur'] = answer_dur
             trial['question'] = stim['question'][n]
             trial['options'] = stim['options'][n]
             trial['condition'] = stim['condition'][n]
@@ -1282,6 +1291,7 @@ class FauxPas(TaskFile):
         super().__init__(const)
         self.name = 'faux_pas'
         self.matching_stimuli = True
+        self.half_assigned = True
 
     def make_task_file(self, hand='right',
                        responses = [1,2], # 1 = True, 2 = False
@@ -1293,7 +1303,9 @@ class FauxPas(TaskFile):
                         question1_dur=4,
                         file_name=None,
                         stim_file=None,
-                        condition=None):
+                        condition=None,
+                        half=None):
+
 
         # count number of trials
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
@@ -1309,6 +1321,9 @@ class FauxPas(TaskFile):
             stim = stim[stim['condition'] == condition]
         else:
             stim = stim[stim['condition'] != 'practice']
+        
+        if half: # Selects different stimuli for the social and control condition, to enable showing each story only once for each participant
+            stim = stim[stim['half'] == half]
             
         start_row = (run_number - 1) * 2
         end_row = run_number * 2 - 1
@@ -1328,7 +1343,7 @@ class FauxPas(TaskFile):
             if str(stim['answer1'][n]) == 'Yes':
                 trial['trial_type'] = 1
             else:
-                trial['trial_type'] = 0
+                trial['trial_type'] = 2
             trial['condition'] = stim['condition'][n]
             trial['story_dur'] = story_dur
             trial['question_dur'] = question1_dur
@@ -1398,6 +1413,7 @@ class FrithHappe(TaskFile):
             trial['iti_dur'] = iti_dur
             trial['display_trial_feedback'] = True
             trial['stim'] = stim['video'][n]
+            trial['video_dur'] = stim['duration'][n]
             trial['question_dur'] = question_dur
             trial['condition'] = stim['condition'][n]
             trial['start_time'] = t
