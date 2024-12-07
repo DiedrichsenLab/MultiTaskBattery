@@ -1077,6 +1077,7 @@ class PictureSequence(TaskFile):
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
             trial['display_trial_feedback'] = True
+            trial['condition'] = stim['condition'][n]
             trial['stim'] = stim['picture'][n]
             # choose random sequence
             trial['sequence'] = self.generate_sequence()
@@ -1092,6 +1093,74 @@ class PictureSequence(TaskFile):
 
         return trial_info
 
+class StorySequence(TaskFile):
+    def __init__(self, const):
+        super().__init__(const)
+        self.name = 'story_sequence'
+        self.matching_stimuli = False # sequence of sentences are different for different conditions
+        
+    def generate_sequence(self):
+        sequence = random.sample([1, 2, 3, 4], 4)
+        return ' '.join(map(str, sequence))
+
+    def make_task_file(self,
+                        hand = 'right',
+                        responses = [1,2,3,4], # 1 = Key_one, 2 = Key_two, 3 = Key_three, 4 = Key_four
+                        run_number=None,
+                        task_dur=30,
+                        trial_dur=14,
+                        iti_dur=1,
+                        file_name=None,
+                        stim_file = None,
+                        condition=None):
+        n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
+        trial_info = []
+        t = 0
+
+        if stim_file:
+            stim = pd.read_csv(self.stim_dir / self.name / stim_file)
+        else:
+            stim = pd.read_csv(self.stim_dir / self.name / f'{self.name}.csv')
+
+
+        if condition:
+            stim = stim[stim['condition'] == condition]
+        else:
+            stim = stim[stim['condition'] != 'practice']
+
+        start_row = (run_number - 1) * n_trials
+        end_row = run_number * n_trials - 1
+        stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
+
+        for n in range(n_trials):
+            trial = {}
+            trial['key_one'] = responses[0]
+            trial['key_two'] = responses[1]
+            trial['key_three'] = responses[2]
+            trial['key_four'] = responses[3]
+            trial['trial_num'] = n
+            trial['hand'] = hand
+            trial['trial_dur'] = trial_dur
+            trial['iti_dur'] = iti_dur
+            trial['display_trial_feedback'] = True
+            trial['condition'] = stim['condition'][n]
+            trial['stim1'] = stim['Sentence1'][n]
+            trial['stim2'] = stim['Sentence2'][n]
+            trial['stim3'] = stim['Sentence3'][n]
+            trial['stim4'] = stim['Sentence4'][n]
+            # choose random sequence
+            trial['sequence'] = self.generate_sequence()
+            trial['start_time'] = t
+            trial['end_time'] = t + trial_dur + iti_dur
+            trial_info.append(trial)
+            t = trial['end_time']
+
+        trial_info = pd.DataFrame(trial_info)
+        if file_name is not None:
+            ut.dircheck(self.task_dir / self.name)
+            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
+
+        return trial_info
 
 class ActionPrediction(TaskFile):
     def __init__(self, const):
