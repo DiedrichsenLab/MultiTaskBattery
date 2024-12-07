@@ -7,10 +7,10 @@ import MultiTaskBattery as mtb
 #Necessary definitions for the experiment:
 exp_name = 'pontine_7T'
 
-#UNCOMMENT THIS FOR SCANNING 
+#UNCOMMENT THIS FOR SCANNING
 #response_keys    = ['y', 'g', 'r', 'm'] # scanner keys
 
-#COMMENT THIS FOR SCANNING 
+#COMMENT THIS FOR SCANNING
 response_keys    = ['a', 's', 'd', 'f']
 
 #not used
@@ -25,11 +25,11 @@ data_dir   = exp_dir / "data"          # This is where the result files are bein
 # do run_file_name as a formated string
 default_run_filename = 'run_01.tsv'
 
-# This is were the stimuli for the different task are stored 
+# This is were the stimuli for the different task are stored
 package_dir = Path(os.path.dirname(os.path.dirname(os.path.realpath(mtb.__file__))))
-stim_dir   = package_dir / "stimuli"       
+stim_dir   = package_dir / "stimuli"
 
-# Is the Eye tracker being used? 
+# Is the Eye tracker being used?
 eye_tracker = False                                     # do you want to do  eyetracking?
 
 # Running in debug mode?
@@ -38,5 +38,5 @@ debug = False                                           # set to True for debugg
 # Screen settings for subject display
 screen = {}
 screen['size'] = [1100, 800]        # screen resolution
-screen['fullscr'] = False           # full screen?
+screen['fullscr'] = False           # full screen, if false it's in a separate window
 screen['number'] = 1                # 0 = main display, 1 = secondary display
