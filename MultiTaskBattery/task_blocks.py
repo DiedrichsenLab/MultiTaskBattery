@@ -1,16 +1,18 @@
 # Task Class definitions
 # March 2021: First version: Ladan Shahshahani  - Maedbh King - Suzanne Witt,
 # Revised 2023: Bassel Arafat, Jorn Diedrichsen, Incé Husain
+# Revised 2024: Caroline Nettekoven
 
 from pathlib import Path
 import pandas as pd
 import numpy as np
 import random 
-
 from psychopy import visual, sound, core, event
 import MultiTaskBattery.utils as ut
-
 from ast import literal_eval
+from copy import deepcopy
+import re
+
 
 class Task:
     """
@@ -27,14 +29,15 @@ class Task:
     def __init__(self, info, screen, ttl_clock, const, subj_id):
 
         # Pointers to Screen and experimental constants
-        self.screen  = screen
-        self.window = screen.window # Shortcut to window
-        self.const   = const
-        self.ttl_clock       =  ttl_clock  # This is a reference to the clock of the run
-        self.name        = info['task_name']
-        self.code        = info['task_code']
-        self.task_file = info['task_file']
-        self.feedback_type = 'none'
+        self.screen             = screen
+        self.window             = screen.window # Shortcut to window
+        self.const              = const
+        self.ttl_clock          = ttl_clock  # This is a reference to the clock of the run
+        self.name               = info['task_name']
+        self.descriptive_name   = info['descriptive_name']
+        self.code               = info['task_code']
+        self.task_file          = info['task_file']
+        self.feedback_type      = 'none'
 
     def init_task(self):
         """
@@ -51,7 +54,7 @@ class Task:
         true_str = f"if True press {self.const.response_keys[1]}"
         false_str = f"if False press {self.const.response_keys[2]}"
 
-        self.instruction_text = f"{self.name} task\n\n {true_str} \n {false_str}"
+        self.instruction_text = f"{self.descriptive_name} Task\n\n {true_str} \n {false_str}"
 
         # 3.2 display the instruction text
         instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
@@ -61,7 +64,7 @@ class Task:
 
     def run(self):
         """Loop over trials and collects data
-        Data will br stored in self.trial_data
+        Data will be stored in self.trial_data
 
         Returns:
             info (pd.DataFrame): _description_
@@ -85,8 +88,32 @@ class Task:
         if self.feedback_type[-2:] == 'rt':
             rt = self.trial_data['rt'].mean()
         return acc,rt
+    
 
-    def wait_response(self, start_time, max_wait_time):
+    def show_progress(self, seconds_left, show_last_seconds=5, height=1, width=10, x_pos=-5, y_pos=8):
+        """ Displays a progress bar for the Picture Sequence task
+        Args:
+            trial (dict): The current trial
+            start_time (float): The start time of the trial
+            height (float): The height of the progress bar
+            width (float): The width of the progress bar
+            y_pos (float): The y position of the progress bar
+        """
+        # If we are in the last five seconds of the trial, display the remaining time
+        if seconds_left < show_last_seconds:
+            progress = visual.Progress(
+                win=self.window, 
+                progress=1-(seconds_left/show_last_seconds),
+                size=(width, height),
+                pos=(x_pos, y_pos),
+                backColor='blue',
+                barColor='black',
+                borderColor='black',
+                lineWidth=5,
+            )
+            progress.draw()
+
+    def wait_response(self, start_time, max_wait_time, show_last_seconds=None, current_stimuli=None):
         """
         waits for a response to be made and then returns the response
         Args:
@@ -102,6 +129,13 @@ class Task:
 
         while (self.ttl_clock.get_time() - start_time <= max_wait_time) and not response_made:
             self.ttl_clock.update()
+            if show_last_seconds is not None:
+                current_stimuli.draw()
+                seconds_left = max_wait_time - (self.ttl_clock.get_time() - start_time)
+                self.show_progress(seconds_left,
+                                show_last_seconds=show_last_seconds,
+                                y_pos=5)
+                self.window.flip()
             keys=event.getKeys(keyList= self.const.response_keys, timeStamped=self.ttl_clock.clock)
             if len(keys)>0:
                 response_made = True
@@ -122,9 +156,9 @@ class Task:
         """
         if give_feedback:
             if correct_response:
-                self.screen.fixation_cross('green')
+                self.screen.check_mark('green')
             else:
-                self.screen.fixation_cross('red')
+                self.screen.error_cross('red')
         else:
             self.screen.fixation_cross('white')
 
@@ -165,8 +199,6 @@ class NBack(Task):
             self.stim.append(visual.ImageStim(self.window, str(stim_path)))
         self.corr_key = [self.trial_info['key_nomatch'].iloc[0],self.trial_info['key_match'].iloc[0]]
 
-
-
     def display_instructions(self):
         """
         displays the instruction for the task
@@ -174,7 +206,7 @@ class NBack(Task):
         str1 = f"Compare image to the one shown 2 previously"
         str2 = f"if match, press {self.corr_key[1]}"
         str3 = f"if no match, press {self.corr_key[0]}"
-        self.instruction_text = f"{self.name} task\n\n {str1} \n {str2} \n {str3}"
+        self.instruction_text = f"{self.descriptive_name} Task\n\n {str1} \n {str2} \n {str3}"
         instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
         instr_visual.draw()
         self.window.flip()
@@ -241,7 +273,7 @@ class VerbGeneration(Task):
 
     def display_instructions(self): # overriding the display instruction from the parent class
 
-        self.instruction_text = f"{self.name} task \n\n Silently read the words presented.  \n\n When GENERATE is shown, silently think of verbs that go with the words."
+        self.instruction_text = f"{self.descriptive_name} Task \n\n Silently read the words presented.  \n\n When GENERATE is shown, silently think of verbs that go with the words."
         instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
         instr_visual.draw()
         self.window.flip()
@@ -283,7 +315,7 @@ class TongueMovement(Task):
         super().__init__(info, screen, ttl_clock, const, subj_id)
 
     def display_instructions(self):
-        self.instruction_text = f"{self.name} task \n\n Move your tongue left to right touching your upper premolar teeth"
+        self.instruction_text = f"{self.descriptive_name} Task \n\n Move your tongue left to right touching your upper premolar teeth"
         instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
         instr_visual.draw()
         self.window.flip()
@@ -315,7 +347,7 @@ class AuditoryNarrative(Task):
         super().__init__(info, screen, ttl_clock, const, subj_id)
 
     def display_instructions(self):
-        self.instruction_text = f'{self.name} Task\n\nListen to the narrative attentively.'
+        self.instruction_text = f'{self.descriptive_name} Task\n\nListen to the narrative attentively.'
         instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
         instr_visual.draw()
         self.window.flip()
@@ -339,43 +371,6 @@ class AuditoryNarrative(Task):
 
         return trial
 
-class RomanceMovie(Task):
-    def __init__(self, info, screen, ttl_clock, const, subj_id):
-        super().__init__(info, screen, ttl_clock, const, subj_id)
-        self.name = 'romance_movie'
-
-    def display_instructions(self):
-        self.instruction_text = f"{self.name} Task\n\n You will watch short clips from a romance movie. Please keep your head still and pay attention to the screen."
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
-        instr_visual.draw()
-        self.window.flip()
-
-    def run_trial(self, trial):
-        # Get the file name
-        movie_file_name = trial['stim']
-
-        # Construct the movie file path
-        movie_path = Path(self.const.stim_dir) / self.name / 'clips' / movie_file_name
-
-        # Convert Path object to string for compatibility
-        movie_path_str = str(movie_path)
-
-        # Create a MovieStim3 object
-        movie_clip = visual.MovieStim3(self.window, movie_path_str, loop=False)
-
-        movie_clip.draw()
-        self.window.flip()
-
-        while movie_clip.status != visual.FINISHED:
-            movie_clip.draw()
-            self.window.flip()
-            self.ttl_clock.update()
-
-        # Display trial feedback
-        self.display_trial_feedback(give_feedback= trial['display_trial_feedback'], correct_response = None)
-
-        return trial
-
 class SpatialNavigation(Task):
     def __init__(self, info, screen, ttl_clock, const, subj_id):
         super().__init__(info, screen, ttl_clock, const, subj_id)
@@ -385,11 +380,11 @@ class SpatialNavigation(Task):
         start_location = self.trial_info.iloc[0]['location_1']
         end_location = self.trial_info.iloc[0]['location_2']
 
-        self.instruction_text = (f"{self.name} Task \n\n"
+        self.instruction_text = (f"{self.descriptive_name} Task \n\n"
                                     f"Imagine walking around your childhood home\n"
                                     f"Start in the {start_location} – end in the {end_location}\n"
                                     f"Focus on the fixation cross")
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1],  wrapWidth=25)
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1],  wrapWidth=20)
         instr_visual.draw()
         self.window.flip()
 
@@ -421,10 +416,12 @@ class TheoryOfMind(Task):
         """
         displays the instruction for the task
         """
+        task_name = visual.TextStim(self.window, text=f'{self.descriptive_name.capitalize()}', color=[-1, -1, -1], bold=True, pos=(0, 3))
+        task_name.draw()
         str1 = f"You will read a story and decide if the answer to the question is True or False"
         str2 = f"if true, press {self.corr_key[1]}"
         str3 = f"if false, press {self.corr_key[0]}"
-        self.instruction_text = f"{self.name} task\n\n {str1} \n {str2} \n {str3}"
+        self.instruction_text = f"{self.descriptive_name} Task\n\n {str1} \n {str2} \n {str3}"
         instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
         instr_visual.draw()
         self.window.flip()
@@ -435,7 +432,7 @@ class TheoryOfMind(Task):
         event.clearEvents()
 
         # Display story
-        story_stim = visual.TextStim(self.window, text=trial['story'], alignHoriz='center', wrapWidth=25, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height= 1.25)
+        story_stim = visual.TextStim(self.window, text=trial['story'], alignHoriz='center', wrapWidth=20, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height= 1.25)
         story_stim.draw()
         self.window.flip()
 
@@ -464,7 +461,7 @@ class DegradedPassage(Task):
         super().__init__(info, screen, ttl_clock, const, subj_id)
 
     def display_instructions(self):
-        self.instruction_text = f'{self.name} Task \n\nListen to the audio attentively.'
+        self.instruction_text = f'{self.descriptive_name} Task \n\nListen to the audio attentively.'
         instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
         instr_visual.draw()
         self.window.flip()
@@ -492,7 +489,7 @@ class IntactPassage(Task):
         super().__init__(info, screen, ttl_clock, const, subj_id)
 
     def display_instructions(self):
-        self.instruction_text = f'{self.name} Task \n\nListen to the audio attentively.'
+        self.instruction_text = f'{self.descriptive_name} Task \n\nListen to the audio attentively.'
         instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
         instr_visual.draw()
         self.window.flip()
@@ -520,7 +517,7 @@ class ActionObservation(Task):
         super().__init__(info, screen, ttl_clock, const, subj_id)
 
     def display_instructions(self): # overriding the display instruction from the parent class
-        self.instruction_text = f"{self.name} Task \n\n Keep your head still while watching the two clips. \n\n Try and remember the knot shown."
+        self.instruction_text = f"{self.descriptive_name} Task \n\n Keep your head still while watching the two clips. \n\n Try and remember the knot shown."
         instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
         instr_visual.draw()
         self.window.flip()
@@ -537,9 +534,9 @@ class ActionObservation(Task):
         movie_path_str = str(movie_path)
 
         # Create a MovieStim3 object
-        movie_clip = visual.MovieStim3(self.window, movie_path_str, loop=False)
+        movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False)
 
-        while movie_clip.status != visual.FINISHED:
+        while movie_clip.isFinished == False:
             movie_clip.draw()
             self.window.flip()
             self.ttl_clock.update()
@@ -573,7 +570,7 @@ class DemandGrid(Task):
         str1 = f"You will watch the sequence of boxes that light up and then choose the correct pattern"
         str2 = f"if left, press {self.corr_key[0]}"
         str3 = f"if right, press {self.corr_key[1]}"
-        self.instruction_text = f"{self.name} task\n\n {str1} \n {str2} \n {str3}"
+        self.instruction_text = f"{self.descriptive_name} Task\n\n {str1} \n {str2} \n {str3}"
         instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
         instr_visual.draw()
         self.window.flip()
@@ -671,7 +668,7 @@ class SentenceReading(Task):
         super().__init__(info, screen, ttl_clock, const, subj_id)
 
     def display_instructions(self):
-        self.instruction_text = f'{self.name} Task \n\n Read each English word and press a button when the image of a hand pressing a button is displayed'
+        self.instruction_text = f'{self.descriptive_name} Task \n\n Read each English word and press a button when the image of a hand pressing a button is displayed'
         instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
         instr_visual.draw()
         self.window.flip()
@@ -715,7 +712,7 @@ class NonwordReading(Task):
         super().__init__(info, screen, ttl_clock, const, subj_id)
 
     def display_instructions(self):
-        self.instruction_text = f'{self.name} Task \n\n Read each nonword word and press a button when the image of a hand pressing a button is displayed'
+        self.instruction_text = f'{self.descriptive_name} Task \n\n Read each nonword word and press a button when the image of a hand pressing a button is displayed'
         instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
         instr_visual.draw()
         self.window.flip()
@@ -772,7 +769,7 @@ class OddBall(Task):
         displays the instruction for the task
         """
         str1 = f"Press {self.corr_key[0]} when you see a red K"
-        self.instruction_text = f"{self.name} task\n\n {str1} \n"
+        self.instruction_text = f"{self.descriptive_name} Task\n\n {str1} \n"
         instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
         instr_visual.draw()
         self.window.flip()
@@ -831,7 +828,7 @@ class FingerSequence(Task):
 
 
     def display_instructions(self):
-        self.instruction_text = f"{self.name} task \n\n Using your four fingers, press the keys in the order shown on the screen\n Use all four fingers for this task"
+        self.instruction_text = f"{self.descriptive_name} Task \n\n Using your four fingers, press the keys in the order shown on the screen\n Use all four fingers for this task"
         instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
         instr_visual.draw()
         self.window.flip()
@@ -917,7 +914,7 @@ class Sencoding(Task):
         super().__init__(info, screen, ttl_clock, const, subj_id)
 
     def display_instructions(self):
-        self.instruction_text = f'{self.name} Task \n\nListen to the following sentences attentively.'
+        self.instruction_text = f'{self.descriptive_name} Task \n\nListen to the following sentences attentively.'
         instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
         instr_visual.draw()
         self.window.flip()
@@ -958,7 +955,7 @@ class SencodingProbe(Task):
         displays the instruction for the task
         """
         str1 = f"You will read sentences and decide which completion is closer to a sentence you heard in the last run"
-        self.instruction_text = f"{self.name} task\n\n {str1}"
+        self.instruction_text = f"{self.descriptive_name} Task\n\n {str1}"
         instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
         instr_visual.draw()
         self.window.flip()
@@ -1013,7 +1010,7 @@ class FlexionExtension(Task):
         self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
 
     def display_instructions(self):
-        self.instruction_text = f"{self.name} task \n\n Flex and extend your right and left toes"
+        self.instruction_text = f"{self.descriptive_name} Task \n\n Flex and extend your right and left toes"
         instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
         instr_visual.draw()
         self.window.flip()
@@ -1068,7 +1065,7 @@ class SemanticPrediction(Task):
         str1 = f"You will read a sentence and decide if the last word makes sense."
         str2 = f"If it makes sense, press {self.corr_key[1]}"
         str3 = f"if it doesn't make sense, press {self.corr_key[0]}"
-        self.instruction_text = f"{self.name} task\n\n {str1} \n {str2} \n {str3}"
+        self.instruction_text = f"{self.descriptive_name} Task\n\n {str1} \n {str2} \n {str3}"
         instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
         instr_visual.draw()
         self.window.flip()
@@ -1195,7 +1192,7 @@ class VisualSearch(Task):
         str1 = f"You will survey a series of shapes and identify whether the letter ‘L’ is present."
         str2 = f"If 'L' is present, press {self.corr_key[1]}"
         str3 = f"if 'L' is not present, press {self.corr_key[0]}"
-        self.instruction_text = f"{self.name} task\n\n {str1} \n {str2} \n {str3}"
+        self.instruction_text = f"{self.descriptive_name} Task\n\n {str1} \n {str2} \n {str3}"
         instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
         instr_visual.draw()
         self.window.flip()
@@ -1226,3 +1223,557 @@ class VisualSearch(Task):
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
 
         return trial
+
+
+class RMET(Task):
+    def __init__(self, info, screen, ttl_clock, const, subj_id):
+        super().__init__(info, screen, ttl_clock, const, subj_id)
+        self.feedback_type = 'acc+rt'
+
+    def init_task(self):
+        """
+        Initialize task - default is to read the target information into the trial_info dataframe
+        """
+        trial_info_file = self.const.task_dir / self.name / self.task_file
+        self.trial_info = pd.read_csv(trial_info_file, sep='\t')
+        self.corr_key = [self.trial_info['key_one'].iloc[0],self.trial_info['key_two'].iloc[0],self.trial_info['key_three'].iloc[0],self.trial_info['key_four'].iloc[0]]
+
+    def display_instructions(self):
+        task_name = visual.TextStim(self.window, text=f'{self.descriptive_name.capitalize()}', color=[-1, -1, -1], bold=True, pos=(0, 3))
+        task_name.draw()
+        self.instruction_text = ""
+        if 'age' in self.task_file:
+            self.instruction_text += "\n\n Choose what AGE the person is."
+        elif 'emotion' in self.task_file:
+            self.instruction_text += "\n\n Choose what FEELING the person has."
+        else:
+            self.instruction_text += "\n\n Choose which AGE or FEELING best describes the person." # General instruction for both age and emotion
+        self.instruction_text += f"\n\n\n{self.trial_info['key_one'].iloc[0]}. index \t{self.trial_info['key_two'].iloc[0]}. middle\t{self.trial_info['key_three'].iloc[0]}. ring\t{self.trial_info['key_four'].iloc[0]}. pinky"
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1], wrapWidth=20, pos=(0, 0))
+        instr_visual.draw()
+        self.window.flip()
+
+    def run_trial(self, trial):
+        """ Runs a single trial of the Reading the Mind in the Eye (RMET) task """
+        
+        # Flush any keys in buffer
+        event.clearEvents()
+        
+        # --- Eyes ---
+        # Get the file name
+        picture_file_name = trial['stim']
+        # Construct the picture file path
+        picture_path = Path(self.const.stim_dir) / self.name / 'pictures' / picture_file_name
+        # Convert Pathself object to string for compatibility
+        picture_path_str = str(picture_path)
+        # Create an ImageStim object
+        picture = visual.ImageStim(self.window, str(picture_path_str))
+
+        # --- Answers ---
+        # Get the answer options
+        answer_options = trial['options']
+        # Separate them into four strings
+        answer_options = answer_options.split(',')
+        # Create TextStim objects for each answer option
+        answer_stims = []
+        for i, option in enumerate(answer_options):
+            # 0 and 1 should be on the left and right of the top line (y position 7 and x positions -7 and 7)
+            # 2 and 3 should be on the left and right of the bottom line (y position -7 and x positions -7 and 7)
+            x = -7 if i % 2 == 0 else 7
+            y = 7 if i < 2 else -7
+            answer_stim = visual.TextStim(self.window, text=f'{option}', pos=(x, y), color=[-1, -1, -1], height=1.3, alignHoriz='center')
+            answer_stims.append(answer_stim)
+
+        # Display stimuli
+        picture.draw()
+        for answer_stim in answer_stims:
+            answer_stim.draw()
+        self.window.flip()
+
+        # collect responses 0: no response 1-4: key pressed
+        trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['trial_dur'])
+        trial['correct'] = (trial['response'] == answer_options.index(trial['answer'])+1)
+        
+        # display trial feedback
+        self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
+
+        # Flush any keys in buffer
+        event.clearEvents()
+
+        return trial
+
+class PictureSequence(Task):
+    def __init__(self, info, screen, ttl_clock, const, subj_id):
+        super().__init__(info, screen, ttl_clock, const, subj_id)
+        self.feedback_type = 'acc+rt'
+
+    def init_task(self):
+        """
+        Initialize task - default is to read the target information into the trial_info dataframe
+        """
+        trial_info_file = self.const.task_dir / self.name / self.task_file
+        self.trial_info = pd.read_csv(trial_info_file, sep='\t')
+        self.corr_key = [self.trial_info['key_one'].iloc[0],self.trial_info['key_two'].iloc[0],self.trial_info['key_three'].iloc[0],self.trial_info['key_four'].iloc[0]]
+
+    def display_instructions(self):
+        task_name = visual.TextStim(self.window, text=f'{self.descriptive_name.capitalize()}', color=[-1, -1, -1], bold=True, pos=(0, 3))
+        task_name.draw()
+        self.instruction_text = ""
+        self.instruction_text += "\n\n Find the correct chronological order of the events."
+        self.instruction_text += f"\n\n\n{self.trial_info['key_one'].iloc[0]}. index \t{self.trial_info['key_two'].iloc[0]}. middle\t{self.trial_info['key_three'].iloc[0]}. ring\t{self.trial_info['key_four'].iloc[0]}. pinky"
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1], wrapWidth=20, pos=(0, 0))
+        instr_visual.draw()
+        self.window.flip()
+        
+    def show_presses(self, pressed_keys, positions, last_key_press_time, width=1.4, height=7, line_width=10):
+        """ Displays the presses on the screen
+        Args:
+            pressed_keys (list): A list of the keys that have been pressed
+            positions (list): A list of the positions of the images
+            width (float): The width of the images
+            height (float): The height of the images
+            line_width (float): The width of the border
+            last_key_press_time (float): The time of the last key press
+        """
+        #Add a black border around the selected images
+        for p, pressed_key in enumerate(pressed_keys):
+            color = 'blue' if p == len(pressed_keys) - 1 and not self.ttl_clock.get_time() - last_key_press_time > 1  else 'black' #Add a green border around the last selected image if the last key press was less than 2 seconds ago
+            visual.Rect(self.window, size=(width, height), pos=positions[pressed_key-1], lineColor=color, lineWidth=line_width).draw()
+        
+    def run_trial(self, trial):
+        """ Runs a single trial of the Reading the Mind in the Eye (RMET) task """
+        
+        # Flush any keys in buffer
+        event.clearEvents()
+        
+        # Get the file name
+        picture_file_name = trial['stim']
+        # Construct the picture file path
+        picture_paths = [str(Path(self.const.stim_dir) / self.name / 'pictures' / f"{picture_file_name} card{n}") for n in range(1,5)]  
+        # Sort them in the order they should be displayed
+        sequence = list(map(int, trial['sequence'].split(' ')))
+        picture_paths = [picture_paths[i-1] for i in sequence]
+
+        # Define positions for a 2x2 grid layout
+        height = 7    
+        width = 1.4*height
+        x_pos = 5
+        y_pos = 3.6
+        positions = [
+            (-x_pos, y_pos),  # Top-left
+            (x_pos, y_pos),   # Top-right
+            (-x_pos, -y_pos), # Bottom-left
+            (x_pos, -y_pos)   # Bottom-right
+        ]
+        # Create ImageStim objects for each picture
+
+        pictures = [visual.ImageStim(self.window, image=path, pos=pos, size=(1.4*height, height)) for path, pos in zip(picture_paths, positions)]
+
+
+        # --- Answers ---
+        # Create TextStim objects for each answer option
+        answer_options = ['1', '2', '3', '4']
+        answer_stims = []
+        for i, option in enumerate(answer_options):
+            x = -x_pos-width*0.4 if i % 2 == 0 else x_pos+width*0.4
+            y = y_pos+height*0.4 if i < 2 else -y_pos-height*0.4
+            answer_stim = visual.TextStim(self.window, text=f'{option}', pos=(x, y), color=[-1, -1, -1], height=1.3, alignHoriz='center')
+            answer_stims.append(answer_stim)
+
+        # Calculate the start position for the sequence and determine the spacing between numbers
+        num_items = len(sequence)
+        
+        # collect responses 0: no response 1-4: key pressed
+        sequence_start_time = self.ttl_clock.get_time() # Needed for knowing when to stop looking for key presses
+        digit_start_time = sequence_start_time # Updated with each key press for calculating RT
+
+        rt_list = np.full(num_items,np.nan)
+        correct_list = np.zeros((num_items,)) # List of booleans indicating whether each press was correct needed for overall trial accuracy
+        num_presses =0
+        pressed_keys = []
+        line_width = 15
+        
+        while self.ttl_clock.get_time() - sequence_start_time < trial['trial_dur']:
+            self.ttl_clock.update()
+
+            for picture in pictures:
+                picture.draw()
+            for answer_stim in answer_stims:
+                answer_stim.draw()
+            
+            seconds_left = trial['trial_dur'] - (self.ttl_clock.get_time() - sequence_start_time)
+            self.show_progress(seconds_left,
+                               show_last_seconds=5,
+                               height=1,
+                               width=width,
+                               x_pos=0-width*0.5,
+                               y_pos=y_pos+height*0.5+1)
+            self.show_presses(pressed_keys, positions, digit_start_time, width, height, line_width)
+            self.window.flip()
+
+            if num_presses < num_items:
+                keys = event.getKeys(keyList=self.const.response_keys, timeStamped=self.ttl_clock.clock)
+                if keys:
+                    key_char, key_press_time = keys[0]
+                    key = self.const.response_keys.index(key_char) + 1
+                    rt = key_press_time - digit_start_time
+                    rt_list[num_presses]=rt
+                    digit_start_time = key_press_time
+
+                    # Check if key pressed is correct
+                    correct_list[num_presses] = key == int(sequence[num_presses])
+                    num_presses += 1
+                    pressed_keys.append(key)
+            
+        # if any press is wrong trial['correct'] needs to be false, this is for post trial feedback
+        trial['correct'] = correct_list.sum()/num_items
+
+        if np.all(np.isnan(rt_list)):
+            # calculate mean rt across presses
+            trial['rt'] = np.nan
+
+        else:
+            trial['rt'] = np.nanmean(rt_list)
+ 
+        # display trial feedback (for whole trial)
+        self.display_trial_feedback(trial['display_trial_feedback'], trial['correct']==1)
+
+        return trial
+
+
+class ActionPrediction(Task):
+    def __init__(self, info, screen, ttl_clock, const, subj_id):
+        super().__init__(info, screen, ttl_clock, const, subj_id)
+        self.feedback_type = 'acc+rt'
+
+    def init_task(self):
+        self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
+        self.corr_key = [self.trial_info['key_one'].iloc[0],self.trial_info['key_two'].iloc[0]]
+        
+    def display_instructions(self):
+        """
+        displays the instruction for the task
+        """
+        task_name = visual.TextStim(self.window, text=f'{self.descriptive_name.capitalize()}', color=[-1, -1, -1], bold=True, pos=(0, 3))
+        task_name.draw()
+        self.instruction_text = ""
+        if 'soccer' in self.task_file:
+            self.instruction_text += "\n\n Decide if the ball is going to the left or right."
+            self.instruction_text += f"\n\n\nLEFT: index finger \tRIGHT: middle finger\n"
+        elif 'greeting' in self.task_file:
+            self.instruction_text += "\n\n Decide if the people will hug or shake hands."
+            self.instruction_text += f"\n\n\nHUG: index finger \tSHAKE HANDS: middle finger\n"
+        else:
+            self.instruction_text += "\n\n Choose where the ball will land or how the people will greet each other." # General instruction for both age and emotion
+            self.instruction_text += f"\n\n\nLEFT/HUG: index finger \tRIGHT/SHAKE HANDS: middle finger\n"
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1], wrapWidth=20, pos=(0, 0))
+        instr_visual.draw()
+        self.window.flip()
+
+
+    def run_trial(self, trial):
+        """ Runs a single trial of the Action Prediction task """
+
+        event.clearEvents()
+        window_width, _ = self.window.size
+        stim_width = int(window_width * 0.7) # Make the video 70% of the window width
+        stim_height = int(stim_width  * 476 / 846)  # 846x476 is the original size of the video given in width x height
+
+        # Display video        
+        movie_path = Path(self.const.stim_dir) / self.name / 'modified_clips' / f"{trial['stim']}.mp4"
+        movie_path_str = str(movie_path)
+        movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False, noAudio=True, size=(stim_width, stim_height), pos=(0, 0))
+
+        movie_clip.draw()
+        self.window.flip()
+
+        while movie_clip.isFinished == False:
+            movie_clip.draw()
+            self.window.flip()
+            self.ttl_clock.update()
+            # core.wait(1)  # Freeze the video for a moment
+
+        # Flush any keys in buffer
+        event.clearEvents()
+
+        # Display question
+        question = trial['question']
+        question += f"\n\n\n{self.corr_key[0]}. {trial['options'].split(',')[0]} \t\t\t{self.corr_key[1]}. {trial['options'].split(',')[1]}"
+        question_stim = visual.TextStim(self.window, text=question, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=25)
+        question_stim.draw()
+        self.window.flip()
+
+        # collect responses 0: no response 1-4: key pressed
+        trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['question_dur'])
+        trial['correct'] = (trial['response'] == trial.options.index(str(trial['answer'])))
+
+        # display trial feedback
+        self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
+
+        return trial
+
+class Movie(Task):
+    def __init__(self, info, screen, ttl_clock, const, subj_id):
+        super().__init__(info, screen, ttl_clock, const, subj_id)
+        self.name = 'movie'
+
+    def display_instructions(self):
+        task_name = visual.TextStim(self.window, text=f'{self.descriptive_name.capitalize()}', color=[-1, -1, -1], bold=True, pos=(0, 3))
+        task_name.draw()
+
+        self.instruction_text = f"\n\n You will watch short clips from a movie. Please keep your head still and pay attention to the screen."
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1], wrapWidth=20, pos=(0, 0))
+        instr_visual.draw()
+        self.window.flip()
+
+    def run_trial(self, trial):
+        window_width, _ = self.window.size
+        stim_width = int(window_width * 0.8) # Make the video fraction of the window width
+        stim_height = int(stim_width  * 360 / 640)  # Original size of the video is 640x360
+        
+        # Get the file name
+        movie_file_name = trial['stim']
+
+        # Construct the movie file path
+        movie_path = Path(self.const.stim_dir) / self.name / 'clips' / movie_file_name
+
+        # Convert Path object to string for compatibility
+        movie_path_str = str(movie_path)
+
+        # Create a MovieStim3 object
+        movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False, size=(stim_width, stim_height), pos=(0, 0))
+
+        movie_clip.draw()
+        self.window.flip()
+
+        while movie_clip.isFinished == False:
+            movie_clip.draw()
+            self.window.flip()
+            self.ttl_clock.update()
+        
+        return trial
+    
+
+class StrangeStories(Task):
+    def __init__(self, info, screen, ttl_clock, const, subj_id):
+        super().__init__(info, screen, ttl_clock, const, subj_id)
+        self.name = 'strange_stories'
+    
+    def init_task(self):
+        self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
+        self.corr_key = [self.trial_info['key_one'].iloc[0],self.trial_info['key_two'].iloc[0], self.trial_info['key_three'].iloc[0]]
+
+    def display_instructions(self):
+        task_name = visual.TextStim(self.window, text=f'{self.descriptive_name.capitalize()}', color=[-1, -1, -1], bold=True, pos=(0, 4))
+        task_name.draw()
+
+        self.instruction_text = f"\n\nYou will watch a clip about a couple and answer a question "
+        if 'social' in self.task_file:
+            self.instruction_text += "about their SOCIAL INTERACTION."
+        elif 'control' in self.task_file:
+            self.instruction_text += "about the FACTS."
+        # self.instruction_text += " They live and work together. Each clip is self-contained and there is no story running from one clip to another."
+        # self.instruction_text += "\n\n You will be asked a question about the clip. Imagine your answer as soon as you see the question. When you see the answer options, press the button that corresponds most to the answer you thought of. Some questions do not have a right or wrong answer."
+        self.instruction_text += "\n\n Imagine your answer to the question. \nChoose the best match from the answers. \nSome questions have no right answer."
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1], wrapWidth=20, pos=(0, 0))
+        instr_visual.draw()
+        self.window.flip()
+
+    def run_trial(self, trial):
+        window_width, _ = self.window.size
+        stim_width = int(window_width * 0.8) # Make the video 40% of the window width
+        stim_height = int(stim_width  * 720 / 1280)  # 1280x720 is the original size of the video given in width x height
+        wrapWidth = 25
+        
+        # Get the file name
+        movie_file_name = trial['stim']
+
+        # Construct the movie file path
+        movie_path = Path(self.const.stim_dir) / self.name / 'clips' / movie_file_name
+
+        # Convert Path object to string for compatibility
+        movie_path_str = str(movie_path)
+
+        # Create a MovieStim object
+        movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False, size=(stim_width, stim_height), pos=(0, 0))
+
+        # Play through the movie frame by frame
+        while movie_clip.isFinished == False:
+            movie_clip.draw()
+            self.window.flip()
+            self.ttl_clock.update()
+
+        # Flush any keys in buffer
+        event.clearEvents()
+
+        # Initialize question
+        question = trial['question']
+
+        # Initialize answer options
+        options_orig = [answer_option.strip() for answer_option in trial['options'].split(',')]
+        options_shuffled = deepcopy(options_orig)
+        random.shuffle(options_shuffled) # Randomize the order of the answer options
+        if trial['condition'] == 'control': # Only the first option is correct (2 points)
+            scores_orig = [2,0,0]
+        elif trial['condition'] == 'social': # First option gets 2 points, second option gets 1 point, third option gets 0 points
+            scores_orig = [2,1,0]            
+        scores_shuffled = [scores_orig[options_orig.index(option)] for option in options_shuffled]
+
+        answers = f"\n\n\n{self.corr_key[0]}. {options_shuffled[0]} \n{self.corr_key[1]}. {options_shuffled[1]} \n{self.corr_key[2]}. {options_shuffled[2]}"
+
+        # Display question
+        stim_question = visual.TextStim(self.window, text = question, pos=(0, 4), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=wrapWidth)
+        stim_question.draw()
+        self.window.flip()
+        # Display the question until X seconds before trial is over (answer_dur), to make the 'buffer' zone for the trial, i.e. the time of variable length, the time where the participant deliberates about their answer
+        self.ttl_clock.wait_until(self.ttl_clock.get_time() + (trial['trial_dur'] - trial['answer_dur']))
+        # Align the answers with the middle of the question if the answers are shorter than half of the question
+        answer_lengths = [len(answer) for answer in options_shuffled]
+        if max(answer_lengths) < wrapWidth and max(answer_lengths) < len(question):
+            left_position = 0-max(answer_lengths)/2  # Answer options are shorter than questions and shorter than wrapWidth
+            align='left'
+        elif max(answer_lengths) > wrapWidth:
+            left_position = 0
+            align='center'
+        stim_answers = visual.TextStim(self.window, text=answers, pos=(left_position, 0), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=wrapWidth, alignHoriz=align)
+        stim_question.draw()
+        stim_answers.draw()
+        self.window.flip()
+
+        # collect responses 0: no response 1-4: key pressed
+        trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['answer_dur'])
+        trial['score'] = scores_shuffled[trial['response']-1]
+        return trial
+    
+
+class FauxPas(Task):
+    def __init__(self, info, screen, ttl_clock, const, subj_id):
+        super().__init__(info, screen, ttl_clock, const, subj_id)
+        self.feedback_type = 'acc+rt'
+
+    def init_task(self):
+        """
+        Initialize task - default is to read the target information into the trial_info dataframe
+        """
+        self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
+        self.corr_key = [self.trial_info['key_yes'].iloc[0],self.trial_info['key_no'].iloc[0]]
+
+        
+    def display_instructions(self):
+        """
+        displays the instruction for the task
+        """
+        task_name = visual.TextStim(self.window, text=f'{self.descriptive_name.capitalize()}', color=[-1, -1, -1], bold=True, pos=(0, 3))
+        task_name.draw()
+        self.instruction_text = "\n\nRead the story and answer the Yes/No question "
+        if 'social' in self.task_file:
+            self.instruction_text += "about the SOCIAL INTERACTION."
+        elif 'control' in self.task_file:
+            self.instruction_text += "about the FACTS."
+        self.instruction_text += f"\n\n{self.corr_key[0]}. Yes \t{self.corr_key[1]}. No\n"
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1], wrapWidth=20, pos=(0, 0))
+        instr_visual.draw()
+        self.window.flip()
+
+    def run_trial(self, trial):
+        """ Runs a single trial of the Theory of Mind task """
+
+        event.clearEvents()
+
+        # Display story
+        story_stim = visual.TextStim(self.window, text=trial['story'], alignHoriz='center', wrapWidth=20, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height= 1.25)
+        story_stim.draw()
+        self.window.flip()
+
+        # wait until story duration
+        self.ttl_clock.wait_until(self.ttl_clock.get_time() + trial['story_dur'])
+
+        # Flush any keys in buffer
+        event.clearEvents()
+
+        # Display question
+        question = trial['question']
+        # Display answers
+        options = [option.strip(' ') for option in trial['options'].split(',')]
+        question += f"\n\n\n{self.corr_key[0]}. {options[0]} \t\t\t{self.corr_key[1]}. {options[1]}"
+        question_stim = visual.TextStim(self.window, text=question, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=25)
+        question_stim.draw()
+        self.window.flip()
+
+        # collect responses 0: no response 1-4: key pressed
+        trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(),
+                                                           trial['question_dur'],
+                                                           show_last_seconds=3,
+                                                           current_stimuli=question_stim)
+        trial['correct'] = (trial['response'] == trial['trial_type'])
+
+
+        # display trial feedback
+        self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
+
+        return trial
+    
+
+class FrithHappe(Task):
+    def __init__(self, info, screen, ttl_clock, const, subj_id):
+        super().__init__(info, screen, ttl_clock, const, subj_id)
+        self.name = 'frith_happe'
+        self.feedback_type = 'acc+rt'
+
+    def init_task(self):
+        self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
+        self.corr_key = [self.trial_info['key_yes'].iloc[0],self.trial_info['key_no'].iloc[0]]
+
+    def display_instructions(self):
+        task_name = visual.TextStim(self.window, text=f'{self.descriptive_name.capitalize()}', color=[-1, -1, -1], bold=True, pos=(0, 3))
+        task_name.draw()
+
+        self.instruction_text = f"\n\n You will watch a short animation with two triangles."
+        self.instruction_text += "\n\n At the end of the clip, decide if one of the triangles was trying to manipulate the thoughts or emotions of the other."
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1], wrapWidth=20, pos=(0, 0))
+        instr_visual.draw()
+        self.window.flip()
+
+    def run_trial(self, trial):
+        window_width, _ = self.window.size
+        stim_width = int(window_width * 0.7) # Make the video 70% of the window width
+        stim_height = int(stim_width  * 1080 / 1440)  # 1280x720 is the original size of the video given in width x height
+        wrapWidth = 20
+        
+        # Get the file name
+        movie_file_name = trial['stim']
+        # Construct the movie file path
+        movie_path = Path(self.const.stim_dir) / self.name / 'clips' / movie_file_name
+        # Convert Path object to string for compatibility
+        movie_path_str = str(movie_path)
+        # Create a MovieStim object
+        movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False, size=(stim_width, stim_height), pos=(0, 0))
+
+        # Play through the movie frame by frame
+        while movie_clip.isFinished == False:
+            movie_clip.draw()
+            self.window.flip()
+            self.ttl_clock.update()
+
+        # Flush any keys in buffer
+        event.clearEvents()
+
+        # Initialize question
+        question = "Did one of the triangles try to change the thoughts or emotions of the other?"
+
+        # Initialize answer options
+        answers = f"\n\n{self.corr_key[0]}. Yes \n{self.corr_key[1]}. No"
+
+        # Display question
+        stim_question = visual.TextStim(self.window, text = question + answers, pos=(0, 0), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=wrapWidth)
+        stim_question.draw()
+        self.window.flip()
+
+        # collect responses 0: no response 1-4: key pressed
+        trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['question_dur'])
+        trial['correct'] = (trial['response'] == trial['trial_type'])
+
+        # display trial feedback
+        self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
+        return trial
+    

@@ -22,8 +22,10 @@ Documentation
    installation.rst
    overview.rst
    eye_tracking.rst
-   instructions.rst
+   MRI_instructions.rst
+   task_descriptions.rst
    building_experiment.rst
+   creating_tasks.rst
    reference.rst
 
 Indices and tables

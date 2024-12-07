@@ -6,7 +6,7 @@ import pandas as pd
 import numpy as np
 import random
 import MultiTaskBattery.utils as ut
-
+import itertools
 
 def shuffle_rows(dataframe):
     """
@@ -73,9 +73,11 @@ class TaskFile():
         Args:
             const: module for constants
         """
-        self.exp_name   = const.exp_name
-        self.task_dir = const.task_dir
-        self.stim_dir   = const.stim_dir
+        self.exp_name           = const.exp_name
+        self.task_dir           = const.task_dir
+        self.stim_dir           = const.stim_dir
+        self.matching_stimuli   = True # whether the stimuli are matching between the control and active condition or not
+
 
 class NBack(TaskFile):
     def __init__(self, const):
@@ -276,40 +278,6 @@ class AuditoryNarrative(TaskFile):
 
         return trial_info
 
-class RomanceMovie(TaskFile):
-    def __init__(self, const):
-        super().__init__(const)
-        self.name = 'romance_movie'
-
-    def make_task_file(self,
-                       run_number = None ,
-                       task_dur=30,
-                       trial_dur=30,
-                       iti_dur=0,
-                       file_name=None):
-        n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
-        trial_info = []
-
-        t = 0
-
-        for n in range(n_trials):
-            trial = {}
-            trial['trial_num'] = n
-            trial['trial_dur'] = trial_dur
-            trial['iti_dur'] = iti_dur
-            trial['display_trial_feedback'] = False
-            trial['stim'] = f'{run_number:02d}_romance.mov'
-            trial['start_time'] = t
-            trial['end_time'] = t + trial_dur + iti_dur
-            trial_info.append(trial)
-            t = trial['end_time']
-
-        trial_info = pd.DataFrame(trial_info)
-        if file_name is not None:
-            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
-
-        return trial_info
-
 class SpatialNavigation(TaskFile):
     def __init__(self, const):
         super().__init__(const)
@@ -356,16 +324,19 @@ class TheoryOfMind(TaskFile):
     def __init__(self, const):
         super().__init__(const)
         self.name = 'theory_of_mind'
+        self.matching_stimuli = False # stimuli for active condition (belief) are different from stimuli for passive condition (photo)
 
     def make_task_file(self, hand='right',
                        responses = [1,2], # 1 = True, 2 = False
                        run_number=None,
-                       task_dur=30,
+                        task_dur=30,
                         trial_dur=14,
                         iti_dur=1, 
                         story_dur=10,
-                        question_dur=4, file_name=None
-                        , stim_file=None):
+                        question_dur=4,
+                        file_name=None,
+                        stim_file=None,
+                        condition=None):
 
         # count number of trials
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
@@ -377,6 +348,11 @@ class TheoryOfMind(TaskFile):
         else:
             stim = pd.read_csv(self.stim_dir / 'theory_of_mind' / 'theory_of_mind.csv')
 
+        if condition:
+            stim = stim[stim['condition'] == condition]
+        else:
+            stim = stim[stim['condition'] != 'practice']
+            
         start_row = (run_number - 1) * 2
         end_row = run_number * 2 - 1
         stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
@@ -492,7 +468,9 @@ class ActionObservation(TaskFile):
     def __init__(self, const):
         super().__init__(const)
         self.name = 'action_observation'
-                # Medium/bad knot vids
+        self.matching_stimuli = False # stimuli for active condition (knot tying) are different from stimuli for passive condition (knot watching)
+
+        # Medium/bad knot vids
         # self.knot_names = [
         #                 'Ampere', 'Arbor', 'Baron', 'Belfry', 'Bramble', 'Chamois', 'Coffer', 
         #                 'Farthing', 'Fissure', 'Gentry', 'Henchman', 'Magnate', 'Perry', 'Phial', 'Polka', 
@@ -762,6 +740,7 @@ class OddBall(TaskFile):
             trial = {}
             trial['key_one'] = responses[0]
             trial['key_two'] = responses[1]
+            trial['key_three'] = responses[2]
             trial['trial_num'] = n
             trial['hand'] = hand
             trial['trial_dur'] = trial_dur
@@ -786,6 +765,7 @@ class FingerSequence(TaskFile):
     def __init__(self, const):
         super().__init__(const)
         self.name = 'finger_sequence'
+        self.matching_stimuli = False # sequence of numbers are different for easy and hard sequence condition
         
     def generate_sequence(self):
         sequence = [random.choice([1, 2, 3, 4])]
@@ -967,3 +947,486 @@ class VisualSearch(TaskFile):
         if file_name is not None:
             trial_info.to_csv(self.task_dir / self.name / file_name,sep='\t',index=False)
         return trial_info
+
+
+class RMET(TaskFile):
+    def __init__(self, const):
+        super().__init__(const)
+        self.name = 'rmet'
+        self.matching_stimuli = True # stimuli are matched for the active condition (determine emotion) and passive condition (determine age)
+
+
+    def make_task_file(self, hand='right',
+                        responses = [1,2,3,4],
+                        run_number=None,
+                        task_dur=30,
+                        trial_dur=6,
+                        iti_dur=1, 
+                        file_name=None,
+                        stim_file = None,
+                        condition=None,
+                        half=None):
+        
+
+        # count number of trials
+        n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
+        trial_info = []
+        t = 0
+
+        if stim_file:
+            stim = pd.read_csv(self.stim_dir / self.name / stim_file)
+        else:
+            stim = pd.read_csv(self.stim_dir / self.name / f'{self.name}.csv')
+
+        if condition:
+            stim = stim[stim['condition'] == condition]
+        else:
+            stim = stim[stim['condition'] != 'practice']
+            # Alternate between emotion and age conditions
+            stim_emotion = stim[stim['condition'] == 'emotion']
+            stim_age = stim[stim['condition'] == 'age']
+            # Split each condition into halves
+            first_half = zip(stim_emotion.iloc[:len(stim_emotion) // 2].iterrows(),
+                            stim_age.iloc[len(stim_age) // 2:].iterrows())
+            second_half = zip(stim_emotion.iloc[len(stim_emotion) // 2:].iterrows(),
+                            stim_age.iloc[:len(stim_age) // 2].iterrows())
+            stim = pd.concat([pd.concat([row1[1], row2[1]], axis=1).T for row1, row2 in itertools.chain(first_half, second_half)], ignore_index=True)
+
+        if half: # Selects different stimuli for the emotion and age condition, to enable showing each pair of eyes only once for each participant (assigns half 1 or 2)
+            stim = stim[stim['half'] == half]
+
+        start_row = (run_number - 1) * n_trials
+        end_row = run_number * n_trials - 1
+        stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
+
+        for n in range(n_trials):
+            trial = {}
+            trial['key_one'] = responses[0]
+            trial['key_two'] = responses[1]
+            trial['key_three'] = responses[2]
+            trial['key_four'] = responses[3]
+            trial['trial_num'] = n
+            trial['hand'] = hand
+            trial['trial_dur'] = trial_dur
+            trial['iti_dur'] = iti_dur
+            trial['stim'] = stim['picture'][n]
+            trial['options'] = stim['options'][n]
+            trial['condition'] = stim['condition'][n]
+            trial['answer'] = stim['answer'][n]
+            trial['display_trial_feedback'] = True
+            trial['start_time'] = t
+            trial['end_time'] = t + trial_dur + iti_dur
+            trial_info.append(trial)
+
+            # Update for next trial:
+            t = trial['end_time']
+
+        trial_info = pd.DataFrame(trial_info)
+        if file_name is not None:
+            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
+        return trial_info
+
+
+class PictureSequence(TaskFile):
+    def __init__(self, const):
+        super().__init__(const)
+        self.name = 'picture_sequence'
+        self.matching_stimuli = False # sequence of pictures are different for different conditions
+        
+    def generate_sequence(self):
+        sequence = random.sample([1, 2, 3, 4], 4)
+        return ' '.join(map(str, sequence))
+
+    def make_task_file(self,
+                        hand = 'right',
+                        responses = [1,2,3,4], # 1 = Key_one, 2 = Key_two, 3 = Key_three, 4 = Key_four
+                        run_number=None,
+                        task_dur=30,
+                        trial_dur=14,
+                        iti_dur=1,
+                        file_name=None,
+                        stim_file = None,
+                        condition=None):
+        n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
+        trial_info = []
+        t = 0
+
+        if stim_file:
+            stim = pd.read_csv(self.stim_dir / self.name / stim_file)
+        else:
+            stim = pd.read_csv(self.stim_dir / self.name / f'{self.name}.csv')
+
+
+        if condition:
+            stim = stim[stim['condition'] == condition]
+        else:
+            stim = stim[stim['condition'] != 'practice']
+
+        start_row = (run_number - 1) * n_trials
+        end_row = run_number * n_trials - 1
+        stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
+
+        for n in range(n_trials):
+            trial = {}
+            trial['key_one'] = responses[0]
+            trial['key_two'] = responses[1]
+            trial['key_three'] = responses[2]
+            trial['key_four'] = responses[3]
+            trial['trial_num'] = n
+            trial['hand'] = hand
+            trial['trial_dur'] = trial_dur
+            trial['iti_dur'] = iti_dur
+            trial['display_trial_feedback'] = True
+            trial['stim'] = stim['picture'][n]
+            # choose random sequence
+            trial['sequence'] = self.generate_sequence()
+            trial['start_time'] = t
+            trial['end_time'] = t + trial_dur + iti_dur
+            trial_info.append(trial)
+            t = trial['end_time']
+
+        trial_info = pd.DataFrame(trial_info)
+        if file_name is not None:
+            ut.dircheck(self.task_dir / self.name)
+            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
+
+        return trial_info
+
+
+class ActionPrediction(TaskFile):
+    def __init__(self, const):
+        super().__init__(const)
+        self.name = 'action_prediction'
+        self.matching_stimuli = False # sequence of pictures are different for different conditions
+
+    def make_task_file(self, hand='right',
+                        responses = [1,2],
+                        run_number=None,
+                        task_dur=30,
+                        trial_dur=6,
+                        iti_dur=1, 
+                        question_dur=4,
+                        file_name=None,
+                        stim_file = None,
+                        condition=None):
+        
+
+        # count number of trials
+        n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
+        trial_info = []
+        t = 0
+
+        if stim_file:
+            stim = pd.read_csv(self.stim_dir / self.name / stim_file)
+        else:
+            stim = pd.read_csv(self.stim_dir / self.name / f'{self.name}.csv')
+
+        if condition:
+            stim = stim[stim['condition'] == condition]
+        else:
+            stim = stim[stim['condition'] != 'practice']
+
+        start_row = (run_number - 1) * n_trials
+        end_row = run_number * n_trials - 1
+        stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
+
+        for n in range(n_trials):
+            trial = {}
+            trial['key_one'] = responses[0]
+            trial['key_two'] = responses[1]
+            trial['trial_num'] = n
+            trial['hand'] = hand
+            trial['trial_dur'] = trial_dur
+            trial['iti_dur'] = iti_dur
+            trial['stim'] = stim['video'][n]
+            trial['question'] = stim['question'][n]
+            trial['options'] = stim['options'][n]
+            trial['answer'] = stim['answer'][n]
+            trial['condition'] = stim['condition'][n]
+            trial['question_dur'] = question_dur
+            trial['display_trial_feedback'] = True
+            trial['start_time'] = t
+            trial['end_time'] = t + trial_dur + iti_dur
+            trial_info.append(trial)
+
+            # Update for next trial:
+            t = trial['end_time']
+
+        trial_info = pd.DataFrame(trial_info)
+        if file_name is not None:
+            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
+        return trial_info
+
+
+class Movie(TaskFile):
+    def __init__(self, const):
+        super().__init__(const)
+        self.name = 'movie'
+        self.matching_stimuli = False # Romance movie clips are different from nature movie clips and landscape movie clips
+
+    def make_task_file(self,
+                       run_number = None ,
+                       task_dur=30,
+                       trial_dur=30,
+                       iti_dur=0,
+                       file_name=None,
+                       stim_file=None,
+                       condition=None):
+
+        n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
+        trial_info = []
+
+        t = 0
+
+        if stim_file:
+            stim = pd.read_csv(self.stim_dir / self.name / stim_file)
+        else:
+            stim = pd.read_csv(self.stim_dir / self.name / f'{self.name}.csv')
+
+        if condition:
+            stim = stim[stim['condition'] == condition]
+        else:
+            stim = stim[stim['condition'] != 'practice']
+
+        start_row = (run_number - 1) * n_trials
+        end_row = run_number * n_trials - 1
+        stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
+
+        # Display a warning for romance clip 09 and up: The clips are repeated clips 1-8
+        if run_number >= 9:
+            Warning('Romance condition clips 9-10 are duplicates. They are the same as clips 1-8')
+
+        for n in range(n_trials):
+            trial = {}
+            trial['trial_num'] = n
+            trial['trial_dur'] = trial_dur
+            trial['iti_dur'] = iti_dur
+            trial['display_trial_feedback'] = False
+            trial['stim'] = stim['video'][n]
+            trial['condition'] = stim['condition'][n]
+            trial['start_time'] = t
+            trial['end_time'] = t + trial_dur + iti_dur
+            trial_info.append(trial)
+            t = trial['end_time']
+
+        trial_info = pd.DataFrame(trial_info)
+        if file_name is not None:
+            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
+
+        return trial_info
+    
+
+class StrangeStories(TaskFile):
+    def __init__(self, const):
+        super().__init__(const)
+        self.name = 'strange_stories'
+        self.matching_stimuli = True
+        self.half_assigned = True
+
+    def make_task_file(self,
+                       hand='right',
+                       responses = [1,2,3],
+                       run_number = None,
+                       task_dur=30,
+                       trial_dur=30,
+                       iti_dur=0,
+                       answer_dur=5,
+                       file_name=None,
+                       stim_file=None,
+                       condition=None,
+                       half=None):
+
+        n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
+        trial_info = []
+
+        t = 0
+
+        if stim_file:
+            stim = pd.read_csv(self.stim_dir / self.name / stim_file)
+        else:
+            stim = pd.read_csv(self.stim_dir / self.name / f'{self.name}.csv')
+
+        if condition:
+            stim = stim[stim['condition'] == condition]
+        else:
+            stim = stim[stim['condition'] != 'practice']
+
+        if half: # Selects different stimuli for the social and control condition, to enable showing each video only once for each participant (assign half the subjects one type of video as social and the other the other half of the videos as social)
+            stim = stim[stim['half'] == half]
+
+        start_row = (run_number - 1) * n_trials
+        end_row = run_number * n_trials - 1
+        stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
+
+        for n in range(n_trials):
+            trial = {}
+            trial['trial_num'] = n
+            trial['key_one'] = responses[0]
+            trial['key_two'] = responses[1]
+            trial['key_three'] = responses[2]
+            trial['hand'] = hand
+            trial['trial_dur'] = trial_dur
+            trial['iti_dur'] = iti_dur
+            trial['display_trial_feedback'] = False
+            trial['stim'] = stim['video'][n]
+            trial['video_dur'] = stim['duration'][n]
+            trial['answer_dur'] = answer_dur
+            trial['question'] = stim['question'][n]
+            trial['options'] = stim['options'][n]
+            trial['condition'] = stim['condition'][n]
+            trial['start_time'] = t
+            trial['end_time'] = t + trial_dur + iti_dur
+            trial_info.append(trial)
+            t = trial['end_time']
+
+        trial_info = pd.DataFrame(trial_info)
+        if file_name is not None:
+            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
+
+        return trial_info
+    
+
+class FauxPas(TaskFile):
+    def __init__(self, const):
+        super().__init__(const)
+        self.name = 'faux_pas'
+        self.matching_stimuli = True
+        self.half_assigned = True
+
+    def make_task_file(self, hand='right',
+                       responses = [1,2], # 1 = True, 2 = False
+                       run_number=None,
+                       task_dur=30,
+                        trial_dur=14,
+                        iti_dur=1, 
+                        story_dur=10,
+                        question1_dur=4,
+                        file_name=None,
+                        stim_file=None,
+                        condition=None,
+                        half=None):
+
+
+        # count number of trials
+        n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
+        trial_info = []
+        t = 0
+
+        if stim_file:
+            stim = pd.read_csv(stim_file)
+        else:
+            stim = pd.read_csv(self.stim_dir / self.name / f'{self.name}.csv')
+
+        if condition:
+            stim = stim[stim['condition'] == condition]
+        else:
+            stim = stim[stim['condition'] != 'practice']
+        
+        if half: # Selects different stimuli for the social and control condition, to enable showing each story only once for each participant
+            stim = stim[stim['half'] == half]
+            
+        start_row = (run_number - 1) * 2
+        end_row = run_number * 2 - 1
+        stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
+
+        for n in range(n_trials):
+            trial = {}
+            trial['key_yes'] = responses[0]
+            trial['key_no'] = responses[1]
+            trial['trial_num'] = n
+            trial['hand'] = hand
+            trial['trial_dur'] = trial_dur
+            trial['iti_dur'] = iti_dur
+            trial['story'] = stim['story'][n]
+            trial['question'] = stim['question1'][n]
+            trial['options'] = stim['options1'][n]
+            if str(stim['answer1'][n]) == 'Yes':
+                trial['trial_type'] = 1
+            else:
+                trial['trial_type'] = 2
+            trial['condition'] = stim['condition'][n]
+            trial['story_dur'] = story_dur
+            trial['question_dur'] = question1_dur
+            trial['display_trial_feedback'] = True
+            trial['start_time'] = t
+            trial['end_time'] = t + trial_dur + iti_dur
+            trial_info.append(trial)
+
+            # Update for next trial:
+            t = trial['end_time']
+
+        trial_info = pd.DataFrame(trial_info)
+        if file_name is not None:
+            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
+        return trial_info
+    
+
+
+class FrithHappe(TaskFile):
+    def __init__(self, const):
+        super().__init__(const)
+        self.name = 'frith_happe'
+        self.matching_stimuli = False
+
+    def make_task_file(self,
+                       hand='right',
+                       responses = [1,2],
+                       run_number = None,
+                       task_dur=30,
+                       trial_dur=28,
+                       iti_dur=2,
+                       question_dur=6,
+                       file_name=None,
+                       stim_file=None,
+                       condition=None):
+
+        n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
+        trial_info = []
+
+        t = 0
+
+        if stim_file:
+            stim = pd.read_csv(self.stim_dir / self.name / stim_file)
+        else:
+            stim = pd.read_csv(self.stim_dir / self.name / f'{self.name}.csv')
+
+        if condition:
+            stim = stim[stim['condition'] == condition]
+        else:
+            stim = stim[stim['condition'] != 'practice']
+
+        start_row = (run_number - 1) * n_trials
+        end_row = run_number * n_trials - 1
+        stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
+
+        for n in range(n_trials):
+            trial = {}
+            trial['trial_num'] = n
+            trial['key_yes'] = responses[0]
+            trial['key_no'] = responses[1]
+            if str(stim['condition'][n]) == 'tom':
+                trial['trial_type'] = 1
+            else:
+                trial['trial_type'] = 2
+            trial['hand'] = hand
+            trial['trial_dur'] = trial_dur
+            trial['iti_dur'] = iti_dur
+            trial['display_trial_feedback'] = True
+            trial['stim'] = stim['video'][n]
+            trial['video_dur'] = stim['duration'][n]
+            trial['question_dur'] = question_dur
+            trial['condition'] = stim['condition'][n]
+            trial['start_time'] = t
+            trial['end_time'] = t + trial_dur + iti_dur
+            trial_info.append(trial)
+            t = trial['end_time']
+
+        trial_info = pd.DataFrame(trial_info)
+        if file_name is not None:
+            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
+
+        return trial_info
+    
+
+
+
