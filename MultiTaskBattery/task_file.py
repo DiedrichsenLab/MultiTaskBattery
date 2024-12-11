@@ -84,7 +84,7 @@ class NBack(TaskFile):
 
     def make_task_file(self,
                         hand = 'right',
-                        responses = [1,2], # 4 = match, 3 = no match
+                        responses = [1,2], # 4 = match, 3 = no match; #1 = match; 2 = no match
                         task_dur =  30,
                         trial_dur = 2,
                         iti_dur   = 0.5,
@@ -527,7 +527,8 @@ class ActionObservation(TaskFile):
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
             trial['display_trial_feedback'] = False
-            knot_index = (run_number - 1)
+            #initially: knot_index = run_number -1 
+            knot_index = random.choice(range(12))
             if n == 0:
                 trial['stim'] = f'knotAction{knot_names[knot_index]}.mov'
             else:
@@ -601,8 +602,8 @@ class DemandGrid(TaskFile):
                     return sequence_copy  # Return the modified sequence if it's different and connected
 
     def make_task_file(self,
-                        hand = 'right',
-                        responses = [1,2], # 1 = Left, 2 = Right
+                        hand = 'left',
+                        responses = [4,3], # 1 = Left, 2 = Right
                         task_dur=30,
                         trial_dur=7,
                         question_dur=3,
@@ -742,8 +743,8 @@ class OddBall(TaskFile):
         
 
     def make_task_file(self,
-                    hand = 'right',
-                    responses = [1,2], # 1,2 any press is ok
+                    hand = 'left',
+                    responses = [4,3], # 1,2 any press is ok
                     task_dur=30,
                     trial_dur=0.15,
                     iti_dur=0.85,
