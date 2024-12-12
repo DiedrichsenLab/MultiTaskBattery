@@ -1589,7 +1589,7 @@ class StrangeStories(Task):
         movie_file_name = trial['stim']
 
         # Construct the movie file path
-        movie_path = Path(self.const.stim_dir) / self.name / 'clips' / movie_file_name
+        movie_path = Path(self.const.stim_dir) / self.name / movie_file_name
 
         # Convert Path object to string for compatibility
         movie_path_str = str(movie_path)
