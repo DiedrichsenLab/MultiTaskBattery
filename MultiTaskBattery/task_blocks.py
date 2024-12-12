@@ -1283,8 +1283,8 @@ class RMET(Task):
             y = 7 if i < 2 else -7
             
             if len (option) < 3:
-                tabs = 1
-            elif len(option) < 10:
+                tabs = 2
+            elif len(option) < 9:
                 tabs = 3
             else:
                 tabs = 4
