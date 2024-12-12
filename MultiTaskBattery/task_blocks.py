@@ -418,10 +418,10 @@ class TheoryOfMind(Task):
         """
         task_name = visual.TextStim(self.window, text=f'{self.descriptive_name.capitalize()}', color=[-1, -1, -1], bold=True, pos=(0, 3))
         task_name.draw()
-        str1 = f"You will read a story and decide if the answer to the question is True or False"
+        str1 = f"You will read a story and decide if the answer to the question is True or False."
         str2 = f"if true, press {self.corr_key[1]}"
         str3 = f"if false, press {self.corr_key[0]}"
-        self.instruction_text = f"{self.descriptive_name} Task\n\n {str1} \n {str2} \n {str3}"
+        self.instruction_text = f"\n\n {str1} \n\n {str2} \n {str3}"
         instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
         instr_visual.draw()
         self.window.flip()
@@ -1716,8 +1716,8 @@ class StrangeStories(Task):
 
     def run_trial(self, trial):
         window_width, _ = self.window.size
-        stim_width = int(window_width * 0.8) # Make the video 40% of the window width
-        stim_height = int(stim_width  * 720 / 1280)  # 1280x720 is the original size of the video given in width x height
+        stim_width = int(window_width * 0.4) # Make the video 40% of the window width
+        stim_height = int(stim_width  * 921 / 1638)  # 1280x720 is the original size of the video given in width x height
         wrapWidth = 25
         
         # Get the file name
