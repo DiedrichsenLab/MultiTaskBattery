@@ -1281,10 +1281,20 @@ class RMET(Task):
             # 2 and 3 should be on the left and right of the bottom line (y position -7 and x positions -7 and 7)
             x = -7 if i % 2 == 0 else 7
             y = 7 if i < 2 else -7
-            answer_stim = visual.TextStim(self.window, text=f'{i+1}.\t\t',
-                                            pos=(x, y-0.04), color='blue', height=1, alignHoriz='center')
+            
+            if len (option) < 3:
+                tabs = 1
+            elif len(option) < 10:
+                tabs = 3
+            else:
+                tabs = 4
+            tab_string = ''.join(["\t"] * tabs)
+            answer_stim = visual.TextStim(self.window, text=f'{i+1}.{tab_string}',
+                              pos=(x, y-0.04), color='blue', height=1, alignHoriz='center')
+
             answer_stims.append(answer_stim)
-            answer_stim = visual.TextStim(self.window, text=f'\t{option}',
+            tab_string = ''.join(["\t"] * (tabs-1))
+            answer_stim = visual.TextStim(self.window, text=f'{tab_string}{option}',
                                             pos=(x, y), color=[-1, -1, -1], height=1.3, alignHoriz='center')
             answer_stims.append(answer_stim)
 
