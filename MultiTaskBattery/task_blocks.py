@@ -1281,7 +1281,11 @@ class RMET(Task):
             # 2 and 3 should be on the left and right of the bottom line (y position -7 and x positions -7 and 7)
             x = -7 if i % 2 == 0 else 7
             y = 7 if i < 2 else -7
-            answer_stim = visual.TextStim(self.window, text=f'{option}', pos=(x, y), color=[-1, -1, -1], height=1.3, alignHoriz='center')
+            answer_stim = visual.TextStim(self.window, text=f'{i+1}.\t\t',
+                                            pos=(x, y-0.04), color='blue', height=1, alignHoriz='center')
+            answer_stims.append(answer_stim)
+            answer_stim = visual.TextStim(self.window, text=f'\t{option}',
+                                            pos=(x, y), color=[-1, -1, -1], height=1.3, alignHoriz='center')
             answer_stims.append(answer_stim)
 
         # Display stimuli
@@ -1292,7 +1296,7 @@ class RMET(Task):
 
         # collect responses 0: no response 1-4: key pressed
         trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['trial_dur'])
-        trial['correct'] = (trial['response'] == answer_options.index(trial['answer'])+1)
+        trial['correct'] = (trial['response'] == answer_options.index(str(trial['answer']))+1)
         
         # display trial feedback
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
@@ -1884,6 +1888,72 @@ class FrithHappe(Task):
 
         # Initialize answer options
         answers = f"\n\n{self.corr_key[0]}. Yes \n{self.corr_key[1]}. No"
+
+        # Display question
+        stim_question = visual.TextStim(self.window, text = question + answers, pos=(0, 0), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=wrapWidth)
+        stim_question.draw()
+        self.window.flip()
+
+        # collect responses 0: no response 1-4: key pressed
+        trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['question_dur'])
+        trial['correct'] = (trial['response'] == trial['trial_type'])
+
+        # display trial feedback
+        self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
+        return trial
+    
+
+
+class Liking(Task):
+    def __init__(self, info, screen, ttl_clock, const, subj_id):
+        super().__init__(info, screen, ttl_clock, const, subj_id)
+        self.name = 'liking'
+        self.feedback_type = 'acc+rt'
+
+    def init_task(self):
+        self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
+        self.corr_key = [self.trial_info['key_one'].iloc[0],self.trial_info['key_two'].iloc[0], self.trial_info['key_three'].iloc[0], self.trial_info['key_four'].iloc[0]]
+
+    def display_instructions(self):
+        task_name = visual.TextStim(self.window, text=f'{self.descriptive_name.capitalize()}', color=[-1, -1, -1], bold=True, pos=(0, 3))
+        task_name.draw()
+
+        self.instruction_text = f"\n\n You will watch two people talking."
+        self.instruction_text += "\nAt the end, rate how much they liked each other."
+        self.instruction_text += f"\n\n{self.corr_key[0]}. Strongly dislike \t{self.corr_key[1]}. Dislike    {self.corr_key[2]}. Like \t{self.corr_key[3]}. Strongly like"
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1], wrapWidth=25, pos=(0, 0))
+        instr_visual.draw()
+        self.window.flip()
+
+    def run_trial(self, trial):
+        window_width, _ = self.window.size
+        stim_width = int(window_width * 0.9)
+        stim_height = int(stim_width  * 486 / 720) 
+        wrapWidth = 20
+        
+        # Get the file name
+        movie_file_name = trial['stim']
+        # Construct the movie file path
+        movie_path = Path(self.const.stim_dir) / self.name / 'clips' / (movie_file_name + '.mov')
+        # Convert Path object to string for compatibility
+        movie_path_str = str(movie_path)
+        # Create a MovieStim object
+        movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False, size=(stim_width, stim_height), pos=(0, 0))
+
+        # Play through the movie frame by frame
+        while movie_clip.isFinished == False:
+            movie_clip.draw()
+            self.window.flip()
+            self.ttl_clock.update()
+
+        # Flush any keys in buffer
+        event.clearEvents()
+
+        # Initialize question
+        question = "How much did they like each other?"
+
+        # Initialize answer options
+        answers = f"\n\n{self.corr_key[0]}. Strongly dislike \n{self.corr_key[1]}. Dislike \n{self.corr_key[2]}. Like \n{self.corr_key[3]}. Strongly like"
 
         # Display question
         stim_question = visual.TextStim(self.window, text = question + answers, pos=(0, 0), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=wrapWidth)
