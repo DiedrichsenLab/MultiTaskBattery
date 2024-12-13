@@ -1577,10 +1577,10 @@ class Liking(TaskFile):
             trial['key_two'] = responses[1]
             trial['key_three'] = responses[2]
             trial['key_four'] = responses[3]
-            # if str(stim['condition'][n]) == 'like':
-            #     trial['trial_type'] = 1
-            # elif str(stim['condition'][n]) == 'dislike':
-            #     trial['trial_type'] = 2
+            if str(stim['condition'][n]) == 'like':
+                trial['trial_type'] = 1
+            elif str(stim['condition'][n]) == 'dislike':
+                trial['trial_type'] = 2
             trial['rating'] = int(stim['liking_effective'][n])
             trial['hand'] = hand
             trial['trial_dur'] = trial_dur
