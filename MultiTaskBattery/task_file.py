@@ -1441,7 +1441,7 @@ class FrithHappe(TaskFile):
 
     def make_task_file(self,
                        hand='right',
-                       responses = [1,2],
+                       responses = [1,2,3],
                        run_number = None,
                        task_dur=30,
                        trial_dur=28,
@@ -1473,8 +1473,9 @@ class FrithHappe(TaskFile):
         for n in range(n_trials):
             trial = {}
             trial['trial_num'] = n
-            trial['key_yes'] = responses[0]
-            trial['key_no'] = responses[1]
+            trial['key_one'] = responses[0]
+            trial['key_two'] = responses[1]
+            trial['key_three'] = responses[2]
             if str(stim['condition'][n]) == 'tom':
                 trial['trial_type'] = 1
             else:
