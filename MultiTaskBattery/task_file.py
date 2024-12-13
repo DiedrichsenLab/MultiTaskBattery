@@ -1477,9 +1477,11 @@ class FrithHappe(TaskFile):
             trial['key_two'] = responses[1]
             trial['key_three'] = responses[2]
             if str(stim['condition'][n]) == 'tom':
-                trial['trial_type'] = 1
-            else:
+                trial['trial_type'] = 3
+            elif str(stim['condition'][n]) == 'gd':
                 trial['trial_type'] = 2
+            else:
+                trial['trial_type'] = 1
             trial['hand'] = hand
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur

@@ -1898,7 +1898,7 @@ class FrithHappe(Task):
         # Initialize question
         question = "What type of interaction did you see?"
         # Initialize answer options
-        answers = f"\n\n{self.corr_key[0]}. Mental \n{self.corr_key[1]}. Physical \n{self.corr_key[2]}. No interaction"
+        answers = f"\n\n{self.corr_key[0]}. No interaction \n{self.corr_key[1]}. Physical \n{self.corr_key[2]}. Mental"
 
         # Display question
         stim_question = visual.TextStim(self.window, text = question + answers, pos=(0, 0), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=wrapWidth)
