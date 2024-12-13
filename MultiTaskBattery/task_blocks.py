@@ -1925,14 +1925,18 @@ class Liking(Task):
         self.corr_key = [self.trial_info['key_one'].iloc[0],self.trial_info['key_two'].iloc[0], self.trial_info['key_three'].iloc[0], self.trial_info['key_four'].iloc[0]]
 
     def display_instructions(self):
-        task_name = visual.TextStim(self.window, text=f'{self.descriptive_name.capitalize()}', color=[-1, -1, -1], bold=True, pos=(0, 3))
+        task_name = visual.TextStim(self.window, text=f'{self.descriptive_name.capitalize()}', color=[-1, -1, -1], bold=True, pos=(0, 5))
         task_name.draw()
 
-        self.instruction_text = f"\n\n You will watch two people talking."
-        self.instruction_text += "\nAt the end, rate how much they liked each other."
-        self.instruction_text += f"\n\n{self.corr_key[0]}. Strongly dislike \t{self.corr_key[1]}. Dislike    {self.corr_key[2]}. Like \t{self.corr_key[3]}. Strongly like"
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1], wrapWidth=25, pos=(0, 0))
+        self.instruction_text = f"You will watch two people meet for the first time."
+        self.instruction_text += "\nRate how much they like each other."
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1], wrapWidth=20, pos=(0, 2))
         instr_visual.draw()
+
+        key_text = f"\n\n\n{self.corr_key[0]}. Strongly dislike \n{self.corr_key[1]}. Dislike \n{self.corr_key[2]}. Like \n{self.corr_key[3]}. Strongly like"
+        # key_text = f"\n\n\n{self.corr_key[0]}. Not at all \n{self.corr_key[1]}. A little \n{self.corr_key[2]}. Moderately \n{self.corr_key[3]}. A lot"
+        key_text = visual.TextStim(self.window, text=key_text, color=[-1, -1, -1], wrapWidth=20, pos=(-4, -1), alignHoriz='left')
+        key_text.draw()
         self.window.flip()
 
     def run_trial(self, trial):
@@ -1960,14 +1964,15 @@ class Liking(Task):
         event.clearEvents()
 
         # Initialize question
-        question = "How much did they like each other?"
+        question = "How much do they like each other?"
+        # Display question
+        stim_question = visual.TextStim(self.window, text = question, pos=(0, 3), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=wrapWidth)
+        stim_question.draw()
 
         # Initialize answer options
-        answers = f"\n\n{self.corr_key[0]}. Like Strongly \n{self.corr_key[1]}. Like \n{self.corr_key[2]}. Dislike \n{self.corr_key[3]}. Dislike Strongly"
-
-        # Display question
-        stim_question = visual.TextStim(self.window, text = question + answers, pos=(0, 0), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=wrapWidth)
-        stim_question.draw()
+        answers = f"\n\n{self.corr_key[0]}. Strongly dislike \n{self.corr_key[1]}. Dislike \n{self.corr_key[2]}. Like \n{self.corr_key[3]}. Strongly like"
+        stim_answers = visual.TextStim(self.window, text=answers, pos=(-4, 0), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=wrapWidth, alignHoriz='left')
+        stim_answers.draw()
         self.window.flip()
 
         # collect responses 0: no response 1-4: key pressed
