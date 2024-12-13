@@ -1866,7 +1866,7 @@ class FrithHappe(Task):
         self.instruction_text = f"Decide how the two triangles are interacting."
         instr_stim = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1], wrapWidth=20, pos=(0, 3))
         instr_stim.draw()
-        answer_expalantion = f"\n\n{self.corr_key[0]}. No interaction\n\n{self.corr_key[1]}. Physical (The actions were directed towards each other) \n\n{self.corr_key[2]}. Mental (One triangle manipulated the thoughts or feelings of the other)"
+        answer_expalantion = f"\n\n{self.corr_key[0]}. No interaction\n\n{self.corr_key[1]}. Physical (The actions are directed towards each other) \n\n{self.corr_key[2]}. Mental (One triangle manipulates the thoughts or feelings of the other)"
         instr_visual = visual.TextStim(self.window, text=answer_expalantion, color=[-1, -1, -1], wrapWidth=20, pos=(-8, -1), alignHoriz='left')
         instr_visual.draw()
         self.window.flip()
@@ -1972,14 +1972,16 @@ class Liking(Task):
 
         # Initialize answer options
         answers = f"\n\n{self.corr_key[0]}. Strongly dislike \n{self.corr_key[1]}. Dislike \n{self.corr_key[2]}. Like \n{self.corr_key[3]}. Strongly like"
-        stim_answers = visual.TextStim(self.window, text=answers, pos=(-4, 0), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=wrapWidth, alignHoriz='left')
+        stim_answers = visual.TextStim(self.window, text=answers, pos=(-5, 0), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=wrapWidth, alignHoriz='left')
         stim_answers.draw()
         self.window.flip()
 
         # collect responses 0: no response 1-4: key pressed
         trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['question_dur'])
-        # trial['correct'] = (trial['response'] == trial['trial_type'])
-        trial['correct'] = (trial['response'] == trial['rating'])
+        trial['correct'] = (trial['response'] <= 2) == (trial['condition'] == 'dislike')
+        # Check if the rating is correct
+        # correct_rating = (trial['response'] > 2 and trial['rating'] > 2)
+        # print(f'trial is {"correct" if correct_rating else "incorrect"}')
 
         # display trial feedback
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
