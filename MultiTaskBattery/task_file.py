@@ -1505,7 +1505,46 @@ class Liking(TaskFile):
         super().__init__(const)
         self.name = 'liking'
         self.matching_stimuli = False
+    
+    def min_max_scale(self, values):
+        """
+        Deal with the avoidance of the 1-point on the 5-point liking scale.
+        Parameters:
+            values (list): A list of values to be scaled.
+            
+        Returns:
+            float: The scaled values according to the effective range.
+        """
+        min_val = values.min()
+        max_val = values.max()
+        return (values - min_val) / (max_val - min_val)
+    
+    def map_to_4point_scale(self, rating):
+        """
+        Map the liking rating from a 1-to-5 scale to the closest value on a 4-point scale
+        (to be used in the scanner with the 4-button box).
 
+        Parameters:
+            rating (float): The rating on a 1-to-5 scale (can include decimals, since it's an average across online raters).
+        Returns:
+            int: The closest value on the 4-point scale (1, 2, 3, or 4).
+
+        # Example usage:
+        rating = 3.7
+        closest_value = map_to_4point_scale(rating)
+        print(f"The 1-to-5 rating {rating} maps closest to {closest_value} on the 4-point scale.")
+        """
+        if rating < 1 or rating > 5:
+            raise ValueError("Rating must be between 1 and 5, inclusive.")
+
+        # Normalize the rating to a 0-to-1 range
+        normalized = (rating - 1) / 4
+        # Map to the 4-point scale
+        mapped_value = 1 + normalized * 3
+        # Round to the nearest integer
+        return round(mapped_value)
+
+    
     def make_task_file(self,
                        hand='right',
                        responses = [1,2,3,4],
@@ -1516,7 +1555,8 @@ class Liking(TaskFile):
                        question_dur=6,
                        file_name=None,
                        stim_file=None,
-                       condition=None):
+                       condition=None,
+                       norm=True):
 
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
@@ -1527,6 +1567,12 @@ class Liking(TaskFile):
             stim = pd.read_csv(self.stim_dir / self.name / stim_file)
         else:
             stim = pd.read_csv(self.stim_dir / self.name / f'{self.name}.csv')
+
+        
+        average_liking = stim[['left_Liking', 'right_Liking']].mean(axis=1)
+        if norm: # Normalize the ratings to the effectively used scale (2 to 5)
+            average_liking = self.min_max_scale(average_liking)
+        stim['liking_effective'] = self.map_to_4point_scale(average_liking) # Map to the 4-point scale to use with the button box
 
         if condition:
             stim = stim[stim['condition'] == condition]
@@ -1544,10 +1590,11 @@ class Liking(TaskFile):
             trial['key_two'] = responses[1]
             trial['key_three'] = responses[2]
             trial['key_four'] = responses[3]
-            if str(stim['condition'][n]) == 'like':
-                trial['trial_type'] = 1
-            else:
-                trial['trial_type'] = 2
+            # if str(stim['condition'][n]) == 'like':
+            #     trial['trial_type'] = 1
+            # elif str(stim['condition'][n]) == 'dislike':
+            #     trial['trial_type'] = 2
+            trial['rating'] = stim['liking_effective'][n]
             trial['hand'] = hand
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur

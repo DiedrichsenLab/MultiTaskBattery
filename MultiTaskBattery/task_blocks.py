@@ -1937,10 +1937,10 @@ class Liking(Task):
 
     def run_trial(self, trial):
         window_width, _ = self.window.size
-        stim_width = int(window_width * 0.9)
+        stim_width = int(window_width * 0.5)
         stim_height = int(stim_width  * 486 / 720) 
         wrapWidth = 20
-        
+
         # Get the file name
         movie_file_name = trial['stim']
         # Construct the movie file path
@@ -1963,7 +1963,7 @@ class Liking(Task):
         question = "How much did they like each other?"
 
         # Initialize answer options
-        answers = f"\n\n{self.corr_key[0]}. Strongly dislike \n{self.corr_key[1]}. Dislike \n{self.corr_key[2]}. Like \n{self.corr_key[3]}. Strongly like"
+        answers = f"\n\n{self.corr_key[0]}. Like Strongly \n{self.corr_key[1]}. Like \n{self.corr_key[2]}. Dislike \n{self.corr_key[3]}. Dislike Strongly"
 
         # Display question
         stim_question = visual.TextStim(self.window, text = question + answers, pos=(0, 0), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=wrapWidth)
@@ -1972,7 +1972,8 @@ class Liking(Task):
 
         # collect responses 0: no response 1-4: key pressed
         trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['question_dur'])
-        trial['correct'] = (trial['response'] == trial['trial_type'])
+        # trial['correct'] = (trial['response'] == trial['trial_type'])
+        trial['correct'] = (trial['response'] == trial['rating'])
 
         # display trial feedback
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
