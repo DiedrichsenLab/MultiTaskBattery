@@ -1,17 +1,22 @@
 ﻿story,stimulus_id,scenario,question1,options1,answer1,question2,options2,answer2,condition,half
-"Vicky was at Oliver's party. A neighbor approached and said, ""Hello, I’m Maria. What's your name?""  
-""I'm Vicky,"" she replied.  
-""Would anyone like a drink?"" Oliver asked.",1,control,Did anyone say something they shouldn't have said or something awkward?,"Yes, No",No,Who said something they shouldn't have said or something awkward?,"Vicky, Maria, Oliver, Nobody",Nobody,social,1
-"Helen's husband planned a surprise birthday party. He warned Sarah, ""Don't tell Helen."" While with Helen, Sarah spilled coffee on her dress and said, ""Oh! I was wearing this to your party!"" ""What party?"" Said Helen.",2,faux pas,Did anyone say something they shouldn't have said or something awkward?,"Yes, No",Yes,Who said something they shouldn't have said or something awkward?,"Helen, Sarah, Helen's husband, Nobody",Sarah,social,1
-"Jim shopped for a shirt to match his suit. He found the right color and tried it, but it didn’t fit. The salesman said, “We’ll get larger sizes next week.”",3,control,Did anyone say something they shouldn't have said or something awkward?,"Yes, No",No,Who said something they shouldn't have said or something awkward?,"Jim, The salesman, Nobody",Nobody,social,1
+"Vicky was at a party at her friend Oliver’s house. She was talking to Oliver when another woman came up to them. She was one of Oliver’s neighbours. The woman said, ""Hello,"" then turned to Vicky and said, "" I don't think we've met. I’m Maria, what's your name?""
+""I’m Vicky.""
+""Would anyone like something to drink?"" Oliver asked.",1,control,Did anyone say something they shouldn't have said or something awkward?,"Yes, No",No,Who said something they shouldn't have said or something awkward?,"Vicky, Maria, Oliver, Nobody",Nobody,social,1
+"Helen's husband was throwing a surprise party for her birthday. He invited Sarah, a friend of Helen's, and said, ""Don't tell anyone, especially Helen."" The day before the party, Helen was over at Sarah's and Sarah spilled some coffee on a new dress that was hanging over her chair.
+""Oh!"" said Sarah, ""I was going to wear this to your party!""
+""What party?"" said Helen.
+""Come on,"" said Sarah, ""Let's go see if we can get the stain out.""",2,faux pas,Did anyone say something they shouldn't have said or something awkward?,"Yes, No",Yes,Who said something they shouldn't have said or something awkward?,"Helen, Sarah, Helen's husband, Nobody",Sarah,social,1
+"Jim was shopping for a shirt to match his suit. The salesman showed him several shirts. Jim looked at them and finally found one that was the right colour. But when he went to the fitting room and tried it on, it didn't fit. ""I'm afraid it's too small,"" he said to the salesman.
+""Not to worry,"" the salesman said. ""We'll get some in next week in a larger size.""
+""Great. I'll just come back then,"" Jim said.",3,control,Did anyone say something they shouldn't have said or something awkward?,"Yes, No",No,Who said something they shouldn't have said or something awkward?,"Jim, The salesman, Nobody",Nobody,social,1
 "Bob went to the barber for a haircut. ""How would you like it cut?"" the barber asked.
 ""I'd like the same style as I have now, only take about an inch off,"" Bob replied.
 The barber cut it a little uneven in the front, so he had to cut it shorter to even it out. ""I'm afraid it's a bit shorter than you asked for,"" said the barber.
 ""Oh well,"" Bob said, ""it'll grow out.""",5,control,Did anyone say something they shouldn't have said or something awkward?,"Yes, No",No,Who said something they shouldn't have said or something awkward?,"The barber, Bob, Nobody",Nobody,social,1
 "John stopped off at the petrol station on the way home to fill up his car. He gave the cashier his credit card. The cashier ran it through the machine at the counter. ""I'm sorry,"" she said, ""the machine won't accept your card.""
 ""Hmmm, that's funny,"" John said. ""Well, I'll just pay in cash."" He gave her fifty and said, ""I filled up the tank with unleaded.""",6,control,Did anyone say something they shouldn't have said or something awkward?,"Yes, No",No,Who said something they shouldn't have said or something awkward?,"The cashier, John, Nobody",Nobody,social,1
-"Jill had just moved into a new flat and bought new curtains for her bedroom. When her best friend Lisa visited, Jill asked, ""How do you like my bedroom?""  
-""Those curtains are horrible,"" Lisa said. ""I hope you're getting new ones!""",7,faux pas,Did anyone say something they shouldn't have said or something awkward?,"Yes, No",Yes,Who said something they shouldn't have said or something awkward?,"Lisa, Jill, Nobody",Lisa,social,1
+"Jill had just moved into a new flat. Jill went shopping and bought some new curtains for her bedroom. When she had just finished decorating the flat, her best friend, Lisa, came over. Jill gave her a tour of the flat and asked, ""How do you like my bedroom?""
+""Those curtains are horrible,"" Lisa said. ""I hope you're going to get some new ones!""",7,faux pas,Did anyone say something they shouldn't have said or something awkward?,"Yes, No",Yes,Who said something they shouldn't have said or something awkward?,"Lisa, Jill, Nobody",Lisa,social,1
 "Sally is a three-year-old girl with a round face and short blonde hair. She was at her Aunt Carol's house. The doorbell rang and her Aunt Carol answered it. It was Mary, a neighbour.
 ""Hi,"" Aunt Carol said, ""Nice of you to stop by.""
 Mary said, ""Hello,"" then looked at Sally and said, ""Oh, I don't think I've met this little boy. What's your name?""",8,faux pas,Did anyone say something they shouldn't have said or something awkward?,"Yes, No",Yes,Who said something they shouldn't have said or something awkward?,"Aunt Carol, Mary, Sally, Nobody",Mary,social,1
@@ -54,19 +59,24 @@ He nodded and started to wrap up a roasted chicken for her.
 ""Excuse me,"" she said, ""I must not have spoken clearly. I asked if you had any free-range chickens."" ""Oh, sorry,"" the butcher said, ""we're all out of them.""",20,control,Did anyone say something they shouldn't have said or something awkward?,"Yes, No",No,Who said something they shouldn't have said or something awkward?,"The butcher, Louise, Nobody",Nobody,social,2
 "Jean West, a manager in Abco Software Design, called a meeting for all of the staff. ""I have something to tell you,"" she said. ""John Morehouse, one of our accountants, is very sick with cancer and he's in hospital.""
 Everyone was quiet, absorbing the news, when Robert, a software engineer, arrived late. ""Hey, I heard this great joke last night!” Robert said. “What did the terminally ill patient say to his doctor?"" Jean said, ""Okay, let's get down to business in the meeting.""",21,faux pas,Did anyone say something they shouldn't have said or something awkward?,"Yes, No",Yes,Who said something they shouldn't have said or something awkward?,"Robert, Jean, John, Nobody",Robert,social,2
-"Vicky was at Oliver's party. A neighbor approached and said, ""Hello, I’m Maria. What's your name?""  
-""I'm Vicky,"" she replied.  
-""Would anyone like a drink?"" Oliver asked.",1,control,Was Vicky at home?,"Yes, No",No,Who was hosting the party?,"Vicky, Maria, Oliver, Nobody",Oliver,control,2
-"Helen's husband planned a surprise birthday party. He warned Sarah, ""Don't tell Helen."" While with Helen, Sarah spilled coffee on her dress and said, ""Oh! I was wearing this to your party!"" ""What party?"" Said Helen.",2,faux pas,Was the surprise party for Helen?,"Yes, No",Yes,What got spilled on the dress?,"Juice, Coffee, Tea, Nothing",Coffee,control,2
-"Jim shopped for a shirt to match his suit. He found the right color and tried it, but it didn’t fit. The salesman said, “We’ll get larger sizes next week.”",3,control,Did Jim try something on?,"Yes, No",Yes,What did Joe buy?,"Tie, Shirt, Nothing",Nothing,control,2
+"Vicky was at a party at her friend Oliver’s house. She was talking to Oliver when another woman came up to them. She was one of Oliver’s neighbours. The woman said, ""Hello,"" then turned to Vicky and said, "" I don't think we've met. I’m Maria, what's your name?""
+""I’m Vicky.""
+""Would anyone like something to drink?"" Oliver asked.",1,control,Was Vicky at home?,"Yes, No",No,Who was hosting the party?,"Vicky, Maria, Oliver, Nobody",Oliver,control,2
+"Helen's husband was throwing a surprise party for her birthday. He invited Sarah, a friend of Helen's, and said, ""Don't tell anyone, especially Helen."" The day before the party, Helen was over at Sarah's and Sarah spilled some coffee on a new dress that was hanging over her chair.
+""Oh!"" said Sarah, ""I was going to wear this to your party!""
+""What party?"" said Helen.
+""Come on,"" said Sarah, ""Let's go see if we can get the stain out.""",2,faux pas,Was the surprise party for Helen?,"Yes, No",Yes,What got spilled on the dress?,"Juice, Coffee, Tea, Nothing",Coffee,control,2
+"Jim was shopping for a shirt to match his suit. The salesman showed him several shirts. Jim looked at them and finally found one that was the right colour. But when he went to the fitting room and tried it on, it didn't fit. ""I'm afraid it's too small,"" he said to the salesman.
+""Not to worry,"" the salesman said. ""We'll get some in next week in a larger size.""
+""Great. I'll just come back then,"" Jim said.",3,control,Did Jim try something on?,"Yes, No",Yes,What did Joe buy?,"Tie, Shirt, Nothing",Nothing,control,2
 "Bob went to the barber for a haircut. ""How would you like it cut?"" the barber asked.
 ""I'd like the same style as I have now, only take about an inch off,"" Bob replied.
 The barber cut it a little uneven in the front, so he had to cut it shorter to even it out. ""I'm afraid it's a bit shorter than you asked for,"" said the barber.
-""Oh well,"" Bob said, ""it'll grow out.""",5,control,Did Bob want to keep the same hairstyle?,"Yes, No",Yes,Where did the barber first cut uneven?,"The front, The back, Nowhere",The front,control,2
+""Oh well,"" Bob said, ""it'll grow out.""",5,control,Did Bob want to keep the samehairstyle?,"Yes, No",Yes,Where did the barber first cut uneven?,"The front, The back, Nowhere",The front,control,2
 "John stopped off at the petrol station on the way home to fill up his car. He gave the cashier his credit card. The cashier ran it through the machine at the counter. ""I'm sorry,"" she said, ""the machine won't accept your card.""
 ""Hmmm, that's funny,"" John said. ""Well, I'll just pay in cash."" He gave her fifty and said, ""I filled up the tank with unleaded.""",6,control,Did the machine accept John's card?,"Yes, No",No,Did John pay thirty or twenty?,"Thirty, Twenty, Neither",Neither,control,2
-"Jill had just moved into a new flat and bought new curtains for her bedroom. When her best friend Lisa visited, Jill asked, ""How do you like my bedroom?""  
-""Those curtains are horrible,"" Lisa said. ""I hope you're getting new ones!""",7,faux pas,Did Jill just move into a new flat?,"Yes, No",Yes,What had Jill just bought? ,"A flat, Curtains, Nothing",Curtains,control,2
+"Jill had just moved into a new flat. Jill went shopping and bought some new curtains for her bedroom. When she had just finished decorating the flat, her best friend, Lisa, came over. Jill gave her a tour of the flat and asked, ""How do you like my bedroom?""
+""Those curtains are horrible,"" Lisa said. ""I hope you're going to get some new ones!""",7,faux pas,Did Jill just move into a new flat?,"Yes, No",Yes,What had Jill just bought? ,"A flat, Curtains, Nothing",Curtains,control,2
 "Sally is a three-year-old girl with a round face and short blonde hair. She was at her Aunt Carol's house. The doorbell rang and her Aunt Carol answered it. It was Mary, a neighbour.
 ""Hi,"" Aunt Carol said, ""Nice of you to stop by.""
 Mary said, ""Hello,"" then looked at Sally and said, ""Oh, I don't think I've met this little boy. What's your name?""",8,faux pas,Did Sally ring the doorbell?,"Yes, No",No,What colour is Sally's hair?,"Black, Blonde, Brown",Blonde,control,2
