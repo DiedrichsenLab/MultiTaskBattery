@@ -1663,7 +1663,7 @@ class Movie(Task):
 
     def run_trial(self, trial):
         window_width, _ = self.window.size
-        stim_width = int(window_width * 0.8) # Make the video fraction of the window width
+        stim_width = int(window_width * 0.6) # Make the video fraction of the window width
         stim_height = int(stim_width  * 360 / 640)  # Original size of the video is 640x360
         
         # Get the file name
@@ -1767,7 +1767,7 @@ class StrangeStories(Task):
         if max(answer_lengths) < wrapWidth and max(answer_lengths) < len(question):
             left_position = 0-max(answer_lengths)/2  # Answer options are shorter than questions and shorter than wrapWidth
             align='left'
-        elif max(answer_lengths) > wrapWidth:
+        elif max(answer_lengths) >= wrapWidth:
             left_position = 0
             align='center'
         stim_answers = visual.TextStim(self.window, text=answers, pos=(left_position, 0), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=wrapWidth, alignHoriz=align)

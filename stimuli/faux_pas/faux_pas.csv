@@ -1,111 +1,87 @@
 ﻿story,stimulus_id,scenario,question1,options1,answer1,question2,options2,answer2,condition,half
-"Vicky was at Oliver's party. A neighbor approached and said, ""Hello, I’m Maria. What's your name?""  
-""I'm Vicky,"" she replied.  
-""Would anyone like a drink?"" Oliver asked.",1,control,Did anyone say something they shouldn't have said or something awkward?,"Yes, No",No,Who said something they shouldn't have said or something awkward?,"Vicky, Maria, Oliver, Nobody",Nobody,social,1
+"Vicky was at Oliver’s party, talking to him when a neighbor approached. The woman said, “Hello. I’m Maria, what’s your name?”
+“I’m Vicky,” she replied.
+“Would anyone like a drink?” Oliver asked.",1,control,Did anyone say something they shouldn't have said or something awkward?,"Yes, No",No,Who said something they shouldn't have said or something awkward?,"Vicky, Maria, Oliver, Nobody",Nobody,practice,1
 "Helen's husband planned a surprise birthday party. He warned Sarah, ""Don't tell Helen."" While with Helen, Sarah spilled coffee on her dress and said, ""Oh! I was wearing this to your party!"" ""What party?"" Said Helen.",2,faux pas,Did anyone say something they shouldn't have said or something awkward?,"Yes, No",Yes,Who said something they shouldn't have said or something awkward?,"Helen, Sarah, Helen's husband, Nobody",Sarah,social,1
-"Jim shopped for a shirt to match his suit. He found the right color and tried it, but it didn’t fit. The salesman said, “We’ll get larger sizes next week.”",3,control,Did anyone say something they shouldn't have said or something awkward?,"Yes, No",No,Who said something they shouldn't have said or something awkward?,"Jim, The salesman, Nobody",Nobody,social,1
-"Bob went to the barber for a haircut. ""How would you like it cut?"" the barber asked.
-""I'd like the same style as I have now, only take about an inch off,"" Bob replied.
-The barber cut it a little uneven in the front, so he had to cut it shorter to even it out. ""I'm afraid it's a bit shorter than you asked for,"" said the barber.
-""Oh well,"" Bob said, ""it'll grow out.""",5,control,Did anyone say something they shouldn't have said or something awkward?,"Yes, No",No,Who said something they shouldn't have said or something awkward?,"The barber, Bob, Nobody",Nobody,social,1
-"John stopped off at the petrol station on the way home to fill up his car. He gave the cashier his credit card. The cashier ran it through the machine at the counter. ""I'm sorry,"" she said, ""the machine won't accept your card.""
-""Hmmm, that's funny,"" John said. ""Well, I'll just pay in cash."" He gave her fifty and said, ""I filled up the tank with unleaded.""",6,control,Did anyone say something they shouldn't have said or something awkward?,"Yes, No",No,Who said something they shouldn't have said or something awkward?,"The cashier, John, Nobody",Nobody,social,1
-"Jill had just moved into a new flat and bought new curtains for her bedroom. When her best friend Lisa visited, Jill asked, ""How do you like my bedroom?""  
-""Those curtains are horrible,"" Lisa said. ""I hope you're getting new ones!""",7,faux pas,Did anyone say something they shouldn't have said or something awkward?,"Yes, No",Yes,Who said something they shouldn't have said or something awkward?,"Lisa, Jill, Nobody",Lisa,social,1
-"Sally is a three-year-old girl with a round face and short blonde hair. She was at her Aunt Carol's house. The doorbell rang and her Aunt Carol answered it. It was Mary, a neighbour.
-""Hi,"" Aunt Carol said, ""Nice of you to stop by.""
-Mary said, ""Hello,"" then looked at Sally and said, ""Oh, I don't think I've met this little boy. What's your name?""",8,faux pas,Did anyone say something they shouldn't have said or something awkward?,"Yes, No",Yes,Who said something they shouldn't have said or something awkward?,"Aunt Carol, Mary, Sally, Nobody",Mary,social,1
-"Joan took her dog, Zack, out to the park. She threw a stick for him to chase.
-When they had been there a while, Pam, a neighbour of hers, passed by. They chatted for a few minutes. Then Pam asked, ""Are you heading home? Would you like to walk together?""
-""Sure,"" Joan said. She called Zack, but he was busy chasing pigeons and didn't come. ""It looks like he's not ready to go,"" she said. ""I think we'll stay.""
-""OK,"" Pam said. ""I'll see you later.""",9,control,Did anyone say something they shouldn't have said or something awkward?,"Yes, No",No,Who said something they shouldn't have said or something awkward?,"Pam, Joan, Nobody",Nobody,social,1
-"Kim's cousin, Scott, was coming to visit and Kim made an apple pie especially for him. After dinner, she said, ""I made a pie just for you. It's in the kitchen.""
-""Mmmm,"" replied Scott, ""It smells great! I love pies, except for apple, of course.""",10,faux pas,Did anyone say something they shouldn't have said or something awkward?,"Yes, No",Yes,Who said something they shouldn't have said or something awkward?,"Scott, Kim, Nobody",Scott,social,1
-"Jeanette bought her friend, Anne, a crystal bowl for a wedding gift. Anne had a big wedding and there were a lot of presents to keep track of.
-About a year later, Jeanette was over one night at Anne's for dinner. Jeanette dropped a wine bottle by accident on the crystal bowl and the bowl shattered. ""I'm really sorry. I've broken the bowl,"" said Jeanette.
-""Don't worry,"" said Anne. ""I never liked it anyway. Someone gave it to me for my wedding.""",11,faux pas,Did anyone say something they shouldn't have said or something awkward?,"Yes, No",Yes,Who said something they shouldn't have said or something awkward?,"Anne, Jeanette, Nobody",Anne,social,1
-"Joanne had had a major role in last year's school play and she really wanted the lead role this year. She took acting classes, and in the spring, she auditioned for the play. The day the decisions were posted, she went before class to check the list of who had made the play.
-She hadn't made the lead and had instead been cast in a minor role. She ran into her boyfriend in the hall and told him what had happened. ""I'm sorry,” he said. ""You must be disappointed.""
-""Yes,"" Joanne answered, ""I have to decide whether to take this role.""",12,control,Did anyone say something they shouldn't have said or something awkward?,"Yes, No",No,Who said something they shouldn't have said or something awkward?,"Joanne, Her boyfriend, Nobody",Nobody,social,2
-"Joe was at the library. He found the book he wanted about sailing in the Mediterranean and went up to the front counter to check it out. When he looked in his wallet, he discovered he had left his library card at home. ""I'm sorry,"" he said to librarian. ""I seem to have left my library card at home.""
-""That's OK,"" she answered. ""Tell me your name, and if we have you in the computer, you can check out the book just by showing me your driving license.""",13,control,Did anyone say something they shouldn't have said or something awkward?,"Yes, No",No,Who said something they shouldn't have said or something awkward?,"The librarian, Joe, Nobody",Nobody,social,2
-"Mike, a nine-year-old boy, just started at a new school. He was in one of the cubicles in the toilets at school. Joe and Peter, two other boys, came in and were standing at the sinks talking.
-Joe said, ""You know that new guy in the class? His name's Mike. Doesn't he look weird? And
-he's so short!""
-Mike came out of the cubicle and Joe and Peter saw him.
-Peter said, ""Oh hi, Mike! Are you going out to play football now?""",14,faux pas,Did anyone say something they shouldn't have said or something awkward?,"Yes, No",Yes,Who said something they shouldn't have said or something awkward?,"Mike, Joe, Peter, Nobody",Joe,social,2
-"At Fernhaven Elementary School, there was a story competition. Everyone was invited to enter. Several of the fifth graders did so. Christine, a fifth grader, loved the story she had entered in the competition.
-A few days later, the results of the competition were announced: Christine’s story had not won anything and a classmate, Jake, had won first prize. The following day, Christine was sitting on a bench with Jake. They were looking at his first prize trophy. Jake said, ""It was so easy to win that contest. All of the other stories in the competition were terrible.""
-""Where are you going to put your trophy?"" asked Christine.",15,faux pas,Did anyone say something they shouldn't have said or something awkward?,"Yes, No",Yes,Who said something they shouldn't have said or something awkward?,"Christine, Jake, Nobody",Jake,social,2
-"Tim was in a restaurant. He spilled some coffee on the floor by accident. ""I'll get you another cup of coffee,"" said the waiter. The waiter was gone for a while.
-Jack was another customer in the restaurant, standing by the cashier waiting to pay. Tim went up to Jack and said, ""I spilled coffee over by my table. Can you mop it up?""",16,faux pas,Did anyone say something they shouldn't have said or something awkward?,"Yes, No",Yes,Who said something they shouldn't have said or something awkward?,"Tim, The waiter, Jack, Nobody",Tim,social,2
-"Eleanor was waiting at the bus stop. The bus was late and she had been standing there a long time. She was 65 and it made her tired to stand for so long. When the bus finally came, it was crowded and there were no seats left. She saw a neighbour, Paul, standing in the aisle of the bus. ""Hello, Eleanor,"" he said. ""Were you waiting there long?""
-""About 20 minutes,"" she replied.
-A young man who was sitting down got up. ""Ma'am, would you like my seat?""",17,control,Did anyone say something they shouldn't have said or something awkward?,"Yes, No",No,Who said something they shouldn't have said or something awkward?,"Paul, Eleanor, Nobody",Nobody,social,2
-"Roger had just started work at a new office. One day, in the coffee room, he was talking to a new friend, Andrew. ""What does your wife do?"" Andrew asked.
-""She's a lawyer,"" answered Roger.
-A few minutes later, Claire came into the coffee room looking irritated. ""I just had the worst phone call,"" she told them. ""Lawyers are all so arrogant and greedy. I can't stand them.""
-""Do you want to come look over these reports?"" Andrew asked Claire. ""Not now,"" she replied, ""I need my coffee.""",18,faux pas,Did anyone say something they shouldn't have said or something awkward?,"Yes, No",Yes,Who said something they shouldn't have said or something awkward?,"Andrew, Roger, Claire, Nobody",Claire,social,2
-"Richard bought a new car, a red Peugeot. A few weeks after he bought it, he backed it into his neighbour Ted's car, an old beat-up Volvo.
-His new car wasn’t damaged at all and he didn’t do much damage to Ted’s car either -- just a scratch in the paint above the wheel. Still, he went up and knocked on the door. When Ted answered, Richard said, ""I'm really sorry. I've just put a small scratch on your car.”
-Ted came out and looked at it and said, ""Don't worry. It was only an accident.""",19,control,Did anyone say something they shouldn't have said or something awkward?,"Yes, No",No,Who said something they shouldn't have said or something awkward?,"Richard, Ted, Nobody",Nobody,social,2
-"Louise went to the butcher to buy some meat. It was crowded and noisy in the shop. She asked the butcher, ""Do you have any free-range chickens?""
-He nodded and started to wrap up a roasted chicken for her.
-""Excuse me,"" she said, ""I must not have spoken clearly. I asked if you had any free-range chickens."" ""Oh, sorry,"" the butcher said, ""we're all out of them.""",20,control,Did anyone say something they shouldn't have said or something awkward?,"Yes, No",No,Who said something they shouldn't have said or something awkward?,"The butcher, Louise, Nobody",Nobody,social,2
-"Jean West, a manager in Abco Software Design, called a meeting for all of the staff. ""I have something to tell you,"" she said. ""John Morehouse, one of our accountants, is very sick with cancer and he's in hospital.""
-Everyone was quiet, absorbing the news, when Robert, a software engineer, arrived late. ""Hey, I heard this great joke last night!” Robert said. “What did the terminally ill patient say to his doctor?"" Jean said, ""Okay, let's get down to business in the meeting.""",21,faux pas,Did anyone say something they shouldn't have said or something awkward?,"Yes, No",Yes,Who said something they shouldn't have said or something awkward?,"Robert, Jean, John, Nobody",Robert,social,2
-"Vicky was at Oliver's party. A neighbor approached and said, ""Hello, I’m Maria. What's your name?""  
-""I'm Vicky,"" she replied.  
-""Would anyone like a drink?"" Oliver asked.",1,control,Was Vicky at home?,"Yes, No",No,Who was hosting the party?,"Vicky, Maria, Oliver, Nobody",Oliver,control,2
+"Jim was shopping for a shirt to match his suit. He found the right color but it didn’t fit.
+“It’s too small,” he said.
+“Not to worry,” the salesman replied. “We’ll have larger sizes next week.”",3,control,Did anyone say something they shouldn't have said or something awkward?,"Yes, No",No,Who said something they shouldn't have said or something awkward?,"Jim, The salesman, Nobody",Nobody,social,1
+"Bob went to the barber for a haircut. “Just take about an inch off,” Bob said. The barber cut the front uneven, so he had to go shorter. “It’s shorter than you wanted,” he said. “Oh well,” Bob replied, “it’ll grow out.”",4,control,Did anyone say something they shouldn't have said or something awkward?,"Yes, No",No,Who said something they shouldn't have said or something awkward?,"The barber, Bob, Nobody",Nobody,social,1
+"John stopped at the petrol station to fill his car. When the cashier ran his card she said ""The machine won't accept it."" ""That's funny,"" John said. ""I'll pay in cash."" He gave her fifty and said, ""I filled up with unleaded.""",5,control,Did anyone say something they shouldn't have said or something awkward?,"Yes, No",No,Who said something they shouldn't have said or something awkward?,"The cashier, John, Nobody",Nobody,social,1
+"Jill had just moved into a new flat and bought curtains for her bedroom. After decorating, her best friend Lisa visited. Jill gave her a tour and asked, “How do you like my bedroom?”
+“Those curtains are horrible,” Lisa said.",6,faux pas,Did anyone say something they shouldn't have said or something awkward?,"Yes, No",Yes,Who said something they shouldn't have said or something awkward?,"Lisa, Jill, Nobody",Lisa,social,1
+"Sally, a three-year-old girl with short blonde hair was at her Aunt Carol's house. A neighbour, Mary, rang the doorbell and Carol answered. Mary looked at Sally and said, “Oh, I don’t think I’ve met this little boy. What’s your name?”",7,faux pas,Did anyone say something they shouldn't have said or something awkward?,"Yes, No",Yes,Who said something they shouldn't have said or something awkward?,"Aunt Carol, Mary, Sally, Nobody",Mary,social,1
+"Joan took her dog, Zack, to the park and threw a stick for him. Pam, a neighbor, passed by and asked, “Want to walk home together?”
+“Sure,” said Joan. She called Jack but he was busy chasing pigeons. “Nevermind, we’ll stay” Joan added.",8,control,Did anyone say something they shouldn't have said or something awkward?,"Yes, No",No,Who said something they shouldn't have said or something awkward?,"Pam, Joan, Nobody",Nobody,social,1
+"Kim’s cousin Scott was coming to visit, and Kim made an apple pie for him. After dinner, she said, “I made a pie just for you.”
+“Mmmm,” Scott replied. “It smells great! I love pies—except for apple, of course.”",9,faux pas,Did anyone say something they shouldn't have said or something awkward?,"Yes, No",Yes,Who said something they shouldn't have said or something awkward?,"Scott, Kim, Nobody",Scott,social,1
+"Jeanette gave Anne a crystal bowl as a wedding gift. A year later, at Anne’s for dinner, Jeanette accidentally broke the bowl.
+“I’m sorry,” Jeanette said.
+“Don’t worry,” Anne replied. “I never liked it anyways. Someone gave it to me.”",10,faux pas,Did anyone say something they shouldn't have said or something awkward?,"Yes, No",Yes,Who said something they shouldn't have said or something awkward?,"Anne, Jeanette, Nobody",Anne,social,1
+"Joanne, who had a big role in last year’s play, auditioned for the lead this spring. Checking the cast list, she saw she’d gotten a minor role. When she ran into her boyfriend he said “You must be disappointed.” Joan replied “Yes, I am”",11,control,Did anyone say something they shouldn't have said or something awkward?,"Yes, No",No,Who said something they shouldn't have said or something awkward?,"Joanne, Her boyfriend, Nobody",Nobody,practice,2
+"Joe found a sailing book at the library. After checking his wallet he realized he’d left his library card at home. “I’m sorry,” he said to the librarian. She replied, “That’s OK. If you’re in the computer, you can check out with your driving license”",12,control,Did anyone say something they shouldn't have said or something awkward?,"Yes, No",No,Who said something they shouldn't have said or something awkward?,"The librarian, Joe, Nobody",Nobody,social,2
+"Jean West, a manager, called a staff meeting. “John Morehouse, our accountant, is very sick with cancer,” she said. The room fell silent. Robert arrived late, making a joke about illness. Jean cut him off, saying, “Let’s start the meeting.”",13,faux pas,Did anyone say something they shouldn't have said or something awkward?,"Yes, No",Yes,Who said something they shouldn't have said or something awkward?,"Robert, Jean, John, Nobody",Robert,social,2
+"Mike started at a new school. While in a bathroom stall he overheard Joe and Peter at the sinks.
+“Doesn’t the new guy, Mike, look weird? And he’s so short!” Joe said.
+Mike emerged.
+“Oh hi, Mike!” Peter said. “Are you going out to play?”",14,faux pas,Did anyone say something they shouldn't have said or something awkward?,"Yes, No",Yes,Who said something they shouldn't have said or something awkward?,"Mike, Joe, Peter, Nobody",Joe,social,2
+"At Fernhaven Elementary, Christine entered a story competition but didn’t win. Her classmate Jake won first prize.
+Sitting with him the next day, Jake said, “The other stories were terrible.”
+Christine asked, “Where will you put your trophy?”",15,faux pas,Did anyone say something they shouldn't have said or something awkward?,"Yes, No",Yes,Who said something they shouldn't have said or something awkward?,"Christine, Jake, Nobody",Jake,social,2
+"Tim spilled coffee on the floor at a restaurant. The waiter said, “I’ll get you another cup,” and left.
+Tim approached Jack, a customer by the cashier, and asked, “I spilled coffee by my table. Can you mop it up?”",16,faux pas,Did anyone say something they shouldn't have said or something awkward?,"Yes, No",Yes,Who said something they shouldn't have said or something awkward?,"Tim, The waiter, Jack, Nobody",Tim,social,2
+"Eleanor, any older lady, tiredly stood waiting 20 minutes for a late bus. When it arrived there were no seats left.
+Eleanor greated her neighbour Paul, speaking about the wait.
+A young man stood and said, “Ma’am, would you like my seat?”",17,control,Did anyone say something they shouldn't have said or something awkward?,"Yes, No",No,Who said something they shouldn't have said or something awkward?,"Paul, Eleanor, Nobody",Nobody,social,2
+"Roger, new at the office, told Andrew, “My wife’s a lawyer.” Moments later, Claire walked into the coffee room, complaining, “Lawyers are so arrogant and greedy.”
+Andrew asked Claire to review reports.
+“Not now,” she said. “I need coffee.”",18,faux pas,Did anyone say something they shouldn't have said or something awkward?,"Yes, No",Yes,Who said something they shouldn't have said or something awkward?,"Andrew, Roger, Claire, Nobody",Claire,social,2
+"Richard backed his new red Peugeot into his neighbor Ted’s old Volvo, leaving only a scratch above the wheel. He knocked on Ted’s door, saying, “I’m sorry about the scratch.”
+Ted looked and said, “Don’t worry. It was an accident.”",19,control,Did anyone say something they shouldn't have said or something awkward?,"Yes, No",No,Who said something they shouldn't have said or something awkward?,"Richard, Ted, Nobody",Nobody,social,2
+"Louise went to the butcher and asked, “Do you have any free-range chickens?”
+The butcher nodded and began wrapping a roasted chicken.
+“Excuse me,” Louise said, “I asked for free-range.”
+“Oh sorry,” the butcher replied, “we’re all out.”",20,control,Did anyone say something they shouldn't have said or something awkward?,"Yes, No",No,Who said something they shouldn't have said or something awkward?,"The butcher, Louise, Nobody",Nobody,social,2
+"Vicky was at Oliver’s party, talking to him when a neighbor approached. The woman said, “Hello. I’m Maria, what’s your name?”
+“I’m Vicky,” she replied.
+“Would anyone like a drink?” Oliver asked.",1,control,Was Vicky at home?,"Yes, No",No,Who was hosting the party?,"Vicky, Maria, Oliver, Nobody",Oliver,practice,2
 "Helen's husband planned a surprise birthday party. He warned Sarah, ""Don't tell Helen."" While with Helen, Sarah spilled coffee on her dress and said, ""Oh! I was wearing this to your party!"" ""What party?"" Said Helen.",2,faux pas,Was the surprise party for Helen?,"Yes, No",Yes,What got spilled on the dress?,"Juice, Coffee, Tea, Nothing",Coffee,control,2
-"Jim shopped for a shirt to match his suit. He found the right color and tried it, but it didn’t fit. The salesman said, “We’ll get larger sizes next week.”",3,control,Did Jim try something on?,"Yes, No",Yes,What did Joe buy?,"Tie, Shirt, Nothing",Nothing,control,2
-"Bob went to the barber for a haircut. ""How would you like it cut?"" the barber asked.
-""I'd like the same style as I have now, only take about an inch off,"" Bob replied.
-The barber cut it a little uneven in the front, so he had to cut it shorter to even it out. ""I'm afraid it's a bit shorter than you asked for,"" said the barber.
-""Oh well,"" Bob said, ""it'll grow out.""",5,control,Did Bob want to keep the same hairstyle?,"Yes, No",Yes,Where did the barber first cut uneven?,"The front, The back, Nowhere",The front,control,2
-"John stopped off at the petrol station on the way home to fill up his car. He gave the cashier his credit card. The cashier ran it through the machine at the counter. ""I'm sorry,"" she said, ""the machine won't accept your card.""
-""Hmmm, that's funny,"" John said. ""Well, I'll just pay in cash."" He gave her fifty and said, ""I filled up the tank with unleaded.""",6,control,Did the machine accept John's card?,"Yes, No",No,Did John pay thirty or twenty?,"Thirty, Twenty, Neither",Neither,control,2
-"Jill had just moved into a new flat and bought new curtains for her bedroom. When her best friend Lisa visited, Jill asked, ""How do you like my bedroom?""  
-""Those curtains are horrible,"" Lisa said. ""I hope you're getting new ones!""",7,faux pas,Did Jill just move into a new flat?,"Yes, No",Yes,What had Jill just bought? ,"A flat, Curtains, Nothing",Curtains,control,2
-"Sally is a three-year-old girl with a round face and short blonde hair. She was at her Aunt Carol's house. The doorbell rang and her Aunt Carol answered it. It was Mary, a neighbour.
-""Hi,"" Aunt Carol said, ""Nice of you to stop by.""
-Mary said, ""Hello,"" then looked at Sally and said, ""Oh, I don't think I've met this little boy. What's your name?""",8,faux pas,Did Sally ring the doorbell?,"Yes, No",No,What colour is Sally's hair?,"Black, Blonde, Brown",Blonde,control,2
-"Joan took her dog, Zack, out to the park. She threw a stick for him to chase.
-When they had been there a while, Pam, a neighbour of hers, passed by. They chatted for a few minutes. Then Pam asked, ""Are you heading home? Would you like to walk together?""
-""Sure,"" Joan said. She called Zack, but he was busy chasing pigeons and didn't come. ""It looks like he's not ready to go,"" she said. ""I think we'll stay.""
-""OK,"" Pam said. ""I'll see you later.""",9,control,Did Joan walk home with Pam?,"Yes, No",No,What was Zack chasing?,"Squirrels, Pigeons",Pigeons,control,2
-"Kim's cousin, Scott, was coming to visit and Kim made an apple pie especially for him. After dinner, she said, ""I made a pie just for you. It's in the kitchen.""
-""Mmmm,"" replied Scott, ""It smells great! I love pies, except for apple, of course.""",10,faux pas,Is Scott Kim's brother?,"Yes, No",No,What kind of pie did Kim make?,"Cherry pie, Blueberry pie, None of the above",None of the above,control,2
-"Jeanette bought her friend, Anne, a crystal bowl for a wedding gift. Anne had a big wedding and there were a lot of presents to keep track of.
-About a year later, Jeanette was over one night at Anne's for dinner. Jeanette dropped a wine bottle by accident on the crystal bowl and the bowl shattered. ""I'm really sorry. I've broken the bowl,"" said Jeanette.
-""Don't worry,"" said Anne. ""I never liked it anyway. Someone gave it to me for my wedding.""",11,faux pas,Did the bowl break?,"Yes, No",Yes,What did Jeanette give Anne for her wedding?,"Champagne glasses, Stand mixer, Crystal bowl, None of the above",Crystal bowl,control,2
-"Joanne had had a major role in last year's school play and she really wanted the lead role this year. She took acting classes, and in the spring, she auditioned for the play. The day the decisions were posted, she went before class to check the list of who had made the play.
-She hadn't made the lead and had instead been cast in a minor role. She ran into her boyfriend in the hall and told him what had happened. ""I'm sorry,” he said. ""You must be disappointed.""
-""Yes,"" Joanne answered, ""I have to decide whether to take this role.""",12,control,Did Joanne get a minor role?,"Yes, No",Yes,Who did Joanne run into?,"Her best friend, Her mother, Neither",Neither,control,1
-"Joe was at the library. He found the book he wanted about sailing in the Mediterranean and went up to the front counter to check it out. When he looked in his wallet, he discovered he had left his library card at home. ""I'm sorry,"" he said to librarian. ""I seem to have left my library card at home.""
-""That's OK,"" she answered. ""Tell me your name, and if we have you in the computer, you can check out the book just by showing me your driving license.""",13,control,Did Joe check out the book?,"Yes, No",Yes,What did Joe forget?,"His library card, His wallet, Neither",His library card,control,1
-"Mike, a nine-year-old boy, just started at a new school. He was in one of the cubicles in the toilets at school. Joe and Peter, two other boys, came in and were standing at the sinks talking.
-Joe said, ""You know that new guy in the class? His name's Mike. Doesn't he look weird? And
-he's so short!""
-Mike came out of the cubicle and Joe and Peter saw him.
-Peter said, ""Oh hi, Mike! Are you going out to play football now?""",14,faux pas,Is Mike new in the class?,"Yes, No",Yes,What did Mike give to Joe?,"A football, A hand towel, A bag, Nothing",Nothing,control,1
-"At Fernhaven Elementary School, there was a story competition. Everyone was invited to enter. Several of the fifth graders did so. Christine, a fifth grader, loved the story she had entered in the competition.
-A few days later, the results of the competition were announced: Christine’s story had not won anything and a classmate, Jake, had won first prize. The following day, Christine was sitting on a bench with Jake. They were looking at his first prize trophy. Jake said, ""It was so easy to win that contest. All of the other stories in the competition were terrible.""
-""Where are you going to put your trophy?"" asked Christine.",15,faux pas,Did Christine’s story win anything?,"Yes, No",No,What did Jake win?,"A trophy, A medal, A pen, Nothing",A trophy,control,1
-"Tim was in a restaurant. He spilled some coffee on the floor by accident. ""I'll get you another cup of coffee,"" said the waiter. The waiter was gone for a while.
-Jack was another customer in the restaurant, standing by the cashier waiting to pay. Tim went up to Jack and said, ""I spilled coffee over by my table. Can you mop it up?""",16,faux pas,Did Jack spill the coffee?,"Yes, No",No,Where was Tim?,"In a restaurant, At home, At school, None of the above",In a restaurant,control,1
-"Eleanor was waiting at the bus stop. The bus was late and she had been standing there a long time. She was 65 and it made her tired to stand for so long. When the bus finally came, it was crowded and there were no seats left. She saw a neighbour, Paul, standing in the aisle of the bus. ""Hello, Eleanor,"" he said. ""Were you waiting there long?""
-""About 20 minutes,"" she replied.
-A young man who was sitting down got up. ""Ma'am, would you like my seat?""",17,control,Did Eleanor get on the bus?,"Yes, No",Yes,How long had Eleanor waited?,"50 minutes, 20 minutes, Neither",20 minutes,control,1
-"Roger had just started work at a new office. One day, in the coffee room, he was talking to a new friend, Andrew. ""What does your wife do?"" Andrew asked.
-""She's a lawyer,"" answered Roger.
-A few minutes later, Claire came into the coffee room looking irritated. ""I just had the worst phone call,"" she told them. ""Lawyers are all so arrogant and greedy. I can't stand them.""
-""Do you want to come look over these reports?"" Andrew asked Claire. ""Not now,"" she replied, ""I need my coffee.""",18,faux pas,Is Roger married?,"Yes, No",Yes,Who wants coffee?,"Andrew, Roger, Claire, Nobody",Claire,control,1
-"Richard bought a new car, a red Peugeot. A few weeks after he bought it, he backed it into his neighbour Ted's car, an old beat-up Volvo.
-His new car wasn’t damaged at all and he didn’t do much damage to Ted’s car either -- just a scratch in the paint above the wheel. Still, he went up and knocked on the door. When Ted answered, Richard said, ""I'm really sorry. I've just put a small scratch on your car.”
-Ted came out and looked at it and said, ""Don't worry. It was only an accident.""",19,control,Did Ted buy a new car?,"Yes, No",No,What colour is Richard's new car?,"Red, Blue, Neither",Red,control,1
-"Louise went to the butcher to buy some meat. It was crowded and noisy in the shop. She asked the butcher, ""Do you have any free-range chickens?""
-He nodded and started to wrap up a roasted chicken for her.
-""Excuse me,"" she said, ""I must not have spoken clearly. I asked if you had any free-range chickens."" ""Oh, sorry,"" the butcher said, ""we're all out of them.""",20,control,Was Louise at school?,"Yes, No",No,What was Louise buying?,"Vegetables, Meat, Neither",Meat,control,1
-"Jean West, a manager in Abco Software Design, called a meeting for all of the staff. ""I have something to tell you,"" she said. ""John Morehouse, one of our accountants, is very sick with cancer and he's in hospital.""
-Everyone was quiet, absorbing the news, when Robert, a software engineer, arrived late. ""Hey, I heard this great joke last night!” Robert said. “What did the terminally ill patient say to his doctor?"" Jean said, ""Okay, let's get down to business in the meeting.""",21,faux pas,Was Robert late to the meeting?,"Yes, No",Yes,Who arrived late to the meeting?,"Robert, Jean, John, Nobody",Robert,control,1
+"Jim was shopping for a shirt to match his suit. He found the right color but it didn’t fit.
+“It’s too small,” he said.
+“Not to worry,” the salesman replied. “We’ll have larger sizes next week.”",3,control,Did Jim try something on?,"Yes, No",Yes,What did Jim buy?,"Tie, Shirt, Nothing",Nothing,control,2
+"Bob went to the barber for a haircut. “Just take about an inch off,” Bob said. The barber cut the front uneven, so he had to go shorter. “It’s shorter than you wanted,” he said. “Oh well,” Bob replied, “it’ll grow out.”",4,control,Did Bob want to keep the same hairstyle?,"Yes, No",Yes,Where did the barber first cut uneven?,"The front, The back, Nowhere",The front,control,2
+"John stopped at the petrol station to fill his car. When the cashier ran his card she said ""The machine won't accept it."" ""That's funny,"" John said. ""I'll pay in cash."" He gave her fifty and said, ""I filled up with unleaded.""",5,control,Did the machine accept John's card?,"Yes, No",No,Did John pay thirty or twenty?,"Thirty, Twenty, Neither",Neither,control,2
+"Jill had just moved into a new flat and bought curtains for her bedroom. After decorating, her best friend Lisa visited. Jill gave her a tour and asked, “How do you like my bedroom?”
+“Those curtains are horrible,” Lisa said.""",6,faux pas,Did Jill just move into a new flat?,"Yes, No",Yes,What had Jill just bought? ,"A flat, Curtains, Nothing",Curtains,control,2
+"Sally, a three-year-old girl with short blonde hair was at her Aunt Carol's house. A neighbour, Mary, rang the doorbell and Carol answered. Mary looked at Sally and said, “Oh, I don’t think I’ve met this little boy. What’s your name?”",7,faux pas,Did Sally ring the doorbell?,"Yes, No",No,What colour is Sally's hair?,"Black, Blonde, Brown",Blonde,control,2
+"Joan took her dog, Zack, to the park and threw a stick for him. Pam, a neighbor, passed by and asked, “Want to walk home together?”
+“Sure,” said Joan. She called Jack but he was busy chasing pigeons. “Nevermind, we’ll stay” Joan added.",8,control,Did Joan walk home with Pam?,"Yes, No",No,What was Zack chasing?,"Squirrels, Pigeons",Pigeons,control,2
+"Kim’s cousin Scott was coming to visit, and Kim made an apple pie for him. After dinner, she said, “I made a pie just for you.”
+“Mmmm,” Scott replied. “It smells great! I love pies—except for apple, of course.”",9,faux pas,Is Scott Kim's brother?,"Yes, No",No,What kind of pie did Kim make?,"Cherry pie, Blueberry pie, None of the above",None of the above,control,2
+"Jeanette gave Anne a crystal bowl as a wedding gift. A year later, at Anne’s for dinner, Jeanette accidentally broke the bowl.
+“I’m sorry,” Jeanette said.
+“Don’t worry,” Anne replied. “I never liked it anyways. Someone gave it to me.”",10,faux pas,Did the bowl break?,"Yes, No",Yes,What did Jeanette give Anne for her wedding?,"Champagne glasses, Stand mixer, Crystal bowl, None of the above",Crystal bowl,control,2
+"Joanne, who had a big role in last year’s play, auditioned for the lead this spring. Checking the cast list, she saw she’d gotten a minor role. When she ran into her boyfriend he said “You must be disappointed.” Joan replied “Yes, I am”",11,control,Did Joanne get a minor role?,"Yes, No",Yes,Who did Joanne run into?,"Her best friend, Her mother, Neither",Neither,practice,1
+"Joe found a sailing book at the library. After checking his wallet he realized he’d left his library card at home. “I’m sorry,” he said to the librarian. She replied, “That’s OK. If you’re in the computer, you can check out with your driving license”",12,control,Did Joe check out the book?,"Yes, No",Yes,What did Joe forget?,"His library card, His wallet, Neither",His library card,control,1
+"Jean West, a manager, called a staff meeting. “John Morehouse, our accountant, is very sick with cancer,” she said. The room fell silent. Robert arrived late, making a joke about illness. Jean cut him off, saying, “Let’s start the meeting.”",13,faux pas,Was Robert late to the meeting?,"Yes, No",Yes,Who arrived late to the meeting?,"Robert, Jean, John, Nobody",Robert,control,1
+"Mike started at a new school. While in a bathroom stall he overheard Joe and Peter at the sinks.
+“Doesn’t the new guy, Mike, look weird? And he’s so short!” Joe said.
+Mike emerged.
+“Oh hi, Mike!” Peter said. “Are you going out to play?”",14,faux pas,Is Mike new in the class?,"Yes, No",Yes,What did Mike give to Joe?,"A football, A hand towel, A bag, Nothing",Nothing,control,1
+"At Fernhaven Elementary, Christine entered a story competition but didn’t win. Her classmate Jake won first prize.
+Sitting with him the next day, Jake said, “The other stories were terrible.”
+Christine asked, “Where will you put your trophy?”",15,faux pas,Did Christine’s story win anything?,"Yes, No",No,What did Jake win?,"A trophy, A medal, A pen, Nothing",A trophy,control,1
+"Tim spilled coffee on the floor at a restaurant. The waiter said, “I’ll get you another cup,” and left.
+Tim approached Jack, a customer by the cashier, and asked, “I spilled coffee by my table. Can you mop it up?”",16,faux pas,Did Jack spill the coffee?,"Yes, No",No,Where was Tim?,"In a restaurant, At home, At school, None of the above",In a restaurant,control,1
+"Eleanor, any older lady, tiredly stood waiting 20 minutes for a late bus. When it arrived there were no seats left.
+Eleanor greated her neighbour Paul, speaking about the wait.
+A young man stood and said, “Ma’am, would you like my seat?”",17,control,Did Eleanor get on the bus?,"Yes, No",Yes,How long had Eleanor waited?,"50 minutes, 20 minutes, Neither",20 minutes,control,1
+"Roger, new at the office, told Andrew, “My wife’s a lawyer.” Moments later, Claire walked into the coffee room, complaining, “Lawyers are so arrogant and greedy.”
+Andrew asked Claire to review reports.
+“Not now,” she said. “I need coffee.”",18,faux pas,Is Roger married?,"Yes, No",Yes,Who wants coffee?,"Andrew, Roger, Claire, Nobody",Claire,control,1
+"Richard backed his new red Peugeot into his neighbor Ted’s old Volvo, leaving only a scratch above the wheel. He knocked on Ted’s door, saying, “I’m sorry about the scratch.”
+Ted looked and said, “Don’t worry. It was an accident.”",19,control,Did Ted buy a new car?,"Yes, No",No,What colour is Richard's new car?,"Red, Blue, Neither",Red,control,1
+"Louise went to the butcher and asked, “Do you have any free-range chickens?”
+The butcher nodded and began wrapping a roasted chicken.
+“Excuse me,” Louise said, “I asked for free-range.”
+“Oh sorry,” the butcher replied, “we’re all out.”",20,control,Was Louise at school?,"Yes, No",No,What was Louise buying?,"Vegetables, Meat, Neither",Meat,control,1
