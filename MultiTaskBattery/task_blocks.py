@@ -418,10 +418,10 @@ class TheoryOfMind(Task):
         """
         task_name = visual.TextStim(self.window, text=f'{self.descriptive_name.capitalize()}', color=[-1, -1, -1], bold=True, pos=(0, 3))
         task_name.draw()
-        str1 = f"You will read a story and decide if the answer to the question is True or False"
+        str1 = f"You will read a story and decide if the answer to the question is True or False."
         str2 = f"if true, press {self.corr_key[1]}"
         str3 = f"if false, press {self.corr_key[0]}"
-        self.instruction_text = f"{self.descriptive_name} Task\n\n {str1} \n {str2} \n {str3}"
+        self.instruction_text = f"\n\n {str1} \n\n {str2} \n {str3}"
         instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
         instr_visual.draw()
         self.window.flip()
@@ -1281,10 +1281,20 @@ class RMET(Task):
             # 2 and 3 should be on the left and right of the bottom line (y position -7 and x positions -7 and 7)
             x = -7 if i % 2 == 0 else 7
             y = 7 if i < 2 else -7
-            answer_stim = visual.TextStim(self.window, text=f'{i+1}.\t\t',
-                                            pos=(x, y-0.04), color='blue', height=1, alignHoriz='center')
+            
+            if len (option) < 3:
+                tabs = 2
+            elif len(option) < 9:
+                tabs = 3
+            else:
+                tabs = 4
+            tab_string = ''.join(["\t"] * tabs)
+            answer_stim = visual.TextStim(self.window, text=f'{i+1}.{tab_string}',
+                              pos=(x, y-0.04), color='blue', height=1, alignHoriz='center')
+
             answer_stims.append(answer_stim)
-            answer_stim = visual.TextStim(self.window, text=f'\t{option}',
+            tab_string = ''.join(["\t"] * (tabs-1))
+            answer_stim = visual.TextStim(self.window, text=f'{tab_string}{option}',
                                             pos=(x, y), color=[-1, -1, -1], height=1.3, alignHoriz='center')
             answer_stims.append(answer_stim)
 
@@ -1706,8 +1716,8 @@ class StrangeStories(Task):
 
     def run_trial(self, trial):
         window_width, _ = self.window.size
-        stim_width = int(window_width * 0.8) # Make the video 40% of the window width
-        stim_height = int(stim_width  * 720 / 1280)  # 1280x720 is the original size of the video given in width x height
+        stim_width = int(window_width * 0.4) # Make the video 40% of the window width
+        stim_height = int(stim_width  * 921 / 1638)  # 1280x720 is the original size of the video given in width x height
         wrapWidth = 25
         
         # Get the file name
