@@ -963,7 +963,7 @@ class RMET(TaskFile):
                         run_number=None,
                         task_dur=30,
                         trial_dur=6,
-                        iti_dur=1, 
+                        iti_dur=1.5, 
                         file_name=None,
                         stim_file = None,
                         condition=None,
@@ -1365,17 +1365,17 @@ class FauxPas(TaskFile):
         self.half_assigned = True
 
     def make_task_file(self, hand='right',
-                       responses = [1,2], # 1 = True, 2 = False
-                       run_number=None,
-                       task_dur=30,
-                        trial_dur=14,
-                        iti_dur=1, 
-                        story_dur=10,
-                        question1_dur=4,
-                        file_name=None,
-                        stim_file=None,
-                        condition=None,
-                        half=None):
+                    responses = [1,2], # 1 = True, 2 = False
+                    run_number=None,
+                    task_dur=30,
+                    trial_dur=14,
+                    iti_dur=1, 
+                    story_dur=10,
+                    question1_dur=4,
+                    file_name=None,
+                    stim_file=None,
+                    condition=None,
+                    half=None):
 
 
         # count number of trials
@@ -1542,7 +1542,7 @@ class Liking(TaskFile):
                        task_dur=30,
                        trial_dur=28,
                        iti_dur=2,
-                       question_dur=6,
+                       question_dur=4,
                        file_name=None,
                        stim_file=None,
                        condition=None):
