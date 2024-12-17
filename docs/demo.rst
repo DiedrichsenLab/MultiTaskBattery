@@ -9,11 +9,10 @@ Step 1: Create the Experiment Folder
 1. Create a new folder for your experiment. For this demo, we will call it `cognition_experiment`.
 2. Add the folder to the `experiments` directory.
 3. Add the following **empty files** to the folder:
-   - **`constants.py`**: Contains information about the scanner, screen, response device, and pointers to the local directories.
-   - **`make_files.py`**: A Python script to generate task and run files.
-   - **`cognition_experiment.py`**: A Python script to run the experiment.
 
----
+   - **`constants.py`**: Contains information about the scanner, screen, response device, and pointers to the local directories.  
+   - **`make_files.py`**: A Python script to generate task and run files.  
+   - **`cognition_experiment.py`**: A Python script to run the experiment.  
 
 Step 2: Choose Tasks
 ---------------------
@@ -32,8 +31,6 @@ Use the task library available at:
 - `tongue_movement`
 - `theory_of_mind`
 - `rest`
-
----
 
 Step 3: Fill in the `constants.py` File
 ---------------------------------------
@@ -77,7 +74,6 @@ Fill in the `constants.py` file with the following content and adjust as needed:
         'number': 1                # 0 = main display, 1 = secondary display
     }
 
----
 
 Step 4: Generate Run and Task Files
 -----------------------------------
@@ -123,7 +119,6 @@ You can also add conditional rules to manage task order. For example, to avoid a
             # Make task file
             myTask.make_task_file(file_name=tfile, **args)
 
----
 
 Step 5: Write the Experiment Function
 -------------------------------------
@@ -154,7 +149,6 @@ After generating the task and run files, fill in the `cognition_experiment.py` f
     if __name__ == "__main__":
         main('subject-0')
 
----
 
 Step 6: Run the Experiment
 ---------------------------
