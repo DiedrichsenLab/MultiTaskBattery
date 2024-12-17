@@ -741,7 +741,6 @@ class OddBall(TaskFile):
             trial = {}
             trial['key_one'] = responses[0]
             trial['key_two'] = responses[1]
-            trial['key_three'] = responses[2]
             trial['trial_num'] = n
             trial['hand'] = hand
             trial['trial_dur'] = trial_dur

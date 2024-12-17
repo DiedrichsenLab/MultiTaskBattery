@@ -3,7 +3,7 @@ Building new experiments
 
 To build a new experiment, first create a new project folder somewhere on your computer. Based on the example experiment ``expertiments/example_experiment``, follow the steps below:
 
-Constants file
+Step 1: Constants file
 --------------
 Create a file called ``constants.py`` in the project folder. This file contains information pertaining to the scanner, screen, response device, and pointers to the local directories. If you run the experiment in multiple setups, it is useful to create a differnt versions of this file, for example `constants_frmi.py` and a `constants_behavioral.py`.
 
@@ -26,6 +26,7 @@ Create a file called ``constants.py`` in the project folder. This file contains 
     task_dir = exp_dir / "task_files"  # contains target files for the task
     run_dir    = exp_dir / "run_files"     # contains run files for each session
     data_dir   = exp_dir / "data"          # This is where the result files are being saved
+
     # This is were the stimuli for the different task are stored
     package_dir = Path(os.path.dirname(os.path.dirname(os.path.realpath(mtb.__file__))))
     stim_dir   = package_dir / "stimuli"
@@ -46,7 +47,7 @@ Create a file called ``constants.py`` in the project folder. This file contains 
     screen['number'] = 1                # 0 = main display, 1 = secondary display
 
 
-Generating run and task files
+Step 2: Generating run and task files
 -----------------------------
 Task and run files are tab-delimited text files (``.tsv``) that specify the order of task in each run, and the order of trials within each task.
 Then create and run a small Python script to generate your run and task files. Very basic examples are included in the example_experiment. Depending on your experiment, you may want to add more information. Of course you can produce these files by hand, but we prefer to write a function in ``task_files.py`` that does the randomization for us.
@@ -81,10 +82,7 @@ The task file can look very different form tasks to task, but typically contains
   - key_three: Key for the third option
   - key_four: Key for the fourth option
 
-Optional variables, depending on the type of task and the experiment would be, in the case of the RMET task:
-- options: Answer options presented on the screen
-- condition: Condition of the trial (Detecting emotion or age)
-- answer: Correct response
+* some of the tasks require run number because the stimuli depend on the run number (e.g., movie clips have a specific order for each run)
 
 **Example Code**
 
