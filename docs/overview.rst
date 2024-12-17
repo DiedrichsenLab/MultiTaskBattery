@@ -29,7 +29,7 @@ Program Structure
 
 The experiment is controlled at at two levels. At the ``run_xx.tsv`` file specifies which tasks are used in each run, and which order and with what timing they are presented in. Typically we recommend to run each task for 30-40s in a randomized order. Each task then has a separate ``task_xx.tsv`` file that determines the exact order of trials within a task, as well as the stimuli and other details.
 
-Your ``main`` program will create and ``Experiment`` object - with all settings specified in the ``constants.py`` file. Because these settings depend exact setup that is used, we usually have different ``constant.py`` for behavioral training and scanning,
+Your ``main`` program will create an ``Experiment`` object - with all settings specified in the ``constants.py`` file. Because these settings depend exact setup that is used, we usually have different ``constant.py`` for behavioral training and scanning,
 
 .. code-block:: python
 
