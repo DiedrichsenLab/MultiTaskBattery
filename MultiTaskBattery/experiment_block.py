@@ -194,7 +194,8 @@ class Experiment:
                 run_data (pd.DataFrame): a dataframe containing the run data
         """
         # Optional: Summarize the behavioural data from different conditions of the same task
-        if True:
+        ignore_conditions = True
+        if ignore_conditions:
             # Ignore Nans
             run_data = run_data.groupby('task_name', as_index=False).agg({'acc': lambda x: x.mean(skipna=True), 'rt': lambda x: x.mean(skipna=True)})
 
