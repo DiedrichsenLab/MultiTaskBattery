@@ -1883,7 +1883,7 @@ class FrithHappe(Task):
         frith_happe_scale = self.const.frith_happe_scale if hasattr(self.const, 'frith_happe_scale') else 0.4
         stim_width = int(window_width * frith_happe_scale) 
         stim_height = int(stim_width  * 1074 / 1433)
-        wrapWidth = 20
+        wrapWidth = 25
         
         # Get the file name
         movie_file_name = trial['stim']
@@ -1905,15 +1905,22 @@ class FrithHappe(Task):
 
         # Initialize question
         question = "What type of interaction did you see?"
-        # Initialize answer options
-        answers = f"\n\n{self.corr_key[0]}. No interaction \n{self.corr_key[1]}. Physical \n{self.corr_key[2]}. Mental"
-
         # Display question
-        stim_question = visual.TextStim(self.window, text = question + answers, pos=(0, 0), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=wrapWidth)
+        stim_question = visual.TextStim(self.window, text = question, pos=(0, 2), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=wrapWidth)
         stim_question.draw()
         self.window.flip()
 
+        # Display the question until X seconds before trial is over (answer_dur), to make the 'buffer' zone for the trial, i.e. the time of variable length, the time where the participant deliberates about their answer
+        self.ttl_clock.wait_until(self.ttl_clock.get_time() + (trial['trial_dur'] - movie_clip.duration - trial['question_dur']))
+
+        stim_question.draw()
+        # Initialize answer options
+        answers = f"\n\n{self.corr_key[0]}. No interaction \n{self.corr_key[1]}. Physical \n{self.corr_key[2]}. Mental"
+        answers_stim = visual.TextStim(self.window, text=answers, pos=(-5, 0), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=wrapWidth, alignHoriz='left')
+        answers_stim.draw()
+        self.window.flip()
         # collect responses 0: no response 1-4: key pressed
+
         trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['question_dur'])
         trial['correct'] = (trial['response'] == trial['trial_type'])
 
