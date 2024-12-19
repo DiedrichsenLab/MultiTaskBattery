@@ -7,7 +7,7 @@ The MTB repository provides a Python-based framework (built on PsychoPy) to run 
 
 The repository implements a number of validated tasks, from which the user can easily assemble a new multi-task battery that fits their specific research needs. The code is object-oriented and can easily be expanded to implement new tasks.
 
-The main benefit of using this framework is that you can include standardized tasks and stimuli in your battery that are also used in other studies. With our collaborators, we are aiming to build a library of datasets using this approach. Having multiple anchor-tasks across experiments (rather than just rest), allows a rich set of analyzes to answer fundamental questions of human mental function. If you are interested in contributing to this library, please contact as us at jdiedric@uwo.ca.
+The main benefit of using this framework is that you can include standardized tasks and stimuli in your battery that are also used in other studies. With our collaborators, we are aiming to build a library of datasets using this approach. Having multiple anchor-tasks across experiments (rather than just rest), allows a rich set of analyses to answer fundamental questions of human mental function. If you are interested in contributing to this library, please contact as us at jdiedric@uwo.ca.
 
 Licence and Acknowledgements
 ----------------------------
@@ -21,10 +21,11 @@ Documentation
 
    installation.rst
    overview.rst
+   building_experiments.rst
+   demo.rst
    eye_tracking.rst
    MRI_instructions.rst
    task_descriptions.rst
-   building_experiment.rst
    creating_tasks.rst
    reference.rst
 

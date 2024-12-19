@@ -1,13 +1,14 @@
-# Language_localzier experiment - main script
-# created 2023: Bassel Arafat, Jorn Diedrichsen
+# Main Script for an example experiment
+# Diedrichsenlab 2021-24
 
+import sys
 import MultiTaskBattery.experiment_block as exp_block
 import constants as const
 
 def main(subj_id):
-    """_summary_
-    make sure you to adjust constanst.py file before running the experiment
-    (e.g., experiment_name, eye_tracker, screen, etc.)
+    """Main function
+    The constanst.py file sets the default - ensure that you have the correct one
+    selected before running the experiment.
 
     Args:
         subj_id (str): id of the subject
@@ -21,4 +22,5 @@ def main(subj_id):
     return
 
 if __name__ == "__main__":
-    main('training')
+    # main(sys.argv[1])
+    main('sub-01')
