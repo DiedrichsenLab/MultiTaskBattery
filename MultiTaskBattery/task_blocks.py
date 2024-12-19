@@ -1772,7 +1772,7 @@ class StrangeStories(Task):
         # Align the answers with the middle of the question if the answers are shorter than half of the question
         answer_lengths = [len(answer) for answer in options_shuffled]
         if max(answer_lengths) < wrapWidth and max(answer_lengths) < len(question):
-            left_position = 0-max(answer_lengths)/2  # Answer options are shorter than questions and shorter than wrapWidth
+            left_position = 0-max(answer_lengths)/3  # Answer options are shorter than questions and shorter than wrapWidth
             align='left'
         elif max(answer_lengths) >= wrapWidth:
             left_position = 0
