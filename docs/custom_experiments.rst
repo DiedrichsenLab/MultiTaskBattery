@@ -1,4 +1,4 @@
-Building new experiments
+Custom Experiments
 ========================
 
 To build a new experiment, first create a new project folder somewhere on your computer. Based on the example experiment ``expertiments/example_experiment``, follow the steps below:
@@ -50,7 +50,7 @@ Create a file called ``constants.py`` in the project folder. This file contains 
 Step 2: Generating run and task files
 -----------------------------
 Task and run files are tab-delimited text files (``.tsv``) that specify the order of task in each run, and the order of trials within each task.
-Then create and run a small Python script to generate your run and task files. Very basic examples are included in the example_experiment. Depending on your experiment, you may want to add more information. Of course you can produce these files by hand, but we prefer to write a function in ``task_files.py`` that does the randomization for us.
+Then create and run a small Python script to generate your run and task files. Very basic examples are included in example_experiment/make_files.py. Depending on your experiment, you may want to add more information. Of course you can produce these files by hand, but we prefer to write a function in ``task_files.py`` that does the randomization for us.
 
 **Run Files**
 Run files that specify the structure of the runs, including the order of the tasks for the run, which task file contains the stimuli for this run.
@@ -88,17 +88,36 @@ The task file can look very different form tasks to task, but typically contains
 
 .. code-block:: python
 
-    tasks = ['n_back','rest'] # ,'social_prediction','verb_generation'
-    for r in range(1,9):
-        tfiles = [f'n_back_{r:02d}.tsv','rest_30s.tsv'] # f'social_prediction_{r:02d}.tsv',f'verb_generation_{r:02d}.tsv',
-        T  = mt.make_run_file(tasks,tfiles)
-        T.to_csv(const.run_dir / f'run_{r:02d}.tsv',sep='\t',index=False)
+    tasks = ['finger_sequence', 'n_back', 'demand_grid', 'auditory_narrative',
+         'sentence_reading', 'verb_generation', 'action_observation',
+         'tongue_movement', 'theory_of_mind', 'rest']
 
-        # for each of the runs, make a target file
-        for task,tfile in zip(tasks, tfiles):
-            cl = mt.get_task_class(task)
-            myTask = getattr(mt,cl)(const)
-            myTask.make_trial_file(file_name = tfile)
+    num_runs = 8  # Number of imaging runs
+
+    # Ensure task and run directories exist
+    ut.dircheck(const.run_dir)
+    for task in tasks:
+        ut.dircheck(const.task_dir / task)
+
+    # Generate run and task files
+    for r in range(1, 11):
+        tfiles = [f'{task}_{r:02d}.tsv' for task in tasks]
+        T = tf.make_run_file(tasks, tfiles)
+        T.to_csv(const.run_dir / f'run_{r:02d}.tsv', sep='\t', index=False)
+
+        # Generate a target file for each run
+        for task, tfile in zip(tasks, tfiles):
+            cl = tf.get_task_class(task)
+            myTask = getattr(tf, cl)(const)
+
+            # Add run number if necessary
+            args = {}
+            if myTask.name not in ut.tasks_without_run_number:
+                args.update({'run_number': r})
+
+            # Make task file
+            myTask.make_task_file(file_name=tfile, **args)
+         
 
 
 Writing your experiment function
@@ -129,5 +148,4 @@ After generating the tasks and run files, you can write your own main script to 
         return
 
     if __name__ == "__main__":
-        # main(sys.argv[1])
-        main('sub-01')
+        main('sub-00')

@@ -5,7 +5,7 @@ import os
 import MultiTaskBattery as mtb
 
 #Necessary definitions for the experiment:
-exp_name = 'pontine_7T'
+exp_name = 'example_experiment' # name of the experiment
 
 #UNCOMMENT THIS FOR SCANNING
 #response_keys    = ['y', 'g', 'r', 'm'] # scanner keys
