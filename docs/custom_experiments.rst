@@ -88,6 +88,10 @@ The task file can look very different form tasks to task, but typically contains
 
 .. code-block:: python
 
+    import MultiTaskBattery.task_file as tf
+    import MultiTaskBattery.utils as ut
+    import constants as const
+
     tasks = ['finger_sequence', 'n_back', 'demand_grid', 'auditory_narrative',
          'sentence_reading', 'verb_generation', 'action_observation',
          'tongue_movement', 'theory_of_mind', 'rest']
