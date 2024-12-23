@@ -16,7 +16,7 @@ Create a file called ``constants.py`` in the project folder. This file contains 
     import MultiTaskBattery as mtb
 
     #Necessary definitions for the experiment:
-    exp_name = 'excample_experiment'
+    exp_name = 'example_experiment'
 
     # These are the response keys (change depending on your keyboard)
     response_keys    = ['a', 's', 'd', 'f']
@@ -124,7 +124,7 @@ The task file can look very different form tasks to task, but typically contains
          
 
 
-Writing your experiment function
+Step 3: Writing your experiment function
 --------------------------------
 
 After generating the tasks and run files, you can write your own main script to run the experiment.
