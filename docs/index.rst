@@ -21,8 +21,8 @@ Documentation
 
    installation.rst
    overview.rst
-   building_experiments.rst
-   demo.rst
+   example_experiment_demo.rst
+   custom_experiments.rst
    eye_tracking.rst
    MRI_instructions.rst
    task_descriptions.rst
