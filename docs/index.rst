@@ -20,8 +20,7 @@ Documentation
    :caption: Contents:
 
    installation.rst
-   overview.rst
-   example_experiment_demo.rst
+   getting_started.rst
    custom_experiments.rst
    creating_tasks.rst
    task_descriptions.rst

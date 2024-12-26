@@ -3,7 +3,7 @@ Custom Experiments
 
 To build a new experiment, first create a new project folder somewhere on your computer. Based on the example experiment ``expertiments/example_experiment``, follow the steps below:
 
-Step 1: Constants file
+Constants file
 --------------
 Create a file called ``constants.py`` in the project folder. This file contains information pertaining to the scanner, screen, response device, and pointers to the local directories. If you run the experiment in multiple setups, it is useful to create a differnt versions of this file, for example `constants_frmi.py` and a `constants_behavioral.py`.
 
@@ -47,7 +47,7 @@ Create a file called ``constants.py`` in the project folder. This file contains 
     screen['number'] = 1                # 0 = main display, 1 = secondary display
 
 
-Step 2: Generating run and task files
+Generating run and task files
 -----------------------------
 Task and run files are tab-delimited text files (``.tsv``) that specify the order of task in each run, and the order of trials within each task.
 Then create and run a small Python script to generate your run and task files. Very basic examples are included in example_experiment/make_files.py. Depending on your experiment, you may want to add more information. Of course you can produce these files by hand, but we prefer to write a function in ``task_files.py`` that does the randomization for us.
@@ -124,7 +124,7 @@ The task file can look very different form tasks to task, but typically contains
          
 
 
-Step 3: Writing your experiment function
+Writing your experiment function
 --------------------------------
 
 After generating the tasks and run files, you can write your own main script to run the experiment.
@@ -152,4 +152,4 @@ After generating the tasks and run files, you can write your own main script to 
         return
 
     if __name__ == "__main__":
-        main('sub-00')
+        main()
