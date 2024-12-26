@@ -70,9 +70,7 @@ add_module_names = False
 
 # add mock psychopy modules because psychopy is not installed on readthedocs
 class Mock(MagicMock):
-    @classmethod
-    def __getattr__(cls, name):
-        return Mock()
+    __getattr__ = MagicMock.__getattr__
 MOCK_MODULES = [
     "psychopy",
     "psychopy.visual",
@@ -80,6 +78,6 @@ MOCK_MODULES = [
     "psychopy.core",
     "psychopy.sound",
     "psychopy.event",
-    "psychopy.gui"
+    "psychopy.gui",
 ]
-sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
+sys.modules.update({mod_name: Mock() for mod_name in MOCK_MODULES})
