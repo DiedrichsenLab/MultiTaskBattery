@@ -1,7 +1,5 @@
 Screen Module
 -------------
 
-.. automodule:: MultiTaskBattery.screen
+.. autoclass:: screen.Screen
     :members:
-
-

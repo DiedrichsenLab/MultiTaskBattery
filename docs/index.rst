@@ -23,10 +23,10 @@ Documentation
    overview.rst
    example_experiment_demo.rst
    custom_experiments.rst
-   eye_tracking.rst
-   MRI_instructions.rst
-   task_descriptions.rst
    creating_tasks.rst
+   task_descriptions.rst
+   MRI_instructions.rst
+   eye_tracking.rst
    reference.rst
 
 Indices and tables
