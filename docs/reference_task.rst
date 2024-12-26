@@ -3,9 +3,10 @@ Task_blocks Module
 
 .. autoclass:: task_blocks.Task
     :members:
+    :undoc-members:
 
-.. autoclass:: task_blocks.NBack
+.. automodule:: task_blocks
     :members:
-
-.. autoclass:: task_blocks.Rest
-    :members:
+    :undoc-members:
+    :show-inheritance:
+    :inherited-members:
