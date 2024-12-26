@@ -12,6 +12,7 @@
 #
 import os
 import sys
+from unittest.mock import MagicMock
 sys.path.insert(0, os.path.abspath('../MultiTaskBattery'))
 sys.path.insert(0, os.path.abspath('..'))
 
@@ -65,3 +66,20 @@ html_static_path = ['assets']
 
 # removes module names in the API documentation
 add_module_names = False
+
+
+# add mock psychopy modules because psychopy is not installed on readthedocs
+class Mock(MagicMock):
+    @classmethod
+    def __getattr__(cls, name):
+        return Mock()
+MOCK_MODULES = [
+    "psychopy",
+    "psychopy.visual",
+    "psychopy.monitors",
+    "psychopy.core",
+    "psychopy.sound",
+    "psychopy.event",
+    "psychopy.gui"
+]
+sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
