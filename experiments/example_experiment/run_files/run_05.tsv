@@ -1,0 +1,11 @@
+task_name	task_code	task_file	instruction_dur	start_time	end_time
+sentence_reading	senread	sentence_reading_05.tsv	5	0	35
+finger_sequence	fingseq	finger_sequence_05.tsv	5	35	70
+rest	rest	rest_05.tsv	5	70	105
+n_back	nbko	n_back_05.tsv	5	105	140
+theory_of_mind	tom	theory_of_mind_05.tsv	5	140	175
+verb_generation	vrbgn-wrdrd	verb_generation_05.tsv	5	175	210
+auditory_narrative	audnarr	auditory_narrative_05.tsv	5	210	245
+demand_grid	dmgrd	demand_grid_05.tsv	5	245	280
+tongue_movement	tongue	tongue_movement_05.tsv	5	280	315
+action_observation	acva-acvk	action_observation_05.tsv	5	315	350

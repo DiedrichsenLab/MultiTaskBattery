@@ -1,0 +1,9 @@
+key_true	key_false	trial_type	trial_num	hand	trial_dur	iti_dur	story	question	condition	answer	story_dur	question_dur	display_trial_feedback	start_time	end_time
+1	2	1	0	right	14	1	The morning of high school dance Sarah placed her high heel shoes under her  dress and then went shopping. That  afternoon, her sister borrowed the shoes and later put them under Sarah's bed.	"Sarah gets ready assuming her 
+shoes are under the dress.
+
+True or False "	belief	True	10	4	True	0	15
+1	2	1	1	right	14	1	Sargent famously painted the south bank of  the river in 1885. In 1910 a huge dam was  built, flooding out the whole river basin,  killing the old forests. Now the whole area  is under water.	"In the painting the south bank of 
+the river is wooded. 
+
+True or False "	photo	True	10	4	True	15	30
