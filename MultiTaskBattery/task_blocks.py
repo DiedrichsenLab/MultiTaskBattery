@@ -551,7 +551,6 @@ class ActionObservation(Task):
 class DemandGrid(Task):
     def __init__(self, info, screen, ttl_clock, const, subj_id):
         super().__init__(info, screen, ttl_clock, const, subj_id)
-        self.grid_size = (3,4)
         self.square_size = 1.5
         self.feedback_type = 'acc+rt'
 
@@ -575,7 +574,7 @@ class DemandGrid(Task):
         instr_visual.draw()
         self.window.flip()
 
-    def create_grid(self, sequence=None, position='center'):
+    def create_grid(self, sequence=None, position='center',grid_size=(3,4)):
         """Creates the grid of squares for the DemandGrid task, lighting up specific squares blue if a sequence is given,
         and positions the grid left, right, or center."""
         # Calculate offsets based on the desired position
@@ -590,17 +589,16 @@ class DemandGrid(Task):
         offset_y = 0
 
         grid = []
-
         # Create and draw the grid
-        for i in range(self.grid_size[0]):
+        for i in range(grid_size[0]):
             row = []
-            for j in range(self.grid_size[1]):
+            for j in range(grid_size[1]):
                 # Calculate position with the offsets
-                square_x = (j - self.grid_size[0] / 2 + 0.5) * self.square_size + offset_x
-                square_y = (self.grid_size[1] / 2 - i - 0.5) * self.square_size + offset_y
+                square_x = (j - grid_size[0] / 2 + 0.5) * self.square_size + offset_x
+                square_y = (grid_size[1] / 2 - i - 0.5) * self.square_size + offset_y
 
                 # Determine the fill color based on the sequence
-                fill_color = 'blue' if sequence and (i, j) in sequence else 'white'
+                fill_color = 'blue' if sequence and any((i, j) in step for step in sequence) else 'white'
 
                 rect = visual.Rect(self.window, width=self.square_size, height=self.square_size,
                                 pos=(square_x, square_y), lineWidth=3,
@@ -611,33 +609,34 @@ class DemandGrid(Task):
 
         return grid
 
-
     def run_trial(self, trial):
         """Runs a single trial of the DemandGrid task with two boxes lighting up at a time"""
         # Draw the entire grid in its initial state
-        self.grid = self.create_grid()
+        grid_size = literal_eval(trial['grid_size'])
+        num_steps = trial['num_steps']
+        step_dur = trial['sequence_dur']/num_steps
+        self.grid = self.create_grid(grid_size=grid_size)
         self.window.flip()
 
-        # Display the sequence in pairs
-        original_sequence = literal_eval(trial['grid_sequence'])
-        for i in range(0, len(original_sequence), 2):  # Iterate in steps of 2
-            if i + 1 < len(original_sequence):
-                pair = [original_sequence[i], original_sequence[i + 1]]
-            else:
-                pair = [original_sequence[i]]  # In case of an odd number of elements in the sequence
+        # Display the sequence in steps
+        original_sequence = literal_eval(trial['original_sequence'])
 
-            for pos in pair:
-                x, y = pos
+        for i in range(num_steps):
+            step_sequence_name = f'original_step_{i+1}'
+            step_sequence = literal_eval(trial[step_sequence_name])
+
+            for tuple in step_sequence:
+                x, y = tuple
                 self.grid[x][y].fillColor = 'blue'
 
             for row in self.grid:
                 for rect in row:
                     rect.draw()
             self.window.flip()
-            self.ttl_clock.wait_until(self.ttl_clock.get_time() + 1) # Wait for 1 second for each box/pair to light up
+            self.ttl_clock.wait_until(self.ttl_clock.get_time() + step_dur)
 
-            for pos in pair:
-                x, y = pos
+            for tuple in step_sequence:
+                x, y = tuple
                 self.grid[x][y].fillColor = 'white'
 
         # Flush any keys in buffer
@@ -650,12 +649,12 @@ class DemandGrid(Task):
         # # Display the original and modified sequence on the left or right side
         modified_sequence = literal_eval(trial['modified_sequence'])
 
-        original_grid = self.create_grid(sequence=original_sequence, position=correct_side)
-        modified_grid = self.create_grid(sequence=modified_sequence, position='left' if correct_side == 'right' else 'right')
+        original_grid = self.create_grid(sequence=original_sequence, position=correct_side, grid_size=grid_size)
+        modified_grid = self.create_grid(sequence=modified_sequence, position='left' if correct_side == 'right' else 'right', grid_size=grid_size)
         self.window.flip()
 
         # collect responses 0: no response 1-4: key pressed
-        trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['question_dur'])
+        trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), 100)
         trial['correct'] = (trial['response'] == self.corr_key[trial['trial_type']])
 
         # Provide feedback if necessary
