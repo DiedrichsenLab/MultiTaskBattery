@@ -1,0 +1,7 @@
+key_true	key_false	trial_type	trial_num	hand	trial_dur	iti_dur	story	question	condition	answer	story_dur	question_dur	display_trial_feedback	start_time	end_time
+1	2	1	0	right	14	1	Amy walked to work today. When George woke  up, he saw her car in the drive. Her room  was quiet and dark. George knows that when  Amy is sick, she lies down in a dark room.	"In fact, Amy walked to work.
+
+True or False "	belief	True	10	4	True	0	15
+1	2	0	1	right	14	1	Old maps of the islands near Titan are  displayed in the Maritime museum.  Erosion has since taken its toll, leaving  only the three largest islands. 	"Near Titan today there are many islands.
+
+True or False "	photo	False	10	4	True	15	30
