@@ -1268,6 +1268,11 @@ class RMET(Task):
         picture_path_str = str(picture_path)
         # Create an ImageStim object
         picture = visual.ImageStim(self.window, str(picture_path_str))
+        # Make the picture smaller
+        picture_scale = self.const.rmet_picture_scale if hasattr(self.const, 'rmet_picture_scale') else 0.7
+        picture.size = picture.size * picture_scale
+
+        
 
         # --- Answers ---
         # Get the answer options
@@ -1279,8 +1284,8 @@ class RMET(Task):
         for i, option in enumerate(answer_options):
             # 0 and 1 should be on the left and right of the top line (y position 7 and x positions -7 and 7)
             # 2 and 3 should be on the left and right of the bottom line (y position -7 and x positions -7 and 7)
-            x = -7 if i % 2 == 0 else 7
-            y = 7 if i < 2 else -7
+            x = -8 if i % 2 == 0 else 6
+            y = 5 if i < 2 else -5
             
             if len (option) < 3:
                 tabs = 2
@@ -1295,7 +1300,7 @@ class RMET(Task):
             answer_stims.append(answer_stim)
             tab_string = ''.join(["\t"] * (tabs-1))
             answer_stim = visual.TextStim(self.window, text=f'{tab_string}{option}',
-                                            pos=(x, y), color=[-1, -1, -1], height=1.3, alignHoriz='center')
+                                            pos=(x, y), color=[-1, -1, -1], height=1.4, alignHoriz='center')
             answer_stims.append(answer_stim)
 
         # Display stimuli
@@ -1663,7 +1668,8 @@ class Movie(Task):
 
     def run_trial(self, trial):
         window_width, _ = self.window.size
-        stim_width = int(window_width * 0.8) # Make the video fraction of the window width
+        movie_scale = self.const.movie_scale if hasattr(self.const, 'movie_scale') else 0.4
+        stim_width = int(window_width * movie_scale) # Make the video fraction of the window width
         stim_height = int(stim_width  * 360 / 640)  # Original size of the video is 640x360
         
         # Get the file name
@@ -1716,7 +1722,8 @@ class StrangeStories(Task):
 
     def run_trial(self, trial):
         window_width, _ = self.window.size
-        stim_width = int(window_width * 0.4) # Make the video 40% of the window width
+        strange_stories_scale = self.const.strange_stories_scale if hasattr(self.const, 'strange_stories_scale') else 0.6
+        stim_width = int(window_width * strange_stories_scale) # Make the video 40% of the window width
         stim_height = int(stim_width  * 921 / 1638)  # 1280x720 is the original size of the video given in width x height
         wrapWidth = 25
         
@@ -1761,13 +1768,13 @@ class StrangeStories(Task):
         stim_question.draw()
         self.window.flip()
         # Display the question until X seconds before trial is over (answer_dur), to make the 'buffer' zone for the trial, i.e. the time of variable length, the time where the participant deliberates about their answer
-        self.ttl_clock.wait_until(self.ttl_clock.get_time() + (trial['trial_dur'] - trial['answer_dur']))
+        self.ttl_clock.wait_until(self.ttl_clock.get_time() + (trial['trial_dur'] - movie_clip.duration - trial['answer_dur']))
         # Align the answers with the middle of the question if the answers are shorter than half of the question
         answer_lengths = [len(answer) for answer in options_shuffled]
         if max(answer_lengths) < wrapWidth and max(answer_lengths) < len(question):
-            left_position = 0-max(answer_lengths)/2  # Answer options are shorter than questions and shorter than wrapWidth
+            left_position = 0-max(answer_lengths)/3  # Answer options are shorter than questions and shorter than wrapWidth
             align='left'
-        elif max(answer_lengths) > wrapWidth:
+        elif max(answer_lengths) >= wrapWidth:
             left_position = 0
             align='center'
         stim_answers = visual.TextStim(self.window, text=answers, pos=(left_position, 0), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=wrapWidth, alignHoriz=align)
@@ -1857,23 +1864,26 @@ class FrithHappe(Task):
 
     def init_task(self):
         self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
-        self.corr_key = [self.trial_info['key_yes'].iloc[0],self.trial_info['key_no'].iloc[0]]
+        self.corr_key = [self.trial_info['key_one'].iloc[0],self.trial_info['key_two'].iloc[0], self.trial_info['key_three'].iloc[0]]
 
     def display_instructions(self):
-        task_name = visual.TextStim(self.window, text=f'{self.descriptive_name.capitalize()}', color=[-1, -1, -1], bold=True, pos=(0, 3))
+        task_name = visual.TextStim(self.window, text=f'{self.descriptive_name.capitalize()}', color=[-1, -1, -1], bold=True, pos=(0, 4))
         task_name.draw()
 
-        self.instruction_text = f"\n\n You will watch a short animation with two triangles."
-        self.instruction_text += "\n\n At the end of the clip, decide if one of the triangles was trying to change the thoughts or feelings of the other."
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1], wrapWidth=20, pos=(0, 0))
+        self.instruction_text = f"Decide how the two triangles are interacting."
+        instr_stim = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1], wrapWidth=20, pos=(0, 3))
+        instr_stim.draw()
+        answer_expalantion = f"\n\n{self.corr_key[0]}. No interaction\n\n{self.corr_key[1]}. Physical (The actions are directed towards each other) \n\n{self.corr_key[2]}. Mental (One triangle manipulates the thoughts or feelings of the other)"
+        instr_visual = visual.TextStim(self.window, text=answer_expalantion, color=[-1, -1, -1], wrapWidth=20, pos=(-8, -1), alignHoriz='left')
         instr_visual.draw()
         self.window.flip()
 
     def run_trial(self, trial):
         window_width, _ = self.window.size
-        stim_width = int(window_width * 0.7) # Make the video 70% of the window width
-        stim_height = int(stim_width  * 1080 / 1440)  # 1280x720 is the original size of the video given in width x height
-        wrapWidth = 20
+        frith_happe_scale = self.const.frith_happe_scale if hasattr(self.const, 'frith_happe_scale') else 0.4
+        stim_width = int(window_width * frith_happe_scale) 
+        stim_height = int(stim_width  * 1074 / 1433)
+        wrapWidth = 25
         
         # Get the file name
         movie_file_name = trial['stim']
@@ -1894,17 +1904,23 @@ class FrithHappe(Task):
         event.clearEvents()
 
         # Initialize question
-        question = "Did one of the triangles try to change the thoughts or feelings of the other?"
-
-        # Initialize answer options
-        answers = f"\n\n{self.corr_key[0]}. Yes \n{self.corr_key[1]}. No"
-
+        question = "What type of interaction did you see?"
         # Display question
-        stim_question = visual.TextStim(self.window, text = question + answers, pos=(0, 0), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=wrapWidth)
+        stim_question = visual.TextStim(self.window, text = question, pos=(0, 2), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=wrapWidth)
         stim_question.draw()
         self.window.flip()
 
+        # Display the question until X seconds before trial is over (answer_dur), to make the 'buffer' zone for the trial, i.e. the time of variable length, the time where the participant deliberates about their answer
+        self.ttl_clock.wait_until(self.ttl_clock.get_time() + (trial['trial_dur'] - movie_clip.duration - trial['question_dur']))
+
+        stim_question.draw()
+        # Initialize answer options
+        answers = f"\n\n{self.corr_key[0]}. No interaction \n{self.corr_key[1]}. Physical \n{self.corr_key[2]}. Mental"
+        answers_stim = visual.TextStim(self.window, text=answers, pos=(-5, 0), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=wrapWidth, alignHoriz='left')
+        answers_stim.draw()
+        self.window.flip()
         # collect responses 0: no response 1-4: key pressed
+
         trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['question_dur'])
         trial['correct'] = (trial['response'] == trial['trial_type'])
 
@@ -1925,22 +1941,27 @@ class Liking(Task):
         self.corr_key = [self.trial_info['key_one'].iloc[0],self.trial_info['key_two'].iloc[0], self.trial_info['key_three'].iloc[0], self.trial_info['key_four'].iloc[0]]
 
     def display_instructions(self):
-        task_name = visual.TextStim(self.window, text=f'{self.descriptive_name.capitalize()}', color=[-1, -1, -1], bold=True, pos=(0, 3))
+        task_name = visual.TextStim(self.window, text=f'{self.descriptive_name.capitalize()}', color=[-1, -1, -1], bold=True, pos=(0, 5))
         task_name.draw()
 
-        self.instruction_text = f"\n\n You will watch two people talking."
-        self.instruction_text += "\nAt the end, rate how much they liked each other."
-        self.instruction_text += f"\n\n{self.corr_key[0]}. Strongly dislike \t{self.corr_key[1]}. Dislike    {self.corr_key[2]}. Like \t{self.corr_key[3]}. Strongly like"
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1], wrapWidth=25, pos=(0, 0))
+        self.instruction_text = f"You will watch two people meeting for the first time."
+        self.instruction_text += "\nRate how much they like each other."
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1], wrapWidth=20, pos=(0, 2))
         instr_visual.draw()
+
+        key_text = f"\n\n\n{self.corr_key[0]}. Strongly dislike \n{self.corr_key[1]}. Dislike \n{self.corr_key[2]}. Like \n{self.corr_key[3]}. Strongly like"
+        # key_text = f"\n\n\n{self.corr_key[0]}. Not at all \n{self.corr_key[1]}. A little \n{self.corr_key[2]}. Moderately \n{self.corr_key[3]}. A lot"
+        key_text = visual.TextStim(self.window, text=key_text, color=[-1, -1, -1], wrapWidth=20, pos=(-4, -1), alignHoriz='left')
+        key_text.draw()
         self.window.flip()
 
     def run_trial(self, trial):
         window_width, _ = self.window.size
-        stim_width = int(window_width * 0.9)
+        liking_scale = self.const.liking_scale if hasattr(self.const, 'liking_scale') else 0.5
+        stim_width = int(window_width * liking_scale)
         stim_height = int(stim_width  * 486 / 720) 
         wrapWidth = 20
-        
+
         # Get the file name
         movie_file_name = trial['stim']
         # Construct the movie file path
@@ -1948,10 +1969,14 @@ class Liking(Task):
         # Convert Path object to string for compatibility
         movie_path_str = str(movie_path)
         # Create a MovieStim object
-        movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False, size=(stim_width, stim_height), pos=(0, 0))
+        movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False,
+                                    size=(stim_width, stim_height),
+                                    pos=(0, 0))
 
         # Play through the movie frame by frame
-        while movie_clip.isFinished == False:
+        max_video_duration = 24
+        movie_start_time = self.ttl_clock.get_time()
+        while self.ttl_clock.get_time() - movie_start_time < max_video_duration:
             movie_clip.draw()
             self.window.flip()
             self.ttl_clock.update()
@@ -1960,20 +1985,25 @@ class Liking(Task):
         event.clearEvents()
 
         # Initialize question
-        question = "How much did they like each other?"
+        question = "How much do they like each other?"
+        # Display question
+        stim_question = visual.TextStim(self.window, text = question, pos=(0, 3), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=wrapWidth)
+        stim_question.draw()
 
         # Initialize answer options
         answers = f"\n\n{self.corr_key[0]}. Strongly dislike \n{self.corr_key[1]}. Dislike \n{self.corr_key[2]}. Like \n{self.corr_key[3]}. Strongly like"
-
-        # Display question
-        stim_question = visual.TextStim(self.window, text = question + answers, pos=(0, 0), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=wrapWidth)
-        stim_question.draw()
+        stim_answers = visual.TextStim(self.window, text=answers, pos=(-5, 0), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=wrapWidth, alignHoriz='left')
+        stim_answers.draw()
         self.window.flip()
 
         # collect responses 0: no response 1-4: key pressed
         trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['question_dur'])
-        trial['correct'] = (trial['response'] == trial['trial_type'])
-
+        trial['correct'] = (trial['response'] in [1, 2]) == (trial['condition'] == 'dislike') # Everything below 2 counts as dislike, everything above as like, 0 is no response and is not counted as correct
+        
+        # Record the played video duration
+        trial['video_dur_orig'] = trial['video_dur']
+        trial['video_dur'] = max_video_duration
+        
         # display trial feedback
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
         return trial

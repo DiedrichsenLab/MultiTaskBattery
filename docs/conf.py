@@ -12,6 +12,7 @@
 #
 import os
 import sys
+from unittest.mock import MagicMock
 sys.path.insert(0, os.path.abspath('../MultiTaskBattery'))
 sys.path.insert(0, os.path.abspath('..'))
 
@@ -62,3 +63,21 @@ html_theme = 'sphinx_rtd_theme'
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['assets']
+
+# removes module names in the API documentation
+add_module_names = False
+
+
+# add mock psychopy modules because psychopy is not installed on readthedocs
+class Mock(MagicMock):
+    __getattr__ = MagicMock.__getattr__
+MOCK_MODULES = [
+    "psychopy",
+    "psychopy.visual",
+    "psychopy.monitors",
+    "psychopy.core",
+    "psychopy.sound",
+    "psychopy.event",
+    "psychopy.gui",
+]
+sys.modules.update({mod_name: Mock() for mod_name in MOCK_MODULES})

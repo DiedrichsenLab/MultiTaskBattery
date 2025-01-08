@@ -1,6 +1,7 @@
-
 Task Descriptions
-----------------------------------
+-----------------
+
+.. _task_descriptions:
 
 Action Observation
 ^^^^^^^^^^^^^^^^^^^
@@ -24,14 +25,14 @@ Auditory Narrative
 This is the auditory narrative task. You will be listening to a story that is told to you via the headphones. Try to follow the story and imagine the scenes that are being described. Try to imagine the characters, the setting, the objects that are being described. Try to imagine the story as vividly as possible. In each run, you will hear a bit more of the story. Try to follow along the narrative across runs.
 
 Degraded Passage
-^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^
 .. image:: images/Slide27.png
    :width: 600
    
 This is the degraded passage task. You will be listening to passages of different stories or snippets of conversations. The sound quality of the stories and conversations will be degraded. Listen attentively and try to understand what is being said.
 
 Demand Grid
-^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^
 .. image:: images/Slide29.png
    :width: 600
    
@@ -45,14 +46,14 @@ Finger Sequence
 This is a movement task. You will have 5 seconds to respond to a sequence of six numbers (comprised of 1,2,3,4).
 
 Flexion Extension
-^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^
 .. image:: images/Slide4.png
    :width: 600
    
 This is a toe movement task. You will flex and extend your toes. When the screen says 'fled', then pull your toes towards you. When it says 'extend', extend your toes away from you, like you're tip-toeing. Try to keep the rest of your body as still as possible while you do this so that you don’t move your head. Try also to match the pace of the instruction.
 
 Intact Passage
-^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^
 .. image:: images/Slide26.png
    :width: 600
    
@@ -128,7 +129,7 @@ Tongue Movement
 This is a tongue movement task. You will move your tongue from left to right in your closed mouth. Your will either touch your left upper premolar teeth or your right upper premolar teeth. The premolar teeth are shown in the image. A black circle flashing on and off around the fixation cross while tell you when to touch left or right. When you see the black circle on, touch your right upper premolar teeth. When it is off, touch your left premolar teeth. Try to keep the rest of your body as still as possible while you do this so that you don’t move your head. 
 
 Unpleasant Scenes
-^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^
 .. image:: images/Slide31.png
    :width: 600
    

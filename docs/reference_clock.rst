@@ -1,7 +1,7 @@
 ttl_clock module
 ----------------
 
-.. automodule:: MultiTaskBattery.ttl_clock
+.. autoclass:: ttl_clock.TTLClock
     :members:
 
 
