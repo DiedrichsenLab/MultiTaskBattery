@@ -1,0 +1,37 @@
+﻿video,condition,stimulus_id,question,options,scenario,duration,width,height,half
+ss_01.mp4,social,ss_01,Why did Alice say that? ,"She forgot the present, She realized something, She doesn’t want to see Rob",practice,12.61,1280,720,1
+ss_02.mp4,social,ss_02,Why did Max say that? ,"A cactus doesn’t need much water, He doesn’t need her to water his plants, He wanted to tell her about his plants",practice,11.72,1280,720,1
+ss_03.mp4,social,ss_03,Why did Max say that?,"He wants her to come with, He is about to leave, He doesn’t like his mom",persuasion,16.84,1280,720,1
+ss_04.mp4,social,ss_04,Why did Alice say that? ,"Alice was pointing out that they were both at fault, Alice wanted Max to feel guilty, Alice wanted to go dancing with Max",idiom,14.88,1280,720,1
+ss_05.mp4,social,ss_05,Why did Max say that?,"He was full but also didn’t want to throw away the food, Max is practical, Soup is a light meal",control,16.08,1280,720,1
+ss_06.mp4,social,ss_06,Why did Alice say that? ,"Her curiosity superseded her squeamishness, She was curious, She felt bad for Jim",mixed_emotions,15.48,1280,720,1
+ss_07.mp4,social,ss_07,Why did Alice say that?,"Alice thought Max was a burglar, Alice did not recognize Max, Someone was breaking in",misunderstanding,20.96,1280,720,1
+ss_08.mp4,practice,ss_08,Why did Alice say that? ,"She doesn't want Max to know she's at a bar, She feels guilty, She was working late",pub,21.36,1280,720,1
+ss_09.mp4,social,ss_09,Why did Alice say that? ,"She forgot the potatoes, She wanted to show him the pudding, She didn’t want to buy potatoes",forget,21.08,1280,720,1
+ss_10.mp4,social,ss_10,Why did Max say that? ,"He made a joke about his costume, He needs the bathroom, He was uncomfortable",ar,12.2,1280,720,2
+ss_11.mp4,social,ss_11,Why did Max say that?,"He was being sarcastic, He just injected himself, He enjoys this",irony,9.32,1280,720,2
+ss_12.mp4,social,ss_12,Why did Alice say that? ,"It’s a better deal, They both have the money now, She doesn’t want to pay",control,17.76,1280,720,2
+ss_13.mp4,social,ss_13,Why did Alice say that?,"She wants him to feel bad for smoking, He should stop smoking, She wanted to tell him she’s pregnant",persuasion,16.96,1280,720,2
+ss_14.mp4,social,ss_14,Why did Max say that? ,"He thinks politicians are full of trash, He doesn’t like politicians, He wants to elect new politicians",joke,17.52,1280,720,2
+ss_15.mp4,social,ss_15,Why did Max say that? ,"He knows Alice will think he’s joking, He was looking at a dating website, He is trying to break up with Alice",db,18.96,1280,720,2
+ss_16.mp4,social,ss_16,Why did Alice say that? ,"She’s pretending they’re rowing a boat, They are rowing a boat, She wants to get back to work",pretend,9.24,1280,720,2
+ss_17.mp4,practice,ss_17,Why did Max say that? ,"He didn’t want to hurt her feelings, He likes her, He thought it was good",white_lie,23.32,1280,720,2
+ss_18.mp4,social,ss_18,Why did Alice say that?,"The bathroom’s sunlight and humidity will help the plant grow, She is being helpful, She doesn’t like plants",control,15.16,1280,720,2
+ss_01.mp4,control,ss_01,Where had Alice just come from?,"From outside, From the bathroom, From underneath the couch",practice,12.61,1280,720,2
+ss_02.mp4,control,ss_02,How long was Max going away for?,"For two weeks, For a year, For a few hours",practice,11.72,1280,720,2
+ss_03.mp4,control,ss_03,Who does Alice find really difficult?,"She finds his mom difficult, She finds going outside difficult, She finds her work difficult",persuasion,16.84,1280,720,2
+ss_04.mp4,control,ss_04,What did Max say John should do?,"Own up to what he did, Dance with him, Come over for dinner",idiom,14.88,1280,720,2
+ss_05.mp4,control,ss_05,What was Max going to cook the next day?,"A soup with the leftovers, A lasagne with the leftovers, A soup with new ingredients",control,16.08,1280,720,2
+ss_06.mp4,control,ss_06,What was the disgusting picture of?,"The bike accident of Max’s colleague, Rotten food that Max left in the fridge, The dead hamster of Max’s colleague’s",mixed_emotions,15.48,1280,720,2
+ss_07.mp4,control,ss_07,What was Max doing when Alice called out?,"He was climbing through the window, He was gardening, He was walking down the street",misunderstanding,20.96,1280,720,2
+ss_08.mp4,practice,ss_08,Where was Alice when she spoke to Max on the phone?,"She was in a bar, She was on her way home, She was still at work",pub,21.36,1280,720,2
+ss_09.mp4,control,ss_09,What did Alice buy from the shop?,"She got cake for pudding, She bought potatoes, She didn’t buy anything",forget,21.08,1280,720,2
+ss_10.mp4,control,ss_10, What was Alice about to put on Max?,"Lipstick on his lips, A hat on his head, A blanket over his legs",ar,12.2,1280,720,1
+ss_11.mp4,control,ss_11,What was Max doing to his tummy?,"Injecting himself with medication, Taking drugs with a needle, Drawing on his skin",irony,9.32,1280,720,1
+ss_12.mp4,control,ss_12,Who was Max talking to on the phone?,"A rental company, His mother, A pizza restaurant",control,17.76,1280,720,1
+ss_13.mp4,control,ss_13,What did Alice say Max was going to be?,"A father, A lung cancer patient, An accountant",persuasion,16.96,1280,720,1
+ss_14.mp4,control,ss_14,What was Max reading?,"The newspaper, A Shakespeare novel, The waste collection calendar",joke,17.52,1280,720,1
+ss_15.mp4,control,ss_15,What was Max looking at on the computer at the start?,"A dating website, A word document, A family album",db,18.96,1280,720,1
+ss_16.mp4,control,ss_16,What was Alice sitting on?,"On an office chair, On a rowing boat seat, On a table",pretend,9.24,1280,720,1
+ss_17.mp4,practice,ss_17,What instrument was Alice playing?,"A guitar, A cello, A harp",white_lie,23.32,1280,720,1
+ss_18.mp4,control,ss_18,Where did Alice say the plant could go?,"In the upstairs bathroom, In the tub, In their bedroom",control,15.16,1280,720,1
