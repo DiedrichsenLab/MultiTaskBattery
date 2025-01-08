@@ -1,25 +1,25 @@
 *.pyc
 .DS_Store
 docs/build/*
-experiments/*/data/*
-experiments/*/run_files/*
-experiments/*/task_files/*
 venv
 env/
 .vscode
 stimuli/.DS_Store
+
+# --- Untracked stimuli (confidential or too big to track) ---
 MultiTaskBattery/task notes.md
 stimuli/sencoding
-stimuli/social_sequence
-stimuli/action_prediction
+# Too big to track
 stimuli/nature_movie
-
-/stimuli/landscapeMovie
+stimuli/landscapeMovie
 stimuli/movie/misc/natureClip.mov
-stimuli/movie/clips/snake/stones.mov
-/stimuli/strange_stories
-MultiTaskBattery/MultiTaskBattery.code-workspace
-/stimuli/frith_happe
-stimuli/faux_pas/~$faux_pas_excel.xlsx
+stimuli/movie/clips
 stimuli/story_sequence/
+# Confidential
+stimuli/action_prediction/clips
+stimuli/action_prediction/archive/
+stimuli/frith_happe/clips
+stimuli/strange_stories/clips
+stimuli/strange_stories/orig
 stimuli/liking/clips
+

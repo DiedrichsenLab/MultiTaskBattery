@@ -194,21 +194,19 @@ class Experiment:
                 run_data (pd.DataFrame): a dataframe containing the run data
         """
         # Optional: Summarize the behavioural data from different conditions of the same task
-        if True:
+        ignore_conditions = True
+        if ignore_conditions:
             # Ignore Nans
             run_data = run_data.groupby('task_name', as_index=False).agg({'acc': lambda x: x.mean(skipna=True), 'rt': lambda x: x.mean(skipna=True)})
 
         # Define column headers
         scores = [["Score:", "", ""], ["", "Correct", "Time"]]
         # Add each task's data to the score text
-        for i, task in enumerate(run_data.task_name.values):
-            if self.task_obj_list[i].feedback_type.lower() != 'none':
-                task_name = f"{self.task_obj_list[i].descriptive_name}"
-                accuracy = f"{int(run_data.acc[i]*100)} %"
-                if np.isnan(run_data.rt[i]):
-                    rt = "-"
-                else:
-                    rt = f"{run_data.rt[i]:.2f} s"
+        for t, _ in enumerate(run_data.task_name.values):
+            if self.task_obj_list[t].feedback_type.lower() != 'none':
+                task_name = f"{self.task_obj_list[t].descriptive_name}"
+                accuracy = f"{int(run_data.acc[t]*100)} %" if not np.isnan(run_data.acc[t]) else "-"
+                rt = f"{run_data.rt[t]:.2f} s" if not np.isnan(run_data.rt[t]) else "-"
                 scores.append([task_name, accuracy, rt])
         
         # Display settings
