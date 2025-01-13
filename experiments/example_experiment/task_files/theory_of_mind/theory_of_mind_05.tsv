@@ -1,8 +1,0 @@
-key_true	key_false	trial_type	trial_num	hand	trial_dur	iti_dur	story	question	condition	answer	story_dur	question_dur	display_trial_feedback	start_time	end_time
-1	2	1	0	right	14	1	Susie parked her sportscar in the driveway.  In the middle of the night  Nathan moved  her car into the garage to make room for  his minivan. Susie woke up early in the morning.	"Susie sees the minivan in 
-the driveway.
-
-True or False "	belief	True	10	4	True	0	15
-1	2	0	1	right	14	1	The girl's middle school pictures showed  her wearing a white blouse. Later, a  red sock was accidentally washed with  the blouse and the blouse turned pink.  	"Today the color of the blouse is white.
-
-True or False "	photo	False	10	4	True	15	30

@@ -2,9 +2,7 @@ import MultiTaskBattery.task_file as tf
 import MultiTaskBattery.utils as ut
 import constants as const
 
-tasks = ['finger_sequence', 'n_back', 'demand_grid', 'auditory_narrative',
-         'sentence_reading', 'verb_generation', 'action_observation',
-         'tongue_movement', 'theory_of_mind', 'rest']
+tasks = ['demand_grid']
 
 num_runs = 8  # Number of imaging runs
 
