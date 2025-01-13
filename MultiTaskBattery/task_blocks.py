@@ -599,7 +599,7 @@ class DemandGrid(Task):
                 square_y = (grid_size[1] / 2 - i - 0.5) * self.square_size + offset_y
 
                 # Determine the fill color based on the sequence
-                fill_color = 'blue' if sequence and any((i, j) in step for step in sequence) else 'white'
+                fill_color = 'blue' if sequence and (i, j) in sequence else 'white'
 
                 rect = visual.Rect(self.window, width=self.square_size, height=self.square_size,
                                 pos=(square_x, square_y), lineWidth=3,
@@ -614,7 +614,13 @@ class DemandGrid(Task):
         """Runs a single trial of the DemandGrid task with two boxes lighting up at a time"""
         # Draw the entire grid in its initial state
         grid_size = literal_eval(trial['grid_size'])
-        num_steps = trial['num_steps']
+
+        # Make the code adaptable to old DemandGrid implementation
+        if 'num_steps' in trial:
+            num_steps = trial['num_steps']
+        else:
+            num_steps = 3
+
         step_dur = trial['sequence_dur']/num_steps
         self.grid = self.create_grid(grid_size=grid_size)
         self.window.flip()
@@ -622,23 +628,46 @@ class DemandGrid(Task):
         # Display the sequence in steps
         original_sequence = literal_eval(trial['original_sequence'])
 
-        for i in range(num_steps):
-            step_sequence_name = f'original_step_{i+1}'
-            step_sequence = literal_eval(trial[step_sequence_name])
+        if 'num_steps' in trial: # new implementation
+            for i in range(num_steps):
+                step_sequence_name = f'original_step_{i+1}'
+                step_sequence = literal_eval(trial[step_sequence_name])
 
-            for tuple in step_sequence:
-                x, y = tuple
-                self.grid[x][y].fillColor = 'blue'
+                for tuple in step_sequence:
+                    x, y = tuple
+                    self.grid[x][y].fillColor = 'blue'
 
-            for row in self.grid:
-                for rect in row:
-                    rect.draw()
-            self.window.flip()
-            self.ttl_clock.wait_until(self.ttl_clock.get_time() + step_dur)
+                for row in self.grid:
+                    for rect in row:
+                        rect.draw()
+                self.window.flip()
+                self.ttl_clock.wait_until(self.ttl_clock.get_time() + step_dur)
 
-            for tuple in step_sequence:
-                x, y = tuple
-                self.grid[x][y].fillColor = 'white'
+                for tuple in step_sequence:
+                    x, y = tuple
+                    self.grid[x][y].fillColor = 'white'
+
+        else: # old implementation
+            for i in range(0, len(original_sequence), 2):  # Iterate in steps of 2
+                if i + 1 < len(original_sequence):
+                    pair = [original_sequence[i], original_sequence[i + 1]]
+                else:
+                    pair = [original_sequence[i]]  # Handle odd-length sequences
+
+                # Highlight positions in the current pair
+                for x, y in pair:
+                    self.grid[x][y].fillColor = 'blue'
+
+                # Draw and update the window
+                for row in self.grid:
+                    for rect in row:
+                        rect.draw()
+                self.window.flip()
+                self.ttl_clock.wait_until(self.ttl_clock.get_time() + step_dur)
+
+                # Reset colors after the pair
+                for x, y in pair:
+                    self.grid[x][y].fillColor = 'white'
 
         # Flush any keys in buffer
         event.clearEvents()
@@ -655,7 +684,7 @@ class DemandGrid(Task):
         self.window.flip()
 
         # collect responses 0: no response 1-4: key pressed
-        trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), 100)
+        trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['question_dur'])
         trial['correct'] = (trial['response'] == self.corr_key[trial['trial_type']])
 
         # Provide feedback if necessary

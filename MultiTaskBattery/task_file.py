@@ -694,7 +694,7 @@ class DemandGrid(TaskFile):
                     # Generate the original sequence
                     original_sequence = self.generate_sequence(grid_size, num_steps, num_boxes_lit)
                     # Attempt to create a modified sequence 
-                    modified_sequence = self.modify_sequence(original_sequence, grid_size=grid_size)                   
+                    modified_sequence = self.modify_sequence(original_sequence, grid_size=grid_size)
                     break
                 except ValueError:
                     continue
@@ -710,8 +710,8 @@ class DemandGrid(TaskFile):
                 'hand': hand,
                 'grid_size': grid_size,
                 'num_steps': num_steps,
-                'original_sequence': original_sequence,
-                'modified_sequence': modified_sequence,
+                'original_sequence': list(itertools.chain.from_iterable(original_sequence)),
+                'modified_sequence': list(itertools.chain.from_iterable(modified_sequence))  ,
                 **{f'original_step_{i+1}': step for i, step in enumerate(original_sequence)},  # Unpack original steps (each grid shown in the exp)
                 'display_trial_feedback': True,
                 'trial_dur': trial_dur,

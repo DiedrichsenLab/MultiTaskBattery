@@ -1,9 +1,0 @@
-key_true	key_false	trial_type	trial_num	hand	trial_dur	iti_dur	story	question	condition	answer	story_dur	question_dur	display_trial_feedback	start_time	end_time
-1	2	0	0	right	14	1	A window wiper was commissioned by a  CEO to wipe an entire building. He  finished the right side, but his  platform broke before he could do the  left side. The next morning the CEO  arrived with foreign investors.	"The CEO comes to work and discovers  
-that all of the walls are cleaned.
-
-True or False "	belief	False	10	4	True	0	15
-1	2	0	1	right	14	1	A long time ago, an explorer mapped a  small island. Since then, the water  levels rose and only a tiny part of the  island is now left above water.	"On the explorer's maps, the island 
-appears to be mostly submerged.
-
-True or False "	photo	False	10	4	True	15	30

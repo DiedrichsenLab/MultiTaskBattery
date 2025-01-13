@@ -1,8 +1,0 @@
-key_true	key_false	trial_type	trial_num	hand	trial_dur	iti_dur	story	question	condition	answer	story_dur	question_dur	display_trial_feedback	start_time	end_time
-1	2	0	0	right	14	1	Sally and Greg called ahead of time to make  a reservation for the back-country cabin.  The park ranger forgot to write down the  reservation and two other hikers got to the  cabin first.	"When the hikers arrive they see no 
-one in their cabin.
-
-True or False "	belief	False	10	4	True	0	15
-1	2	0	1	right	14	1	When the picture was taken of the house,  it was one story tall. Since then, the  renovators added an additional story and  a garage.	"The house is currently one story.
-
-True or False "	photo	False	10	4	True	15	30
