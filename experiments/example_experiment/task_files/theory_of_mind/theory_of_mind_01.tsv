@@ -1,0 +1,10 @@
+key_true	key_false	trial_type	trial_num	hand	trial_dur	iti_dur	story	question	condition	answer	story_dur	question_dur	display_trial_feedback	start_time	end_time
+1	2	0	0	right	14	1	Expecting the game to be postponed because of the rain, the Garcia family took the subway home. The score was tied, 3-3. During their commute the rain stopped and the game soon ended with a score of 5-3.	"The Garcia family arrives home 
+believing the score is 5-3.
+
+True or False"	belief	False	10	4	True	0	15
+1	2	1	1	right	14	1	Accounts of the country's bustling economic  success were recorded in both fiction and non-fiction books from the early 1900s. Soon  after, a horrible plague hit the country and  the country was sent into an economic depression.	"Early 1900s novels portray the 
+country as experiencing economic 
+wealth.
+
+True or False"	photo	True	10	4	True	15	30
