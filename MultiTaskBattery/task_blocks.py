@@ -613,7 +613,10 @@ class DemandGrid(Task):
     def run_trial(self, trial):
         """Runs a single trial of the DemandGrid task with two boxes lighting up at a time"""
         # Draw the entire grid in its initial state
-        grid_size = literal_eval(trial['grid_size'])
+        if 'grid_size' in trial:
+            grid_size = literal_eval(trial['grid_size'])
+        else:
+            grid_size = (3,4)
 
         # Make the code adaptable to old DemandGrid implementation
         if 'num_steps' in trial:
@@ -626,7 +629,10 @@ class DemandGrid(Task):
         self.window.flip()
 
         # Display the sequence in steps
-        original_sequence = literal_eval(trial['original_sequence'])
+        if 'original_sequence' in trial:
+            original_sequence = literal_eval(trial['original_sequence'])
+        else:
+            original_sequence = literal_eval(trial['grid_sequence'])
 
         if 'num_steps' in trial: # new implementation
             for i in range(num_steps):
