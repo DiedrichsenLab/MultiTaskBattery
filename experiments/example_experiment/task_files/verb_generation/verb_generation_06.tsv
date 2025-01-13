@@ -1,0 +1,13 @@
+trial_num	trial_type	trial_dur	iti_dur	start_time	end_time	stim	display_trial_feedback
+0	read	2	0.5	0.0	2.5	spider      	False
+1	read	2	0.5	2.5	5.0	cigarette   	False
+2	read	2	0.5	5.0	7.5	volleyball 	False
+3	read	2	0.5	7.5	10.0	snowflake  	False
+4	read	2	0.5	10.0	12.5	pot         	False
+5	read	2	0.5	12.5	15.0	cap         	False
+6	generate	2	0.5	15.0	17.5	leopard     	False
+7	generate	2	0.5	17.5	20.0	camel       	False
+8	generate	2	0.5	20.0	22.5	gorilla     	False
+9	generate	2	0.5	22.5	25.0	blouse      	False
+10	generate	2	0.5	25.0	27.5	book        	False
+11	generate	2	0.5	27.5	30.0	strawberry  	False
