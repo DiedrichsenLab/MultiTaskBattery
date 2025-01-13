@@ -537,6 +537,7 @@ class ActionObservation(Task):
         movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False)
 
         while movie_clip.isFinished == False:
+            movie_clip.play()
             movie_clip.draw()
             self.window.flip()
             self.ttl_clock.update()
@@ -1623,10 +1624,13 @@ class ActionPrediction(Task):
         movie_path_str = str(movie_path)
         movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False, noAudio=True, size=(stim_width, stim_height), pos=(0, 0))
 
+        movie_clip.play()
         movie_clip.draw()
         self.window.flip()
+        
 
         while movie_clip.isFinished == False:
+            movie_clip.play()
             movie_clip.draw()
             self.window.flip()
             self.ttl_clock.update()
@@ -1684,9 +1688,11 @@ class Movie(Task):
         movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False, size=(stim_width, stim_height), pos=(0, 0))
 
         movie_clip.draw()
+        movie_clip.play()
         self.window.flip()
 
         while movie_clip.isFinished == False:
+            movie_clip.play()
             movie_clip.draw()
             self.window.flip()
             self.ttl_clock.update()
@@ -1738,8 +1744,14 @@ class StrangeStories(Task):
         # Create a MovieStim object
         movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False, size=(stim_width, stim_height), pos=(0, 0))
 
+        
+        movie_clip.draw()
+        movie_clip.play()
+        self.window.flip()
+
         # Play through the movie frame by frame
         while movie_clip.isFinished == False:
+            movie_clip.play()
             movie_clip.draw()
             self.window.flip()
             self.ttl_clock.update()
@@ -1892,9 +1904,14 @@ class FrithHappe(Task):
         movie_path_str = str(movie_path)
         # Create a MovieStim object
         movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False, size=(stim_width, stim_height), pos=(0, 0))
+        
+        movie_clip.draw()
+        movie_clip.play()
+        self.window.flip()
 
         # Play through the movie frame by frame
         while movie_clip.isFinished == False:
+            movie_clip.play()
             movie_clip.draw()
             self.window.flip()
             self.ttl_clock.update()
@@ -1975,7 +1992,13 @@ class Liking(Task):
         # Play through the movie frame by frame
         max_video_duration = 24
         movie_start_time = self.ttl_clock.get_time()
+        
+        movie_clip.draw()
+        movie_clip.play()
+        self.window.flip()
+
         while self.ttl_clock.get_time() - movie_start_time < max_video_duration:
+            movie_clip.play()
             movie_clip.draw()
             self.window.flip()
             self.ttl_clock.update()
