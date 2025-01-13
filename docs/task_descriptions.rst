@@ -36,7 +36,8 @@ Demand Grid
 .. image:: images/Slide29.png
    :width: 600
    
-In this task, you will see 4 pairs of squares light up in a 3x4 grid.  You will need the choose the grid that represents the combination of all 4 pairs.
+In this task, you will see 3 pairs of squares light up in a 3x4 grid.  You will need the choose the grid that represents the combination of all 3 pairs.
+This task is flexible. Paratmeters like grid size, num of steps and num of boxes shown in each step can be changed.
 
 Finger Sequence
 ^^^^^^^^^^^^^^^
