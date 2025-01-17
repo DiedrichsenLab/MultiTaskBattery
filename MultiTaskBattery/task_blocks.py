@@ -1757,6 +1757,8 @@ class StrangeStories(Task):
             movie_clip.draw()
             self.window.flip()
 
+        audio.stop()
+
         # Flush any keys in buffer
         event.clearEvents()
 
@@ -1980,18 +1982,34 @@ class Liking(Task):
         movie_path = Path(self.const.stim_dir) / self.name / 'clips' / (movie_file_name + '.mov')
         # Convert Path object to string for compatibility
         movie_path_str = str(movie_path)
+
+        # Play the audio from the movie
+        sample_rate = 44100
+        audio_clip = AudioFileClip(movie_path)
+        audio_array = audio_clip.to_soundarray(fps=sample_rate)
+        audio = sound.Sound(audio_array,sampleRate=sample_rate, stereo=True)
+        audio.play()
+
         # Create a MovieStim object
         movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False,
                                     size=(stim_width, stim_height),
-                                    pos=(0, 0))
+                                    pos=(0, 0),noAudio=True)
+        movie_clip.draw()
+        movie_clip.play()
+        self.window.flip()
+        
+
 
         # Play through the movie frame by frame
         max_video_duration = 24
         movie_start_time = self.ttl_clock.get_time()
         while self.ttl_clock.get_time() - movie_start_time < max_video_duration:
+            movie_clip.play()
             movie_clip.draw()
             self.window.flip()
             self.ttl_clock.update()
+
+        audio.stop()
 
         # Flush any keys in buffer
         event.clearEvents()
