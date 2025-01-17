@@ -1738,11 +1738,12 @@ class StrangeStories(Task):
         movie_path_str = str(movie_path)
 
         #Plays the movie audio
-        sample_rate = 44100
         audio_clip = AudioFileClip(movie_path)
+        sample_rate = 48000
         audio_array = audio_clip.to_soundarray(fps=sample_rate)
         audio = sound.Sound(audio_array,sampleRate=sample_rate, stereo=True)
         audio.play()
+
 
         # Create a MovieStim object
         movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False, size=(stim_width, stim_height), pos=(0, 0),noAudio=True)
@@ -1751,9 +1752,7 @@ class StrangeStories(Task):
         self.window.flip()
 
         # Play through the movie frame by frame
-        timer = core.Clock()
         while movie_clip.isFinished == False:
-            print(f'{timer.getTime()}/{movie_clip.duration}')
             movie_clip.play()
             movie_clip.draw()
             self.window.flip()
