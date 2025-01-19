@@ -11,6 +11,7 @@ from psychopy import visual, sound, core, event
 import MultiTaskBattery.utils as ut
 from ast import literal_eval
 from copy import deepcopy
+from moviepy import AudioFileClip
 import gc
 
 
@@ -1728,7 +1729,7 @@ class Movie(Task):
         movie_path_str = str(movie_path)
 
         # Create a MovieStim3 object
-        movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False, size=(stim_width, stim_height), pos=(0, 0))
+        movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False, size=(stim_width, stim_height), pos=(0, 0), noAudio=True)
 
         movie_clip.draw()
         movie_clip.play()
@@ -1789,10 +1790,15 @@ class StrangeStories(Task):
         movie_path_str = str(movie_path)
 
         # Create a MovieStim object
-        movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False, size=(stim_width, stim_height), pos=(0, 0))
-
-        
+        movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False, size=(stim_width, stim_height), pos=(0, 0), noAudio=True)
+        # Create an audio object
+        sample_rate = 48000
+        audio_clip = AudioFileClip(movie_path)
+        audio_array = audio_clip.to_soundarray(fps=sample_rate)
+        audio = sound.Sound(audio_array,sampleRate=sample_rate, stereo=True)
+                
         movie_clip.draw()
+        audio.play()
         movie_clip.play()
         self.window.flip()
 
@@ -1957,7 +1963,7 @@ class FrithHappe(Task):
         # Convert Path object to string for compatibility
         movie_path_str = str(movie_path)
         # Create a MovieStim object
-        movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False, size=(stim_width, stim_height), pos=(0, 0))
+        movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False, size=(stim_width, stim_height), pos=(0, 0), noAudio=True)
         
         movie_clip.draw()
         movie_clip.play()
@@ -2049,13 +2055,14 @@ class Liking(Task):
         audio_clip = AudioFileClip(movie_path)
         audio_array = audio_clip.to_soundarray(fps=sample_rate)
         audio = sound.Sound(audio_array,sampleRate=sample_rate, stereo=True)
-        audio.play()
-
+        
         # Create a MovieStim object
         movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False,
                                     size=(stim_width, stim_height),
                                     pos=(0, 0),noAudio=True)
         movie_clip.draw()
+        
+        audio.play()
         movie_clip.play()
         self.window.flip()
         
