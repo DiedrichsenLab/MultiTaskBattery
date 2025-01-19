@@ -11,7 +11,7 @@ from psychopy import visual, sound, core, event
 import MultiTaskBattery.utils as ut
 from ast import literal_eval
 from copy import deepcopy
-import re
+import gc
 
 
 class Task:
@@ -546,6 +546,10 @@ class ActionObservation(Task):
 
         # Display trial feedback
         self.display_trial_feedback(give_feedback= trial['display_trial_feedback'], correct_response = None)
+
+        # Flush memory
+        movie_clip.unload()
+        gc.collect() # Collect garbarge
 
         return trial
 
@@ -1688,6 +1692,10 @@ class ActionPrediction(Task):
         # display trial feedback
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
 
+        # Flush memory
+        movie_clip.unload()
+        gc.collect() # Collect garbarge
+
         return trial
 
 class Movie(Task):
@@ -1731,6 +1739,10 @@ class Movie(Task):
             movie_clip.draw()
             self.window.flip()
             self.ttl_clock.update()
+
+        # Flush memory
+        movie_clip.unload()
+        gc.collect() # Collect garbarge
         
         return trial
     
@@ -1831,6 +1843,11 @@ class StrangeStories(Task):
         # collect responses 0: no response 1-4: key pressed
         trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['answer_dur'])
         trial['score'] = scores_shuffled[trial['response']-1]
+
+        # Flush memory
+        movie_clip.unload()
+        gc.collect() # Collect garbarge
+
         return trial
     
 
@@ -1977,6 +1994,11 @@ class FrithHappe(Task):
 
         # display trial feedback
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
+
+        # Flush movie from memory
+        movie_clip.unload()
+        gc.collect() # Collect garbarge
+
         return trial
     
 
@@ -2063,5 +2085,10 @@ class Liking(Task):
         
         # display trial feedback
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
+
+        # Flush memory
+        movie_clip.unload()
+        gc.collect() # Collect garbarge
+        
         return trial
     
