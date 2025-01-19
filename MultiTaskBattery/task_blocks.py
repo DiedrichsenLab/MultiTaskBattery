@@ -11,7 +11,7 @@ from psychopy import visual, sound, core, event
 import MultiTaskBattery.utils as ut
 from ast import literal_eval
 from copy import deepcopy
-import re
+from moviepy import AudioFileClip
 
 
 class Task:
@@ -1776,8 +1776,20 @@ class StrangeStories(Task):
         # Convert Path object to string for compatibility
         movie_path_str = str(movie_path)
 
+        #Plays the movie audio
+        audio_clip = AudioFileClip(movie_path)
+        sample_rate = 48000
+        audio_array = audio_clip.to_soundarray(fps=sample_rate)
+        audio = sound.Sound(audio_array,sampleRate=sample_rate, stereo=True)
+        
         # Create a MovieStim object
-        movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False, size=(stim_width, stim_height), pos=(0, 0))
+        movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False, size=(stim_width, stim_height), pos=(0, 0),noAudio=True)
+        movie_clip.draw()
+        
+        # Play the movie and audio
+        audio.play()
+        movie_clip.play()
+        self.window.flip()
 
         
         movie_clip.draw()
@@ -1789,7 +1801,8 @@ class StrangeStories(Task):
             movie_clip.play()
             movie_clip.draw()
             self.window.flip()
-            self.ttl_clock.update()
+
+        audio.stop()
 
         # Flush any keys in buffer
         event.clearEvents()
@@ -2019,10 +2032,25 @@ class Liking(Task):
         movie_path = Path(self.const.stim_dir) / self.name / 'clips' / (movie_file_name + '.mov')
         # Convert Path object to string for compatibility
         movie_path_str = str(movie_path)
+
+        # Play the audio from the movie
+        sample_rate = 44100
+        audio_clip = AudioFileClip(movie_path)
+        audio_array = audio_clip.to_soundarray(fps=sample_rate)
+        audio = sound.Sound(audio_array,sampleRate=sample_rate, stereo=True)
+
         # Create a MovieStim object
         movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False,
                                     size=(stim_width, stim_height),
-                                    pos=(0, 0))
+                                    pos=(0, 0),noAudio=True)
+        
+        # Play the movie and audio
+        movie_clip.draw()
+        audio.play()
+        movie_clip.play()
+        self.window.flip()
+        
+
 
         # Play through the movie frame by frame
         max_video_duration = 24
@@ -2037,6 +2065,8 @@ class Liking(Task):
             movie_clip.draw()
             self.window.flip()
             self.ttl_clock.update()
+
+        audio.stop()
 
         # Flush any keys in buffer
         event.clearEvents()
