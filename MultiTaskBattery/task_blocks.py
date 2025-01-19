@@ -11,7 +11,6 @@ from psychopy import visual, sound, core, event
 import MultiTaskBattery.utils as ut
 from ast import literal_eval
 from copy import deepcopy
-import re
 from moviepy import AudioFileClip
 
 
@@ -1742,12 +1741,13 @@ class StrangeStories(Task):
         sample_rate = 48000
         audio_array = audio_clip.to_soundarray(fps=sample_rate)
         audio = sound.Sound(audio_array,sampleRate=sample_rate, stereo=True)
-        audio.play()
-
-
+        
         # Create a MovieStim object
         movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False, size=(stim_width, stim_height), pos=(0, 0),noAudio=True)
         movie_clip.draw()
+        
+        # Play the movie and audio
+        audio.play()
         movie_clip.play()
         self.window.flip()
 
@@ -1988,13 +1988,15 @@ class Liking(Task):
         audio_clip = AudioFileClip(movie_path)
         audio_array = audio_clip.to_soundarray(fps=sample_rate)
         audio = sound.Sound(audio_array,sampleRate=sample_rate, stereo=True)
-        audio.play()
 
         # Create a MovieStim object
         movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False,
                                     size=(stim_width, stim_height),
                                     pos=(0, 0),noAudio=True)
+        
+        # Play the movie and audio
         movie_clip.draw()
+        audio.play()
         movie_clip.play()
         self.window.flip()
         
