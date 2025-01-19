@@ -537,6 +537,7 @@ class ActionObservation(Task):
         movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False)
 
         while movie_clip.isFinished == False:
+            movie_clip.play()
             movie_clip.draw()
             self.window.flip()
             self.ttl_clock.update()
@@ -551,7 +552,6 @@ class ActionObservation(Task):
 class DemandGrid(Task):
     def __init__(self, info, screen, ttl_clock, const, subj_id):
         super().__init__(info, screen, ttl_clock, const, subj_id)
-        self.grid_size = (3,4)
         self.square_size = 1.5
         self.feedback_type = 'acc+rt'
 
@@ -575,7 +575,7 @@ class DemandGrid(Task):
         instr_visual.draw()
         self.window.flip()
 
-    def create_grid(self, sequence=None, position='center'):
+    def create_grid(self, sequence=None, position='center',grid_size=(3,4)):
         """Creates the grid of squares for the DemandGrid task, lighting up specific squares blue if a sequence is given,
         and positions the grid left, right, or center."""
         # Calculate offsets based on the desired position
@@ -590,14 +590,13 @@ class DemandGrid(Task):
         offset_y = 0
 
         grid = []
-
         # Create and draw the grid
-        for i in range(self.grid_size[0]):
+        for i in range(grid_size[0]):
             row = []
-            for j in range(self.grid_size[1]):
+            for j in range(grid_size[1]):
                 # Calculate position with the offsets
-                square_x = (j - self.grid_size[0] / 2 + 0.5) * self.square_size + offset_x
-                square_y = (self.grid_size[1] / 2 - i - 0.5) * self.square_size + offset_y
+                square_x = (j - grid_size[0] / 2 + 0.5) * self.square_size + offset_x
+                square_y = (grid_size[1] / 2 - i - 0.5) * self.square_size + offset_y
 
                 # Determine the fill color based on the sequence
                 fill_color = 'blue' if sequence and (i, j) in sequence else 'white'
@@ -611,34 +610,70 @@ class DemandGrid(Task):
 
         return grid
 
-
     def run_trial(self, trial):
         """Runs a single trial of the DemandGrid task with two boxes lighting up at a time"""
         # Draw the entire grid in its initial state
-        self.grid = self.create_grid()
+        if 'grid_size' in trial:
+            grid_size = literal_eval(trial['grid_size'])
+        else:
+            grid_size = (3,4)
+
+        # Make the code adaptable to old DemandGrid implementation
+        if 'num_steps' in trial:
+            num_steps = trial['num_steps']
+        else:
+            num_steps = 3
+
+        step_dur = trial['sequence_dur']/num_steps
+        self.grid = self.create_grid(grid_size=grid_size)
         self.window.flip()
 
-        # Display the sequence in pairs
-        original_sequence = literal_eval(trial['grid_sequence'])
-        for i in range(0, len(original_sequence), 2):  # Iterate in steps of 2
-            if i + 1 < len(original_sequence):
-                pair = [original_sequence[i], original_sequence[i + 1]]
-            else:
-                pair = [original_sequence[i]]  # In case of an odd number of elements in the sequence
+        # Display the sequence in steps
+        if 'original_sequence' in trial:
+            original_sequence = literal_eval(trial['original_sequence'])
+        else:
+            original_sequence = literal_eval(trial['grid_sequence'])
 
-            for pos in pair:
-                x, y = pos
-                self.grid[x][y].fillColor = 'blue'
+        if 'num_steps' in trial: # new implementation
+            for i in range(num_steps):
+                step_sequence_name = f'original_step_{i+1}'
+                step_sequence = literal_eval(trial[step_sequence_name])
 
-            for row in self.grid:
-                for rect in row:
-                    rect.draw()
-            self.window.flip()
-            self.ttl_clock.wait_until(self.ttl_clock.get_time() + 1) # Wait for 1 second for each box/pair to light up
+                for tuple in step_sequence:
+                    x, y = tuple
+                    self.grid[x][y].fillColor = 'blue'
 
-            for pos in pair:
-                x, y = pos
-                self.grid[x][y].fillColor = 'white'
+                for row in self.grid:
+                    for rect in row:
+                        rect.draw()
+                self.window.flip()
+                self.ttl_clock.wait_until(self.ttl_clock.get_time() + step_dur)
+
+                for tuple in step_sequence:
+                    x, y = tuple
+                    self.grid[x][y].fillColor = 'white'
+
+        else: # old implementation
+            for i in range(0, len(original_sequence), 2):  # Iterate in steps of 2
+                if i + 1 < len(original_sequence):
+                    pair = [original_sequence[i], original_sequence[i + 1]]
+                else:
+                    pair = [original_sequence[i]]  # Handle odd-length sequences
+
+                # Highlight positions in the current pair
+                for x, y in pair:
+                    self.grid[x][y].fillColor = 'blue'
+
+                # Draw and update the window
+                for row in self.grid:
+                    for rect in row:
+                        rect.draw()
+                self.window.flip()
+                self.ttl_clock.wait_until(self.ttl_clock.get_time() + step_dur)
+
+                # Reset colors after the pair
+                for x, y in pair:
+                    self.grid[x][y].fillColor = 'white'
 
         # Flush any keys in buffer
         event.clearEvents()
@@ -650,8 +685,8 @@ class DemandGrid(Task):
         # # Display the original and modified sequence on the left or right side
         modified_sequence = literal_eval(trial['modified_sequence'])
 
-        original_grid = self.create_grid(sequence=original_sequence, position=correct_side)
-        modified_grid = self.create_grid(sequence=modified_sequence, position='left' if correct_side == 'right' else 'right')
+        original_grid = self.create_grid(sequence=original_sequence, position=correct_side, grid_size=grid_size)
+        modified_grid = self.create_grid(sequence=modified_sequence, position='left' if correct_side == 'right' else 'right', grid_size=grid_size)
         self.window.flip()
 
         # collect responses 0: no response 1-4: key pressed
@@ -1624,10 +1659,13 @@ class ActionPrediction(Task):
         movie_path_str = str(movie_path)
         movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False, noAudio=True, size=(stim_width, stim_height), pos=(0, 0))
 
+        movie_clip.play()
         movie_clip.draw()
         self.window.flip()
+        
 
         while movie_clip.isFinished == False:
+            movie_clip.play()
             movie_clip.draw()
             self.window.flip()
             self.ttl_clock.update()
@@ -1685,9 +1723,11 @@ class Movie(Task):
         movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False, size=(stim_width, stim_height), pos=(0, 0))
 
         movie_clip.draw()
+        movie_clip.play()
         self.window.flip()
 
         while movie_clip.isFinished == False:
+            movie_clip.play()
             movie_clip.draw()
             self.window.flip()
             self.ttl_clock.update()
@@ -1739,8 +1779,14 @@ class StrangeStories(Task):
         # Create a MovieStim object
         movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False, size=(stim_width, stim_height), pos=(0, 0))
 
+        
+        movie_clip.draw()
+        movie_clip.play()
+        self.window.flip()
+
         # Play through the movie frame by frame
         while movie_clip.isFinished == False:
+            movie_clip.play()
             movie_clip.draw()
             self.window.flip()
             self.ttl_clock.update()
@@ -1893,9 +1939,14 @@ class FrithHappe(Task):
         movie_path_str = str(movie_path)
         # Create a MovieStim object
         movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False, size=(stim_width, stim_height), pos=(0, 0))
+        
+        movie_clip.draw()
+        movie_clip.play()
+        self.window.flip()
 
         # Play through the movie frame by frame
         while movie_clip.isFinished == False:
+            movie_clip.play()
             movie_clip.draw()
             self.window.flip()
             self.ttl_clock.update()
@@ -1976,7 +2027,13 @@ class Liking(Task):
         # Play through the movie frame by frame
         max_video_duration = 24
         movie_start_time = self.ttl_clock.get_time()
+        
+        movie_clip.draw()
+        movie_clip.play()
+        self.window.flip()
+
         while self.ttl_clock.get_time() - movie_start_time < max_video_duration:
+            movie_clip.play()
             movie_clip.draw()
             self.window.flip()
             self.ttl_clock.update()
