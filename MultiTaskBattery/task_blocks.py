@@ -2108,7 +2108,12 @@ class Liking(Task):
 
         # collect responses 0: no response 1-4: key pressed
         trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['question_dur'])
-        trial['correct'] = (trial['response'] in [1, 2]) == (trial['condition'] == 'dislike') # Everything below 2 counts as dislike, everything above as like, 0 is no response and is not counted as correct
+        if trial['condition'] == 'like':
+            trial['correct'] = (trial['response'] in [3, 4])
+        elif trial['condition'] == 'dislike':
+            trial['correct'] = (trial['response'] in [1, 2])
+        else:
+            trial['correct'] = False
         
         # Record the played video duration
         trial['video_dur_orig'] = trial['video_dur']
