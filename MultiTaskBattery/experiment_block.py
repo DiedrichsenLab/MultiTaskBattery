@@ -202,11 +202,14 @@ class Experiment:
         # Define column headers
         scores = [["Score:", "", ""], ["", "Correct", "Time"]]
         # Add each task's data to the score text
-        for t, _ in enumerate(run_data.task_name.values):
-            if self.task_obj_list[t].feedback_type.lower() != 'none':
-                task_name = f"{self.task_obj_list[t].descriptive_name}"
-                accuracy = f"{int(run_data.acc[t]*100)} %" if not np.isnan(run_data.acc[t]) else "-"
-                rt = f"{run_data.rt[t]:.2f} s" if not np.isnan(run_data.rt[t]) else "-"
+        task_object_names = [obj.name for obj in self.task_obj_list]
+        for r, name in enumerate(run_data.task_name.values):
+            task_idx = task_object_names.index(name)
+            if self.task_obj_list[task_idx].feedback_type.lower() != 'none':
+                task_name = f"{self.task_obj_list[task_idx].descriptive_name}"
+                acc = run_data.acc[r]
+                accuracy = f"{int(acc*100)} %" if not np.isnan(acc) else "-"
+                rt = f"{run_data.rt[r]:.2f} s" if not np.isnan(run_data.rt[r]) else "-"
                 scores.append([task_name, accuracy, rt])
         
         # Display settings
@@ -240,6 +243,8 @@ class Experiment:
         # Draw the scores
         [el.draw() for el in elements]
         self.screen.window.flip()
+
+        # Wait for a key press
         event.waitKeys()
 
 

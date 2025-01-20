@@ -12,6 +12,7 @@ import MultiTaskBattery.utils as ut
 from ast import literal_eval
 from copy import deepcopy
 from moviepy import AudioFileClip
+import gc
 
 
 class Task:
@@ -546,6 +547,10 @@ class ActionObservation(Task):
 
         # Display trial feedback
         self.display_trial_feedback(give_feedback= trial['display_trial_feedback'], correct_response = None)
+
+        # Flush memory
+        movie_clip.unload()
+        gc.collect() # Collect garbarge
 
         return trial
 
@@ -1688,6 +1693,10 @@ class ActionPrediction(Task):
         # display trial feedback
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
 
+        # Flush memory
+        movie_clip.unload()
+        gc.collect() # Collect garbarge
+
         return trial
 
 class Movie(Task):
@@ -1720,7 +1729,7 @@ class Movie(Task):
         movie_path_str = str(movie_path)
 
         # Create a MovieStim3 object
-        movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False, size=(stim_width, stim_height), pos=(0, 0))
+        movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False, size=(stim_width, stim_height), pos=(0, 0), noAudio=True)
 
         movie_clip.draw()
         movie_clip.play()
@@ -1731,6 +1740,10 @@ class Movie(Task):
             movie_clip.draw()
             self.window.flip()
             self.ttl_clock.update()
+
+        # Flush memory
+        movie_clip.unload()
+        gc.collect() # Collect garbarge
         
         return trial
     
@@ -1783,16 +1796,15 @@ class StrangeStories(Task):
         audio = sound.Sound(audio_array,sampleRate=sample_rate, stereo=True)
         
         # Create a MovieStim object
-        movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False, size=(stim_width, stim_height), pos=(0, 0),noAudio=True)
+        movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False, size=(stim_width, stim_height), pos=(0, 0), noAudio=True)
+        # Create an audio object
+        sample_rate = 48000
+        audio_clip = AudioFileClip(movie_path)
+        audio_array = audio_clip.to_soundarray(fps=sample_rate)
+        audio = sound.Sound(audio_array,sampleRate=sample_rate, stereo=True)
+                
         movie_clip.draw()
-        
-        # Play the movie and audio
         audio.play()
-        movie_clip.play()
-        self.window.flip()
-
-        
-        movie_clip.draw()
         movie_clip.play()
         self.window.flip()
 
@@ -1801,6 +1813,8 @@ class StrangeStories(Task):
             movie_clip.play()
             movie_clip.draw()
             self.window.flip()
+
+        audio.stop()
 
         audio.stop()
 
@@ -1844,6 +1858,11 @@ class StrangeStories(Task):
         # collect responses 0: no response 1-4: key pressed
         trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['answer_dur'])
         trial['score'] = scores_shuffled[trial['response']-1]
+
+        # Flush memory
+        movie_clip.unload()
+        gc.collect() # Collect garbarge
+
         return trial
     
 
@@ -1951,7 +1970,7 @@ class FrithHappe(Task):
         # Convert Path object to string for compatibility
         movie_path_str = str(movie_path)
         # Create a MovieStim object
-        movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False, size=(stim_width, stim_height), pos=(0, 0))
+        movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False, size=(stim_width, stim_height), pos=(0, 0), noAudio=True)
         
         movie_clip.draw()
         movie_clip.play()
@@ -1990,6 +2009,11 @@ class FrithHappe(Task):
 
         # display trial feedback
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
+
+        # Flush movie from memory
+        movie_clip.unload()
+        gc.collect() # Collect garbarge
+
         return trial
     
 
@@ -2038,14 +2062,13 @@ class Liking(Task):
         audio_clip = AudioFileClip(movie_path)
         audio_array = audio_clip.to_soundarray(fps=sample_rate)
         audio = sound.Sound(audio_array,sampleRate=sample_rate, stereo=True)
-
+        
         # Create a MovieStim object
         movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False,
                                     size=(stim_width, stim_height),
                                     pos=(0, 0),noAudio=True)
-        
-        # Play the movie and audio
         movie_clip.draw()
+        
         audio.play()
         movie_clip.play()
         self.window.flip()
@@ -2093,5 +2116,10 @@ class Liking(Task):
         
         # display trial feedback
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
+
+        # Flush memory
+        movie_clip.unload()
+        gc.collect() # Collect garbarge
+        
         return trial
     
