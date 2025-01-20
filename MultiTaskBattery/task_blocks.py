@@ -1789,6 +1789,12 @@ class StrangeStories(Task):
         # Convert Path object to string for compatibility
         movie_path_str = str(movie_path)
 
+        #Plays the movie audio
+        audio_clip = AudioFileClip(movie_path)
+        sample_rate = 48000
+        audio_array = audio_clip.to_soundarray(fps=sample_rate)
+        audio = sound.Sound(audio_array,sampleRate=sample_rate, stereo=True)
+        
         # Create a MovieStim object
         movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False, size=(stim_width, stim_height), pos=(0, 0), noAudio=True)
         # Create an audio object
@@ -1807,7 +1813,8 @@ class StrangeStories(Task):
             movie_clip.play()
             movie_clip.draw()
             self.window.flip()
-            self.ttl_clock.update()
+
+        audio.stop()
 
         audio.stop()
 
