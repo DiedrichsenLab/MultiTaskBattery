@@ -1646,7 +1646,7 @@ class ActionPrediction(Task):
         else:
             self.instruction_text += "\n\n Choose where the ball will land or how the people will greet each other." # General instruction for both age and emotion
             self.instruction_text += f"\n\n\nLEFT/HUG: index finger \tRIGHT/SHAKE HANDS: middle finger\n"
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1], wrapWidth=20, pos=(0, 0))
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1], wrapWidth=25, pos=(0, 0))
         instr_visual.draw()
         self.window.flip()
 
@@ -1655,12 +1655,15 @@ class ActionPrediction(Task):
         """ Runs a single trial of the Action Prediction task """
 
         event.clearEvents()
-        window_width, _ = self.window.size
-        stim_width = int(window_width * 0.7) # Make the video 70% of the window width
-        stim_height = int(stim_width  * 476 / 846)  # 846x476 is the original size of the video given in width x height
 
+        window_width, _ = self.window.size
+        movie_scale = self.const.movie_scale if hasattr(self.const, 'action_prediction_scale') else 0.4
+        stim_width = int(window_width * movie_scale) # Make the video fraction of the window width
+        stim_height = int(stim_width  * 476 / 846)  # Original size of the video is 640x360
+        
+        
         # Display video        
-        movie_path = Path(self.const.stim_dir) / self.name / 'modified_clips' / f"{trial['stim']}.mp4"
+        movie_path = Path(self.const.stim_dir) / self.name / 'clips' / f"{trial['stim']}.mp4"
         movie_path_str = str(movie_path)
         movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False, noAudio=True, size=(stim_width, stim_height), pos=(0, 0))
 
@@ -1680,15 +1683,16 @@ class ActionPrediction(Task):
         event.clearEvents()
 
         # Display question
+        options = trial['options'].split(',')
         question = trial['question']
-        question += f"\n\n\n{self.corr_key[0]}. {trial['options'].split(',')[0]} \t\t\t{self.corr_key[1]}. {trial['options'].split(',')[1]}"
+        question += f"\n\n\n{self.corr_key[0]}. {options[0]} \t\t\t{self.corr_key[1]}. {options[1]}"
         question_stim = visual.TextStim(self.window, text=question, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=25)
         question_stim.draw()
         self.window.flip()
 
         # collect responses 0: no response 1-4: key pressed
         trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['question_dur'])
-        trial['correct'] = (trial['response'] == trial.options.index(str(trial['answer'])))
+        trial['correct'] = (trial['response'] == options.index(str(trial['answer']))+1)
 
         # display trial feedback
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
@@ -2108,7 +2112,12 @@ class Liking(Task):
 
         # collect responses 0: no response 1-4: key pressed
         trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['question_dur'])
-        trial['correct'] = (trial['response'] in [1, 2]) == (trial['condition'] == 'dislike') # Everything below 2 counts as dislike, everything above as like, 0 is no response and is not counted as correct
+        if trial['condition'] == 'like':
+            trial['correct'] = (trial['response'] in [3, 4])
+        elif trial['condition'] == 'dislike':
+            trial['correct'] = (trial['response'] in [1, 2])
+        else:
+            trial['correct'] = False
         
         # Record the played video duration
         trial['video_dur_orig'] = trial['video_dur']
