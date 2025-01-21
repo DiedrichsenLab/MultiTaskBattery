@@ -1292,9 +1292,9 @@ class ActionPrediction(TaskFile):
         t = 0
 
         if stim_file:
-            stim = pd.read_csv(self.stim_dir / self.name / stim_file)
+            stim = pd.read_csv(self.stim_dir / self.name / stim_file, sep='\t')
         else:
-            stim = pd.read_csv(self.stim_dir / self.name / f'{self.name}.csv')
+            stim = pd.read_csv(self.stim_dir / self.name / f'{self.name}.csv', sep='\t')
 
         if condition:
             stim = stim[stim['condition'] == condition]
