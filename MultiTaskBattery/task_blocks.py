@@ -1660,7 +1660,7 @@ class ActionPrediction(Task):
         stim_height = int(stim_width  * 476 / 846)  # 846x476 is the original size of the video given in width x height
 
         # Display video        
-        movie_path = Path(self.const.stim_dir) / self.name / 'modified_clips' / f"{trial['stim']}.mp4"
+        movie_path = Path(self.const.stim_dir) / self.name / 'clips' / f"{trial['stim']}.mp4"
         movie_path_str = str(movie_path)
         movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False, noAudio=True, size=(stim_width, stim_height), pos=(0, 0))
 
