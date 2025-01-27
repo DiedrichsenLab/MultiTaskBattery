@@ -121,7 +121,7 @@ class Experiment:
         """
         run a run of the experiment
         """
-        print(f"running the experiment")
+        print(f"Running the experiment - run {self.run_number}")
         self.screen.fixation_cross()
         self.ttl_clock.reset()
         self.ttl_clock.wait_for_first_ttl(wait = self.wait_ttl)
@@ -135,7 +135,7 @@ class Experiment:
             # clear keys in buffer
             event.clearEvents()
 
-            print(f"Starting: {task.name}")
+            print(f"Starting task {t_num}: {task.name}")
 
             # Take the task data from the run_info dataframe
             r_data = self.run_info.iloc[t_num].copy()
