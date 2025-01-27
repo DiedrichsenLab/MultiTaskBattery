@@ -121,7 +121,7 @@ class Experiment:
         """
         run a run of the experiment
         """
-        print(f"running the experiment")
+        print(f"running the experiment - run {self.run_number}")
         self.screen.fixation_cross()
         self.ttl_clock.reset()
         self.ttl_clock.wait_for_first_ttl(wait = self.wait_ttl)

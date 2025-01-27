@@ -182,6 +182,17 @@ class Task:
                 self.window.close()
                 core.quit()
 
+    def get_audio_from_movie(self, movie_path, sample_rate=48000):
+        """Seperates the audio from the movie file and returns the audio object (for better memory handling when playing movies with sound)"""
+
+        # Gets the movie audio
+        audio_clip = AudioFileClip(movie_path)
+        audio_array = audio_clip.to_soundarray(fps=sample_rate)
+        audio_clip.close()
+        audio = sound.Sound(audio_array,sampleRate=sample_rate, stereo=True)
+
+        return audio
+
 class NBack(Task):
 
     def __init__(self, info, screen, ttl_clock, const, subj_id):
@@ -1793,19 +1804,10 @@ class StrangeStories(Task):
         # Convert Path object to string for compatibility
         movie_path_str = str(movie_path)
 
-        #Plays the movie audio
-        audio_clip = AudioFileClip(movie_path)
-        sample_rate = 48000
-        audio_array = audio_clip.to_soundarray(fps=sample_rate)
-        audio = sound.Sound(audio_array,sampleRate=sample_rate, stereo=True)
-        
         # Create a MovieStim object
-        movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False, size=(stim_width, stim_height), pos=(0, 0), noAudio=True)
-        # Create an audio object
-        sample_rate = 48000
-        audio_clip = AudioFileClip(movie_path)
-        audio_array = audio_clip.to_soundarray(fps=sample_rate)
-        audio = sound.Sound(audio_array,sampleRate=sample_rate, stereo=True)
+        movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False, size=(stim_width, stim_height), pos=(0, 0), noAudio=False)
+
+        audio = self.get_audio_from_movie(movie_path, sample_rate=48000)
                 
         movie_clip.draw()
         audio.play()
@@ -1817,8 +1819,6 @@ class StrangeStories(Task):
             movie_clip.play()
             movie_clip.draw()
             self.window.flip()
-
-        audio.stop()
 
         audio.stop()
 
@@ -2061,29 +2061,23 @@ class Liking(Task):
         # Convert Path object to string for compatibility
         movie_path_str = str(movie_path)
 
-        # Play the audio from the movie
-        sample_rate = 44100
-        audio_clip = AudioFileClip(movie_path)
-        audio_array = audio_clip.to_soundarray(fps=sample_rate)
-        audio = sound.Sound(audio_array,sampleRate=sample_rate, stereo=True)
-        
+        play_audio_separatly = False
+        if play_audio_separatly:
+            # Play the audio from the movie
+            audio = self.get_audio_from_movie(movie_path, sample_rate=48000)
+
         # Create a MovieStim object
         movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False,
                                     size=(stim_width, stim_height),
-                                    pos=(0, 0),noAudio=True)
-        movie_clip.draw()
-        
-        audio.play()
-        movie_clip.play()
-        self.window.flip()
-        
-
+                                    pos=(0, 0),noAudio=play_audio_separatly)
 
         # Play through the movie frame by frame
         max_video_duration = 24
         movie_start_time = self.ttl_clock.get_time()
         
         movie_clip.draw()
+        if play_audio_separatly:
+            audio.play()
         movie_clip.play()
         self.window.flip()
 
@@ -2093,7 +2087,8 @@ class Liking(Task):
             self.window.flip()
             self.ttl_clock.update()
 
-        audio.stop()
+        if play_audio_separatly:
+            audio.stop()
 
         # Flush any keys in buffer
         event.clearEvents()
