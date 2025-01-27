@@ -62,7 +62,7 @@ class Task:
         # instr.size = 0.8
         instr_visual.draw()
         self.window.flip()
-
+    
     def run(self):
         """Loop over trials and collects data
         Data will be stored in self.trial_data
