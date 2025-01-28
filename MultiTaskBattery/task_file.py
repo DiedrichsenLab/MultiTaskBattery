@@ -1149,7 +1149,7 @@ class PictureSequence(TaskFile):
                         run_number=None,
                         task_dur=30,
                         trial_dur=14,
-                        iti_dur=1,
+                        iti_dur=1.5,
                         file_name=None,
                         stim_file = None,
                         condition=None):
@@ -1278,7 +1278,7 @@ class ActionPrediction(TaskFile):
                         responses = [1,2],
                         run_number=None,
                         task_dur=30,
-                        trial_dur=6,
+                        trial_dur=5,
                         iti_dur=1, 
                         question_dur=4,
                         file_name=None,
