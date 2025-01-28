@@ -61,7 +61,7 @@ picture,condition,options,answer,stimulus_id,half
 46Indifferent-A.jpg,age,"23,29,43,57",29,21,1
 46Indifferent-B.jpg,age,"22,29,44,69",22,22,1
 17Confident-M.jpg,age,"25,34,63,76",25,23,1
-11Ashamed-J.jpg,age,"18, 24,56,79",24,24,1
+11Ashamed-J.jpg,age,"18,24,56,79",24,24,1
 5Amused-Ly.jpg,age,"18,44,52,56",44,25,1
 1Accusing-L.jpg,age,"29,36,49,63",29,26,1
 5Amused-D.jpg,age,"45,50,56,66",45,27,1
