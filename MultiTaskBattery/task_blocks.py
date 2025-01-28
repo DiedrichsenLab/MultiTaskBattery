@@ -11,7 +11,8 @@ from psychopy import visual, sound, core, event
 import MultiTaskBattery.utils as ut
 from ast import literal_eval
 from copy import deepcopy
-import re
+from moviepy import AudioFileClip
+import gc
 
 
 class Task:
@@ -61,7 +62,7 @@ class Task:
         # instr.size = 0.8
         instr_visual.draw()
         self.window.flip()
-
+    
     def run(self):
         """Loop over trials and collects data
         Data will be stored in self.trial_data
@@ -180,6 +181,17 @@ class Task:
             if 'q' and 'esc' in key:
                 self.window.close()
                 core.quit()
+
+    def get_audio_from_movie(self, movie_path, sample_rate=48000):
+        """Seperates the audio from the movie file and returns the audio object (for better memory handling when playing movies with sound)"""
+
+        # Gets the movie audio
+        audio_clip = AudioFileClip(movie_path)
+        audio_array = audio_clip.to_soundarray(fps=sample_rate)
+        audio_clip.close()
+        audio = sound.Sound(audio_array,sampleRate=sample_rate, stereo=True)
+
+        return audio
 
 class NBack(Task):
 
@@ -547,12 +559,15 @@ class ActionObservation(Task):
         # Display trial feedback
         self.display_trial_feedback(give_feedback= trial['display_trial_feedback'], correct_response = None)
 
+        # Flush memory
+        movie_clip.unload()
+        gc.collect() # Collect garbarge
+
         return trial
 
 class DemandGrid(Task):
     def __init__(self, info, screen, ttl_clock, const, subj_id):
         super().__init__(info, screen, ttl_clock, const, subj_id)
-        self.grid_size = (3,4)
         self.square_size = 1.5
         self.feedback_type = 'acc+rt'
 
@@ -576,7 +591,7 @@ class DemandGrid(Task):
         instr_visual.draw()
         self.window.flip()
 
-    def create_grid(self, sequence=None, position='center'):
+    def create_grid(self, sequence=None, position='center',grid_size=(3,4)):
         """Creates the grid of squares for the DemandGrid task, lighting up specific squares blue if a sequence is given,
         and positions the grid left, right, or center."""
         # Calculate offsets based on the desired position
@@ -591,14 +606,13 @@ class DemandGrid(Task):
         offset_y = 0
 
         grid = []
-
         # Create and draw the grid
-        for i in range(self.grid_size[0]):
+        for i in range(grid_size[0]):
             row = []
-            for j in range(self.grid_size[1]):
+            for j in range(grid_size[1]):
                 # Calculate position with the offsets
-                square_x = (j - self.grid_size[0] / 2 + 0.5) * self.square_size + offset_x
-                square_y = (self.grid_size[1] / 2 - i - 0.5) * self.square_size + offset_y
+                square_x = (j - grid_size[0] / 2 + 0.5) * self.square_size + offset_x
+                square_y = (grid_size[1] / 2 - i - 0.5) * self.square_size + offset_y
 
                 # Determine the fill color based on the sequence
                 fill_color = 'blue' if sequence and (i, j) in sequence else 'white'
@@ -612,34 +626,70 @@ class DemandGrid(Task):
 
         return grid
 
-
     def run_trial(self, trial):
         """Runs a single trial of the DemandGrid task with two boxes lighting up at a time"""
         # Draw the entire grid in its initial state
-        self.grid = self.create_grid()
+        if 'grid_size' in trial:
+            grid_size = literal_eval(trial['grid_size'])
+        else:
+            grid_size = (3,4)
+
+        # Make the code adaptable to old DemandGrid implementation
+        if 'num_steps' in trial:
+            num_steps = trial['num_steps']
+        else:
+            num_steps = 3
+
+        step_dur = trial['sequence_dur']/num_steps
+        self.grid = self.create_grid(grid_size=grid_size)
         self.window.flip()
 
-        # Display the sequence in pairs
-        original_sequence = literal_eval(trial['grid_sequence'])
-        for i in range(0, len(original_sequence), 2):  # Iterate in steps of 2
-            if i + 1 < len(original_sequence):
-                pair = [original_sequence[i], original_sequence[i + 1]]
-            else:
-                pair = [original_sequence[i]]  # In case of an odd number of elements in the sequence
+        # Display the sequence in steps
+        if 'original_sequence' in trial:
+            original_sequence = literal_eval(trial['original_sequence'])
+        else:
+            original_sequence = literal_eval(trial['grid_sequence'])
 
-            for pos in pair:
-                x, y = pos
-                self.grid[x][y].fillColor = 'blue'
+        if 'num_steps' in trial: # new implementation
+            for i in range(num_steps):
+                step_sequence_name = f'original_step_{i+1}'
+                step_sequence = literal_eval(trial[step_sequence_name])
 
-            for row in self.grid:
-                for rect in row:
-                    rect.draw()
-            self.window.flip()
-            self.ttl_clock.wait_until(self.ttl_clock.get_time() + 1) # Wait for 1 second for each box/pair to light up
+                for tuple in step_sequence:
+                    x, y = tuple
+                    self.grid[x][y].fillColor = 'blue'
 
-            for pos in pair:
-                x, y = pos
-                self.grid[x][y].fillColor = 'white'
+                for row in self.grid:
+                    for rect in row:
+                        rect.draw()
+                self.window.flip()
+                self.ttl_clock.wait_until(self.ttl_clock.get_time() + step_dur)
+
+                for tuple in step_sequence:
+                    x, y = tuple
+                    self.grid[x][y].fillColor = 'white'
+
+        else: # old implementation
+            for i in range(0, len(original_sequence), 2):  # Iterate in steps of 2
+                if i + 1 < len(original_sequence):
+                    pair = [original_sequence[i], original_sequence[i + 1]]
+                else:
+                    pair = [original_sequence[i]]  # Handle odd-length sequences
+
+                # Highlight positions in the current pair
+                for x, y in pair:
+                    self.grid[x][y].fillColor = 'blue'
+
+                # Draw and update the window
+                for row in self.grid:
+                    for rect in row:
+                        rect.draw()
+                self.window.flip()
+                self.ttl_clock.wait_until(self.ttl_clock.get_time() + step_dur)
+
+                # Reset colors after the pair
+                for x, y in pair:
+                    self.grid[x][y].fillColor = 'white'
 
         # Flush any keys in buffer
         event.clearEvents()
@@ -651,8 +701,8 @@ class DemandGrid(Task):
         # # Display the original and modified sequence on the left or right side
         modified_sequence = literal_eval(trial['modified_sequence'])
 
-        original_grid = self.create_grid(sequence=original_sequence, position=correct_side)
-        modified_grid = self.create_grid(sequence=modified_sequence, position='left' if correct_side == 'right' else 'right')
+        original_grid = self.create_grid(sequence=original_sequence, position=correct_side, grid_size=grid_size)
+        modified_grid = self.create_grid(sequence=modified_sequence, position='left' if correct_side == 'right' else 'right', grid_size=grid_size)
         self.window.flip()
 
         # collect responses 0: no response 1-4: key pressed
@@ -1607,7 +1657,7 @@ class ActionPrediction(Task):
         else:
             self.instruction_text += "\n\n Choose where the ball will land or how the people will greet each other." # General instruction for both age and emotion
             self.instruction_text += f"\n\n\nLEFT/HUG: index finger \tRIGHT/SHAKE HANDS: middle finger\n"
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1], wrapWidth=20, pos=(0, 0))
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1], wrapWidth=25, pos=(0, 0))
         instr_visual.draw()
         self.window.flip()
 
@@ -1616,12 +1666,15 @@ class ActionPrediction(Task):
         """ Runs a single trial of the Action Prediction task """
 
         event.clearEvents()
-        window_width, _ = self.window.size
-        stim_width = int(window_width * 0.7) # Make the video 70% of the window width
-        stim_height = int(stim_width  * 476 / 846)  # 846x476 is the original size of the video given in width x height
 
+        window_width, _ = self.window.size
+        movie_scale = self.const.movie_scale if hasattr(self.const, 'action_prediction_scale') else 0.4
+        stim_width = int(window_width * movie_scale) # Make the video fraction of the window width
+        stim_height = int(stim_width  * 476 / 846)  # Original size of the video is 640x360
+        
+        
         # Display video        
-        movie_path = Path(self.const.stim_dir) / self.name / 'modified_clips' / f"{trial['stim']}.mp4"
+        movie_path = Path(self.const.stim_dir) / self.name / 'clips' / f"{trial['stim']}.mp4"
         movie_path_str = str(movie_path)
         movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False, noAudio=True, size=(stim_width, stim_height), pos=(0, 0))
 
@@ -1641,18 +1694,23 @@ class ActionPrediction(Task):
         event.clearEvents()
 
         # Display question
+        options = trial['options'].split(',')
         question = trial['question']
-        question += f"\n\n\n{self.corr_key[0]}. {trial['options'].split(',')[0]} \t\t\t{self.corr_key[1]}. {trial['options'].split(',')[1]}"
+        question += f"\n\n\n{self.corr_key[0]}. {options[0]} \t\t\t{self.corr_key[1]}. {options[1]}"
         question_stim = visual.TextStim(self.window, text=question, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=25)
         question_stim.draw()
         self.window.flip()
 
         # collect responses 0: no response 1-4: key pressed
         trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['question_dur'])
-        trial['correct'] = (trial['response'] == trial.options.index(str(trial['answer'])))
+        trial['correct'] = (trial['response'] == options.index(str(trial['answer']))+1)
 
         # display trial feedback
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
+
+        # Flush memory
+        movie_clip.unload()
+        gc.collect() # Collect garbarge
 
         return trial
 
@@ -1686,7 +1744,7 @@ class Movie(Task):
         movie_path_str = str(movie_path)
 
         # Create a MovieStim3 object
-        movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False, size=(stim_width, stim_height), pos=(0, 0))
+        movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False, size=(stim_width, stim_height), pos=(0, 0), noAudio=True)
 
         
         movie_clip.play()
@@ -1697,6 +1755,10 @@ class Movie(Task):
             movie_clip.draw()
             self.window.flip()
             self.ttl_clock.update()
+
+        # Flush memory
+        movie_clip.unload()
+        gc.collect() # Collect garbarge
         
         return trial
     
@@ -1742,11 +1804,20 @@ class StrangeStories(Task):
         # Convert Path object to string for compatibility
         movie_path_str = str(movie_path)
 
-        # Create a MovieStim object
-        movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False, size=(stim_width, stim_height), pos=(0, 0))
+        # Play the audio separately for better memory management
+        play_audio_separatly = True
 
+        # Create a MovieStim object
+        movie_clip = visual.MovieStim(self.window, movie_path_str,
+                                      loop=False, size=(stim_width, stim_height),
+                                      pos=(0, 0), noAudio=play_audio_separatly)
         
-        
+        if play_audio_separatly:
+            audio = self.get_audio_from_movie(movie_path, sample_rate=48000)
+                
+        movie_clip.draw()
+        if play_audio_separatly:
+            audio.play()
         movie_clip.play()
         self.window.flip()
 
@@ -1755,7 +1826,9 @@ class StrangeStories(Task):
             movie_clip.play()
             movie_clip.draw()
             self.window.flip()
-            self.ttl_clock.update()
+
+        if play_audio_separatly:
+            audio.stop()
 
         # Flush any keys in buffer
         event.clearEvents()
@@ -1767,9 +1840,9 @@ class StrangeStories(Task):
         options_orig = [answer_option.strip() for answer_option in trial['options'].split(',')]
         options_shuffled = deepcopy(options_orig)
         random.shuffle(options_shuffled) # Randomize the order of the answer options
-        if trial['condition'] == 'control': # Only the first option is correct (2 points)
+        if 'control' in trial['condition']: # Only the first option is correct (2 points)
             scores_orig = [2,0,0]
-        elif trial['condition'] == 'social': # First option gets 2 points, second option gets 1 point, third option gets 0 points
+        elif 'social'in trial['condition']: # First option gets 2 points, second option gets 1 point, third option gets 0 points
             scores_orig = [2,1,0]            
         scores_shuffled = [scores_orig[options_orig.index(option)] for option in options_shuffled]
 
@@ -1797,6 +1870,11 @@ class StrangeStories(Task):
         # collect responses 0: no response 1-4: key pressed
         trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['answer_dur'])
         trial['score'] = scores_shuffled[trial['response']-1]
+
+        # Flush memory
+        movie_clip.unload()
+        gc.collect() # Collect garbarge
+
         return trial
     
 
@@ -1904,7 +1982,7 @@ class FrithHappe(Task):
         # Convert Path object to string for compatibility
         movie_path_str = str(movie_path)
         # Create a MovieStim object
-        movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False, size=(stim_width, stim_height), pos=(0, 0))
+        movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False, size=(stim_width, stim_height), pos=(0, 0), noAudio=True)
         
         
         movie_clip.play()
@@ -1943,6 +2021,11 @@ class FrithHappe(Task):
 
         # display trial feedback
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
+
+        # Flush movie from memory
+        movie_clip.unload()
+        gc.collect() # Collect garbarge
+
         return trial
     
 
@@ -1985,16 +2068,24 @@ class Liking(Task):
         movie_path = Path(self.const.stim_dir) / self.name / 'clips' / (movie_file_name + '.mov')
         # Convert Path object to string for compatibility
         movie_path_str = str(movie_path)
+
+        play_audio_separatly = True
+        if play_audio_separatly:
+            # Play the audio from the movie
+            audio = self.get_audio_from_movie(movie_path, sample_rate=48000)
+
         # Create a MovieStim object
         movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False,
                                     size=(stim_width, stim_height),
-                                    pos=(0, 0))
+                                    pos=(0, 0),noAudio=play_audio_separatly)
 
         # Play through the movie frame by frame
         max_video_duration = 24
         movie_start_time = self.ttl_clock.get_time()
         
-        
+        movie_clip.draw()
+        if play_audio_separatly:
+            audio.play()
         movie_clip.play()
         self.window.flip()
 
@@ -2003,6 +2094,9 @@ class Liking(Task):
             movie_clip.draw()
             self.window.flip()
             self.ttl_clock.update()
+
+        if play_audio_separatly:
+            audio.stop()
 
         # Flush any keys in buffer
         event.clearEvents()
@@ -2021,7 +2115,12 @@ class Liking(Task):
 
         # collect responses 0: no response 1-4: key pressed
         trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['question_dur'])
-        trial['correct'] = (trial['response'] in [1, 2]) == (trial['condition'] == 'dislike') # Everything below 2 counts as dislike, everything above as like, 0 is no response and is not counted as correct
+        if trial['condition'] == 'like':
+            trial['correct'] = (trial['response'] in [3, 4])
+        elif trial['condition'] == 'dislike':
+            trial['correct'] = (trial['response'] in [1, 2])
+        else:
+            trial['correct'] = False
         
         # Record the played video duration
         trial['video_dur_orig'] = trial['video_dur']
@@ -2029,5 +2128,10 @@ class Liking(Task):
         
         # display trial feedback
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
+
+        # Flush memory
+        movie_clip.unload()
+        gc.collect() # Collect garbarge
+        
         return trial
     
