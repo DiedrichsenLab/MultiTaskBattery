@@ -1804,13 +1804,20 @@ class StrangeStories(Task):
         # Convert Path object to string for compatibility
         movie_path_str = str(movie_path)
 
-        # Create a MovieStim object
-        movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False, size=(stim_width, stim_height), pos=(0, 0), noAudio=False)
+        # Play the audio separately for better memory management
+        play_audio_separatly = True
 
-        audio = self.get_audio_from_movie(movie_path, sample_rate=48000)
+        # Create a MovieStim object
+        movie_clip = visual.MovieStim(self.window, movie_path_str,
+                                      loop=False, size=(stim_width, stim_height),
+                                      pos=(0, 0), noAudio=play_audio_separatly)
+        
+        if play_audio_separatly:
+            audio = self.get_audio_from_movie(movie_path, sample_rate=48000)
                 
         movie_clip.draw()
-        audio.play()
+        if play_audio_separatly:
+            audio.play()
         movie_clip.play()
         self.window.flip()
 
@@ -1820,7 +1827,8 @@ class StrangeStories(Task):
             movie_clip.draw()
             self.window.flip()
 
-        audio.stop()
+        if play_audio_separatly:
+            audio.stop()
 
         # Flush any keys in buffer
         event.clearEvents()
@@ -2061,7 +2069,7 @@ class Liking(Task):
         # Convert Path object to string for compatibility
         movie_path_str = str(movie_path)
 
-        play_audio_separatly = False
+        play_audio_separatly = True
         if play_audio_separatly:
             # Play the audio from the movie
             audio = self.get_audio_from_movie(movie_path, sample_rate=48000)
