@@ -1,41 +1,448 @@
-video,condition,question,options,answer,player,success,file_id,target,file_name,instructed_target
-FI_203_dynamic_5_resized,soccer,Will the ball land left or right?,"left,right",left,FI,T,203,5,FI_203,10
-FI_216_dynamic_5,soccer,Will the ball land left or right?,"left,right",left,FI,T,216,5,FI_216,14
-DC_56_dynamic_1,soccer,Will the ball land left or right?,"left,right",left,DC,T,56,1,DC_56,11
-EW_243_dynamic_5,soccer,Will the ball land left or right?,"left,right",left,EW,T,243,5,EW_243,10
-EW_145_dynamic_3,soccer,Will the ball land left or right?,"left,right",left,EW,F,145,3,EW_145,14
-EW_169_dynamic_5_resized,soccer,Will the ball land left or right?,"left,right",left,EW,T,169,5,EW_169,3
-EW_357_dynamic_3,soccer,Will the ball land left or right?,"left,right",left,EW,T,357,3,EW_357,10
-EW_174_dynamic_4,soccer,Will the ball land left or right?,"left,right",right,EW,T,174,4,EW_174,16
-EW_299_dynamic_5,soccer,Will the ball land left or right?,"left,right",left,EW,T,299,5,EW_299,11
-FI_77_dynamic_5,soccer,Will the ball land left or right?,"left,right",left,FI,T,77,5,FI_77,1
-FI_77_dynamic_1_resized,soccer,Will the ball land left or right?,"left,right",right,FI,T,77,1,FI_77,1
-EW_99_dynamic_1_resized,soccer,Will the ball land left or right?,"left,right",right,EW,T,99,1,EW_99,3
-EW_44_dynamic_1,soccer,Will the ball land left or right?,"left,right",right,EW,T,44,1,EW_44,13
-DC_330_dynamic_5_resized,soccer,Will the ball land left or right?,"left,right",left,DC,T,330,5,DC_330,11
-DC_251_dynamic_5,soccer,Will the ball land left or right?,"left,right",left,DC,T,251,5,DC_251,6
-FI_217_dynamic_5,soccer,Will the ball land left or right?,"left,right",left,FI,T,217,5,FI_217,3
-DC_289_dynamic_5,soccer,Will the ball land left or right?,"left,right",left,DC,F,289,5,DC_289,3
-FI_312_dynamic_1_resized,soccer,Will the ball land left or right?,"left,right",right,FI,T,312,1,FI_312,2
-FI_169_dynamic_4,soccer,Will the ball land left or right?,"left,right",right,FI,T,169,4,FI_169,10
-FI_30_dynamic_5,soccer,Will the ball land left or right?,"left,right",left,FI,T,30,5,FI_30,12
-DC_49_dynamic_4,soccer,Will the ball land left or right?,"left,right",right,DC,T,49,4,DC_49,1
-EW_349_dynamic_4,soccer,Will the ball land left or right?,"left,right",right,EW,T,349,4,EW_349,15
-DC_138_dynamic_5,soccer,Will the ball land left or right?,"left,right",left,DC,T,138,5,DC_138,6
-DC_57_dynamic_5_resized,soccer,Will the ball land left or right?,"left,right",left,DC,T,57,5,DC_57,12
-FI_291_dynamic_4_resized,soccer,Will the ball land left or right?,"left,right",right,FI,T,291,4,FI_291,7
-FI_96_dynamic_1_resized,soccer,Will the ball land left or right?,"left,right",right,FI,T,96,1,FI_96,16
-FI_67_dynamic_5_resized,soccer,Will the ball land left or right?,"left,right",left,FI,T,67,5,FI_67,15
-EW_94_dynamic_1_resized,soccer,Will the ball land left or right?,"left,right",right,EW,T,94,1,EW_94,10
-EW_142_dynamic_5_resized,soccer,Will the ball land left or right?,"left,right",left,EW,T,142,5,EW_142,7
-DC_304_dynamic_4,soccer,Will the ball land left or right?,"left,right",right,DC,T,304,4,DC_304,7
-EW_33_dynamic_2_resized,soccer,Will the ball land left or right?,"left,right",right,EW,T,33,2,EW_33,2
-EW_188_dynamic_1,soccer,Will the ball land left or right?,"left,right",right,EW,T,188,1,EW_188,14
-EW_357_dynamic_1,soccer,Will the ball land left or right?,"left,right",left,EW,T,357,1,EW_357,10
-EW_132_dynamic_5_resized,soccer,Will the ball land left or right?,"left,right",left,EW,F,132,5,EW_132,14
-FI_63_dynamic_2_resized,soccer,Will the ball land left or right?,"left,right",right,FI,T,63,2,FI_63,4
-DC_26_dynamic_3,soccer,Will the ball land left or right?,"left,right",right,DC,T,26,3,DC_26,16
-DC_253_dynamic_1,soccer,Will the ball land left or right?,"left,right",left,DC,T,253,1,DC_253,12
-DC_320_dynamic_3_resized,soccer,Will the ball land left or right?,"left,right",right,DC,T,320,3,DC_320,16
-FI_127_dynamic_2_resized,soccer,Will the ball land left or right?,"left,right",right,FI,T,127,2,FI_127,5
-DC_74_dynamic_5_resized,soccer,Will the ball land left or right?,"left,right",left,DC,T,74,5,DC_74,4
+video	condition	interaction	difficulty	question	options	answer	duration	width	height
+EW_295_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+FI_269_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+126_handShake_dynamic_0ms_resized	greeting_easy	greeting	easy	Will they hug or shake hands?	hug,shake hands	shake hands	0.5	846	476
+419_hug_dynamic_100ms_resized	greeting_hard	greeting	hard	Will they hug or shake hands?	hug,shake hands	hug	0.5	846	476
+173_handShake_dynamic_100ms_resized	greeting_hard	greeting	hard	Will they hug or shake hands?	hug,shake hands	shake hands	0.5	846	476
+EW_128_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+EW_314_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+450_hug_dynamic_0ms_resized	greeting_easy	greeting	easy	Will they hug or shake hands?	hug,shake hands	hug	0.5	846	476
+FI_44_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+110_handShake_dynamic_0ms_resized	greeting_easy	greeting	easy	Will they hug or shake hands?	hug,shake hands	shake hands	0.5	846	476
+718_handShake_dynamic_100ms_resized	greeting_hard	greeting	hard	Will they hug or shake hands?	hug,shake hands	shake hands	0.5	846	476
+DC_40_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+495_hug_dynamic_100ms_resized	greeting_hard	greeting	hard	Will they hug or shake hands?	hug,shake hands	hug	0.5	846	476
+FI_12_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+FI_40_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+49_hug_dynamic_0ms_resized	greeting_easy	greeting	easy	Will they hug or shake hands?	hug,shake hands	hug	0.5	846	476
+EW_268_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+109_handShake_dynamic_100ms_resized	greeting_hard	greeting	hard	Will they hug or shake hands?	hug,shake hands	shake hands	0.5	846	476
+EW_152_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+46_hug_dynamic_0ms_resized	greeting_easy	greeting	easy	Will they hug or shake hands?	hug,shake hands	hug	0.5	846	476
+FI_264_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+139_handShake_dynamic_0ms_resized	greeting_easy	greeting	easy	Will they hug or shake hands?	hug,shake hands	shake hands	0.5	846	476
+47_hug_dynamic_100ms_resized	greeting_hard	greeting	hard	Will they hug or shake hands?	hug,shake hands	hug	0.5	846	476
+FI_201_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+DC_89_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+760_handShake_dynamic_0ms_resized	greeting_easy	greeting	easy	Will they hug or shake hands?	hug,shake hands	shake hands	0.5	846	476
+471_hug_dynamic_100ms_resized	greeting_hard	greeting	hard	Will they hug or shake hands?	hug,shake hands	hug	0.5	846	476
+EW_174_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+FI_193_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+765_handShake_dynamic_100ms_resized	greeting_hard	greeting	hard	Will they hug or shake hands?	hug,shake hands	shake hands	0.5	846	476
+DC_75_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+434_hug_dynamic_0ms_resized	greeting_easy	greeting	easy	Will they hug or shake hands?	hug,shake hands	hug	0.5	846	476
+435_hug_dynamic_100ms_resized	greeting_hard	greeting	hard	Will they hug or shake hands?	hug,shake hands	hug	0.5	846	476
+761_handShake_dynamic_0ms_resized	greeting_easy	greeting	easy	Will they hug or shake hands?	hug,shake hands	shake hands	0.5	846	476
+DC_304_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+EW_120_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+156_handShake_dynamic_100ms_resized	greeting_hard	greeting	hard	Will they hug or shake hands?	hug,shake hands	shake hands	0.5	846	476
+DC_287_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+20_hug_dynamic_0ms_resized	greeting_easy	greeting	easy	Will they hug or shake hands?	hug,shake hands	hug	0.5	846	476
+EW_246_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+FI_191_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+757_handShake_dynamic_100ms_resized	greeting_hard	greeting	hard	Will they hug or shake hands?	hug,shake hands	shake hands	0.5	846	476
+717_handShake_dynamic_0ms_resized	greeting_easy	greeting	easy	Will they hug or shake hands?	hug,shake hands	shake hands	0.5	846	476
+DC_49_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+DC_350_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+732_handShake_dynamic_0ms_resized	greeting_easy	greeting	easy	Will they hug or shake hands?	hug,shake hands	shake hands	0.5	846	476
+800_handShake_dynamic_100ms_resized	greeting_hard	greeting	hard	Will they hug or shake hands?	hug,shake hands	shake hands	0.5	846	476
+DC_211_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+DC_199_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+FI_112_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+773_handShake_dynamic_0ms_resized	greeting_easy	greeting	easy	Will they hug or shake hands?	hug,shake hands	shake hands	0.5	846	476
+119_handShake_dynamic_100ms_resized	greeting_hard	greeting	hard	Will they hug or shake hands?	hug,shake hands	shake hands	0.5	846	476
+120_handShake_dynamic_100ms_resized	greeting_hard	greeting	hard	Will they hug or shake hands?	hug,shake hands	shake hands	0.5	846	476
+EW_217_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+FI_230_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+741_handShake_dynamic_0ms_resized	greeting_easy	greeting	easy	Will they hug or shake hands?	hug,shake hands	shake hands	0.5	846	476
+DC_216_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+FI_300_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+733_handShake_dynamic_100ms_resized	greeting_hard	greeting	hard	Will they hug or shake hands?	hug,shake hands	shake hands	0.5	846	476
+21_hug_dynamic_0ms_resized	greeting_easy	greeting	easy	Will they hug or shake hands?	hug,shake hands	hug	0.5	846	476
+DC_60_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+3_hug_dynamic_100ms_resized	greeting_hard	greeting	hard	Will they hug or shake hands?	hug,shake hands	hug	0.5	846	476
+191_handShake_dynamic_0ms_resized	greeting_easy	greeting	easy	Will they hug or shake hands?	hug,shake hands	shake hands	0.5	846	476
+DC_272_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+FI_164_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+DC_243_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+488_hug_dynamic_0ms_resized	greeting_easy	greeting	easy	Will they hug or shake hands?	hug,shake hands	hug	0.5	846	476
+124_handShake_dynamic_100ms_resized	greeting_hard	greeting	hard	Will they hug or shake hands?	hug,shake hands	shake hands	0.5	846	476
+DC_302_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+405_hug_dynamic_0ms_resized	greeting_easy	greeting	easy	Will they hug or shake hands?	hug,shake hands	hug	0.5	846	476
+EW_24_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+8_hug_dynamic_100ms_resized	greeting_hard	greeting	hard	Will they hug or shake hands?	hug,shake hands	hug	0.5	846	476
+EW_341_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+EW_25_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+2_hug_dynamic_100ms_resized	greeting_hard	greeting	hard	Will they hug or shake hands?	hug,shake hands	hug	0.5	846	476
+445_hug_dynamic_0ms_resized	greeting_easy	greeting	easy	Will they hug or shake hands?	hug,shake hands	hug	0.5	846	476
+FI_310_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+38_hug_dynamic_100ms_resized	greeting_hard	greeting	hard	Will they hug or shake hands?	hug,shake hands	hug	0.5	846	476
+734_handShake_dynamic_0ms_resized	greeting_easy	greeting	easy	Will they hug or shake hands?	hug,shake hands	shake hands	0.5	846	476
+EW_52_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+FI_27_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+143_handShake_dynamic_0ms_resized	greeting_easy	greeting	easy	Will they hug or shake hands?	hug,shake hands	shake hands	0.5	846	476
+DC_185_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+140_handShake_dynamic_100ms_resized	greeting_hard	greeting	hard	Will they hug or shake hands?	hug,shake hands	shake hands	0.5	846	476
+146_handShake_dynamic_100ms_resized	greeting_hard	greeting	hard	Will they hug or shake hands?	hug,shake hands	shake hands	0.5	846	476
+763_handShake_dynamic_0ms_resized	greeting_easy	greeting	easy	Will they hug or shake hands?	hug,shake hands	shake hands	0.5	846	476
+DC_172_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+DC_235_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+FI_54_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+441_hug_dynamic_100ms_resized	greeting_hard	greeting	hard	Will they hug or shake hands?	hug,shake hands	hug	0.5	846	476
+28_hug_dynamic_0ms_resized	greeting_easy	greeting	easy	Will they hug or shake hands?	hug,shake hands	hug	0.5	846	476
+DC_282_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+153_handShake_dynamic_0ms_resized	greeting_easy	greeting	easy	Will they hug or shake hands?	hug,shake hands	shake hands	0.5	846	476
+EW_41_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+428_hug_dynamic_100ms_resized	greeting_hard	greeting	hard	Will they hug or shake hands?	hug,shake hands	hug	0.5	846	476
+DC_276_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+51_hug_dynamic_100ms_resized	greeting_hard	greeting	hard	Will they hug or shake hands?	hug,shake hands	hug	0.5	846	476
+35_hug_dynamic_0ms_resized	greeting_easy	greeting	easy	Will they hug or shake hands?	hug,shake hands	hug	0.5	846	476
+FI_170_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+DC_109_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+EW_161_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+FI_273_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+446_hug_dynamic_0ms_resized	greeting_easy	greeting	easy	Will they hug or shake hands?	hug,shake hands	hug	0.5	846	476
+198_handShake_dynamic_100ms_resized	greeting_hard	greeting	hard	Will they hug or shake hands?	hug,shake hands	shake hands	0.5	846	476
+722_handShake_dynamic_100ms_resized	greeting_hard	greeting	hard	Will they hug or shake hands?	hug,shake hands	shake hands	0.5	846	476
+747_handShake_dynamic_0ms_resized	greeting_easy	greeting	easy	Will they hug or shake hands?	hug,shake hands	shake hands	0.5	846	476
+EW_333_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+DC_241_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+187_handShake_dynamic_100ms_resized	greeting_hard	greeting	hard	Will they hug or shake hands?	hug,shake hands	shake hands	0.5	846	476
+736_handShake_dynamic_0ms_resized	greeting_easy	greeting	easy	Will they hug or shake hands?	hug,shake hands	shake hands	0.5	846	476
+FI_222_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+DC_181_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+DC_184_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+DC_149_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+108_handShake_dynamic_0ms_resized	greeting_easy	greeting	easy	Will they hug or shake hands?	hug,shake hands	shake hands	0.5	846	476
+804_handShake_dynamic_100ms_resized	greeting_hard	greeting	hard	Will they hug or shake hands?	hug,shake hands	shake hands	0.5	846	476
+783_handShake_dynamic_100ms_resized	greeting_hard	greeting	hard	Will they hug or shake hands?	hug,shake hands	shake hands	0.5	846	476
+FI_43_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+409_hug_dynamic_0ms_resized	greeting_easy	greeting	easy	Will they hug or shake hands?	hug,shake hands	hug	0.5	846	476
+FI_76_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+DC_294_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+421_hug_dynamic_100ms_resized	greeting_hard	greeting	hard	Will they hug or shake hands?	hug,shake hands	hug	0.5	846	476
+735_handShake_dynamic_0ms_resized	greeting_easy	greeting	easy	Will they hug or shake hands?	hug,shake hands	shake hands	0.5	846	476
+FI_281_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+FI_246_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+740_handShake_dynamic_0ms_resized	greeting_easy	greeting	easy	Will they hug or shake hands?	hug,shake hands	shake hands	0.5	846	476
+DC_292_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+184_handShake_dynamic_100ms_resized	greeting_hard	greeting	hard	Will they hug or shake hands?	hug,shake hands	shake hands	0.5	846	476
+DC_38_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+138_handShake_dynamic_100ms_resized	greeting_hard	greeting	hard	Will they hug or shake hands?	hug,shake hands	shake hands	0.5	846	476
+9_hug_dynamic_0ms_resized	greeting_easy	greeting	easy	Will they hug or shake hands?	hug,shake hands	hug	0.5	846	476
+EW_299_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+29_hug_dynamic_100ms_resized	greeting_hard	greeting	hard	Will they hug or shake hands?	hug,shake hands	hug	0.5	846	476
+103_handShake_dynamic_0ms_resized	greeting_easy	greeting	easy	Will they hug or shake hands?	hug,shake hands	shake hands	0.5	846	476
+FI_289_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+FI_75_dynamic_120ms_resized	soccer_practice	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+716_handShake_dynamic_0ms_resized	greeting_practice	greeting	easy	Will they hug or shake hands?	hug,shake hands	shake hands	0.5	846	476
+EW_308_dynamic_120ms_resized	soccer_practice	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+731_handShake_dynamic_100ms_resized	greeting_practice	greeting	hard	Will they hug or shake hands?	hug,shake hands	shake hands	0.5	846	476
+FI_285_dynamic_120ms_resized	soccer_practice	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+DC_36_dynamic_120ms_resized	soccer_practice	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+106_handShake_dynamic_100ms_resized	greeting_practice	greeting	hard	Will they hug or shake hands?	hug,shake hands	shake hands	0.5	846	476
+DC_9_dynamic_120ms_resized	soccer_practice	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+796_handShake_dynamic_0ms_resized	greeting_practice	greeting	easy	Will they hug or shake hands?	hug,shake hands	shake hands	0.5	846	476
+22_hug_dynamic_100ms_resized	greeting_practice	greeting	hard	Will they hug or shake hands?	hug,shake hands	hug	0.5	846	476
+121_handShake_dynamic_0ms_resized	greeting_practice	greeting	easy	Will they hug or shake hands?	hug,shake hands	shake hands	0.5	846	476
+FI_168_dynamic_120ms_resized	soccer_practice	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+EW_303_dynamic_120ms_resized	soccer_practice	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+183_handShake_dynamic_0ms_resized	greeting_practice	greeting	easy	Will they hug or shake hands?	hug,shake hands	shake hands	0.5	846	476
+FI_68_dynamic_120ms_resized	soccer_practice	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+32_hug_dynamic_100ms_resized	greeting_practice	greeting	hard	Will they hug or shake hands?	hug,shake hands	hug	0.5	846	476
+EW_337_dynamic_120ms_resized	soccer_practice	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+112_handShake_dynamic_100ms_resized	greeting_practice	greeting	hard	Will they hug or shake hands?	hug,shake hands	shake hands	0.5	846	476
+DC_285_dynamic_120ms_resized	soccer_practice	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+116_handShake_dynamic_0ms_resized	greeting_practice	greeting	easy	Will they hug or shake hands?	hug,shake hands	shake hands	0.5	846	476
+DC_273_dynamic_120ms_resized	soccer_practice	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+499_hug_dynamic_0ms_resized	greeting_practice	greeting	easy	Will they hug or shake hands?	hug,shake hands	hug	0.5	846	476
+463_hug_dynamic_100ms_resized	greeting_practice	greeting	hard	Will they hug or shake hands?	hug,shake hands	hug	0.5	846	476
+EW_127_dynamic_120ms_resized	soccer_practice	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+DC_28_dynamic_120ms_resized	soccer_practice	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+EW_235_dynamic_120ms_resized	soccer_practice	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+135_handShake_dynamic_100ms_resized	greeting_practice	greeting	hard	Will they hug or shake hands?	hug,shake hands	shake hands	0.5	846	476
+743_handShake_dynamic_0ms_resized	greeting_practice	greeting	easy	Will they hug or shake hands?	hug,shake hands	shake hands	0.5	846	476
+DC_312_dynamic_120ms_resized	soccer_practice	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+EW_93_dynamic_120ms_resized	soccer_practice	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+772_handShake_dynamic_0ms_resized	greeting_practice	greeting	easy	Will they hug or shake hands?	hug,shake hands	shake hands	0.5	846	476
+177_handShake_dynamic_100ms_resized	greeting_practice	greeting	hard	Will they hug or shake hands?	hug,shake hands	shake hands	0.5	846	476
+DC_271_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+FI_142_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+DC_332_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+738_handShake_dynamic_100ms_resized	greeting_hard	greeting	hard	Will they hug or shake hands?	hug,shake hands	shake hands	0.5	846	476
+805_handShake_dynamic_100ms_resized	greeting_hard	greeting	hard	Will they hug or shake hands?	hug,shake hands	shake hands	0.5	846	476
+FI_266_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+DC_70_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+DC_158_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+803_handShake_dynamic_100ms_resized	greeting_hard	greeting	hard	Will they hug or shake hands?	hug,shake hands	shake hands	0.5	846	476
+EW_189_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+EW_109_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+FI_153_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+55_hug_dynamic_100ms_resized	greeting_hard	greeting	hard	Will they hug or shake hands?	hug,shake hands	hug	0.5	846	476
+FI_58_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+FI_276_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+415_hug_dynamic_100ms_resized	greeting_hard	greeting	hard	Will they hug or shake hands?	hug,shake hands	hug	0.5	846	476
+DC_57_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+FI_50_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+EW_265_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+EW_324_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+FI_154_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+EW_285_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+EW_155_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+FI_124_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+DC_59_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+FI_71_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+DC_278_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+EW_287_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+FI_174_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+EW_130_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+DC_314_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+EW_222_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+DC_222_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+DC_231_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+DC_268_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+FI_136_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+EW_307_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+EW_179_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+EW_250_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+FI_279_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+FI_20_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+FI_3_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+FI_245_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+FI_248_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+DC_108_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+FI_313_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+DC_54_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+FI_5_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+EW_196_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+DC_306_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+EW_261_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+DC_284_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+DC_124_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+DC_13_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+DC_201_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+DC_125_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+FI_309_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+FI_232_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+FI_304_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+DC_338_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+EW_197_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+EW_269_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+FI_226_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+DC_174_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+EW_301_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+EW_213_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+DC_132_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+FI_190_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+FI_110_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+FI_53_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+DC_61_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+DC_127_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+EW_225_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+DC_142_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+DC_173_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+FI_274_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+FI_257_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+EW_1_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+EW_327_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+DC_318_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+EW_105_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+FI_231_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+DC_186_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+EW_305_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+FI_25_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+EW_243_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+DC_189_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+FI_259_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+DC_4_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+FI_37_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+DC_249_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+FI_59_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+DC_345_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+FI_109_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+FI_200_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+DC_34_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+FI_116_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+DC_280_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+EW_173_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+DC_261_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+EW_283_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+DC_10_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+FI_169_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+EW_322_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+EW_124_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+FI_272_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+DC_279_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+EW_13_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+DC_291_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+FI_261_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+DC_267_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+FI_241_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+FI_198_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+DC_113_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+DC_74_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+EW_70_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+EW_284_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+DC_156_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+EW_58_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+FI_284_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+EW_30_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+EW_129_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+FI_39_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+FI_199_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+EW_43_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+DC_220_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+FI_253_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+FI_218_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+DC_131_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+DC_346_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+EW_321_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+EW_315_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+DC_117_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+DC_53_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+FI_268_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+EW_323_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+EW_298_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+EW_357_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+EW_247_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+EW_294_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+EW_345_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+EW_288_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+EW_343_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+EW_83_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+EW_330_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+EW_256_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+DC_52_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+DC_254_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+FI_90_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+EW_85_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+DC_301_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+DC_322_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+EW_263_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+EW_271_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+DC_133_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+FI_122_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+DC_160_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+DC_197_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+DC_12_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+DC_339_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+EW_275_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+FI_107_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+EW_313_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+FI_183_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+EW_60_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+DC_274_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+FI_258_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+DC_43_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+DC_200_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+FI_307_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+EW_176_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+FI_120_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+FI_314_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+EW_233_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+DC_315_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+FI_33_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+EW_40_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+FI_134_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+DC_86_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+DC_275_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+DC_50_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+FI_93_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+EW_135_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+FI_45_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+EW_339_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+FI_267_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+DC_33_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+FI_81_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+FI_129_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+EW_206_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+FI_181_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+DC_88_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+EW_59_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+FI_41_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+EW_258_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+EW_221_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+DC_45_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+EW_49_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+FI_234_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+EW_12_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+DC_35_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+EW_262_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+DC_335_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+EW_62_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+DC_84_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+EW_185_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+EW_291_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+EW_7_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+DC_313_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+FI_146_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+EW_89_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+DC_15_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+FI_179_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+FI_56_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+FI_85_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+FI_28_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+FI_111_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+DC_286_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+DC_41_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+EW_277_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+EW_334_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+FI_187_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+EW_349_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+FI_113_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+FI_158_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+FI_4_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+EW_119_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+DC_256_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+EW_9_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+EW_86_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+EW_216_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+DC_179_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+EW_198_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+EW_278_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+FI_282_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+DC_187_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+DC_195_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+FI_21_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+DC_7_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+DC_255_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+EW_293_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+EW_204_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+EW_26_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+DC_198_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+EW_22_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+FI_60_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+FI_145_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+DC_155_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+DC_6_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+FI_194_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+DC_326_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+EW_108_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+FI_10_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+FI_203_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+FI_49_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+DC_215_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+FI_70_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+EW_147_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+FI_176_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+DC_257_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+DC_99_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+FI_31_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+EW_328_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+FI_278_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+DC_129_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+DC_293_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+EW_134_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+EW_27_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+FI_290_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+DC_262_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+DC_30_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+EW_318_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+DC_157_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	right	0.5	846	476
+EW_115_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+FI_26_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+EW_57_dynamic_120ms_resized	soccer_hard	soccer	hard	Will the ball land left or right?	left,right	left	0.5	846	476
+FI_312_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	right	0.5	846	476
+EW_188_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+EW_319_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
+EW_203_dynamic_120ms_resized	soccer_easy	soccer	easy	Will the ball land left or right?	left,right	left	0.5	846	476
