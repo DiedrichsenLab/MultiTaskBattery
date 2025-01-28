@@ -1149,7 +1149,7 @@ class PictureSequence(TaskFile):
                         run_number=None,
                         task_dur=30,
                         trial_dur=14,
-                        iti_dur=1.5,
+                        iti_dur=1,
                         file_name=None,
                         stim_file = None,
                         condition=None):
