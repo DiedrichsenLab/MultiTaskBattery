@@ -1832,9 +1832,9 @@ class StrangeStories(Task):
         options_orig = [answer_option.strip() for answer_option in trial['options'].split(',')]
         options_shuffled = deepcopy(options_orig)
         random.shuffle(options_shuffled) # Randomize the order of the answer options
-        if trial['condition'] == 'control': # Only the first option is correct (2 points)
+        if 'control' in trial['condition']: # Only the first option is correct (2 points)
             scores_orig = [2,0,0]
-        elif trial['condition'] == 'social': # First option gets 2 points, second option gets 1 point, third option gets 0 points
+        elif 'social'in trial['condition']: # First option gets 2 points, second option gets 1 point, third option gets 0 points
             scores_orig = [2,1,0]            
         scores_shuffled = [scores_orig[options_orig.index(option)] for option in options_shuffled]
 
