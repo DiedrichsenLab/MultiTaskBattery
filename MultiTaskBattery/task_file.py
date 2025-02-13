@@ -352,10 +352,10 @@ class TheoryOfMind(TaskFile):
         if condition:
             stim = stim[stim['condition'] == condition]
         else:
-            stim = stim[stim['condition'] != 'practice']
+            stim = stim.loc[~stim['condition'].str.contains('practice', na=False)]
             
-        start_row = (run_number - 1) * 2
-        end_row = run_number * 2 - 1
+        start_row = (run_number - 1) * n_trials
+        end_row = run_number * n_trials - 1
         stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
 
         for n in range(n_trials):
@@ -977,8 +977,8 @@ class SemanticPrediction(TaskFile):
         else:
             stim = pd.read_csv(self.stim_dir / 'semantic_prediction' / 'semantic_prediction.csv')
 
-        start_row = (run_number - 1) * 2
-        end_row = run_number * 2 - 1
+        start_row = (run_number - 1) * n_trials
+        end_row = run_number * n_trials - 1
         stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
 
         for n in range(n_trials):        
@@ -1060,7 +1060,7 @@ class RMET(TaskFile):
         self.name = 'rmet'
         self.matching_stimuli = True # stimuli are matched for the active condition (determine emotion) and passive condition (determine age)
         self.half_assigned = True
-
+        self.repeat_stimuli_from_previous_runs = True
 
     def make_task_file(self, hand='right',
                         responses = [1,2,3,4],
@@ -1079,6 +1079,9 @@ class RMET(TaskFile):
         trial_info = []
         t = 0
 
+        start_row = (run_number - 1) * n_trials
+        end_row = run_number * n_trials - 1
+
         if stim_file:
             stim = pd.read_csv(self.stim_dir / self.name / stim_file)
         else:
@@ -1087,7 +1090,7 @@ class RMET(TaskFile):
         if condition:
             stim = stim[stim['condition'] == condition]
         else:
-            stim = stim[stim['condition'] != 'practice']
+            stim = stim.loc[~stim['condition'].str.contains('practice', na=False)]
             # Alternate between emotion and age conditions
             stim_emotion = stim[stim['condition'] == 'emotion']
             stim_age = stim[stim['condition'] == 'age']
@@ -1098,13 +1101,21 @@ class RMET(TaskFile):
                             stim_age.iloc[:len(stim_age) // 2].iterrows())
             stim = pd.concat([pd.concat([row1[1], row2[1]], axis=1).T for row1, row2 in itertools.chain(first_half, second_half)], ignore_index=True)
 
-        if half: # Selects different stimuli for the emotion and age condition, to enable showing each pair of eyes only once for each participant (assigns half 1 or 2)
-            stim = stim[stim['half'] == half]
-
-        start_row = (run_number - 1) * n_trials
-        end_row = run_number * n_trials - 1
-        stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
-
+        if half: # Selects different stimuli for the social and control condition, to enable showing each story only once for each participant
+            stim_half = stim[stim['half'] == half]
+            if n_trials <= stim_half.iloc[start_row:end_row + 1].shape[0]: # Check if there are enough stimuli for the run
+                stim = stim_half.iloc[start_row:end_row + 1].reset_index(drop=True)
+            elif self.repeat_stimuli_from_previous_runs:
+                # If there are not enough stimuli, repeat stimuli from the OTHER condition of previous runs
+                new_run_number = run_number - 4
+                new_start_row = (new_run_number - 1) * n_trials
+                new_end_row = new_run_number * n_trials - 1
+                stim = stim[stim['half'] != half].iloc[new_start_row:new_end_row + 1].reset_index(drop=True)
+            else:
+                raise ValueError('Not enough stimuli for the run')
+        else: 
+            stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
+    
         for n in range(n_trials):
             trial = {}
             trial['key_one'] = responses[0]
@@ -1166,7 +1177,7 @@ class PictureSequence(TaskFile):
         if condition:
             stim = stim[stim['condition'] == condition]
         else:
-            stim = stim[stim['condition'] != 'practice']
+            stim = stim.loc[~stim['condition'].str.contains('practice', na=False)]
 
         start_row = (run_number - 1) * n_trials
         end_row = run_number * n_trials - 1
@@ -1232,7 +1243,7 @@ class StorySequence(TaskFile):
         if condition:
             stim = stim[stim['condition'] == condition]
         else:
-            stim = stim[stim['condition'] != 'practice']
+            stim = stim.loc[~stim['condition'].str.contains('practice', na=False)]
 
         start_row = (run_number - 1) * n_trials
         end_row = run_number * n_trials - 1
@@ -1299,7 +1310,7 @@ class ActionPrediction(TaskFile):
         if condition:
             stim = stim[stim['condition'] == condition]
         else:
-            stim = stim[stim['condition'] != 'practice']
+            stim = stim.loc[~stim['condition'].str.contains('practice', na=False)]
 
         start_row = (run_number - 1) * n_trials
         end_row = run_number * n_trials - 1
@@ -1361,7 +1372,7 @@ class Movie(TaskFile):
         if condition:
             stim = stim[stim['condition'] == condition]
         else:
-            stim = stim[stim['condition'] != 'practice']
+            stim = stim.loc[~stim['condition'].str.contains('practice', na=False)]
 
         start_row = (run_number - 1) * n_trials
         end_row = run_number * n_trials - 1
@@ -1424,7 +1435,7 @@ class StrangeStories(TaskFile):
         if condition:
             stim = stim[stim['condition'] == condition]
         else:
-            stim = stim[stim['condition'] != 'practice']
+            stim = stim.loc[~stim['condition'].str.contains('practice', na=False)]
 
         if half: # Selects different stimuli for the social and control condition, to enable showing each video only once for each participant (assign half the subjects one type of video as social and the other the other half of the videos as social)
             stim = stim[stim['half'] == half]
@@ -1467,6 +1478,7 @@ class FauxPas(TaskFile):
         self.name = 'faux_pas'
         self.matching_stimuli = True
         self.half_assigned = True
+        self.repeat_stimuli_from_previous_runs = True
 
     def make_task_file(self, hand='right',
                     responses = [1,2], # 1 = True, 2 = False
@@ -1487,6 +1499,9 @@ class FauxPas(TaskFile):
         trial_info = []
         t = 0
 
+        start_row = (run_number - 1) * n_trials
+        end_row = run_number * n_trials - 1
+
         if stim_file:
             stim = pd.read_csv(stim_file)
         else:
@@ -1495,15 +1510,23 @@ class FauxPas(TaskFile):
         if condition:
             stim = stim[stim['condition'] == condition]
         else:
-            stim = stim[stim['condition'] != 'practice']
+            stim = stim.loc[~stim['condition'].str.contains('practice', na=False)]
         
         if half: # Selects different stimuli for the social and control condition, to enable showing each story only once for each participant
-            stim = stim[stim['half'] == half]
-            
-        start_row = (run_number - 1) * 2
-        end_row = run_number * 2 - 1
-        stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
-
+            stim_half = stim[stim['half'] == half]
+            if n_trials <= stim_half.iloc[start_row:end_row + 1].shape[0]: # Check if there are enough stimuli for the run
+                stim = stim_half.iloc[start_row:end_row + 1].reset_index(drop=True)
+            elif self.repeat_stimuli_from_previous_runs:
+                # If there are not enough stimuli, repeat stimuli from the OTHER condition of previous runs
+                new_run_number = run_number - 5
+                new_start_row = (new_run_number - 1) * n_trials
+                new_end_row = new_run_number * n_trials - 1
+                stim = stim[stim['half'] != half].iloc[new_start_row:new_end_row + 1].reset_index(drop=True)
+            else:
+                raise ValueError('Not enough stimuli for the run')
+        else: 
+            stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
+    
         for n in range(n_trials):
             trial = {}
             trial['key_yes'] = responses[0]
@@ -1568,7 +1591,7 @@ class FrithHappe(TaskFile):
         if condition:
             stim = stim[stim['condition'] == condition]
         else:
-            stim = stim[stim['condition'] != 'practice']
+            stim = stim.loc[~stim['condition'].str.contains('practice', na=False)]
 
         start_row = (run_number - 1) * n_trials
         end_row = run_number * n_trials - 1
@@ -1668,7 +1691,7 @@ class Liking(TaskFile):
         if condition:
             stim = stim[stim['condition'] == condition]
         else:
-            stim = stim[stim['condition'] != 'practice']
+            stim = stim.loc[~stim['condition'].str.contains('practice', na=False)]
 
         start_row = (run_number - 1) * n_trials
         end_row = run_number * n_trials - 1

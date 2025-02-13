@@ -116,7 +116,6 @@ class Experiment:
         ut.dircheck(subj_dir) # making sure the directory is created!
         self.run_data_file = self.const.data_dir / self.subj_id / f"{self.subj_id}.tsv"
 
-
     def run(self):
         """
         run a run of the experiment
@@ -135,7 +134,7 @@ class Experiment:
             # clear keys in buffer
             event.clearEvents()
 
-            print(f"Starting task {t_num}: {task.name}")
+            print(f"Starting task {t_num+1}: {task.name}")
 
             # Take the task data from the run_info dataframe
             r_data = self.run_info.iloc[t_num].copy()
