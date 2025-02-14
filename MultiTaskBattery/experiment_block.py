@@ -167,7 +167,7 @@ class Experiment:
         # Wait for the last end time of run
         self.screen.fixation_cross()
         # self.ttl_clock.wait_until(r_data.end_time)
-        self.ttl_clock.wait_until(r_data.end_time + 9)
+        self.ttl_clock.wait_until(r_data.real_end_time  + 9)
 
         # Stop the eyetracker
         if self.const.eye_tracker:
