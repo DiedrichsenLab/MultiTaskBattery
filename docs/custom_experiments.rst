@@ -122,7 +122,7 @@ The task file can look very different form tasks to task, but typically contains
             # Make task file
             myTask.make_task_file(file_name=tfile, **args)
          
-> Note that you can add an optional argument run_time to the make_task_file function to specify the duration of your run (e.g. `myTask.make_task_file(tasks, tfiles, run_time=600)` for a 10-minute run). After the last trial ends, this will return the screen to a fixation cross until the run_time is reached. This is usfeul for imaging experiments where you want to keep the scanner running for a fixed amount of time after the last trial to capture the remaining activation. If this is not specified, the run will end after the last trial.
+> Note that you can add an optional argument run_time to the make_task_file function to specify the duration of your run (e.g. ``myTask.make_task_file(tasks, tfiles, run_time=600)`` for a 10-minute run). After the last trial ends, this will return the screen to a fixation cross until the run_time is reached. This is usfeul for imaging experiments where you want to keep the scanner running for a fixed amount of time after the last trial to capture the remaining activation. If this is not specified, the run will end after the last trial.
 
 Writing your experiment function
 --------------------------------
