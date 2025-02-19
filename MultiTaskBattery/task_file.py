@@ -22,7 +22,7 @@ def shuffle_rows(dataframe):
     dataframe = (dataframe.iloc[indx]).reset_index(drop = True)
     return dataframe
 
-def add_start_end_times(dataframe, offset, task_dur):
+def add_start_end_times(dataframe, offset, task_dur, run_time=None):
     """
     adds start and end times to the dataframe
 
@@ -30,18 +30,25 @@ def add_start_end_times(dataframe, offset, task_dur):
         dataframe (dataframe): dataframe to be shuffled
         offset (float): offset of the task
         task_dur (float): duration of the task
+        run_time (float): Time that the run should last. Use this to ensure the last task runs until the end of the imaging run
     Returns:
         dataframe (dataframe): dataframe with start and end times
     """
     dataframe['start_time'] = np.arange(offset, offset + len(dataframe)*task_dur, task_dur)
     dataframe['end_time']   = dataframe['start_time'] + task_dur
+    if run_time:
+        if run_time < dataframe['end_time'].iloc[-1]:
+            raise ValueError('Run time is shorter than the last task')
+        # Add add_end_time seconds to the last task to ensure the task runs until the end of the run (e.g. for capturing the activity overhang from the final task in an imaging run)
+        dataframe['end_time'].iloc[-1] = run_time
     return dataframe
 
 def make_run_file(task_list,
                   tfiles,
                   offset = 0,
                   instruction_dur = 5,
-                  task_dur = 30):
+                  task_dur = 30,
+                  run_time = None):
     """
     Make a single run file
     """
@@ -53,7 +60,7 @@ def make_run_file(task_list,
          'instruction_dur':[instruction_dur]*len(task_list)}
     R = pd.DataFrame(R)
     R = shuffle_rows(R)
-    R = add_start_end_times(R, offset, task_dur+instruction_dur)
+    R = add_start_end_times(R, offset, task_dur+instruction_dur, run_time=run_time)
     return R
 
 def get_task_class(name):
