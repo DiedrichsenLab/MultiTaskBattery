@@ -82,7 +82,7 @@ The task file can look very different form tasks to task, but typically contains
   - key_three: Key for the third option
   - key_four: Key for the fourth option
 
-* some of the tasks require run number because the stimuli depend on the run number (e.g., movie clips have a specific order for each run)
+Some of the tasks require run number because the stimuli depend on the run number (e.g., movie clips have a specific order for each run)
 
 **Example Code**
 
