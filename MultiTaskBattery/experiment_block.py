@@ -164,7 +164,7 @@ class Experiment:
             # If last task, wait until the endtime for the last task, which for imaging could be longer than the task duration
             # Note that endtime is not used for any task but the last one 
             if t_num == len(self.task_obj_list)-1:
-                self.ttl_clock.wait_until(r_data[-1].end_time)
+                self.ttl_clock.wait_until(r_data.end_time)
 
         # Stop the eyetracker
         if self.const.eye_tracker:
