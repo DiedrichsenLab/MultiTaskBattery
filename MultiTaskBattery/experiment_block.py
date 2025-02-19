@@ -116,7 +116,6 @@ class Experiment:
         ut.dircheck(subj_dir) # making sure the directory is created!
         self.run_data_file = self.const.data_dir / self.subj_id / f"{self.subj_id}.tsv"
 
-
     def run(self):
         """
         run a run of the experiment
@@ -135,7 +134,7 @@ class Experiment:
             # clear keys in buffer
             event.clearEvents()
 
-            print(f"Starting task {t_num}: {task.name}")
+            print(f"Starting task {t_num+1}: {task.name}")
 
             # Take the task data from the run_info dataframe
             r_data = self.run_info.iloc[t_num].copy()
@@ -160,14 +159,12 @@ class Experiment:
             # Add the end time of the task
             r_data['real_end_time'] = self.ttl_clock.get_time()
             run_data.append(r_data)
+            self.screen.fixation_cross()
 
-            # If last task wait until the end of the trial before showing fixation cross
+            # If last task, wait until the endtime for the last task, which for imaging could be longer than the task duration
+            # Note that endtime is not used for any task but the last one 
             if t_num == len(self.task_obj_list)-1:
-                self.ttl_clock.wait_until(task.start_time + task.trial_info.end_time.max())
-
-        # Wait for the last end time of run
-        self.screen.fixation_cross()
-        self.ttl_clock.wait_until(r_data.end_time)
+                self.ttl_clock.wait_until(r_data.end_time)
 
         # Stop the eyetracker
         if self.const.eye_tracker:

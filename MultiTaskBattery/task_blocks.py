@@ -1862,6 +1862,9 @@ class StrangeStories(Task):
         elif max(answer_lengths) >= wrapWidth:
             left_position = 0
             align='center'
+        else:
+            left_position = 0
+            align='center'
         stim_answers = visual.TextStim(self.window, text=answers, pos=(left_position, 0), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=wrapWidth, alignHoriz=align)
         stim_question.draw()
         stim_answers.draw()
