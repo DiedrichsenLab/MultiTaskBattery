@@ -30,7 +30,7 @@ def add_start_end_times(dataframe, offset, task_dur, run_time=None):
         dataframe (dataframe): dataframe to be shuffled
         offset (float): offset of the task
         task_dur (float): duration of the task
-        run_time (float): Time that the run should last. Use this to ensure the last task runs until the end of the imaging run
+        run_time (float): Time (in seconds) that the run should last. Use this to ensure the last task runs until the end of the imaging run
     Returns:
         dataframe (dataframe): dataframe with start and end times
     """
