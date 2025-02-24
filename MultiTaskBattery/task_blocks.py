@@ -1998,9 +1998,6 @@ class FrithHappe(Task):
             self.window.flip()
             self.ttl_clock.update()
 
-        # Flush any keys in buffer
-        event.clearEvents()
-
         # Initialize question
         question = "What type of interaction did you see?"
         # Display question
@@ -2017,8 +2014,10 @@ class FrithHappe(Task):
         answers_stim = visual.TextStim(self.window, text=answers, pos=(-5, 0), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=wrapWidth, alignHoriz='left')
         answers_stim.draw()
         self.window.flip()
-        # collect responses 0: no response 1-4: key pressed
 
+        # Flush any keys in buffer
+        event.clearEvents()
+        # collect responses 0: no response 1-4: key pressed
         trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['question_dur'])
         trial['correct'] = (trial['response'] == trial['trial_type'])
 
