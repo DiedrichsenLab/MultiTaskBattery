@@ -1830,9 +1830,6 @@ class StrangeStories(Task):
         if play_audio_separatly:
             audio.stop()
 
-        # Flush any keys in buffer
-        event.clearEvents()
-
         # Initialize question
         question = trial['question']
 
@@ -1865,6 +1862,9 @@ class StrangeStories(Task):
         else:
             left_position = 0
             align='center'
+        
+        # Flush any keys in buffer
+        event.clearEvents()
         stim_answers = visual.TextStim(self.window, text=answers, pos=(left_position, 0), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=wrapWidth, alignHoriz=align)
         stim_question.draw()
         stim_answers.draw()
