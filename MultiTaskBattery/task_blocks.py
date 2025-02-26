@@ -1497,6 +1497,7 @@ class PictureSequence(Task):
             
         # if any press is wrong trial['correct'] needs to be false, this is for post trial feedback
         trial['correct'] = correct_list.sum()/num_items
+        trial['response'] = pressed_keys
 
         if np.all(np.isnan(rt_list)):
             # calculate mean rt across presses
