@@ -2037,7 +2037,7 @@ class Liking(Task):
     def __init__(self, info, screen, ttl_clock, const, subj_id):
         super().__init__(info, screen, ttl_clock, const, subj_id)
         self.name = 'liking'
-        self.feedback_type = 'acc+rt'
+        self.feedback_type = 'rt'
 
     def init_task(self):
         self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
@@ -2052,7 +2052,7 @@ class Liking(Task):
         instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1], wrapWidth=20, pos=(0, 2))
         instr_visual.draw()
 
-        key_text = f"\n\n\n{self.corr_key[0]}. Strongly dislike \n{self.corr_key[1]}. Dislike \n{self.corr_key[2]}. Like \n{self.corr_key[3]}. Strongly like"
+        key_text = f"\n\n\n{self.corr_key[0]}. Dislike \n{self.corr_key[1]}. Mildly dislike \n{self.corr_key[2]}. Mildly like \n{self.corr_key[3]}. Like"
         # key_text = f"\n\n\n{self.corr_key[0]}. Not at all \n{self.corr_key[1]}. A little \n{self.corr_key[2]}. Moderately \n{self.corr_key[3]}. A lot"
         key_text = visual.TextStim(self.window, text=key_text, color=[-1, -1, -1], wrapWidth=20, pos=(-4, -1), alignHoriz='left')
         key_text.draw()
