@@ -8,19 +8,50 @@ import random
 import MultiTaskBattery.utils as ut
 import itertools
 
-def shuffle_rows(dataframe):
+def shuffle_rows(dataframe, keep_in_middle=None):
     """
     randomly shuffles rows of the dataframe
 
     Args:
         dataframe (dataframe): dataframe to be shuffled
+        keep_in_middle (list): list of tasks that should be kept in the middle
     Returns:
         dataframe (dataframe): shuffled dataframe
     """
     indx = np.arange(len(dataframe.index))
     np.random.shuffle(indx)
     dataframe = (dataframe.iloc[indx]).reset_index(drop = True)
+
+    if keep_in_middle is not None:
+        dataframe = move_edge_tasks_to_middle(dataframe, keep_in_middle)
+        
     return dataframe
+
+def move_edge_tasks_to_middle(dataframe, keep_in_middle):
+    """Moves tasks that should be kept in the middle and are at the edge of the dataframe to the middle of the dataframe
+    Args:
+        dataframe (dataframe): dataframe to be shuffled
+        keep_in_middle (list): list of tasks that should be kept in the middle
+    Returns:
+        dataframe (dataframe): shuffled dataframe"""
+
+    middle_task_at_edge = np.any([edge_task in keep_in_middle for edge_task in dataframe.iloc[[0, -1]].task_name])
+
+    if middle_task_at_edge and len(keep_in_middle) < len(dataframe)-2:
+        # If the middle task is at the edge and there are enough tasks to frame the middle tasks, find a new position in the middle
+        middle_indices = list(dataframe.iloc[1:-1].index)
+        middle_indices = [i for i in middle_indices if dataframe.iloc[i].task_name not in keep_in_middle]
+        selected_middle_indices = np.random.choice(middle_indices, len(keep_in_middle), replace=False)
+
+        for i, task in enumerate(keep_in_middle):
+            # Find where the middle task is wrongly placed (edge positions)
+            for edge_idx in [0, -1]:
+                if dataframe.iloc[edge_idx].task_name == task:
+                    # Swap the edge task with a chosen middle position
+                    middle_idx = selected_middle_indices[i]
+                    dataframe.iloc[edge_idx], dataframe.iloc[middle_idx] = dataframe.iloc[middle_idx], dataframe.iloc[edge_idx]
+    return dataframe
+
 
 def add_start_end_times(dataframe, offset, task_dur, run_time=None):
     """
@@ -48,7 +79,8 @@ def make_run_file(task_list,
                   offset = 0,
                   instruction_dur = 5,
                   task_dur = 30,
-                  run_time = None):
+                  run_time = None,
+                  keep_in_middle=None):
     """
     Make a single run file
     """
@@ -59,7 +91,7 @@ def make_run_file(task_list,
          'task_file':tfiles,
          'instruction_dur':[instruction_dur]*len(task_list)}
     R = pd.DataFrame(R)
-    R = shuffle_rows(R)
+    R = shuffle_rows(R, keep_in_middle=keep_in_middle)
     R = add_start_end_times(R, offset, task_dur+instruction_dur, run_time=run_time)
     return R
 
