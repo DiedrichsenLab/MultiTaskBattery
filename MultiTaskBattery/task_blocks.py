@@ -2147,6 +2147,7 @@ class Pong(Task):
     def __init__(self, info, screen, ttl_clock, const, subj_id):
         super().__init__(info, screen, ttl_clock, const, subj_id)
         self.name = 'pong'
+        self.feedback_type = 'acc'
 
     def init_task(self):
         # Read trial info and set keys from file
@@ -2166,7 +2167,7 @@ class Pong(Task):
 
     def run_trial(self, trial):
         # Set parameters (all values are in degrees)
-        paddle_speed = 1        # Movement per frame (deg)
+        paddle_speed = 0.5        # Movement per frame (deg)
         paddle_width = 3.0         # Paddle width (deg)
         paddle_height = 0.3        # Paddle thickness (deg)
         ball_radius = 0.4          # Ball radius (deg)
