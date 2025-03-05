@@ -1873,7 +1873,7 @@ class StrangeStories(Task):
 
         # collect responses 0: no response 1-4: key pressed
         trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['answer_dur'])
-        trial['score'] = scores_shuffled[trial['response']-1]
+        trial['acc'] = scores_shuffled[trial['response']-1]
 
         # Flush memory
         movie_clip.unload()
