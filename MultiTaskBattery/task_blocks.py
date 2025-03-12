@@ -1967,7 +1967,8 @@ class FrithHappe(Task):
         self.instruction_text = f"Decide how the two triangles are interacting."
         instr_stim = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1], wrapWidth=20, pos=(0, 3))
         instr_stim.draw()
-        answer_expalantion = f"\n\n{self.corr_key[0]}. No interaction\n\n{self.corr_key[1]}. Physical (The actions are directed towards each other) \n\n{self.corr_key[2]}. Mental (One triangle manipulates the thoughts or feelings of the other)"
+        # answer_expalantion = f"\n\n{self.corr_key[0]}. No interaction\n\n{self.corr_key[1]}. Physical (The actions are directed towards each other) \n\n{self.corr_key[2]}. Mental (One triangle manipulates the thoughts or feelings of the other)"
+        answer_expalantion = f"\n\n{self.corr_key[0]}. No interaction\n\n{self.corr_key[1]}. Mental (One triangle manipulates the thoughts or feelings of the other)"
         instr_visual = visual.TextStim(self.window, text=answer_expalantion, color=[-1, -1, -1], wrapWidth=20, pos=(-8, -1), alignHoriz='left')
         instr_visual.draw()
         self.window.flip()
@@ -2011,7 +2012,8 @@ class FrithHappe(Task):
 
         stim_question.draw()
         # Initialize answer options
-        answers = f"\n\n{self.corr_key[0]}. No interaction \n{self.corr_key[1]}. Physical \n{self.corr_key[2]}. Mental"
+        # answers = f"\n\n{self.corr_key[0]}. No interaction \n{self.corr_key[1]}. Physical \n{self.corr_key[2]}. Mental"
+        answers = f"\n\n{self.corr_key[0]}. No interaction \n{self.corr_key[1]}. Mental"
         answers_stim = visual.TextStim(self.window, text=answers, pos=(-5, 0), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=wrapWidth, alignHoriz='left')
         answers_stim.draw()
         self.window.flip()
