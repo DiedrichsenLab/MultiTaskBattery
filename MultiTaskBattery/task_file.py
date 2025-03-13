@@ -1723,12 +1723,10 @@ class Liking(TaskFile):
         else:
             stim = pd.read_csv(self.stim_dir / self.name / f'{self.name}.csv')
 
-        
-        average_liking = stim[['left_Liking', 'right_Liking']].mean(axis=1)
-        stim['liking_effective'] = self.map_to_4point_scale(average_liking) # Map to the 4-point scale to use with the button box
-
         if condition:
             stim = stim[stim['condition'] == condition]
+            # Randomize order with seed
+            stim = stim.sample(frac=1, random_state=84).reset_index(drop=True)
         else:
             stim = stim.loc[~stim['condition'].str.contains('practice', na=False)]
 
@@ -1741,13 +1739,8 @@ class Liking(TaskFile):
             trial['trial_num'] = n
             trial['key_one'] = responses[0]
             trial['key_two'] = responses[1]
-            trial['key_three'] = responses[2]
-            trial['key_four'] = responses[3]
-            if str(stim['condition'][n]) == 'like':
-                trial['trial_type'] = 1
-            elif str(stim['condition'][n]) == 'dislike':
-                trial['trial_type'] = 2
             trial['rating'] = int(stim['liking_effective'][n])
+            trial['answer'] = stim['answer'][n]
             trial['hand'] = hand
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
