@@ -2041,7 +2041,7 @@ class Liking(Task):
     def __init__(self, info, screen, ttl_clock, const, subj_id):
         super().__init__(info, screen, ttl_clock, const, subj_id)
         self.name = 'liking'
-        self.feedback_type = 'rt'
+        self.feedback_type = 'acc+rt'
 
     def init_task(self):
         self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
