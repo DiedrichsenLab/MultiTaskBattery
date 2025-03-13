@@ -129,13 +129,6 @@ Tongue Movement
    
 This is a tongue movement task. You will move your tongue from left to right in your closed mouth. Your will either touch your left upper premolar teeth or your right upper premolar teeth. The premolar teeth are shown in the image. A black circle flashing on and off around the fixation cross while tell you when to touch left or right. When you see the black circle on, touch your right upper premolar teeth. When it is off, touch your left premolar teeth. Try to keep the rest of your body as still as possible while you do this so that you don’t move your head. 
 
-Unpleasant Scenes
-^^^^^^^^^^^^^^^^^
-.. image:: images/Slide31.png
-   :width: 600
-   
-In this task you will indicate if a scene is pleasant or unpleasant.
-
 Verb Generation
 ^^^^^^^^^^^^^^^
 .. image:: images/Slide22.png
