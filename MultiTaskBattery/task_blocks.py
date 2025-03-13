@@ -8,11 +8,13 @@ import pandas as pd
 import numpy as np
 import random 
 from psychopy import visual, sound, core, event
+from pyglet.window import key
 import MultiTaskBattery.utils as ut
 from ast import literal_eval
 from copy import deepcopy
-from moviepy import AudioFileClip
+from moviepy.audio.io.AudioFileClip import AudioFileClip
 import gc
+import math
 
 
 class Task:
@@ -2153,4 +2155,123 @@ class Liking(Task):
         gc.collect() # Collect garbarge
         
         return trial
-    
+
+class Pong(Task):
+    """
+    Pong task
+    """
+    def __init__(self, info, screen, ttl_clock, const, subj_id):
+        super().__init__(info, screen, ttl_clock, const, subj_id)
+        self.name = 'pong'
+        self.feedback_type = 'acc'
+
+    def init_task(self):
+        # Read trial info and set keys from file
+        trial_info_file = self.const.task_dir / self.name / self.task_file
+        self.trial_info = pd.read_csv(trial_info_file, sep='\t')
+        self.corr_key = [self.trial_info['key_left'].iloc[0],
+                         self.trial_info['key_right'].iloc[0]]
+        # for real time handle movment
+        self.key_handler = key.KeyStateHandler()
+        self.window.winHandle.push_handlers(self.key_handler)
+
+    def display_instructions(self):
+        self.instruction_text = f"{self.descriptive_name} Task\n\nUse the left and right keys to move the paddle"
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
+        instr_visual.draw()
+        self.window.flip()
+
+    def run_trial(self, trial):
+        # Set parameters (all values are in degrees)
+        paddle_speed = 0.5        # Movement per frame (deg)
+        paddle_width = 3.0         # Paddle width (deg)
+        paddle_height = 0.3        # Paddle thickness (deg)
+        ball_radius = 0.4          # Ball radius (deg)
+        trial_duration = trial['trial_dur']
+
+        # Compute the effective screen dimensions (in degrees) based on monitor calibration.
+        # Get monitor width (in cm) and viewing distance (in cm) from your screen object.
+        monitor_width_cm = self.screen.monitor.getWidth()  
+        distance_cm = self.screen.distance               
+
+        # Calculate horizontal visual angle (in degrees)
+        half_width_deg = math.degrees(math.atan((monitor_width_cm / 2) / distance_cm))
+        screen_width_deg = 2 * half_width_deg
+
+        # Compute vertical visual angle using the aspect ratio from the pixel dimensions.
+        aspect_ratio = self.screen.size[1] / self.screen.size[0]
+        screen_height_deg = screen_width_deg * aspect_ratio
+
+        half_screen_width = screen_width_deg / 2.0
+        half_screen_height = screen_height_deg / 2.0
+
+        # Compute paddle boundaries in degrees
+        paddle_half_width = paddle_width / 2.0
+        min_x = -half_screen_width + paddle_half_width
+        max_x = half_screen_width - paddle_half_width
+
+        # Define margins (in degrees)
+        paddle_margin = 2.0        
+        ball_margin = 2.0        
+
+        # Clear events
+        event.clearEvents()
+
+        # Convert the trajectory string to floats
+        stim_str = trial['stim'].strip("()")
+        dx, dy = map(float, stim_str.split(","))
+
+        # Set initial positions for paddle and ball (in degrees)
+        paddle_y = -half_screen_height + paddle_margin
+        ball_y = half_screen_height - ball_margin
+
+        # Create the paddle and ball stimuli using self.window (coordinates in deg)
+        paddle = visual.Rect(self.window, width=paddle_width, height=paddle_height,
+                             fillColor="white", pos=(0, paddle_y))
+        ball = visual.Circle(self.window, radius=ball_radius, fillColor="white", pos=(0, ball_y))
+
+        start_time = self.ttl_clock.get_time()
+
+        # get movement keys
+        key_left = getattr(key, self.const.response_keys[self.corr_key[0]-1].upper(), None)
+        key_right = getattr(key, self.const.response_keys[self.corr_key[1]-1].upper(), None)
+        trial['correct'] = False
+        
+        while self.ttl_clock.get_time() - start_time < trial_duration:
+            if self.key_handler[key_left]:
+                paddle.pos = (paddle.pos[0] - paddle_speed, paddle.pos[1])
+            if self.key_handler[key_right]:
+                paddle.pos = (paddle.pos[0] + paddle_speed, paddle.pos[1])
+
+            # Clamp paddle position so it doesn't go off-screen
+            if paddle.pos[0] < min_x:
+                paddle.pos = (min_x, paddle.pos[1])
+            if paddle.pos[0] > max_x:
+                paddle.pos = (max_x, paddle.pos[1])
+
+            # Update the ball position
+            ball.pos = (ball.pos[0] + dx, ball.pos[1] + dy)
+
+            # Bounce the ball off the side walls
+            if ball.pos[0] >= half_screen_width - ball_radius or ball.pos[0] <= -half_screen_width + ball_radius:
+                dx *= -1
+
+            # Bounce the ball off the paddle if it's in the correct vertical range
+            # Only process collision if the ball is moving downward because of bug when paddle is in the middle of ball
+            if dy < 0 and (paddle_y - ball_radius) < ball.pos[1] < (paddle_y + paddle_height + ball_radius):
+                if (paddle.pos[0] - paddle_half_width) < ball.pos[0] < (paddle.pos[0] + paddle_half_width):
+                    dy *= -1
+                    trial['correct'] = True
+
+
+            # Draw the stimuli and update the display
+            ball.draw()
+            paddle.draw()
+            self.window.flip()
+
+        # Provide trial feedback
+        self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
+        return trial
+
+
+

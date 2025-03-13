@@ -1760,6 +1760,49 @@ class Liking(TaskFile):
 
         return trial_info
     
+class Pong(TaskFile):
+    def __init__(self, const):
+        super().__init__(const)
+        self.name = 'pong'
+        self.trajectories =  [
+    (0.3, -0.15), (-0.3, -0.15), (0.1, -0.15), (-0.1, -0.15),
+    (0.4, -0.15), (-0.4, -0.15), (0.6, -0.15), (-0.6, -0.15)
+        ]
 
+    def make_task_file(self,
+                        hand = 'bimanual',
+                        responses = [3,4], #3 = Key_three, 4 = Key_four
+                        task_dur=30,
+                        trial_dur=3.25,
+                        iti_dur=0.5,
+                        file_name=None,
+                        run_number=None):
+        n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
+        trial_info = []
+
+        t = 0
+
+        for n in range(n_trials):
+            trial = {}
+            trial['key_left'] = responses[0]
+            trial['key_right'] = responses[1]
+            trial['trial_num'] = n
+            trial['hand'] = hand
+            trial['trial_dur'] = trial_dur
+            trial['iti_dur'] = iti_dur
+            trial['display_trial_feedback'] = True
+            # choose random sequence
+            trial['stim'] = random.choice(self.trajectories)
+            trial['start_time'] = t
+            trial['end_time'] = t + trial_dur + iti_dur
+            trial_info.append(trial)
+            t = trial['end_time']
+
+        trial_info = pd.DataFrame(trial_info)
+        if file_name is not None:
+            ut.dircheck(self.task_dir / self.name)
+            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
+
+        return trial_info
 
 
