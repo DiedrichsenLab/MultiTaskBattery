@@ -2043,20 +2043,23 @@ class Liking(Task):
 
     def init_task(self):
         self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
-        self.corr_key = [self.trial_info['key_one'].iloc[0],self.trial_info['key_two'].iloc[0], self.trial_info['key_three'].iloc[0], self.trial_info['key_four'].iloc[0]]
+        self.corr_key = [self.trial_info['key_one'].iloc[0],self.trial_info['key_two'].iloc[0]]
 
     def display_instructions(self):
-        task_name = visual.TextStim(self.window, text=f'{self.descriptive_name.capitalize()}', color=[-1, -1, -1], bold=True, pos=(0, 5))
+        task_name = visual.TextStim(self.window, text=f'{self.descriptive_name.capitalize()}', color=[-1, -1, -1], bold=True, pos=(0, 3))
         task_name.draw()
 
-        self.instruction_text = f"You will watch two people meeting for the first time."
-        self.instruction_text += "\nRate how much they like each other."
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1], wrapWidth=20, pos=(0, 2))
-        instr_visual.draw()
-
-        key_text = f"\n\n\n{self.corr_key[0]}. Dislike \n{self.corr_key[1]}. Mildly dislike \n{self.corr_key[2]}. Mildly like \n{self.corr_key[3]}. Like"
-        # key_text = f"\n\n\n{self.corr_key[0]}. Not at all \n{self.corr_key[1]}. A little \n{self.corr_key[2]}. Moderately \n{self.corr_key[3]}. A lot"
-        key_text = visual.TextStim(self.window, text=key_text, color=[-1, -1, -1], wrapWidth=20, pos=(-4, -1), alignHoriz='left')
+        self.instruction_text = f"You will watch two people meeting for the first time.\n"
+        if 'like' in self.task_file:
+            self.instruction_text += "Judge if one person speaks more."
+            key_text = f"\n{self.corr_key[0]}. Yes \n{self.corr_key[1]}. No"
+        elif 'control' in self.task_file:
+            self.instruction_text += "Judge if they like each other."
+            key_text = f"\n{self.corr_key[0]}. Yes \n{self.corr_key[1]}. No"
+        instr_stim = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1], wrapWidth=20, pos=(0, 0))
+        instr_stim.draw()
+        key_text = visual.TextStim(self.window, text=key_text, color=[-1, -1, -1],
+                                   wrapWidth=20, pos=(-1, -3), alignHoriz='left')
         key_text.draw()
         self.window.flip()
 
@@ -2107,23 +2110,34 @@ class Liking(Task):
         event.clearEvents()
 
         # Initialize question
-        question = "How much do they like each other?"
+        trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['question_dur'])
+        if trial['condition'] == 'like':
+            question = "Do they like each other?"
+        elif trial['condition'] == 'control':
+            question = "Did one person talk more?"
+        
         # Display question
-        stim_question = visual.TextStim(self.window, text = question, pos=(0, 3), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=wrapWidth)
+        stim_question = visual.TextStim(self.window, text = question, pos=(0, 1), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=wrapWidth)
         stim_question.draw()
 
         # Initialize answer options
-        answers = f"\n\n{self.corr_key[0]}. Strongly dislike \n{self.corr_key[1]}. Dislike \n{self.corr_key[2]}. Like \n{self.corr_key[3]}. Strongly like"
-        stim_answers = visual.TextStim(self.window, text=answers, pos=(-5, 0), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=wrapWidth, alignHoriz='left')
+        answers = f"\n\n{self.corr_key[0]}. Yes \n{self.corr_key[1]}. No"
+        stim_answers = visual.TextStim(self.window, text=answers, pos=(-3, 0), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=wrapWidth, alignHoriz='left')
         stim_answers.draw()
         self.window.flip()
 
         # collect responses 0: no response 1-4: key pressed
         trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['question_dur'])
         if trial['condition'] == 'like':
-            trial['correct'] = (trial['response'] in [3, 4])
-        elif trial['condition'] == 'dislike':
-            trial['correct'] = (trial['response'] in [1, 2])
+            if trial['answer'] == 'like':
+                trial['correct'] = (trial['response'] == 1)
+            elif trial['answer'] == 'dislike':
+                trial['correct'] = (trial['response'] == 2)
+        elif trial['condition'] == 'control':
+            if trial['answer'] == 'unbalanced':
+                trial['correct'] = (trial['response'] == 1)
+            elif trial['answer'] == 'balanced':
+                trial['correct'] = (trial['response'] == 2)
         else:
             trial['correct'] = False
         
