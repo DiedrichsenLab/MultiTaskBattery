@@ -2054,10 +2054,10 @@ class Liking(Task):
         self.instruction_text = f"You will watch two people meeting for the first time.\n"
         if 'like' in self.task_file:
             self.instruction_text += "Judge if one person speaks more."
-            key_text = f"\n{self.corr_key[0]}. Yes \n{self.corr_key[1]}. No"
+            key_text = f"\n{self.corr_key[0]}. Yes \t{self.corr_key[1]}. No"
         elif 'control' in self.task_file:
             self.instruction_text += "Judge if they like each other."
-            key_text = f"\n{self.corr_key[0]}. Yes \n{self.corr_key[1]}. No"
+            key_text = f"\n{self.corr_key[0]}. Yes \t{self.corr_key[1]}. No"
         instr_stim = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1], wrapWidth=20, pos=(0, 0))
         instr_stim.draw()
         key_text = visual.TextStim(self.window, text=key_text, color=[-1, -1, -1],
@@ -2113,9 +2113,9 @@ class Liking(Task):
 
         # Initialize question
         trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['question_dur'])
-        if trial['condition'] == 'like':
+        if 'like' in trial['condition']:
             question = "Do they like each other?"
-        elif trial['condition'] == 'control':
+        elif 'control' in trial['condition']:
             question = "Did one person talk more?"
         
         # Display question
@@ -2123,7 +2123,7 @@ class Liking(Task):
         stim_question.draw()
 
         # Initialize answer options
-        answers = f"\n\n{self.corr_key[0]}. Yes \n{self.corr_key[1]}. No"
+        answers = f"\n\n{self.corr_key[0]}. Yes \t{self.corr_key[1]}. No"
         stim_answers = visual.TextStim(self.window, text=answers, pos=(-3, 0), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=wrapWidth, alignHoriz='left')
         stim_answers.draw()
         self.window.flip()
