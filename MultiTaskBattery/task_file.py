@@ -1703,12 +1703,12 @@ class Liking(TaskFile):
     
     def make_task_file(self,
                        hand='right',
-                       responses = [1,2,3,4],
+                       responses = [1,2],
                        run_number = None,
                        task_dur=30,
                        trial_dur=28,
-                       iti_dur=2,
-                       question_dur=4,
+                       iti_dur=1,
+                       question_dur=3,
                        file_name=None,
                        stim_file=None,
                        condition=None):
