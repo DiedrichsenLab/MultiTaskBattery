@@ -6,7 +6,9 @@
 from pathlib import Path
 import pandas as pd
 import numpy as np
-import random 
+import random
+from psychopy import prefs
+prefs.hardware['audioLib'] = ['sounddevice'] 
 from psychopy import visual, sound, core, event
 from pyglet.window import key
 import MultiTaskBattery.utils as ut
@@ -15,6 +17,9 @@ from copy import deepcopy
 from moviepy.audio.io.AudioFileClip import AudioFileClip
 import gc
 import math
+
+
+
 
 
 class Task:
