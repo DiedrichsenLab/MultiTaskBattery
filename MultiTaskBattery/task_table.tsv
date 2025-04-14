@@ -11,7 +11,7 @@ degraded_passage	DegradedPassage	listen	degpass
 intact_passage	IntactPassage	story_listen	intpass			
 sentence_reading	SentenceReading	sentence_reading	senread			
 nonword_reading	NonwordReading	word_reading	nwdread			
-oddball	OddBall	oddball	odbal			
+oddball	OddBall	oddball	odbal		"Functional specificity for high-level linguistic processing in the human brain (Fedorenko et al., 2011)"	
 demand_grid	DemandGrid	grid	dmgrd			
 finger_sequence	FingerSequence	finger_sequence	fingseq			
 flexion_extension	FlexionExtension	toe	flexexten	alternating periods of flexing/extending toes		
