@@ -1374,6 +1374,9 @@ class RMET(Task):
         # display trial feedback
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
 
+        # Flush any keys in buffer
+        event.clearEvents()
+
         return trial
 
 class PictureSequence(Task):
@@ -1695,6 +1698,9 @@ class ActionPrediction(Task):
             self.ttl_clock.update()
             # core.wait(1)  # Freeze the video for a moment
 
+        # Flush any keys in buffer
+        event.clearEvents()
+
         # Display question
         options = trial['options'].split(',')
         question = trial['question']
@@ -1925,6 +1931,9 @@ class FauxPas(Task):
         # wait until story duration
         self.ttl_clock.wait_until(self.ttl_clock.get_time() + trial['story_dur'])
 
+        # Flush any keys in buffer
+        event.clearEvents()
+
         # Display question
         question = trial['question']
         # Display answers
@@ -1972,10 +1981,6 @@ class FrithHappe(Task):
         self.window.flip()
 
     def run_trial(self, trial):
-        """ Runs a single trial of the Frith-Happe task """
-        # Flush any keys in buffer
-        event.clearEvents()
-
         window_width, _ = self.window.size
         frith_happe_scale = self.const.frith_happe_scale if hasattr(self.const, 'frith_happe_scale') else 0.4
         stim_width = int(window_width * frith_happe_scale) 
@@ -2020,6 +2025,8 @@ class FrithHappe(Task):
         answers_stim.draw()
         self.window.flip()
 
+        # Flush any keys in buffer
+        event.clearEvents()
         # collect responses 0: no response 1-4: key pressed
         trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['question_dur'])
         trial['correct'] = (trial['response'] == trial['trial_type'])
@@ -2030,8 +2037,6 @@ class FrithHappe(Task):
         # Flush movie from memory
         movie_clip.unload()
         gc.collect() # Collect garbarge
-
-
 
         return trial
     
