@@ -1374,6 +1374,9 @@ class RMET(Task):
         # display trial feedback
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
 
+        # Flush any keys in buffer
+        event.clearEvents()
+
         return trial
 
 class PictureSequence(Task):
@@ -1415,7 +1418,7 @@ class PictureSequence(Task):
             visual.Rect(self.window, size=(width, height), pos=positions[pressed_key-1], lineColor=color, lineWidth=line_width).draw()
         
     def run_trial(self, trial):
-        """ Runs a single trial of the Picture Sequencing task """
+        """ Runs a single trial of the Reading the Mind in the Eye (RMET) task """
         
         # Flush any keys in buffer
         event.clearEvents()
@@ -1557,7 +1560,7 @@ class StorySequence(Task):
             
         
     def run_trial(self, trial):
-        """ Runs a single trial of the Story Sequencing task """
+        """ Runs a single trial of the Reading the Mind in the Eye (RMET) task """
         
         # Flush any keys in buffer
         event.clearEvents()
@@ -1695,6 +1698,9 @@ class ActionPrediction(Task):
             self.ttl_clock.update()
             # core.wait(1)  # Freeze the video for a moment
 
+        # Flush any keys in buffer
+        event.clearEvents()
+
         # Display question
         options = trial['options'].split(',')
         question = trial['question']
@@ -1791,9 +1797,6 @@ class StrangeStories(Task):
         self.window.flip()
 
     def run_trial(self, trial):
-        # Flush any keys in buffer
-        event.clearEvents()
-
         window_width, _ = self.window.size
         strange_stories_scale = self.const.strange_stories_scale if hasattr(self.const, 'strange_stories_scale') else 0.6
         stim_width = int(window_width * strange_stories_scale) # Make the video 40% of the window width
@@ -1868,7 +1871,8 @@ class StrangeStories(Task):
             left_position = 0
             align='center'
         
-
+        # Flush any keys in buffer
+        event.clearEvents()
         stim_answers = visual.TextStim(self.window, text=answers, pos=(left_position, 0), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=wrapWidth, alignHoriz=align)
         stim_question.draw()
         stim_answers.draw()
@@ -1977,9 +1981,6 @@ class FrithHappe(Task):
         self.window.flip()
 
     def run_trial(self, trial):
-        # Flush any keys in buffer
-        event.clearEvents()
-        
         window_width, _ = self.window.size
         frith_happe_scale = self.const.frith_happe_scale if hasattr(self.const, 'frith_happe_scale') else 0.4
         stim_width = int(window_width * frith_happe_scale) 
@@ -2024,6 +2025,8 @@ class FrithHappe(Task):
         answers_stim.draw()
         self.window.flip()
 
+        # Flush any keys in buffer
+        event.clearEvents()
         # collect responses 0: no response 1-4: key pressed
         trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['question_dur'])
         trial['correct'] = (trial['response'] == trial['trial_type'])
@@ -2068,9 +2071,6 @@ class Liking(Task):
         self.window.flip()
 
     def run_trial(self, trial):
-        # Flush any keys in buffer
-        event.clearEvents()
-        
         window_width, _ = self.window.size
         liking_scale = self.const.liking_scale if hasattr(self.const, 'liking_scale') else 0.5
         stim_width = int(window_width * liking_scale)
