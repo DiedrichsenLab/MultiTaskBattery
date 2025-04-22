@@ -15,7 +15,7 @@ Affective
 .. image:: images/Slide35.png
    :width: 600
 
-In this task, you will be shown a series of emotionally evocative images (e.g., pleasant or unpleasant scenes). Each image will appear on the screen and choose if it's pleasant or unpleasant.
+In this task, you will be shown a series of emotionally evocative images (e.g., pleasant or unpleasant scenes). Each image will appear on the screen and you will choose if it's pleasant or unpleasant.
 
 Auditory Narrative
 ^^^^^^^^^^^^^^^^^^^
