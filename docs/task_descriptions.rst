@@ -12,7 +12,7 @@ You are not required to make any response (overt or covert) in this task. You wi
 
 Affective 
 ^^^^^^^^^^^^^^^^^^^^
-.. image:: images/35.png
+.. image:: images/Slide35.png
    :width: 600
 
 In this task, you will be shown a series of emotionally evocative images (e.g., pleasant or unpleasant scenes). Each image will appear on the screen and choose if it's pleasant or unpleasant.
