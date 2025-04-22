@@ -19,21 +19,6 @@ sencoding	Sencoding	sentence	sencod
 sencoding_probe	SencodingProbe	sentence_probe	sencodeprob			
 semantic_prediction	SemanticPrediction	complete	sempred	"sentence presented, participants decide if last word makes sense."		
 visual_search	VisualSearch	search	visrchsml	"geometric shapes presented on screen, participants must identify if 'L' is present."		
-go_no_go	Na	nogo	nogo			
-affective	Na	pleasent	pleasent			
-arithmetic	Na	math	math			
-checkerBoard	Na	checker	chckbrd			
-emotional	Na	faces	sdfac			
-interval_timing	Na	timing	inttim			
-n_back_verbal	Na	memory_verbal	vrbbck			
-n_back_pic	Na	memory_object	objbck			
-stroop	Na	stroop	strp			
-CPRO	Na	CPRO	crpo			
-motor_imagery	Na	motor_imagery	mtrimg			
-spatial_map	Na	spatial_map	spatmp			
-mental_rotation	Na	rotation	mntrlrt			
-emotionProcess	Na	motion	biomot			
-respAlt	Na	response_alternative	respalt			
 rmet	RMET	eyes	rmet	"pictures of faces with different emotions presented (eyes only) along with four attribute words, participants must identify which attribute describes person best."	"Kim, H.A. et al. (2024) ‘Multiracial Reading the Mind in the Eyes Test (MRMET): An inclusive version of an influential measure’, Behavior Research Methods. Revised from Baron-Cohen, Wheelwright, Hill, Raste, & Plumb, 2001"	"age, emotion"
 picture_sequence	PictureSequence	cartoon	picture_sequence	"4 cartoon pictures are presented, participants must order them chronologically."	"Heleven, E., van Dun, K. and Van Overwalle, F. (2019) ‘The posterior Cerebellum is involved in constructing Social Action Sequences: An fMRI Study’, Scientific Reports, 9(1), pp. 1–11. Available at: https://doi.org/10.1038/s41598-019-46962-7."	"fbelief,tbelief,control,sscript,mechanical"
 story_sequence	StorySequence	story sequence	story_sequence	"4 sentences are presented, participants must order them chronologically."	"Heleven, E., van Dun, K. and Van Overwalle, F. (2019) ‘The posterior Cerebellum is involved in constructing Social Action Sequences: An fMRI Study’, Scientific Reports, 9(1), pp. 1–11. Available at: https://doi.org/10.1038/s41598-019-46962-7."	"fbelief,tbelief,control,sscript,mechanical"
@@ -44,3 +29,4 @@ faux_pas	FauxPas	faux pas	faux_pas	"stories of (potential) faux pas situations, 
 frith_happe	FrithHappe	triangle	frith_happe	"video clips of triangle animations, participants must determine whether interaction was random, goal-directed or a mentalizing interaction"	"Livingston, L.A. et al. (2021) ‘Further developing the Frith–Happé animations: A quicker, more objective, and web-based test of theory of mind for autistic and neurotypical adults’, Autism Research, 14(9), pp. 1905–1912. Available at: https://doi.org/10.1002/aur.2575.."	"random,gd,tom"
 liking	Liking	meeting	liking	"video clips of people interacting, participants must determine if the interaction was positive or negative"	"Heerey, E.A. and Gilder, T.S.E. (2019) ‘The subjective value of a smile alters social behaviour’, PLoS ONE, 14(12), pp. 1–19. Available at: https://doi.org/10.1371/journal.pone.0225284."	"like,dislike"
 pong	Pong	pong	pomg	pong game		
+affective	Affective	affective	affect	2 choice is the image pleasant or unpleasant		
