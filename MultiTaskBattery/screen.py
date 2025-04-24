@@ -1,5 +1,7 @@
 # created 2023: Bassel Arafat, Jorn Diedrichsen, Ince Husain
 from psychopy import visual, monitors
+from pyglet.canvas import get_display
+
 
 class Screen:
     def __init__(self, const):
@@ -28,6 +30,8 @@ class Screen:
         self.monitor.setSizePix(self.size) # screen size (not window!) look in display prefs
         self.monitor.saveMon()
 
+        self.check_monitors()
+
         self.window   = visual.Window(size = self.size,
                              screen = self.screen_number,
                              monitor = self.monitor,
@@ -35,6 +39,25 @@ class Screen:
                              units = self.units,
                              color = self.color,
                              allowGUI = self.allowGUI, allowStencil=True)
+        
+    def check_monitors(self):
+
+        display = get_display()
+        screens = display.get_screens()
+
+        if self.fullscr and len(screens) <= 1:
+            print("Warning: Fullscreen mode is enabled, but you have no external monitor connected.")
+            print("Change the constants to not use fullscreen mode or connect an external monitor.")
+            print("Quitting the experiment to avoid a frozen screen....")
+            exit(1)
+
+
+    def start_screen(self, color='white'):
+        """    A method to draw a start screen on the screen
+        """
+        loading_msg = visual.TextStim(self.window, text="Preparing experiment...", color=color)
+        loading_msg.draw()
+        self.window.flip()
 
     def fixation_cross(self, color='white', flip=True):
         """    A method to draw a fixation cross on the screen
