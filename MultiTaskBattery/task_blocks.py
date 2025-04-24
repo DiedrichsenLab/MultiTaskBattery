@@ -1828,6 +1828,7 @@ class StrangeStories(Task):
             movie_clip.play()
             movie_clip.draw()
             self.window.flip()
+            self.ttl_clock.update()
 
         if play_audio_separatly:
             audio.stop()
@@ -2099,7 +2100,7 @@ class Liking(Task):
         movie_clip.play()
         self.window.flip()
 
-        while self.ttl_clock.get_time() - movie_start_time < max_video_duration:
+        while (self.ttl_clock.get_time() - movie_start_time < max_video_duration and not movie_clip.isFinished):
             movie_clip.play()
             movie_clip.draw()
             self.window.flip()
