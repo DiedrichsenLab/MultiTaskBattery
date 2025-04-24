@@ -2098,7 +2098,7 @@ class Liking(Task):
         movie_clip.play()
         self.window.flip()
 
-        while (self.ttl_clock.get_time() - movie_start_time < max_video_duration and not movie_clip.isFinished):
+        while (self.ttl_clock.get_time() - movie_start_time < max_video_duration):
             movie_clip.play()
             movie_clip.draw()
             self.window.flip()
