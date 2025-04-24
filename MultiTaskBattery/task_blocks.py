@@ -566,6 +566,10 @@ class ActionObservation(Task):
         # Display trial feedback
         self.display_trial_feedback(give_feedback= trial['display_trial_feedback'], correct_response = None)
 
+        # Flush memory
+        movie_clip.unload()
+        gc.collect() # Collect garbarge
+
         return trial
 
 class DemandGrid(Task):
@@ -2129,6 +2133,10 @@ class Liking(Task):
         # display trial feedback
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
 
+        # Flush memory
+        movie_clip.unload()
+        gc.collect() # Collect garbarge
+        
         return trial
 
 class Pong(Task):
