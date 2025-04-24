@@ -2104,11 +2104,11 @@ class Liking(Task):
             self.window.flip()
             self.ttl_clock.update()
 
-        if play_audio_separatly:
-            audio.stop()
-
         # Flush any keys in buffer
         event.clearEvents()
+
+        if play_audio_separatly:
+            audio.stop()
 
         # Initialize question
         trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['question_dur'])
