@@ -100,12 +100,28 @@ class Task:
 
     def show_progress(self, seconds_left, show_last_seconds=5, height=1, width=10, x_pos=-5, y_pos=8):
         """ Displays a progress bar for the Picture Sequence task
-        Args:
-            trial (dict): The current trial
-            start_time (float): The start time of the trial
-            height (float): The height of the progress bar
-            width (float): The width of the progress bar
-            y_pos (float): The y position of the progress bar
+   Args:
+        seconds_left (float): 
+            The number of seconds remaining in the current trial. 
+            If this value is greater than `show_last_seconds`, the progress bar is not shown.
+
+        show_last_seconds (float, optional): 
+            The duration (in seconds) over which to display the progress bar at the end of a trial. 
+            Default is 5 seconds. When `seconds_left` is less than this value, the progress bar appears.
+
+        height (float, optional): 
+            The vertical size of the progress bar in PsychoPy window units. Default is 1.
+
+        width (float, optional): 
+            The horizontal size of the progress bar in PsychoPy window units. Default is 10.
+
+        x_pos (float, optional): 
+            The horizontal position of the center of the progress bar in window coordinates. 
+            Negative values move it leftward. Default is -5.
+
+        y_pos (float, optional): 
+            The vertical position of the center of the progress bar in window coordinates. 
+            Positive values move it upward. Default is 8.
         """
         # If we are in the last five seconds of the trial, display the remaining time
         if seconds_left < show_last_seconds:
