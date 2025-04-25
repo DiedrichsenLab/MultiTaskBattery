@@ -2272,5 +2272,58 @@ class Pong(Task):
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
         return trial
 
+class Affective(Task):
+    def __init__(self, info, screen, ttl_clock, const, subj_id):
+        super().__init__(info, screen, ttl_clock, const, subj_id)
+        self.feedback_type = 'acc+rt'
 
+    def init_task(self):
+        """
+        Initialize task
+        """
+        trial_info_file = self.const.task_dir / self.name / self.task_file
+        self.trial_info = pd.read_csv(trial_info_file, sep='\t')
+        
+        self.stim = []
+        for stim_file in self.trial_info['stim']:
+            stim_path = self.const.stim_dir / self.name / stim_file
+            self.stim.append(visual.ImageStim(self.window, image=str(stim_path)))
+
+    def display_instructions(self):
+        """
+        Display instructions for the affective task.
+        """
+        key_pleasant = self.trial_info['key_pleasant'].iloc[0]
+        key_unpleasant = self.trial_info['key_unpleasant'].iloc[0]
+
+        self.instruction_text = (
+            f"{self.descriptive_name} Task\n\n"
+            f"Press {key_unpleasant} if the image is UNPLEASANT.\n"
+            f"Press {key_pleasant} if the image is PLEASANT."
+        )
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1], wrapWidth=20)
+        instr_visual.draw()
+        self.window.flip()
+
+    def run_trial(self, trial):
+        """
+        Run a single trial of the affective task.
+        """
+        event.clearEvents()
+
+        # Display image
+        self.stim[trial['trial_num']].draw()
+        self.window.flip()
+
+        # Wait for response
+        trial['response'], trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['trial_dur'])
+
+        # Determine correct response
+        correct_key = trial['key_pleasant'] if trial['trial_type'] == 2 else trial['key_unpleasant']
+        trial['correct'] = (trial['response'] == correct_key)
+
+        # Show feedback
+        self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
+
+        return trial
 
