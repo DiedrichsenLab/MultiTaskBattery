@@ -10,12 +10,12 @@ Action Observation
    
 You are not required to make any response (overt or covert) in this task. You will watch two short video clips of 1) a knot being tied and 2) an already tied knot rotating on an axis. We ask that you pay close attention to the knot-tying exercise and the finished product as well as the name of each knot (upper right side of screen) as we will quiz you after the scanning experiment and ask you to tie the knot yourself”.
 
-Arithmetic
-^^^^^^^^^^^^^^^^^^^
-.. image:: images/Slide34.png
+Affective 
+^^^^^^^^^^^^^^^^^^^^
+.. image:: images/Slide35.png
    :width: 600
-   
-In this task, you will indicate if a simple multiplication equation is correct or incorrect.
+
+In this task, you will be shown a series of emotionally evocative images (e.g., pleasant or unpleasant scenes). Each image will appear on the screen and you will choose if it's pleasant or unpleasant.
 
 Auditory Narrative
 ^^^^^^^^^^^^^^^^^^^

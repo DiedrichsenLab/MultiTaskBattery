@@ -1806,3 +1806,61 @@ class Pong(TaskFile):
         return trial_info
 
 
+class Affective(TaskFile):
+    def __init__(self, const):
+        super().__init__(const)
+        self.name = 'affective'
+
+    def make_task_file(self,
+                       task_dur=30,
+                       trial_dur=1.6,
+                       iti_dur=0.4,
+                       file_name=None,
+                       run_number=None,
+                       hand='left',
+                       responses=[3, 4]):  
+
+        # check how many trials to include
+        n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
+        n_pleasant = n_trials // 2
+        n_unpleasant = n_trials - n_pleasant 
+
+        # Randomly sample numbers 1–26 (image name numbers)
+        pleasant_nums = random.sample(range(1, 27), n_pleasant)
+        unpleasant_nums = random.sample(range(1, 27), n_unpleasant)
+
+        # Create stim list
+        stim = [{'imgName': f'pleasant{n}.jpg', 'trialType': 2} for n in pleasant_nums] + \
+               [{'imgName': f'unpleasant{n}.jpg', 'trialType': 1} for n in unpleasant_nums]
+
+        random.shuffle(stim)  # mix trial order
+
+        # Build trial list
+        trial_info = []
+        t = 0
+        for n in range(n_trials):
+            trial = {}
+            trial['key_pleasant'] = responses[0]
+            trial['key_unpleasant'] = responses[1]
+            trial['trial_num'] = n
+            trial['stim'] = stim[n]['imgName']
+            trial['trial_type'] = stim[n]['trialType']
+            trial['hand'] = hand
+            trial['trial_dur'] = trial_dur
+            trial['iti_dur'] = iti_dur
+            trial['key_unpleasant'] = responses[0]
+            trial['key_pleasant'] = responses[1]
+            trial['display_trial_feedback'] = True
+            trial['start_time'] = t
+            trial['end_time'] = t + trial_dur + iti_dur
+            trial_info.append(trial)
+            t = trial['end_time']
+
+        trial_info = pd.DataFrame(trial_info)
+
+        if file_name is not None:
+            ut.dircheck(self.task_dir / self.name)
+            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
+
+        return trial_info
+
