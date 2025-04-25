@@ -2019,7 +2019,7 @@ class FrithHappe(Task):
 
         stim_question.draw()
         # Initialize answer options
-        # answers = f"\n\n{self.corr_key[0]}. No interaction \n{self.corr_key[1]}. Physical \n{self.corr_key[2]}. Mental"
+        # answers = f"\n\n{self.corr_key[0]}. No interaction \n{self.corr_key[1]}. Mental \n{self.corr_key[2]}. Physical "
         answers = f"\n\n{self.corr_key[0]}. No interaction \n{self.corr_key[1]}. Mental"
         answers_stim = visual.TextStim(self.window, text=answers, pos=(-5, 0), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=wrapWidth, alignHoriz='left')
         answers_stim.draw()
