@@ -13,6 +13,7 @@ from MultiTaskBattery.ttl_clock import TTLClock
 from MultiTaskBattery.screen import Screen
 # import pylink as pl # to connect to eyelink
 
+
 class Experiment:
     def __init__(self, const, subj_id):
         """    A general class with attributes common to experiments
@@ -58,6 +59,9 @@ class Experiment:
         Args:
         """
         if not self.const.debug:
+            # Step 1: Create a temporary small window for user feedback
+            self.screen.start_screen()
+
             # a dialog box pops up so you can enter info
             #Set up input box
             inputDlg = gui.Dlg(title = f"{self.exp_name}")

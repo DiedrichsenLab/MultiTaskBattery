@@ -100,12 +100,28 @@ class Task:
 
     def show_progress(self, seconds_left, show_last_seconds=5, height=1, width=10, x_pos=-5, y_pos=8):
         """ Displays a progress bar for the Picture Sequence task
-        Args:
-            trial (dict): The current trial
-            start_time (float): The start time of the trial
-            height (float): The height of the progress bar
-            width (float): The width of the progress bar
-            y_pos (float): The y position of the progress bar
+   Args:
+        seconds_left (float): 
+            The number of seconds remaining in the current trial. 
+            If this value is greater than `show_last_seconds`, the progress bar is not shown.
+
+        show_last_seconds (float, optional): 
+            The duration (in seconds) over which to display the progress bar at the end of a trial. 
+            Default is 5 seconds. When `seconds_left` is less than this value, the progress bar appears.
+
+        height (float, optional): 
+            The vertical size of the progress bar in PsychoPy window units. Default is 1.
+
+        width (float, optional): 
+            The horizontal size of the progress bar in PsychoPy window units. Default is 10.
+
+        x_pos (float, optional): 
+            The horizontal position of the center of the progress bar in window coordinates. 
+            Negative values move it leftward. Default is -5.
+
+        y_pos (float, optional): 
+            The vertical position of the center of the progress bar in window coordinates. 
+            Positive values move it upward. Default is 8.
         """
         # If we are in the last five seconds of the trial, display the remaining time
         if seconds_left < show_last_seconds:
@@ -1374,9 +1390,6 @@ class RMET(Task):
         # display trial feedback
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
 
-        # Flush any keys in buffer
-        event.clearEvents()
-
         return trial
 
 class PictureSequence(Task):
@@ -1698,9 +1711,6 @@ class ActionPrediction(Task):
             self.ttl_clock.update()
             # core.wait(1)  # Freeze the video for a moment
 
-        # Flush any keys in buffer
-        event.clearEvents()
-
         # Display question
         options = trial['options'].split(',')
         question = trial['question']
@@ -1715,10 +1725,6 @@ class ActionPrediction(Task):
 
         # display trial feedback
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
-
-        # Flush memory
-        movie_clip.unload()
-        gc.collect() # Collect garbarge
 
         return trial
 
@@ -1764,10 +1770,6 @@ class Movie(Task):
             self.window.flip()
             self.ttl_clock.update()
 
-        # Flush memory
-        movie_clip.unload()
-        gc.collect() # Collect garbarge
-        
         return trial
     
 
@@ -1834,6 +1836,7 @@ class StrangeStories(Task):
             movie_clip.play()
             movie_clip.draw()
             self.window.flip()
+            self.ttl_clock.update()
 
         if play_audio_separatly:
             audio.stop()
@@ -1882,10 +1885,6 @@ class StrangeStories(Task):
         trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['answer_dur'])
         trial['acc'] = scores_shuffled[trial['response']-1]
 
-        # Flush memory
-        movie_clip.unload()
-        gc.collect() # Collect garbarge
-
         return trial
     
 
@@ -1930,9 +1929,6 @@ class FauxPas(Task):
 
         # wait until story duration
         self.ttl_clock.wait_until(self.ttl_clock.get_time() + trial['story_dur'])
-
-        # Flush any keys in buffer
-        event.clearEvents()
 
         # Display question
         question = trial['question']
@@ -1981,6 +1977,10 @@ class FrithHappe(Task):
         self.window.flip()
 
     def run_trial(self, trial):
+        """ Runs a single trial of the Frith-Happe task """
+        # Flush any keys in buffer
+        event.clearEvents()
+
         window_width, _ = self.window.size
         frith_happe_scale = self.const.frith_happe_scale if hasattr(self.const, 'frith_happe_scale') else 0.4
         stim_width = int(window_width * frith_happe_scale) 
@@ -2025,18 +2025,12 @@ class FrithHappe(Task):
         answers_stim.draw()
         self.window.flip()
 
-        # Flush any keys in buffer
-        event.clearEvents()
         # collect responses 0: no response 1-4: key pressed
         trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['question_dur'])
         trial['correct'] = (trial['response'] == trial['trial_type'])
 
         # display trial feedback
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
-
-        # Flush movie from memory
-        movie_clip.unload()
-        gc.collect() # Collect garbarge
 
         return trial
     
@@ -2104,17 +2098,17 @@ class Liking(Task):
         movie_clip.play()
         self.window.flip()
 
-        while self.ttl_clock.get_time() - movie_start_time < max_video_duration:
+        while (self.ttl_clock.get_time() - movie_start_time < max_video_duration):
             movie_clip.play()
             movie_clip.draw()
             self.window.flip()
             self.ttl_clock.update()
 
-        if play_audio_separatly:
-            audio.stop()
-
         # Flush any keys in buffer
         event.clearEvents()
+
+        if play_audio_separatly:
+            audio.stop()
 
         # Initialize question
         trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['question_dur'])
