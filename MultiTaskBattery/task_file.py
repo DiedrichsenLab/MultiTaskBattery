@@ -71,7 +71,7 @@ def add_start_end_times(dataframe, offset, task_dur, run_time=None):
         if run_time < dataframe['end_time'].iloc[-1]:
             raise ValueError('Run time is shorter than the last task')
         # Add add_end_time seconds to the last task to ensure the task runs until the end of the run (e.g. for capturing the activity overhang from the final task in an imaging run)
-        dataframe['end_time'].iloc[-1] = run_time
+        dataframe.loc[dataframe.index[-1], 'end_time'] = run_time
     return dataframe
 
 def make_run_file(task_list,
@@ -1642,9 +1642,9 @@ class FrithHappe(TaskFile):
             trial['key_one'] = responses[0]
             trial['key_two'] = responses[1]
             trial['key_three'] = responses[2]
-            if str(stim['condition'][n]) == 'tom':
+            if 'tom' in str(stim['condition'][n]):
                 trial['trial_type'] = 3
-            elif str(stim['condition'][n]) == 'gd':
+            elif 'gd' in str(stim['condition'][n]):
                 trial['trial_type'] = 2
             else:
                 trial['trial_type'] = 1
