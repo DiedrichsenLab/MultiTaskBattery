@@ -112,8 +112,8 @@ image-033.jpg,practice_emotion,"embarrassed,guilty,fantasizing,concerned",concer
 image-034.jpg,practice_emotion,"aghast,baffled,distrustful,terrified",distrustful,baron_cohen_34,0
 image-035.jpg,practice_emotion,"puzzled,nervous,insisting,contemplative",nervous,baron_cohen_35,0
 image-036.jpg,practice_emotion,"ashamed,nervous,suspicious,indecisive",suspicious,baron_cohen_36,0
-image-023.jpg,practice_age,"49,55,63,71",55,baron_cohen_23,0
-image-024.jpg,practice_age,"78,78,91,96",91,baron_cohen_24,0
+image-023.jpg,practice_age,"90,55,20,71",55,baron_cohen_23,0
+image-024.jpg,practice_age,"30,40,91,25",91,baron_cohen_24,0
 image-026.jpg,practice_age,"58,67,73,81",67,baron_cohen_26,0
 image-029.jpg,practice_age,"18,20,27,35",20,baron_cohen_29,0
 image-030.jpg,exclude,"21,36,43,48",36,baron_cohen_30,0
