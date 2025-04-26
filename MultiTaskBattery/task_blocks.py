@@ -1479,6 +1479,7 @@ class PictureSequence(Task):
 
         rt_list = np.full(num_items,np.nan)
         correct_list = np.zeros((num_items,)) # List of booleans indicating whether each press was correct needed for overall trial accuracy
+        correct_sequence = np.argsort(sequence) + 1 # correct sequence of the answers to sort the images into the right order
         num_presses =0
         pressed_keys = []
         line_width = 15
@@ -1511,7 +1512,7 @@ class PictureSequence(Task):
                     digit_start_time = key_press_time
 
                     # Check if key pressed is correct
-                    correct_list[num_presses] = key == int(sequence[num_presses])
+                    correct_list[num_presses] = key == int(correct_sequence[num_presses])
                     num_presses += 1
                     pressed_keys.append(key)
             
@@ -2129,12 +2130,12 @@ class Liking(Task):
 
         # collect responses 0: no response 1-4: key pressed
         trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['question_dur'])
-        if trial['condition'] == 'like':
+        if 'like' in trial['condition']:
             if trial['answer'] == 'like':
                 trial['correct'] = (trial['response'] == 1)
             elif trial['answer'] == 'dislike':
                 trial['correct'] = (trial['response'] == 2)
-        elif trial['condition'] == 'control':
+        elif 'control' in trial['condition']:
             if trial['answer'] == 'unbalanced':
                 trial['correct'] = (trial['response'] == 1)
             elif trial['answer'] == 'balanced':
