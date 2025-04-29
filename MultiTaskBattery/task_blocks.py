@@ -1767,6 +1767,10 @@ class Movie(Task):
             self.window.flip()
             self.ttl_clock.update()
 
+        # Flush memory
+        movie_clip.unload()
+        gc.collect() # Collect garbarge
+
         return trial
     
 
@@ -1881,6 +1885,10 @@ class StrangeStories(Task):
         # collect responses 0: no response 1-4: key pressed
         trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['answer_dur'])
         trial['acc'] = scores_shuffled[trial['response']-1]
+
+        # Flush memory
+        movie_clip.unload()
+        gc.collect() # Collect garbarge
 
         return trial
     
@@ -2029,6 +2037,10 @@ class FrithHappe(Task):
         # display trial feedback
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
 
+        # Flush memory
+        movie_clip.unload()
+        gc.collect() # Collect garbarge
+
         return trial
     
 
@@ -2145,6 +2157,10 @@ class Liking(Task):
         
         # display trial feedback
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
+
+        # Flush memory
+        movie_clip.unload()
+        gc.collect() # Collect garbarge
 
         return trial
 
