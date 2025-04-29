@@ -1767,7 +1767,7 @@ class Movie(Task):
             self.window.flip()
             self.ttl_clock.update()
 
-        # Flush memory
+        # Flush memory: This is necessary for the script to be able to run more than 1 run. Presenting movies is very memory hungry, so do not remove!
         movie_clip.unload()
         gc.collect() # Collect garbarge
 
@@ -1886,7 +1886,7 @@ class StrangeStories(Task):
         trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['answer_dur'])
         trial['acc'] = scores_shuffled[trial['response']-1]
 
-        # Flush memory
+        # Flush memory: This is necessary for the script to be able to run more than 1 run. Presenting movies is very memory hungry, so do not remove!
         movie_clip.unload()
         gc.collect() # Collect garbarge
 
@@ -2037,7 +2037,7 @@ class FrithHappe(Task):
         # display trial feedback
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
 
-        # Flush memory
+        # Flush memory: This is necessary for the script to be able to run more than 1 run. Presenting movies is very memory hungry, so do not remove!
         movie_clip.unload()
         gc.collect() # Collect garbarge
 
@@ -2158,7 +2158,7 @@ class Liking(Task):
         # display trial feedback
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
 
-        # Flush memory
+        # Flush memory: This is necessary for the script to be able to run more than 1 run. Presenting movies is very memory hungry, so do not remove!
         movie_clip.unload()
         gc.collect() # Collect garbarge
 
