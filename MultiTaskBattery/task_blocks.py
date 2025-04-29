@@ -582,6 +582,10 @@ class ActionObservation(Task):
         # Display trial feedback
         self.display_trial_feedback(give_feedback= trial['display_trial_feedback'], correct_response = None)
 
+        # Flush memory: This is necessary for the script to be able to run more than 1 run. Presenting movies is very memory hungry, so do not remove!
+        movie_clip.unload()
+        gc.collect() # Collect garbarge
+
         return trial
 
 class DemandGrid(Task):
@@ -1722,6 +1726,10 @@ class ActionPrediction(Task):
 
         # display trial feedback
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
+
+        # Flush memory: This is necessary for the script to be able to run more than 1 run. Presenting movies is very memory hungry, so do not remove!
+        movie_clip.unload()
+        gc.collect() # Collect garbarge
 
         return trial
 
