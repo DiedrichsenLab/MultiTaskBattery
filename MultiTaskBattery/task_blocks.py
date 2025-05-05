@@ -1892,7 +1892,13 @@ class StrangeStories(Task):
 
         # collect responses 0: no response 1-4: key pressed
         trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['answer_dur'])
-        trial['acc'] = scores_shuffled[trial['response']-1]
+
+        # Get the score for the selected answer
+        if trial['response'] > len(scores_shuffled):
+            trial['acc'] = 0 # If the participant pressed a key that is not in the list of answers, set the score to 0
+        else:
+            trial['acc'] = scores_shuffled[trial['response']-1]
+        
 
         # Flush memory: This is necessary for the script to be able to run more than 1 run. Presenting movies is very memory hungry, so do not remove!
         movie_clip.unload()
