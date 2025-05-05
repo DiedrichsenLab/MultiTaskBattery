@@ -1869,8 +1869,12 @@ class StrangeStories(Task):
         stim_question = visual.TextStim(self.window, text = question, pos=(0, 4), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=wrapWidth)
         stim_question.draw()
         self.window.flip()
+        
         # Display the question until X seconds before trial is over (answer_dur), to make the 'buffer' zone for the trial, i.e. the time of variable length, the time where the participant deliberates about their answer
         self.ttl_clock.wait_until(self.ttl_clock.get_time() + (trial['trial_dur'] - movie_clip.duration - trial['answer_dur']))
+        # Flush any keys in buffer
+        event.clearEvents()
+
         # Align the answers with the middle of the question if the answers are shorter than half of the question
         answer_lengths = [len(answer) for answer in options_shuffled]
         if max(answer_lengths) < wrapWidth and max(answer_lengths) < len(question):
@@ -1883,8 +1887,7 @@ class StrangeStories(Task):
             left_position = 0
             align='center'
         
-        # Flush any keys in buffer
-        event.clearEvents()
+        
         stim_answers = visual.TextStim(self.window, text=answers, pos=(left_position, 0), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=wrapWidth, alignHoriz=align)
         stim_question.draw()
         stim_answers.draw()
@@ -1948,6 +1951,9 @@ class FauxPas(Task):
 
         # wait until story duration
         self.ttl_clock.wait_until(self.ttl_clock.get_time() + trial['story_dur'])
+
+        # Flush any keys in buffer
+        event.clearEvents()
 
         # Display question
         question = trial['question']
@@ -2035,6 +2041,9 @@ class FrithHappe(Task):
 
         # Display the question until X seconds before trial is over (answer_dur), to make the 'buffer' zone for the trial, i.e. the time of variable length, the time where the participant deliberates about their answer
         self.ttl_clock.wait_until(self.ttl_clock.get_time() + (trial['trial_dur'] - movie_clip.duration - trial['question_dur']))
+
+        # Flush any keys in buffer
+        event.clearEvents()
 
         stim_question.draw()
         # Initialize answer options
