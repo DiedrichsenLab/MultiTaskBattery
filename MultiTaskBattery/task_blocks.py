@@ -47,6 +47,7 @@ class Task:
         self.task_file          = info['task_file']
         self.feedback_type      = 'none'
 
+        # Set the instruction text height to a value defined in the constants, or use default - useful for smaller screens
         self.const.instruction_text_height = getattr(self.const, 'instruction_text_height', None) or 1
 
     def init_task(self):
