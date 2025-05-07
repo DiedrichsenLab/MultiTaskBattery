@@ -1702,7 +1702,7 @@ class ActionPrediction(Task):
         event.clearEvents()
 
         window_width, _ = self.window.size
-        movie_scale = self.const.movie_scale if hasattr(self.const, 'action_prediction_scale') else 0.4
+        movie_scale = self.const.action_prediction_scale if hasattr(self.const, 'action_prediction_scale') else 0.4
         stim_width = int(window_width * movie_scale) # Make the video fraction of the window width
         stim_height = int(stim_width  * 476 / 846)  # Original size of the video is 640x360
         
