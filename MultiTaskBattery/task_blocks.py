@@ -466,19 +466,24 @@ class TheoryOfMind(Task):
 
         event.clearEvents()
 
+        height=1.8
+        wrapWidth=25       
+
         # Display story
-        story_stim = visual.TextStim(self.window, text=trial['story'], alignHoriz='center', wrapWidth=20, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height= 1.25)
+        story_clean = ' '.join(trial['story'].split('\n'))
+        story_formatted = '.\n'.join(story_clean.split('. '))
+        story_stim = visual.TextStim(self.window, text=story_formatted, alignHoriz='center', wrapWidth=wrapWidth, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height=height)
         story_stim.draw()
         self.window.flip()
 
-       # wait until story duration
+        # wait until story duration
         self.ttl_clock.wait_until(self.ttl_clock.get_time() + trial['story_dur'])
 
         # Flush any keys in buffer
         event.clearEvents()
 
         # Display question
-        question_stim = visual.TextStim(self.window, text=trial['question'], pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=25)
+        question_stim = visual.TextStim(self.window, text=trial['question'], pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height=height, wrapWidth=25)
         question_stim.draw()
         self.window.flip()
 
@@ -1445,10 +1450,10 @@ class PictureSequence(Task):
         picture_paths = [picture_paths[i-1] for i in sequence]
 
         # Define positions for a 2x2 grid layout
-        height = 7    
+        height = 10
         width = 1.4*height
-        x_pos = 5
-        y_pos = 3.6
+        x_pos = 7.2
+        y_pos = 5.2
         positions = [
             (-x_pos, y_pos),  # Top-left
             (x_pos, y_pos),   # Top-right
@@ -1495,10 +1500,10 @@ class PictureSequence(Task):
             seconds_left = trial['trial_dur'] - (self.ttl_clock.get_time() - sequence_start_time)
             self.show_progress(seconds_left,
                                show_last_seconds=5,
-                               height=1,
+                               height=0.9,
                                width=width,
                                x_pos=0-width*0.5,
-                               y_pos=y_pos+height*0.5+1)
+                               y_pos=y_pos+height*0.5+0.6)
             self.show_presses(pressed_keys, positions, digit_start_time, width, height, line_width)
             self.window.flip()
 
