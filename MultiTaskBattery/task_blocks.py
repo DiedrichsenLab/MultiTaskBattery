@@ -466,7 +466,14 @@ class TheoryOfMind(Task):
 
         event.clearEvents()
 
-        height=1.8
+        # Set text height according to constants or default value
+        height = (
+            1.25 
+            if getattr(self.const, 'theory_of_mind_text_height', None) is None 
+            else self.const.theory_of_mind_text_height 
+            if hasattr(self.const, 'theory_of_mind_text_height') 
+            else 1.25
+        )
         wrapWidth=25       
 
         # Display story
@@ -1949,8 +1956,18 @@ class FauxPas(Task):
 
         event.clearEvents()
 
+        height = (
+            1.25 
+            if getattr(self.const, 'faux_pas_text_height', None) is None 
+            else self.const.faux_pas_text_height 
+            if hasattr(self.const, 'faux_pas_text_height') 
+            else 1.25
+        )
+
         # Display story
-        story_stim = visual.TextStim(self.window, text=trial['story'], alignHoriz='center', wrapWidth=20, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height= 1.25)
+        story = trial['story']
+        # story = '.\n'.join(story.split('. '))  
+        story_stim = visual.TextStim(self.window, text=story, alignHoriz='center', wrapWidth=20, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height= height)
         story_stim.draw()
         self.window.flip()
 
@@ -1965,7 +1982,7 @@ class FauxPas(Task):
         # Display answers
         options = [option.strip(' ') for option in trial['options'].split(',')]
         question += f"\n\n\n{self.corr_key[0]}. {options[0]} \t\t\t{self.corr_key[1]}. {options[1]}"
-        question_stim = visual.TextStim(self.window, text=question, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=25)
+        question_stim = visual.TextStim(self.window, text=question, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height= height, wrapWidth=25)
         question_stim.draw()
         self.window.flip()
 
