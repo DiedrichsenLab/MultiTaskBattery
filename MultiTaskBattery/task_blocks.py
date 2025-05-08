@@ -454,7 +454,7 @@ class TheoryOfMind(Task):
         """
         displays the instruction for the task
         """
-        task_name = visual.TextStim(self.window, text=f'{self.descriptive_name.capitalize()}', color=[-1, -1, -1], bold=True, pos=(0, 3))
+        task_name = visual.TextStim(self.window, text=f'{self.descriptive_name.capitalize()}', height=self.const.instruction_text_height, color=[-1, -1, -1], bold=True, pos=(0, 3))
         task_name.draw()
         str1 = f"You will read a story and decide if the answer to the question is True or False."
         str2 = f"if true, press {self.corr_key[1]}"
@@ -1322,7 +1322,7 @@ class RMET(Task):
         self.corr_key = [self.trial_info['key_one'].iloc[0],self.trial_info['key_two'].iloc[0],self.trial_info['key_three'].iloc[0],self.trial_info['key_four'].iloc[0]]
 
     def display_instructions(self):
-        task_name = visual.TextStim(self.window, text=f'{self.descriptive_name.capitalize()}', color=[-1, -1, -1], bold=True, pos=(0, 3))
+        task_name = visual.TextStim(self.window, text=f'{self.descriptive_name.capitalize()}', height=self.const.instruction_text_height, color=[-1, -1, -1], bold=True, pos=(0, 3))
         task_name.draw()
         self.instruction_text = ""
         if 'age' in self.task_file:
@@ -1415,7 +1415,7 @@ class PictureSequence(Task):
         self.corr_key = [self.trial_info['key_one'].iloc[0],self.trial_info['key_two'].iloc[0],self.trial_info['key_three'].iloc[0],self.trial_info['key_four'].iloc[0]]
 
     def display_instructions(self):
-        task_name = visual.TextStim(self.window, text=f'{self.descriptive_name.capitalize()}', color=[-1, -1, -1], bold=True, pos=(0, 3))
+        task_name = visual.TextStim(self.window, text=f'{self.descriptive_name.capitalize()}', height=self.const.instruction_text_height, color=[-1, -1, -1], bold=True, pos=(0, 3))
         task_name.draw()
         self.instruction_text = ""
         self.instruction_text += "\n\n Find the correct chronological order of the pictures."
@@ -1556,7 +1556,7 @@ class StorySequence(Task):
         self.corr_key = [self.trial_info['key_one'].iloc[0],self.trial_info['key_two'].iloc[0],self.trial_info['key_three'].iloc[0],self.trial_info['key_four'].iloc[0]]
 
     def display_instructions(self):
-        task_name = visual.TextStim(self.window, text=f'{self.descriptive_name.capitalize()}', color=[-1, -1, -1], bold=True, pos=(0, 3))
+        task_name = visual.TextStim(self.window, text=f'{self.descriptive_name.capitalize()}', height=self.const.instruction_text_height, color=[-1, -1, -1], bold=True, pos=(0, 3))
         task_name.draw()
         self.instruction_text = ""
         self.instruction_text += "\n\n Find the correct chronological order of the sentences."
@@ -1676,7 +1676,7 @@ class ActionPrediction(Task):
         """
         displays the instruction for the task
         """
-        task_name = visual.TextStim(self.window, text=f'{self.descriptive_name.capitalize()}', color=[-1, -1, -1], bold=True, pos=(0, 3))
+        task_name = visual.TextStim(self.window, text=f'{self.descriptive_name.capitalize()}', height=self.const.instruction_text_height, color=[-1, -1, -1], bold=True, pos=(0, 3))
         task_name.draw()
         self.instruction_text = ""
         if 'soccer' in self.task_file:
@@ -1748,7 +1748,7 @@ class Movie(Task):
         self.name = 'movie'
 
     def display_instructions(self):
-        task_name = visual.TextStim(self.window, text=f'{self.descriptive_name.capitalize()}', color=[-1, -1, -1], bold=True, pos=(0, 3))
+        task_name = visual.TextStim(self.window, text=f'{self.descriptive_name.capitalize()}', height=self.const.instruction_text_height, color=[-1, -1, -1], bold=True, pos=(0, 3))
         task_name.draw()
 
         self.instruction_text = f"\n\n You will watch short clips from a movie. Please keep your head still and pay attention to the screen."
@@ -1801,7 +1801,7 @@ class StrangeStories(Task):
         self.corr_key = [self.trial_info['key_one'].iloc[0],self.trial_info['key_two'].iloc[0], self.trial_info['key_three'].iloc[0]]
 
     def display_instructions(self):
-        task_name = visual.TextStim(self.window, text=f'{self.descriptive_name.capitalize()}', color=[-1, -1, -1], bold=True, pos=(0, 4))
+        task_name = visual.TextStim(self.window, text=f'{self.descriptive_name.capitalize()}', height=self.const.instruction_text_height, color=[-1, -1, -1], bold=True, pos=(0, 4))
         task_name.draw()
 
         self.instruction_text = f"\n\nYou will watch a clip about a couple and answer a question "
@@ -1936,7 +1936,7 @@ class FauxPas(Task):
         """
         displays the instruction for the task
         """
-        task_name = visual.TextStim(self.window, text=f'{self.descriptive_name.capitalize()}', color=[-1, -1, -1], bold=True, pos=(0, 3))
+        task_name = visual.TextStim(self.window, text=f'{self.descriptive_name.capitalize()}', height=self.const.instruction_text_height, color=[-1, -1, -1], bold=True, pos=(0, 3))
         task_name.draw()
         self.instruction_text = "\n\nRead the story and answer the Yes/No question "
         if 'social' in self.task_file:
@@ -2001,7 +2001,7 @@ class FrithHappe(Task):
         self.corr_key = [self.trial_info['key_one'].iloc[0],self.trial_info['key_two'].iloc[0], self.trial_info['key_three'].iloc[0]]
 
     def display_instructions(self):
-        task_name = visual.TextStim(self.window, text=f'{self.descriptive_name.capitalize()}', color=[-1, -1, -1], bold=True, pos=(0, 4))
+        task_name = visual.TextStim(self.window, text=f'{self.descriptive_name.capitalize()}', height=self.const.instruction_text_height, color=[-1, -1, -1], bold=True, pos=(0, 4))
         task_name.draw()
 
         self.instruction_text = f"Decide how the two triangles are interacting."
@@ -2091,7 +2091,7 @@ class Liking(Task):
         self.corr_key = [self.trial_info['key_one'].iloc[0],self.trial_info['key_two'].iloc[0]]
 
     def display_instructions(self):
-        task_name = visual.TextStim(self.window, text=f'{self.descriptive_name.capitalize()}', color=[-1, -1, -1], bold=True, pos=(0, 3))
+        task_name = visual.TextStim(self.window, text=f'{self.descriptive_name.capitalize()}', height=self.const.instruction_text_height, color=[-1, -1, -1], bold=True, pos=(0, 3))
         task_name.draw()
 
         self.instruction_text = f"You will watch two people meeting for the first time.\n"
@@ -2103,7 +2103,7 @@ class Liking(Task):
             key_text = f"\n{self.corr_key[0]}. Yes \t{self.corr_key[1]}. No"
         instr_stim = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1], wrapWidth=20, pos=(0, 0))
         instr_stim.draw()
-        key_text = visual.TextStim(self.window, text=key_text, color=[-1, -1, -1],
+        key_text = visual.TextStim(self.window, text=key_text, height=self.const.instruction_text_height, color=[-1, -1, -1],
                                     wrapWidth=20, pos=(-3, -3), alignHoriz='left')
         key_text.draw()
         self.window.flip()
