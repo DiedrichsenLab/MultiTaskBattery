@@ -2210,11 +2210,6 @@ class Pong(Task):
         self.instruction_text = f"Use the buttons to move the paddle and catch the ball."
         instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1],pos=(0, 0.3))
         instr_visual.draw()
-
-        image_path = self.const.package_dir / 'docs'/ 'images' / 'pong_icon.png'
-        # Task image (update the filename to the actual path of your image)
-        task_image = visual.ImageStim(self.window, image=image_path, pos=(0, -3), size=(4, 4))
-        task_image.draw()
         self.window.flip()
 
     def run_trial(self, trial):
