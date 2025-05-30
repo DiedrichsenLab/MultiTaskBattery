@@ -2206,18 +2206,23 @@ class Pong(Task):
         self.key_handler = key.KeyStateHandler()
         self.window.winHandle.push_handlers(self.key_handler)
 
-    def display_instructions(self):
-        self.instruction_text = f"{self.descriptive_name} Task\n\nUse the left and right keys to move the paddle"
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1])
+    def display_instructions(self): 
+        self.instruction_text = f"Use the buttons to move the paddle and catch the ball."
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1],pos=(0, 0.3))
         instr_visual.draw()
+
+        image_path = self.const.package_dir / 'docs'/ 'images' / 'pong_icon.png'
+        # Task image (update the filename to the actual path of your image)
+        task_image = visual.ImageStim(self.window, image=image_path, pos=(0, -3), size=(4, 4))
+        task_image.draw()
         self.window.flip()
 
     def run_trial(self, trial):
         # Set parameters (all values are in degrees)
         paddle_speed = 0.5        # Movement per frame (deg)
-        paddle_width = 3.0         # Paddle width (deg)
-        paddle_height = 0.3        # Paddle thickness (deg)
-        ball_radius = 0.4          # Ball radius (deg)
+        paddle_width = 7         # Paddle width (deg)
+        paddle_height = 0.6        # Paddle thickness (deg)
+        ball_radius = 0.8          # Ball radius (deg)
         trial_duration = trial['trial_dur']
 
         # Compute the effective screen dimensions (in degrees) based on monitor calibration.
@@ -2268,6 +2273,10 @@ class Pong(Task):
         key_right = getattr(key, self.const.response_keys[self.corr_key[1]-1].upper(), None)
         trial['correct'] = False
         
+        
+        ball_stuck = False
+        ball_offset_x = 0
+        
         while self.ttl_clock.get_time() - start_time < trial_duration:
             if self.key_handler[key_left]:
                 paddle.pos = (paddle.pos[0] - paddle_speed, paddle.pos[1])
@@ -2281,19 +2290,25 @@ class Pong(Task):
                 paddle.pos = (max_x, paddle.pos[1])
 
             # Update the ball position
-            ball.pos = (ball.pos[0] + dx, ball.pos[1] + dy)
+            if not ball_stuck:
+                ball.pos = (ball.pos[0] + dx, ball.pos[1] + dy)
+            else:
+                ball.pos = (paddle.pos[0] + ball_offset_x, paddle_y + paddle_height + ball_radius)
+
 
             # Bounce the ball off the side walls
             if ball.pos[0] >= half_screen_width - ball_radius or ball.pos[0] <= -half_screen_width + ball_radius:
                 dx *= -1
 
-            # Bounce the ball off the paddle if it's in the correct vertical range
-            # Only process collision if the ball is moving downward because of bug when paddle is in the middle of ball
-            if dy < 0 and (paddle_y - ball_radius) < ball.pos[1] < (paddle_y + paddle_height + ball_radius):
-                if (paddle.pos[0] - paddle_half_width) < ball.pos[0] < (paddle.pos[0] + paddle_half_width):
-                    dy *= -1
-                    trial['correct'] = True
 
+            # Stick the ball to the paddle if it hits
+            if not ball_stuck and dy < 0 and (paddle_y - ball_radius) < ball.pos[1] < (paddle_y + paddle_height + ball_radius):
+                if (paddle.pos[0] - paddle_half_width) < ball.pos[0] < (paddle.pos[0] + paddle_half_width):
+                    dy = 0
+                    dx = 0
+                    ball_stuck = True
+                    ball_offset_x = ball.pos[0] - paddle.pos[0]  # Remember how far from center it landed
+                    trial['correct'] = True
 
             # Draw the stimuli and update the display
             ball.draw()
