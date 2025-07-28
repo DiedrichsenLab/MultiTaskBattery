@@ -1701,7 +1701,7 @@ class ActionPrediction(Task):
         movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False, noAudio=True, size=(stim_width, stim_height), pos=(0, 0))
 
         movie_clip.play()
-        movie_clip.draw()
+        
         self.window.flip()
         
 
@@ -1765,7 +1765,7 @@ class Movie(Task):
         # Create a MovieStim3 object
         movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False, size=(stim_width, stim_height), pos=(0, 0), noAudio=True)
 
-        movie_clip.draw()
+        
         movie_clip.play()
         self.window.flip()
 
@@ -2021,7 +2021,7 @@ class FrithHappe(Task):
         # Create a MovieStim object
         movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False, size=(stim_width, stim_height), pos=(0, 0), noAudio=True)
         
-        movie_clip.draw()
+        
         movie_clip.play()
         self.window.flip()
 
