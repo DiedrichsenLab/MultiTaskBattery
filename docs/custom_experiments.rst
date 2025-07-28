@@ -82,7 +82,7 @@ The task file can look very different form tasks to task, but typically contains
   - key_three: Key for the third option
   - key_four: Key for the fourth option
 
-* some of the tasks require run number because the stimuli depend on the run number (e.g., movie clips have a specific order for each run)
+Some of the tasks require run number because the stimuli depend on the run number (e.g., movie clips have a specific order for each run)
 
 **Example Code**
 
@@ -122,7 +122,8 @@ The task file can look very different form tasks to task, but typically contains
             # Make task file
             myTask.make_task_file(file_name=tfile, **args)
          
-
+> Note that you can add an optional argument run_time to the make_task_file function to specify the duration of your run (e.g. ``myTask.make_task_file(tasks, tfiles, run_time=600)`` for a 10-minute run). After the last trial ends, this will return the screen to a fixation cross until the run_time is reached. This is usfeul for imaging experiments where you want to keep the scanner running for a fixed amount of time after the last trial to capture the remaining activation. If this is not specified, the run will end after the last trial.
+> You can also add an optional argument offset to the make_task_file function to start the stimuli presentation after some seconds of fixation cross  (e.g. ``myTask.make_task_file(tasks, tfiles, offset=5)`` for a 5-second delay after the first trigger). This is recommended for imaging experiments where you acquire dummy scans in the beginning of the scan (to account for stabilizing magnetization) that will be removed from the data in later processing. If during those dummy scans trigger signals are already being sent out, this will have the first stimulus presented only after this offset period accounting for dummy scans has passed. If the offset parameter has not been specified, the run will end after the last trial.
 
 Writing your experiment function
 --------------------------------
