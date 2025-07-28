@@ -6,13 +6,20 @@
 from pathlib import Path
 import pandas as pd
 import numpy as np
-import random 
+import random
+from psychopy import prefs
+prefs.hardware['audioLib'] = ['sounddevice'] 
 from psychopy import visual, sound, core, event
+from pyglet.window import key
 import MultiTaskBattery.utils as ut
 from ast import literal_eval
 from copy import deepcopy
-from moviepy import AudioFileClip
+from moviepy.audio.io.AudioFileClip import AudioFileClip
 import gc
+import math
+
+
+
 
 
 class Task:
@@ -93,12 +100,28 @@ class Task:
 
     def show_progress(self, seconds_left, show_last_seconds=5, height=1, width=10, x_pos=-5, y_pos=8):
         """ Displays a progress bar for the Picture Sequence task
-        Args:
-            trial (dict): The current trial
-            start_time (float): The start time of the trial
-            height (float): The height of the progress bar
-            width (float): The width of the progress bar
-            y_pos (float): The y position of the progress bar
+   Args:
+        seconds_left (float): 
+            The number of seconds remaining in the current trial. 
+            If this value is greater than `show_last_seconds`, the progress bar is not shown.
+
+        show_last_seconds (float, optional): 
+            The duration (in seconds) over which to display the progress bar at the end of a trial. 
+            Default is 5 seconds. When `seconds_left` is less than this value, the progress bar appears.
+
+        height (float, optional): 
+            The vertical size of the progress bar in PsychoPy window units. Default is 1.
+
+        width (float, optional): 
+            The horizontal size of the progress bar in PsychoPy window units. Default is 10.
+
+        x_pos (float, optional): 
+            The horizontal position of the center of the progress bar in window coordinates. 
+            Negative values move it leftward. Default is -5.
+
+        y_pos (float, optional): 
+            The vertical position of the center of the progress bar in window coordinates. 
+            Positive values move it upward. Default is 8.
         """
         # If we are in the last five seconds of the trial, display the remaining time
         if seconds_left < show_last_seconds:
@@ -559,7 +582,7 @@ class ActionObservation(Task):
         # Display trial feedback
         self.display_trial_feedback(give_feedback= trial['display_trial_feedback'], correct_response = None)
 
-        # Flush memory
+        # Flush memory: This is necessary for the script to be able to run more than 1 run. Presenting movies is very memory hungry, so do not remove!
         movie_clip.unload()
         gc.collect() # Collect garbarge
 
@@ -1367,9 +1390,6 @@ class RMET(Task):
         # display trial feedback
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
 
-        # Flush any keys in buffer
-        event.clearEvents()
-
         return trial
 
 class PictureSequence(Task):
@@ -1459,6 +1479,7 @@ class PictureSequence(Task):
 
         rt_list = np.full(num_items,np.nan)
         correct_list = np.zeros((num_items,)) # List of booleans indicating whether each press was correct needed for overall trial accuracy
+        correct_sequence = np.argsort(sequence) + 1 # correct sequence of the answers to sort the images into the right order
         num_presses =0
         pressed_keys = []
         line_width = 15
@@ -1491,12 +1512,13 @@ class PictureSequence(Task):
                     digit_start_time = key_press_time
 
                     # Check if key pressed is correct
-                    correct_list[num_presses] = key == int(sequence[num_presses])
+                    correct_list[num_presses] = key == int(correct_sequence[num_presses])
                     num_presses += 1
                     pressed_keys.append(key)
             
         # if any press is wrong trial['correct'] needs to be false, this is for post trial feedback
         trial['correct'] = correct_list.sum()/num_items
+        trial['response'] = pressed_keys
 
         if np.all(np.isnan(rt_list)):
             # calculate mean rt across presses
@@ -1690,9 +1712,6 @@ class ActionPrediction(Task):
             self.ttl_clock.update()
             # core.wait(1)  # Freeze the video for a moment
 
-        # Flush any keys in buffer
-        event.clearEvents()
-
         # Display question
         options = trial['options'].split(',')
         question = trial['question']
@@ -1708,7 +1727,7 @@ class ActionPrediction(Task):
         # display trial feedback
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
 
-        # Flush memory
+        # Flush memory: This is necessary for the script to be able to run more than 1 run. Presenting movies is very memory hungry, so do not remove!
         movie_clip.unload()
         gc.collect() # Collect garbarge
 
@@ -1756,10 +1775,10 @@ class Movie(Task):
             self.window.flip()
             self.ttl_clock.update()
 
-        # Flush memory
+        # Flush memory: This is necessary for the script to be able to run more than 1 run. Presenting movies is very memory hungry, so do not remove!
         movie_clip.unload()
         gc.collect() # Collect garbarge
-        
+
         return trial
     
 
@@ -1826,12 +1845,10 @@ class StrangeStories(Task):
             movie_clip.play()
             movie_clip.draw()
             self.window.flip()
+            self.ttl_clock.update()
 
         if play_audio_separatly:
             audio.stop()
-
-        # Flush any keys in buffer
-        event.clearEvents()
 
         # Initialize question
         question = trial['question']
@@ -1852,8 +1869,12 @@ class StrangeStories(Task):
         stim_question = visual.TextStim(self.window, text = question, pos=(0, 4), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=wrapWidth)
         stim_question.draw()
         self.window.flip()
+        
         # Display the question until X seconds before trial is over (answer_dur), to make the 'buffer' zone for the trial, i.e. the time of variable length, the time where the participant deliberates about their answer
         self.ttl_clock.wait_until(self.ttl_clock.get_time() + (trial['trial_dur'] - movie_clip.duration - trial['answer_dur']))
+        # Flush any keys in buffer
+        event.clearEvents()
+
         # Align the answers with the middle of the question if the answers are shorter than half of the question
         answer_lengths = [len(answer) for answer in options_shuffled]
         if max(answer_lengths) < wrapWidth and max(answer_lengths) < len(question):
@@ -1862,6 +1883,11 @@ class StrangeStories(Task):
         elif max(answer_lengths) >= wrapWidth:
             left_position = 0
             align='center'
+        else:
+            left_position = 0
+            align='center'
+        
+        
         stim_answers = visual.TextStim(self.window, text=answers, pos=(left_position, 0), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=wrapWidth, alignHoriz=align)
         stim_question.draw()
         stim_answers.draw()
@@ -1869,9 +1895,15 @@ class StrangeStories(Task):
 
         # collect responses 0: no response 1-4: key pressed
         trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['answer_dur'])
-        trial['score'] = scores_shuffled[trial['response']-1]
 
-        # Flush memory
+        # Get the score for the selected answer
+        if trial['response'] > len(scores_shuffled):
+            trial['acc'] = 0 # If the participant pressed a key that is not in the list of answers, set the score to 0
+        else:
+            trial['acc'] = scores_shuffled[trial['response']-1]
+        
+
+        # Flush memory: This is necessary for the script to be able to run more than 1 run. Presenting movies is very memory hungry, so do not remove!
         movie_clip.unload()
         gc.collect() # Collect garbarge
 
@@ -1963,12 +1995,17 @@ class FrithHappe(Task):
         self.instruction_text = f"Decide how the two triangles are interacting."
         instr_stim = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1], wrapWidth=20, pos=(0, 3))
         instr_stim.draw()
-        answer_expalantion = f"\n\n{self.corr_key[0]}. No interaction\n\n{self.corr_key[1]}. Physical (The actions are directed towards each other) \n\n{self.corr_key[2]}. Mental (One triangle manipulates the thoughts or feelings of the other)"
+        # answer_expalantion = f"\n\n{self.corr_key[0]}. No interaction\n\n{self.corr_key[1]}. Physical (The actions are directed towards each other) \n\n{self.corr_key[2]}. Mental (One triangle manipulates the thoughts or feelings of the other)"
+        answer_expalantion = f"\n\n{self.corr_key[0]}. No interaction\n\n{self.corr_key[1]}. Mental (One triangle manipulates the thoughts or feelings of the other)"
         instr_visual = visual.TextStim(self.window, text=answer_expalantion, color=[-1, -1, -1], wrapWidth=20, pos=(-8, -1), alignHoriz='left')
         instr_visual.draw()
         self.window.flip()
 
     def run_trial(self, trial):
+        """ Runs a single trial of the Frith-Happe task """
+        # Flush any keys in buffer
+        event.clearEvents()
+
         window_width, _ = self.window.size
         frith_happe_scale = self.const.frith_happe_scale if hasattr(self.const, 'frith_happe_scale') else 0.4
         stim_width = int(window_width * frith_happe_scale) 
@@ -1995,9 +2032,6 @@ class FrithHappe(Task):
             self.window.flip()
             self.ttl_clock.update()
 
-        # Flush any keys in buffer
-        event.clearEvents()
-
         # Initialize question
         question = "What type of interaction did you see?"
         # Display question
@@ -2008,21 +2042,25 @@ class FrithHappe(Task):
         # Display the question until X seconds before trial is over (answer_dur), to make the 'buffer' zone for the trial, i.e. the time of variable length, the time where the participant deliberates about their answer
         self.ttl_clock.wait_until(self.ttl_clock.get_time() + (trial['trial_dur'] - movie_clip.duration - trial['question_dur']))
 
+        # Flush any keys in buffer
+        event.clearEvents()
+
         stim_question.draw()
         # Initialize answer options
-        answers = f"\n\n{self.corr_key[0]}. No interaction \n{self.corr_key[1]}. Physical \n{self.corr_key[2]}. Mental"
+        # answers = f"\n\n{self.corr_key[0]}. No interaction \n{self.corr_key[1]}. Mental \n{self.corr_key[2]}. Physical "
+        answers = f"\n\n{self.corr_key[0]}. No interaction \n{self.corr_key[1]}. Mental"
         answers_stim = visual.TextStim(self.window, text=answers, pos=(-5, 0), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=wrapWidth, alignHoriz='left')
         answers_stim.draw()
         self.window.flip()
-        # collect responses 0: no response 1-4: key pressed
 
+        # collect responses 0: no response 1-4: key pressed
         trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['question_dur'])
         trial['correct'] = (trial['response'] == trial['trial_type'])
 
         # display trial feedback
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
 
-        # Flush movie from memory
+        # Flush memory: This is necessary for the script to be able to run more than 1 run. Presenting movies is very memory hungry, so do not remove!
         movie_clip.unload()
         gc.collect() # Collect garbarge
 
@@ -2038,20 +2076,23 @@ class Liking(Task):
 
     def init_task(self):
         self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
-        self.corr_key = [self.trial_info['key_one'].iloc[0],self.trial_info['key_two'].iloc[0], self.trial_info['key_three'].iloc[0], self.trial_info['key_four'].iloc[0]]
+        self.corr_key = [self.trial_info['key_one'].iloc[0],self.trial_info['key_two'].iloc[0]]
 
     def display_instructions(self):
-        task_name = visual.TextStim(self.window, text=f'{self.descriptive_name.capitalize()}', color=[-1, -1, -1], bold=True, pos=(0, 5))
+        task_name = visual.TextStim(self.window, text=f'{self.descriptive_name.capitalize()}', color=[-1, -1, -1], bold=True, pos=(0, 3))
         task_name.draw()
 
-        self.instruction_text = f"You will watch two people meeting for the first time."
-        self.instruction_text += "\nRate how much they like each other."
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1], wrapWidth=20, pos=(0, 2))
-        instr_visual.draw()
-
-        key_text = f"\n\n\n{self.corr_key[0]}. Strongly dislike \n{self.corr_key[1]}. Dislike \n{self.corr_key[2]}. Like \n{self.corr_key[3]}. Strongly like"
-        # key_text = f"\n\n\n{self.corr_key[0]}. Not at all \n{self.corr_key[1]}. A little \n{self.corr_key[2]}. Moderately \n{self.corr_key[3]}. A lot"
-        key_text = visual.TextStim(self.window, text=key_text, color=[-1, -1, -1], wrapWidth=20, pos=(-4, -1), alignHoriz='left')
+        self.instruction_text = f"You will watch two people meeting for the first time.\n"
+        if 'like' in self.task_file:
+            self.instruction_text += "Judge if they like each other."
+            key_text = f"\n{self.corr_key[0]}. Yes \t{self.corr_key[1]}. No"
+        elif 'control' in self.task_file:
+            self.instruction_text += "Judge if one person speaks more."
+            key_text = f"\n{self.corr_key[0]}. Yes \t{self.corr_key[1]}. No"
+        instr_stim = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1], wrapWidth=20, pos=(0, 0))
+        instr_stim.draw()
+        key_text = visual.TextStim(self.window, text=key_text, color=[-1, -1, -1],
+                                   wrapWidth=20, pos=(-1, -3), alignHoriz='left')
         key_text.draw()
         self.window.flip()
 
@@ -2089,36 +2130,47 @@ class Liking(Task):
         movie_clip.play()
         self.window.flip()
 
-        while self.ttl_clock.get_time() - movie_start_time < max_video_duration:
+        while (self.ttl_clock.get_time() - movie_start_time < max_video_duration):
             movie_clip.play()
             movie_clip.draw()
             self.window.flip()
             self.ttl_clock.update()
 
-        if play_audio_separatly:
-            audio.stop()
-
         # Flush any keys in buffer
         event.clearEvents()
 
+        if play_audio_separatly:
+            audio.stop()
+
         # Initialize question
-        question = "How much do they like each other?"
+        trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['question_dur'])
+        if 'like' in trial['condition']:
+            question = "Do they like each other?"
+        elif 'control' in trial['condition']:
+            question = "Did one person talk more?"
+        
         # Display question
-        stim_question = visual.TextStim(self.window, text = question, pos=(0, 3), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=wrapWidth)
+        stim_question = visual.TextStim(self.window, text = question, pos=(0, 1), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=wrapWidth)
         stim_question.draw()
 
         # Initialize answer options
-        answers = f"\n\n{self.corr_key[0]}. Strongly dislike \n{self.corr_key[1]}. Dislike \n{self.corr_key[2]}. Like \n{self.corr_key[3]}. Strongly like"
-        stim_answers = visual.TextStim(self.window, text=answers, pos=(-5, 0), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=wrapWidth, alignHoriz='left')
+        answers = f"\n\n{self.corr_key[0]}. Yes \t{self.corr_key[1]}. No"
+        stim_answers = visual.TextStim(self.window, text=answers, pos=(-3, 0), color=(-1, -1, -1), units='deg', height= 1.25, wrapWidth=wrapWidth, alignHoriz='left')
         stim_answers.draw()
         self.window.flip()
 
         # collect responses 0: no response 1-4: key pressed
         trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['question_dur'])
-        if trial['condition'] == 'like':
-            trial['correct'] = (trial['response'] in [3, 4])
-        elif trial['condition'] == 'dislike':
-            trial['correct'] = (trial['response'] in [1, 2])
+        if 'like' in trial['condition']:
+            if trial['answer'] == 'like':
+                trial['correct'] = (trial['response'] == 1)
+            elif trial['answer'] == 'dislike':
+                trial['correct'] = (trial['response'] == 2)
+        elif 'control' in trial['condition']:
+            if trial['answer'] == 'unbalanced':
+                trial['correct'] = (trial['response'] == 1)
+            elif trial['answer'] == 'balanced':
+                trial['correct'] = (trial['response'] == 2)
         else:
             trial['correct'] = False
         
@@ -2129,9 +2181,191 @@ class Liking(Task):
         # display trial feedback
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
 
-        # Flush memory
+        # Flush memory: This is necessary for the script to be able to run more than 1 run. Presenting movies is very memory hungry, so do not remove!
         movie_clip.unload()
         gc.collect() # Collect garbarge
-        
+
         return trial
-    
+
+class Pong(Task):
+    """
+    Pong task
+    """
+    def __init__(self, info, screen, ttl_clock, const, subj_id):
+        super().__init__(info, screen, ttl_clock, const, subj_id)
+        self.name = 'pong'
+        self.feedback_type = 'acc'
+
+    def init_task(self):
+        # Read trial info and set keys from file
+        trial_info_file = self.const.task_dir / self.name / self.task_file
+        self.trial_info = pd.read_csv(trial_info_file, sep='\t')
+        self.corr_key = [self.trial_info['key_left'].iloc[0],
+                         self.trial_info['key_right'].iloc[0]]
+        # for real time handle movment
+        self.key_handler = key.KeyStateHandler()
+        self.window.winHandle.push_handlers(self.key_handler)
+
+    def display_instructions(self): 
+        self.instruction_text = f"Use the buttons to move the paddle and catch the ball."
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1],pos=(0, 0.3))
+        instr_visual.draw()
+        self.window.flip()
+
+    def run_trial(self, trial):
+        # Set parameters (all values are in degrees)
+        paddle_speed = 0.5        # Movement per frame (deg)
+        paddle_width = 7         # Paddle width (deg)
+        paddle_height = 0.6        # Paddle thickness (deg)
+        ball_radius = 0.8          # Ball radius (deg)
+        trial_duration = trial['trial_dur']
+
+        # Compute the effective screen dimensions (in degrees) based on monitor calibration.
+        # Get monitor width (in cm) and viewing distance (in cm) from your screen object.
+        monitor_width_cm = self.screen.monitor.getWidth()  
+        distance_cm = self.screen.distance               
+
+        # Calculate horizontal visual angle (in degrees)
+        half_width_deg = math.degrees(math.atan((monitor_width_cm / 2) / distance_cm))
+        screen_width_deg = 2 * half_width_deg
+
+        # Compute vertical visual angle using the aspect ratio from the pixel dimensions.
+        aspect_ratio = self.screen.size[1] / self.screen.size[0]
+        screen_height_deg = screen_width_deg * aspect_ratio
+
+        half_screen_width = screen_width_deg / 2.0
+        half_screen_height = screen_height_deg / 2.0
+
+        # Compute paddle boundaries in degrees
+        paddle_half_width = paddle_width / 2.0
+        min_x = -half_screen_width + paddle_half_width
+        max_x = half_screen_width - paddle_half_width
+
+        # Define margins (in degrees)
+        paddle_margin = 2.0        
+        ball_margin = 2.0        
+
+        # Clear events
+        event.clearEvents()
+
+        # Convert the trajectory string to floats
+        stim_str = trial['stim'].strip("()")
+        dx, dy = map(float, stim_str.split(","))
+
+        # Set initial positions for paddle and ball (in degrees)
+        paddle_y = -half_screen_height + paddle_margin
+        ball_y = half_screen_height - ball_margin
+
+        # Create the paddle and ball stimuli using self.window (coordinates in deg)
+        paddle = visual.Rect(self.window, width=paddle_width, height=paddle_height,
+                             fillColor="white", pos=(0, paddle_y))
+        ball = visual.Circle(self.window, radius=ball_radius, fillColor="white", pos=(0, ball_y))
+
+        start_time = self.ttl_clock.get_time()
+
+        # get movement keys
+        key_left = getattr(key, self.const.response_keys[self.corr_key[0]-1].upper(), None)
+        key_right = getattr(key, self.const.response_keys[self.corr_key[1]-1].upper(), None)
+        trial['correct'] = False
+        
+        
+        ball_stuck = False
+        ball_offset_x = 0
+        
+        while self.ttl_clock.get_time() - start_time < trial_duration:
+            if self.key_handler[key_left]:
+                paddle.pos = (paddle.pos[0] - paddle_speed, paddle.pos[1])
+            if self.key_handler[key_right]:
+                paddle.pos = (paddle.pos[0] + paddle_speed, paddle.pos[1])
+
+            # Clamp paddle position so it doesn't go off-screen
+            if paddle.pos[0] < min_x:
+                paddle.pos = (min_x, paddle.pos[1])
+            if paddle.pos[0] > max_x:
+                paddle.pos = (max_x, paddle.pos[1])
+
+            # Update the ball position
+            if not ball_stuck:
+                ball.pos = (ball.pos[0] + dx, ball.pos[1] + dy)
+            else:
+                ball.pos = (paddle.pos[0] + ball_offset_x, paddle_y + paddle_height + ball_radius)
+
+
+            # Bounce the ball off the side walls
+            if ball.pos[0] >= half_screen_width - ball_radius or ball.pos[0] <= -half_screen_width + ball_radius:
+                dx *= -1
+
+
+            # Stick the ball to the paddle if it hits
+            if not ball_stuck and dy < 0 and (paddle_y - ball_radius) < ball.pos[1] < (paddle_y + paddle_height + ball_radius):
+                if (paddle.pos[0] - paddle_half_width) < ball.pos[0] < (paddle.pos[0] + paddle_half_width):
+                    dy = 0
+                    dx = 0
+                    ball_stuck = True
+                    ball_offset_x = ball.pos[0] - paddle.pos[0]  # Remember how far from center it landed
+                    trial['correct'] = True
+
+            # Draw the stimuli and update the display
+            ball.draw()
+            paddle.draw()
+            self.window.flip()
+
+        # Provide trial feedback
+        self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
+        return trial
+
+class Affective(Task):
+    def __init__(self, info, screen, ttl_clock, const, subj_id):
+        super().__init__(info, screen, ttl_clock, const, subj_id)
+        self.feedback_type = 'acc+rt'
+
+    def init_task(self):
+        """
+        Initialize task
+        """
+        trial_info_file = self.const.task_dir / self.name / self.task_file
+        self.trial_info = pd.read_csv(trial_info_file, sep='\t')
+        
+        self.stim = []
+        for stim_file in self.trial_info['stim']:
+            stim_path = self.const.stim_dir / self.name / stim_file
+            self.stim.append(visual.ImageStim(self.window, image=str(stim_path)))
+
+    def display_instructions(self):
+        """
+        Display instructions for the affective task.
+        """
+        key_pleasant = self.trial_info['key_pleasant'].iloc[0]
+        key_unpleasant = self.trial_info['key_unpleasant'].iloc[0]
+
+        self.instruction_text = (
+            f"{self.descriptive_name} Task\n\n"
+            f"Press {key_unpleasant} if the image is UNPLEASANT.\n"
+            f"Press {key_pleasant} if the image is PLEASANT."
+        )
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1], wrapWidth=20)
+        instr_visual.draw()
+        self.window.flip()
+
+    def run_trial(self, trial):
+        """
+        Run a single trial of the affective task.
+        """
+        event.clearEvents()
+
+        # Display image
+        self.stim[trial['trial_num']].draw()
+        self.window.flip()
+
+        # Wait for response
+        trial['response'], trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['trial_dur'])
+
+        # Determine correct response
+        correct_key = trial['key_pleasant'] if trial['trial_type'] == 2 else trial['key_unpleasant']
+        trial['correct'] = (trial['response'] == correct_key)
+
+        # Show feedback
+        self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
+
+        return trial
+

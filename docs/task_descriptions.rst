@@ -10,12 +10,12 @@ Action Observation
    
 You are not required to make any response (overt or covert) in this task. You will watch two short video clips of 1) a knot being tied and 2) an already tied knot rotating on an axis. We ask that you pay close attention to the knot-tying exercise and the finished product as well as the name of each knot (upper right side of screen) as we will quiz you after the scanning experiment and ask you to tie the knot yourself”.
 
-Arithmetic
-^^^^^^^^^^^^^^^^^^^
-.. image:: images/Slide34.png
+Affective 
+^^^^^^^^^^^^^^^^^^^^
+.. image:: images/Slide35.png
    :width: 600
-   
-In this task, you will indicate if a simple multiplication equation is correct or incorrect.
+
+In this task, you will be shown a series of emotionally evocative images (e.g., pleasant or unpleasant scenes). Each image will appear on the screen and you will choose if it's pleasant or unpleasant.
 
 Auditory Narrative
 ^^^^^^^^^^^^^^^^^^^
@@ -128,13 +128,6 @@ Tongue Movement
    :width: 600
    
 This is a tongue movement task. You will move your tongue from left to right in your closed mouth. Your will either touch your left upper premolar teeth or your right upper premolar teeth. The premolar teeth are shown in the image. A black circle flashing on and off around the fixation cross while tell you when to touch left or right. When you see the black circle on, touch your right upper premolar teeth. When it is off, touch your left premolar teeth. Try to keep the rest of your body as still as possible while you do this so that you don’t move your head. 
-
-Unpleasant Scenes
-^^^^^^^^^^^^^^^^^
-.. image:: images/Slide31.png
-   :width: 600
-   
-In this task you will indicate if a scene is pleasant or unpleasant.
 
 Verb Generation
 ^^^^^^^^^^^^^^^

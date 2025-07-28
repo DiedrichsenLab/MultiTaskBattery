@@ -8,21 +8,52 @@ import random
 import MultiTaskBattery.utils as ut
 import itertools
 
-def shuffle_rows(dataframe):
+def shuffle_rows(dataframe, keep_in_middle=None):
     """
     randomly shuffles rows of the dataframe
 
     Args:
         dataframe (dataframe): dataframe to be shuffled
+        keep_in_middle (list): list of tasks that should be kept in the middle
     Returns:
         dataframe (dataframe): shuffled dataframe
     """
     indx = np.arange(len(dataframe.index))
     np.random.shuffle(indx)
     dataframe = (dataframe.iloc[indx]).reset_index(drop = True)
+
+    if keep_in_middle is not None:
+        dataframe = move_edge_tasks_to_middle(dataframe, keep_in_middle)
+        
     return dataframe
 
-def add_start_end_times(dataframe, offset, task_dur):
+def move_edge_tasks_to_middle(dataframe, keep_in_middle):
+    """Moves tasks that should be kept in the middle and are at the edge of the dataframe to the middle of the dataframe
+    Args:
+        dataframe (dataframe): dataframe to be shuffled
+        keep_in_middle (list): list of tasks that should be kept in the middle
+    Returns:
+        dataframe (dataframe): shuffled dataframe"""
+
+    middle_task_at_edge = np.any([edge_task in keep_in_middle for edge_task in dataframe.iloc[[0, -1]].task_name])
+
+    if middle_task_at_edge and len(keep_in_middle) < len(dataframe)-2:
+        # If the middle task is at the edge and there are enough tasks to frame the middle tasks, find a new position in the middle
+        middle_indices = list(dataframe.iloc[1:-1].index)
+        middle_indices = [i for i in middle_indices if dataframe.iloc[i].task_name not in keep_in_middle]
+        selected_middle_indices = np.random.choice(middle_indices, len(keep_in_middle), replace=False)
+
+        for i, task in enumerate(keep_in_middle):
+            # Find where the middle task is wrongly placed (edge positions)
+            for edge_idx in [0, -1]:
+                if dataframe.iloc[edge_idx].task_name == task:
+                    # Swap the edge task with a chosen middle position
+                    middle_idx = selected_middle_indices[i]
+                    dataframe.iloc[edge_idx], dataframe.iloc[middle_idx] = dataframe.iloc[middle_idx], dataframe.iloc[edge_idx]
+    return dataframe
+
+
+def add_start_end_times(dataframe, offset, task_dur, run_time=None):
     """
     adds start and end times to the dataframe
 
@@ -30,18 +61,26 @@ def add_start_end_times(dataframe, offset, task_dur):
         dataframe (dataframe): dataframe to be shuffled
         offset (float): offset of the task
         task_dur (float): duration of the task
+        run_time (float): Time (in seconds) that the run should last. Use this to ensure the last task runs until the end of the imaging run
     Returns:
         dataframe (dataframe): dataframe with start and end times
     """
     dataframe['start_time'] = np.arange(offset, offset + len(dataframe)*task_dur, task_dur)
     dataframe['end_time']   = dataframe['start_time'] + task_dur
+    if run_time:
+        if run_time < dataframe['end_time'].iloc[-1]:
+            raise ValueError('Run time is shorter than the last task')
+        # Add add_end_time seconds to the last task to ensure the task runs until the end of the run (e.g. for capturing the activity overhang from the final task in an imaging run)
+        dataframe.loc[dataframe.index[-1], 'end_time'] = run_time
     return dataframe
 
 def make_run_file(task_list,
                   tfiles,
                   offset = 0,
                   instruction_dur = 5,
-                  task_dur = 30):
+                  task_dur = 30,
+                  run_time = None,
+                  keep_in_middle=None):
     """
     Make a single run file
     """
@@ -52,8 +91,8 @@ def make_run_file(task_list,
          'task_file':tfiles,
          'instruction_dur':[instruction_dur]*len(task_list)}
     R = pd.DataFrame(R)
-    R = shuffle_rows(R)
-    R = add_start_end_times(R, offset, task_dur+instruction_dur)
+    R = shuffle_rows(R, keep_in_middle=keep_in_middle)
+    R = add_start_end_times(R, offset, task_dur+instruction_dur, run_time=run_time)
     return R
 
 def get_task_class(name):
@@ -352,10 +391,10 @@ class TheoryOfMind(TaskFile):
         if condition:
             stim = stim[stim['condition'] == condition]
         else:
-            stim = stim[stim['condition'] != 'practice']
+            stim = stim.loc[~stim['condition'].str.contains('practice', na=False)]
             
-        start_row = (run_number - 1) * 2
-        end_row = run_number * 2 - 1
+        start_row = (run_number - 1) * n_trials
+        end_row = run_number * n_trials - 1
         stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
 
         for n in range(n_trials):
@@ -977,8 +1016,8 @@ class SemanticPrediction(TaskFile):
         else:
             stim = pd.read_csv(self.stim_dir / 'semantic_prediction' / 'semantic_prediction.csv')
 
-        start_row = (run_number - 1) * 2
-        end_row = run_number * 2 - 1
+        start_row = (run_number - 1) * n_trials
+        end_row = run_number * n_trials - 1
         stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
 
         for n in range(n_trials):        
@@ -1060,7 +1099,7 @@ class RMET(TaskFile):
         self.name = 'rmet'
         self.matching_stimuli = True # stimuli are matched for the active condition (determine emotion) and passive condition (determine age)
         self.half_assigned = True
-
+        self.repeat_stimuli_from_previous_runs = True
 
     def make_task_file(self, hand='right',
                         responses = [1,2,3,4],
@@ -1079,6 +1118,9 @@ class RMET(TaskFile):
         trial_info = []
         t = 0
 
+        start_row = (run_number - 1) * n_trials
+        end_row = run_number * n_trials - 1
+
         if stim_file:
             stim = pd.read_csv(self.stim_dir / self.name / stim_file)
         else:
@@ -1087,7 +1129,7 @@ class RMET(TaskFile):
         if condition:
             stim = stim[stim['condition'] == condition]
         else:
-            stim = stim[stim['condition'] != 'practice']
+            stim = stim.loc[~stim['condition'].str.contains('practice', na=False)]
             # Alternate between emotion and age conditions
             stim_emotion = stim[stim['condition'] == 'emotion']
             stim_age = stim[stim['condition'] == 'age']
@@ -1098,13 +1140,21 @@ class RMET(TaskFile):
                             stim_age.iloc[:len(stim_age) // 2].iterrows())
             stim = pd.concat([pd.concat([row1[1], row2[1]], axis=1).T for row1, row2 in itertools.chain(first_half, second_half)], ignore_index=True)
 
-        if half: # Selects different stimuli for the emotion and age condition, to enable showing each pair of eyes only once for each participant (assigns half 1 or 2)
-            stim = stim[stim['half'] == half]
-
-        start_row = (run_number - 1) * n_trials
-        end_row = run_number * n_trials - 1
-        stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
-
+        if half: # Selects different stimuli for the social and control condition, to enable showing each story only once for each participant
+            stim_half = stim[stim['half'] == half]
+            if n_trials <= stim_half.iloc[start_row:end_row + 1].shape[0]: # Check if there are enough stimuli for the run
+                stim = stim_half.iloc[start_row:end_row + 1].reset_index(drop=True)
+            elif self.repeat_stimuli_from_previous_runs:
+                # If there are not enough stimuli, repeat stimuli from the OTHER condition of previous runs
+                new_run_number = run_number - 4
+                new_start_row = (new_run_number - 1) * n_trials
+                new_end_row = new_run_number * n_trials - 1
+                stim = stim[stim['half'] != half].iloc[new_start_row:new_end_row + 1].reset_index(drop=True)
+            else:
+                raise ValueError('Not enough stimuli for the run')
+        else: 
+            stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
+    
         for n in range(n_trials):
             trial = {}
             trial['key_one'] = responses[0]
@@ -1166,7 +1216,7 @@ class PictureSequence(TaskFile):
         if condition:
             stim = stim[stim['condition'] == condition]
         else:
-            stim = stim[stim['condition'] != 'practice']
+            stim = stim.loc[~stim['condition'].str.contains('practice', na=False)]
 
         start_row = (run_number - 1) * n_trials
         end_row = run_number * n_trials - 1
@@ -1232,7 +1282,7 @@ class StorySequence(TaskFile):
         if condition:
             stim = stim[stim['condition'] == condition]
         else:
-            stim = stim[stim['condition'] != 'practice']
+            stim = stim.loc[~stim['condition'].str.contains('practice', na=False)]
 
         start_row = (run_number - 1) * n_trials
         end_row = run_number * n_trials - 1
@@ -1278,7 +1328,7 @@ class ActionPrediction(TaskFile):
                         responses = [1,2],
                         run_number=None,
                         task_dur=30,
-                        trial_dur=6,
+                        trial_dur=5,
                         iti_dur=1, 
                         question_dur=4,
                         file_name=None,
@@ -1299,7 +1349,7 @@ class ActionPrediction(TaskFile):
         if condition:
             stim = stim[stim['condition'] == condition]
         else:
-            stim = stim[stim['condition'] != 'practice']
+            stim = stim.loc[~stim['condition'].str.contains('practice', na=False)]
 
         start_row = (run_number - 1) * n_trials
         end_row = run_number * n_trials - 1
@@ -1361,7 +1411,7 @@ class Movie(TaskFile):
         if condition:
             stim = stim[stim['condition'] == condition]
         else:
-            stim = stim[stim['condition'] != 'practice']
+            stim = stim.loc[~stim['condition'].str.contains('practice', na=False)]
 
         start_row = (run_number - 1) * n_trials
         end_row = run_number * n_trials - 1
@@ -1424,7 +1474,7 @@ class StrangeStories(TaskFile):
         if condition:
             stim = stim[stim['condition'] == condition]
         else:
-            stim = stim[stim['condition'] != 'practice']
+            stim = stim.loc[~stim['condition'].str.contains('practice', na=False)]
 
         if half: # Selects different stimuli for the social and control condition, to enable showing each video only once for each participant (assign half the subjects one type of video as social and the other the other half of the videos as social)
             stim = stim[stim['half'] == half]
@@ -1467,6 +1517,7 @@ class FauxPas(TaskFile):
         self.name = 'faux_pas'
         self.matching_stimuli = True
         self.half_assigned = True
+        self.repeat_stimuli_from_previous_runs = True
 
     def make_task_file(self, hand='right',
                     responses = [1,2], # 1 = True, 2 = False
@@ -1487,6 +1538,9 @@ class FauxPas(TaskFile):
         trial_info = []
         t = 0
 
+        start_row = (run_number - 1) * n_trials
+        end_row = run_number * n_trials - 1
+
         if stim_file:
             stim = pd.read_csv(stim_file)
         else:
@@ -1495,15 +1549,23 @@ class FauxPas(TaskFile):
         if condition:
             stim = stim[stim['condition'] == condition]
         else:
-            stim = stim[stim['condition'] != 'practice']
+            stim = stim.loc[~stim['condition'].str.contains('practice', na=False)]
         
         if half: # Selects different stimuli for the social and control condition, to enable showing each story only once for each participant
-            stim = stim[stim['half'] == half]
-            
-        start_row = (run_number - 1) * 2
-        end_row = run_number * 2 - 1
-        stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
-
+            stim_half = stim[stim['half'] == half]
+            if n_trials <= stim_half.iloc[start_row:end_row + 1].shape[0]: # Check if there are enough stimuli for the run
+                stim = stim_half.iloc[start_row:end_row + 1].reset_index(drop=True)
+            elif self.repeat_stimuli_from_previous_runs:
+                # If there are not enough stimuli, repeat stimuli from the OTHER condition of previous runs
+                new_run_number = run_number - 5
+                new_start_row = (new_run_number - 1) * n_trials
+                new_end_row = new_run_number * n_trials - 1
+                stim = stim[stim['half'] != half].iloc[new_start_row:new_end_row + 1].reset_index(drop=True)
+            else:
+                raise ValueError('Not enough stimuli for the run')
+        else: 
+            stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
+    
         for n in range(n_trials):
             trial = {}
             trial['key_yes'] = responses[0]
@@ -1568,7 +1630,7 @@ class FrithHappe(TaskFile):
         if condition:
             stim = stim[stim['condition'] == condition]
         else:
-            stim = stim[stim['condition'] != 'practice']
+            stim = stim.loc[~stim['condition'].str.contains('practice', na=False)]
 
         start_row = (run_number - 1) * n_trials
         end_row = run_number * n_trials - 1
@@ -1580,10 +1642,10 @@ class FrithHappe(TaskFile):
             trial['key_one'] = responses[0]
             trial['key_two'] = responses[1]
             trial['key_three'] = responses[2]
-            if str(stim['condition'][n]) == 'tom':
-                trial['trial_type'] = 3
-            elif str(stim['condition'][n]) == 'gd':
+            if 'tom' in str(stim['condition'][n]):
                 trial['trial_type'] = 2
+            elif 'gd' in str(stim['condition'][n]):
+                trial['trial_type'] = 3
             else:
                 trial['trial_type'] = 1
             trial['hand'] = hand
@@ -1641,12 +1703,12 @@ class Liking(TaskFile):
     
     def make_task_file(self,
                        hand='right',
-                       responses = [1,2,3,4],
+                       responses = [1,2],
                        run_number = None,
                        task_dur=30,
                        trial_dur=28,
-                       iti_dur=2,
-                       question_dur=4,
+                       iti_dur=1,
+                       question_dur=3,
                        file_name=None,
                        stim_file=None,
                        condition=None):
@@ -1661,14 +1723,12 @@ class Liking(TaskFile):
         else:
             stim = pd.read_csv(self.stim_dir / self.name / f'{self.name}.csv')
 
-        
-        average_liking = stim[['left_Liking', 'right_Liking']].mean(axis=1)
-        stim['liking_effective'] = self.map_to_4point_scale(average_liking) # Map to the 4-point scale to use with the button box
-
         if condition:
             stim = stim[stim['condition'] == condition]
+            # Randomize order with seed
+            stim = stim.sample(frac=1, random_state=84).reset_index(drop=True)
         else:
-            stim = stim[stim['condition'] != 'practice']
+            stim = stim.loc[~stim['condition'].str.contains('practice', na=False)]
 
         start_row = (run_number - 1) * n_trials
         end_row = run_number * n_trials - 1
@@ -1679,13 +1739,8 @@ class Liking(TaskFile):
             trial['trial_num'] = n
             trial['key_one'] = responses[0]
             trial['key_two'] = responses[1]
-            trial['key_three'] = responses[2]
-            trial['key_four'] = responses[3]
-            if str(stim['condition'][n]) == 'like':
-                trial['trial_type'] = 1
-            elif str(stim['condition'][n]) == 'dislike':
-                trial['trial_type'] = 2
             trial['rating'] = int(stim['liking_effective'][n])
+            trial['answer'] = stim['answer'][n]
             trial['hand'] = hand
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
@@ -1705,6 +1760,107 @@ class Liking(TaskFile):
 
         return trial_info
     
+class Pong(TaskFile):
+    def __init__(self, const):
+        super().__init__(const)
+        self.name = 'pong'
+        self.trajectories =  [
+    (0.3, -0.15), (-0.3, -0.15), (0.1, -0.15), (-0.1, -0.15),
+    (0.4, -0.15), (-0.4, -0.15), (0.6, -0.15), (-0.6, -0.15)
+        ]
+
+    def make_task_file(self,
+                        hand = 'bimanual',
+                        responses = [3,4], #3 = Key_three, 4 = Key_four
+                        task_dur=30,
+                        trial_dur=3.25,
+                        iti_dur=0.5,
+                        file_name=None,
+                        run_number=None):
+        n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
+        trial_info = []
+
+        t = 0
+
+        for n in range(n_trials):
+            trial = {}
+            trial['key_left'] = responses[0]
+            trial['key_right'] = responses[1]
+            trial['trial_num'] = n
+            trial['hand'] = hand
+            trial['trial_dur'] = trial_dur
+            trial['iti_dur'] = iti_dur
+            trial['display_trial_feedback'] = True
+            # choose random sequence
+            trial['stim'] = random.choice(self.trajectories)
+            trial['start_time'] = t
+            trial['end_time'] = t + trial_dur + iti_dur
+            trial_info.append(trial)
+            t = trial['end_time']
+
+        trial_info = pd.DataFrame(trial_info)
+        if file_name is not None:
+            ut.dircheck(self.task_dir / self.name)
+            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
+
+        return trial_info
 
 
+class Affective(TaskFile):
+    def __init__(self, const):
+        super().__init__(const)
+        self.name = 'affective'
+
+    def make_task_file(self,
+                       task_dur=30,
+                       trial_dur=1.6,
+                       iti_dur=0.4,
+                       file_name=None,
+                       run_number=None,
+                       hand='left',
+                       responses=[3, 4]):  
+
+        # check how many trials to include
+        n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
+        n_pleasant = n_trials // 2
+        n_unpleasant = n_trials - n_pleasant 
+
+        # Randomly sample numbers 1–26 (image name numbers)
+        pleasant_nums = random.sample(range(1, 27), n_pleasant)
+        unpleasant_nums = random.sample(range(1, 27), n_unpleasant)
+
+        # Create stim list
+        stim = [{'imgName': f'pleasant{n}.jpg', 'trialType': 2} for n in pleasant_nums] + \
+               [{'imgName': f'unpleasant{n}.jpg', 'trialType': 1} for n in unpleasant_nums]
+
+        random.shuffle(stim)  # mix trial order
+
+        # Build trial list
+        trial_info = []
+        t = 0
+        for n in range(n_trials):
+            trial = {}
+            trial['key_pleasant'] = responses[0]
+            trial['key_unpleasant'] = responses[1]
+            trial['trial_num'] = n
+            trial['stim'] = stim[n]['imgName']
+            trial['trial_type'] = stim[n]['trialType']
+            trial['hand'] = hand
+            trial['trial_dur'] = trial_dur
+            trial['iti_dur'] = iti_dur
+            trial['key_unpleasant'] = responses[0]
+            trial['key_pleasant'] = responses[1]
+            trial['display_trial_feedback'] = True
+            trial['start_time'] = t
+            trial['end_time'] = t + trial_dur + iti_dur
+            trial_info.append(trial)
+            t = trial['end_time']
+
+        trial_info = pd.DataFrame(trial_info)
+
+        if file_name is not None:
+            ut.dircheck(self.task_dir / self.name)
+            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
+
+        return trial_info
 
