@@ -5,7 +5,7 @@ To build a new experiment, first create a new project folder somewhere on your c
 
 Constants file
 --------------
-Create a file called ``constants.py`` in the project folder. This file contains information pertaining to the scanner, screen, response device, and pointers to the local directories. If you run the experiment in multiple setups, it is useful to create a differnt versions of this file, for example `constants_frmi.py` and a `constants_behavioral.py`.
+Create a file called ``constants.py`` in the project folder. This file contains information pertaining to the scanner, screen, response device, and pointers to the local directories. If you run the experiment in multiple setups, it is useful to create a differnt versions of this file, for example `constants_fmri.py` and a `constants_behavioral.py`.
 
 .. code-block:: python
 
@@ -50,14 +50,15 @@ Create a file called ``constants.py`` in the project folder. This file contains 
 Generating run and task files
 -----------------------------
 Task and run files are tab-delimited text files (``.tsv``) that specify the order of task in each run, and the order of trials within each task.
-Then create and run a small Python script to generate your run and task files. Very basic examples are included in example_experiment/make_files.py. Depending on your experiment, you may want to add more information. Of course you can produce these files by hand, but we prefer to write a function in ``task_files.py`` that does the randomization for us.
+Create and run a small Python script to generate your run and task files. Very basic examples are included in example_experiment/make_files.py. Depending on your experiment, you may want to add more information. Of course you can produce these files by hand, but we prefer to write a function in ``task_files.py`` that does the randomization for us.
 
 **Run Files**
 Run files that specify the structure of the runs, including the order of the tasks for the run, which task file contains the stimuli for this run.
 
 Each run file should contain the following columns:
+
 - task_name: Name of the task
-- task_code: short name of the task
+- task_code: short name of the task. task codes are listed in the `task_table.tsv` file
 - task_file: Name of the task file for this run
 - instruction_dur: Duration of the instruction screen before the task starts (in seconds)
 - start_time: Start time of the task (in seconds from the start of the run)
@@ -77,6 +78,7 @@ The task file can look very different form tasks to task, but typically contains
 - start_time: Start time of the trial (in seconds)
 - end_time: End time of the trial (in seconds)
 - Key columns, for example in the case of four response keys (e.g. in the RMET task or Finger Sequence task):
+
   - key_one: Key for the first option
   - key_two: Key for the second option
   - key_three: Key for the third option
@@ -104,12 +106,12 @@ Some of the tasks require run number because the stimuli depend on the run numbe
         ut.dircheck(const.task_dir / task)
 
     # Generate run and task files
-    for r in range(1, 11):
+    for r in range(1, num_runs + 1):
         tfiles = [f'{task}_{r:02d}.tsv' for task in tasks]
         T = tf.make_run_file(tasks, tfiles)
         T.to_csv(const.run_dir / f'run_{r:02d}.tsv', sep='\t', index=False)
 
-        # Generate a target file for each run
+        # Generate task files for each run
         for task, tfile in zip(tasks, tfiles):
             cl = tf.get_task_class(task)
             myTask = getattr(tf, cl)(const)
@@ -122,13 +124,13 @@ Some of the tasks require run number because the stimuli depend on the run numbe
             # Make task file
             myTask.make_task_file(file_name=tfile, **args)
          
-> Note that you can add an optional argument run_time to the make_task_file function to specify the duration of your run (e.g. ``myTask.make_task_file(tasks, tfiles, run_time=600)`` for a 10-minute run). After the last trial ends, this will return the screen to a fixation cross until the run_time is reached. This is usfeul for imaging experiments where you want to keep the scanner running for a fixed amount of time after the last trial to capture the remaining activation. If this is not specified, the run will end after the last trial.
-> You can also add an optional argument offset to the make_task_file function to start the stimuli presentation after some seconds of fixation cross  (e.g. ``myTask.make_task_file(tasks, tfiles, offset=5)`` for a 5-second delay after the first trigger). This is recommended for imaging experiments where you acquire dummy scans in the beginning of the scan (to account for stabilizing magnetization) that will be removed from the data in later processing. If during those dummy scans trigger signals are already being sent out, this will have the first stimulus presented only after this offset period accounting for dummy scans has passed. If the offset parameter has not been specified, the run will end after the last trial.
+* Note that you can add an optional argument run_time to the make_task_file function to specify the duration of your run (e.g. ``myTask.make_task_file(tasks, tfiles, run_time=600)`` for a 10-minute run). After the last trial ends, this will return the screen to a fixation cross until the run_time is reached. This is usfeul for imaging experiments where you want to keep the scanner running for a fixed amount of time after the last trial to capture the remaining activation. If this is not specified, the run will end after the last trial.
+* You can also add an optional argument offset to the make_task_file function to start the stimuli presentation after some seconds of fixation cross  (e.g. ``myTask.make_task_file(tasks, tfiles, offset=5)`` for a 5-second delay after the first trigger). This is recommended for imaging experiments where you acquire dummy scans in the beginning of the scan (to account for stabilizing magnetization) that will be removed from the data in later processing. If during those dummy scans trigger signals are already being sent out, this will have the first stimulus presented only after this offset period accounting for dummy scans has passed. If the offset parameter has not been specified, the run will end after the last trial.
 
 Writing your experiment function
 --------------------------------
 
-After generating the tasks and run files, you can write your own main script to run the experiment.
+After generating the tasks and run files, you can write your own main script `run.py` and save it in the project folder. This script will initialize the experiment and run it for a specific subject. Below is a basic example of how to structure this script:
 
 .. code-block:: python
 

@@ -10,6 +10,11 @@ Action Observation
    
 You are not required to make any response (overt or covert) in this task. You will watch two short video clips of 1) a knot being tied and 2) an already tied knot rotating on an axis. We ask that you pay close attention to the knot-tying exercise and the finished product as well as the name of each knot (upper right side of screen) as we will quiz you after the scanning experiment and ask you to tie the knot yourself”.
 
+Available conditions:
+
+- action: knot tying
+- knot: 360 view of the knot
+
 Affective 
 ^^^^^^^^^^^^^^^^^^^^
 .. image:: images/Slide35.png
@@ -17,12 +22,18 @@ Affective
 
 In this task, you will be shown a series of emotionally evocative images (e.g., pleasant or unpleasant scenes). Each image will appear on the screen and you will choose if it's pleasant or unpleasant.
 
+Available conditions:
+
+- pleasant: pleasant images
+- unpleasant: unpleasant images
+
 Auditory Narrative
 ^^^^^^^^^^^^^^^^^^^
 .. image:: images/Slide25.png
    :width: 600
    
 This is the auditory narrative task. You will be listening to a story that is told to you via the headphones. Try to follow the story and imagine the scenes that are being described. Try to imagine the characters, the setting, the objects that are being described. Try to imagine the story as vividly as possible. In each run, you will hear a bit more of the story. Try to follow along the narrative across runs.
+
 
 Degraded Passage
 ^^^^^^^^^^^^^^^^
@@ -91,12 +102,18 @@ Rest
    
 Look at a fixation cross.
 
-Romance Movie
+Movie
 ^^^^^^^^^^^^^^^^^^^
 .. image:: images/Slide7.png
    :width: 600
    
-You are not required to make any response (overt or covert) in this task. You will watch short video clips of of an animated movie.
+You are not required to make any response (overt or covert) in this task. You will watch short video clips of of a movie.
+
+Available conditions:
+
+ - romance: animated romance movie
+ - landscape: landscape movie
+ - nature: nature movie
 
 Sentence Reading
 ^^^^^^^^^^^^^^^^^^
@@ -122,6 +139,11 @@ Theory of Mind
    
 In this task, you will read two stories and answer a question after each story presentation. You will have 10 seconds to read the story and 5 seconds to answer a ‘true’ or ‘false’ question about the story. There is a particular strategy to answering these questions, which you will learn with practice”.
 
+Available conditions:
+
+- photo: control condition with no theory of mind
+- belief: belief condition with theory of mind
+
 Tongue Movement
 ^^^^^^^^^^^^^^^
 .. image:: images/Slide21.png
@@ -135,17 +157,6 @@ Verb Generation
    :width: 600
    
 This is the verb generation task. On the screen you will see a a noun. Try to think of a verb that is something you can do with the noun. For example, when seeing 'computer', think of 'type'. Or think of something that the noun does. For example when seeing 'lion' think of 'roar'. Think the first verb that comes to mind and try not to move your tongue or lips while you do this.
-
-Verbal-2-Back
-^^^^^^^^^^^^^^^
-.. image:: images/Slide32.png
-   :width: 600
-
-.. image:: images/Slide33.png
-   :width: 600
-   
-This is the Verbal-2-Back task. This is a task of working memory. On the screen you will be presented with a series of letters (either A, B or C). Whenever you see that the current letter on the screen is the same as the letter 2-letters ago, make your response. For example, you may see A, then B, then A again, when you see that second A make your response indicating that A matches the letter that you saw two trials ago.
-
 
 Visual Search
 ^^^^^^^^^^^^^^^
