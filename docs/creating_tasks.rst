@@ -5,7 +5,7 @@ If you would like to implement your own tasks in addition to the once we have pr
 
 Register the task in the task_table
 -----------------------------------
-Start by adding adding your task name,, the class, description, and reference to the `task_table.tsv` file in the `MultiTaskBattery` directory. This keeps track of all the tasks in the battery.
+Start by adding adding your task name,task code (unique code for each task), the class, description, and reference to the `task_table.tsv` file in the `MultiTaskBattery` directory. This keeps track of all the tasks in the battery.
 
 
 Generate new task files
@@ -13,7 +13,7 @@ Generate new task files
 Add a new class to the task_file.py file in the `MultiTaskBattery` directory. This class should inherit from the `TaskFile` class and should have the following methods:
 
 - `__init__`: This method should call the `__init__` method of the parent class and set the `self.task_name` attribute to the name of the task.
-- `make_task_file`: This method should create a single task file for the task. For a detailed description of the task file, see the `docs/building_experiment.rst` page.
+- `make_task_file`: This method should create a single task file for the task.
 
 Implement the task code
 -----------------------

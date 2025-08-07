@@ -1,51 +1,58 @@
 Installation
 ============
 
-Cloning this Repository
------------------------
+Step 1: Clone the Repository
+----------------------------
 
-1. Copy the git repo URL. Click the "Clone or Download" button and copy the link (`https://github.com/diedrichsenlab/MultiTaskBattery.git`).
-2. Go to your terminal and navigate (using `cd` and `ls` commands) to the directory where you want to clone the repository.
-3. Use `git clone` to download the entire folder to your computer:
+Using Git::
 
-```
-git clone https://github.com/diedrichsenlab/MultiTaskBattery.git
-```
+    git clone https://github.com/diedrichsenlab/MultiTaskBattery.git
+    cd MultiTaskBattery
 
-Or use Gitdesktop to clone the repository.
+Or use `GitHub Desktop <https://desktop.github.com/>`_.
 
-Installing the Required Python Version
---------------------------------------
+Step 2: Install Python (≥ 3.9)
+------------------------------
 
-This project requires **python version >3.9.0**. Please ensure it is installed globally on your local machine.
+This project requires **Python 3.9 or later**.
 
-If you are running Mac OS X or Linux, it is recommended to use [`pyenv`](https://github.com/pyenv/pyenv)
-for python version management. The full installation instructions can be found [here](https://github.com/pyenv/pyenv#installation).
+Option A: Using pyenv (Recommended on macOS/Linux)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Below is an abridged version of the `pyenv` install procedure for Max OS X:
+Install pyenv::
 
-Install `pyenv` using Homebrew:
+    brew update
+    brew install pyenv
 
-    $ brew update
-    $ brew install pyenv
+Configure your shell::
 
-Add `pyenv init` to your shell:
+    echo 'if command -v pyenv 1>/dev/null 2>&1; then eval "$(pyenv init -)"; fi' >> ~/.bash_profile
+    source ~/.bash_profile
 
-    $ echo -e 'if command -v pyenv 1>/dev/null 2>&1; then\n  eval "$(pyenv init -)"\nfi' >> ~/.bash_profile
-    $ source ~/.bash_profile
+Install Python::
 
-Install the required version of python:
+    pyenv install 3.9.0
+    pyenv global 3.9.0
 
-    $ pyenv install 3.9.0
+Option B: Using system Python
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Installing the Required Python Packages
----------------------------------------
+Ensure `python --version` reports 3.9 or higher.
 
-It is a good idea to create a virtual environment, and install the dependencies in this environment. This can be done using `pipenv`, or to make it more convient virtualenvwrapper.
+Step 3: Create a Virtual Environment
+------------------------------------
 
-Install the required packages into your virtual environment:
-```pip install -r requirements.txt```
+::
 
-Make sure you have updated your pip to the latest version, otherwise you will see several errors. Upgrade pip with:
-```pip install --upgrade pip```
+    python -m venv mtb-env
+    source mtb-env/bin/activate    # On Windows: mtb-env\Scripts\activate
+
+Step 4: Install Dependencies
+----------------------------
+Make sure you upgrade pip first, then install the required packages from the `requirements.txt` file.
+
+::
+
+    pip install --upgrade pip
+    pip install -r requirements.txt
 
