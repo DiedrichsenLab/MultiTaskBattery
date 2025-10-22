@@ -8,8 +8,6 @@ from pathlib import Path
 import pandas as pd
 import numpy as np
 import random
-from psychopy import prefs
-prefs.hardware['audioLib'] = ['sounddevice']
 from psychopy import visual, sound, core, event
 from pyglet.window import key
 import MultiTaskBattery.utils as ut
@@ -19,9 +17,6 @@ from moviepy.audio.io.AudioFileClip import AudioFileClip
 import gc
 import math
 import json
-
-
-
 
 
 class Task:
@@ -506,9 +501,8 @@ class TimePerception(Task):
     def init_task(self):
         self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
         self.corr_key = [self.trial_info['key_one'].iloc[0], self.trial_info['key_two'].iloc[0]]
-
         # one tone for both modalities
-        self.tone = sound.Sound(value=1000, secs=0.050)  # 1000 Hz, 50 ms
+        self.tone = sound.Sound(value=1000, secs=0.050, sampleRate=48000, stereo=True)  # 1000 Hz, 50 ms
 
         # PEST state per side
         mod = str(self.trial_info['modality'].iloc[0]).lower()
