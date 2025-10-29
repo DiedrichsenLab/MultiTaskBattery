@@ -2313,6 +2313,9 @@ class Liking(Task):
         elif 'control' in self.task_file:
             self.instruction_text += "Judge if one person SPEAKS MORE."
             key_text = f"\n{self.corr_key[0]}. Yes \t{self.corr_key[1]}. No"
+        elif 'liking' in self.task_file and 'control' in self.task_file:
+            self.instruction_text += "Judge if they LIKE each other or if one person SPEAKS MORE."
+            key_text = f"\n{self.corr_key[0]}. Yes \t{self.corr_key[1]}. No"
         instr_stim = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1], wrapWidth=20, pos=(0, 0))
         instr_stim.draw()
         key_text = visual.TextStim(self.window, text=key_text, height=self.const.instruction_text_height, color=[-1, -1, -1],
