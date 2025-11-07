@@ -418,10 +418,11 @@ class FingerRhythmic(Task):
         """
         displays the instruction for the task
         """
-        txt = (f'{self.descriptive_name} Task\n\n'
-               f'Tap along to the tones using the "{self.corr_key[0]}" key.\n\n'
-               f'Keep tapping at the same pace when the tones stop.')
-        instr_visual = visual.TextStim(self.window, text=txt, height=self.const.instruction_text_height, color=[-1, -1, -1])
+
+        str1 = f"Tap along to the tones using the {self.corr_key[0]} key."
+        str2 = f"Keep tapping at the same pace when the tones stop."
+        self.instruction_text = f"{self.descriptive_name} Task\n\n {str1} \n {str2}"
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1])
         instr_visual.draw()
         self.window.flip()
 
@@ -495,7 +496,6 @@ class FingerRhythmic(Task):
 class TimePerception(Task):
     def __init__(self, info, screen, ttl_clock, const, subj_id):
         super().__init__(info, screen, ttl_clock, const, subj_id)
-        self.name = 'time_perception'
         self.feedback_type = 'acc+rt'
 
     def init_task(self):
@@ -522,16 +522,19 @@ class TimePerception(Task):
     def display_instructions(self):
         mod = str(self.trial_info['modality'].iloc[0]).lower()
         if mod == 'time':
-            txt = (f"You will hear two pairs of tones.\n\n"
-                   f"Press [{self.corr_key[0]}] if the SECOND interval is shorter.\n"
-                   f"Press [{self.corr_key[1]}] if the SECOND interval is longer.")
+            str1 = f"You will hear two pairs of tones."
+            str2 = f"Press [{self.corr_key[0]}] if the SECOND interval is shorter."
+            str3 = f"Press [{self.corr_key[1]}] if the SECOND interval is longer."
+            str4 = "The first pair is always the same."
+            self.instruction_text = f"{self.descriptive_name} Task\n\n {str1} \n {str2} \n {str3} \n {str4}"
+
         else:
-            txt = (f"You will hear two pairs of tones.\n\n"
-                   f"Press [{self.corr_key[0]}] if the SECOND pair is quieter.\n"
-                   f"Press [{self.corr_key[1]}] if the SECOND pair is louder.\n"
-                   f"The first pair is always the same.")
-        visual.TextStim(self.window, text=txt,
-                        height=self.const.instruction_text_height, color=[-1, -1, -1]).draw()
+            str1 = f"You will hear two pairs of tones."
+            str2 = f"Press [{self.corr_key[0]}] if the SECOND interval is quieter."
+            str3 = f"Press [{self.corr_key[1]}] if the SECOND interval is louder."
+            str4 = "The first pair is always the same."
+            self.instruction_text = f"{self.descriptive_name} Task\n\n {str1} \n {str2} \n {str3} \n {str4}"
+        visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1]).draw()
         self.window.flip()
 
     def run_trial(self, trial):
@@ -601,51 +604,96 @@ class TimePerception(Task):
         trial['response'], trial['rt'] = self.wait_response(clk.get_time(), float(trial['question_dur']))
         trial['correct'] = (trial['response'] == trial['trial_type'])
 
-        # --- PEST update (classic): halve on reversal; double after two same-direction moves ---
+        # --- PEST update (classic + border-safe): halve on reversal; double after two same-direction moves ---
         # Define movement: toward standard if correct, away if incorrect.
         # Use unified sign for direction comparison: toward = -1, away = +1.
         move_dir = (-1 if trial['correct'] else +1)
 
-        # Apply movement to current level, then clamp/snap
+        # Store the old level so we can tell if we actually moved after clamping.
+        old_curr = st['curr']
+
+        # 1. Propose + clamp
         if mod == 'time':
             if side == 'shorter':
+                # correct => toward standard => make interval longer => +step
+                # incorrect => away => make interval even shorter => -step
                 st['curr'] += (+st['step'] if trial['correct'] else -st['step'])
-                st['curr']  = max(160.0, min(392.0, float(int(round(st['curr'] / 8.0) * 8))))
-            else:
+                # snap to 8 ms grid and clamp to that side's allowed range
+                st['curr']  = float(int(round(st['curr'] / 8.0) * 8))
+                if st['curr'] < 160.0:
+                    st['curr'] = 160.0
+                if st['curr'] > 392.0:
+                    st['curr'] = 392.0
+
+            else:  # side == 'longer'
+                # correct => toward standard => make interval shorter => -step
+                # incorrect => away => make interval even longer => +step
                 st['curr'] += (-st['step'] if trial['correct'] else +st['step'])
-                st['curr']  = max(408.0, min(640.0, float(int(round(st['curr'] / 8.0) * 8))))
+                st['curr']  = float(int(round(st['curr'] / 8.0) * 8))
+                if st['curr'] < 408.0:
+                    st['curr'] = 408.0
+                if st['curr'] > 640.0:
+                    st['curr'] = 640.0
+
         else:
-            # volume (quieter: toward=+; louder: toward=-), clamp to side range
+            # volume
             if side == 'quieter':
+                # correct => toward standard (louder) => +step in dB toward 73
+                # incorrect => away (quieter) => -step
                 st['curr'] += (+st['step'] if trial['correct'] else -st['step'])
-                st['curr']  = max(64.9, min(72.73, st['curr']))
-            else:
+                if st['curr'] < 64.9:
+                    st['curr'] = 64.9
+                if st['curr'] > 72.73:
+                    st['curr'] = 72.73
+
+            else:  # side == 'louder'
+                # correct => toward standard (quieter) => -step
+                # incorrect => away (louder) => +step
                 st['curr'] += (-st['step'] if trial['correct'] else +st['step'])
-                st['curr']  = max(73.27, min(81.1, st['curr']))
+                if st['curr'] < 73.27:
+                    st['curr'] = 73.27
+                if st['curr'] > 81.1:
+                    st['curr'] = 81.1
 
-        # Reversal check
-        if st['last_dir'] != 0 and move_dir != st['last_dir']:
-            # reversal -> halve step (floor at min_step), reset same_dir
-            st['step'] = max(st['min_step'], st['step'] / 2.0)
-            st['same_dir'] = 0
+        # 2. Did we actually move?
+        actually_moved = (st['curr'] != old_curr)
+
+        if actually_moved:
+            # Normal PESt adaptation only if we escaped the boundary.
+
+            if st['last_dir'] != 0 and move_dir != st['last_dir']:
+                # reversal -> halve step (but not below min_step), reset consecutive counter
+                st['step'] = max(st['min_step'], st['step'] / 2.0)
+                st['same_dir'] = 0
+
+            else:
+                # same direction as last (or first informative move)
+                if st['last_dir'] == 0 or move_dir == st['last_dir']:
+                    st['same_dir'] += 1
+                else:
+                    # new direction but last_dir was 0 should already be covered above,
+                    # but keep a safe fallback
+                    st['same_dir'] = 1
+
+                # after two same-direction moves -> double step
+                if st['same_dir'] >= 2:
+                    st['step'] = st['step'] * 2.0
+                    st['same_dir'] = 0  # require two more same-direction moves for next doubling
+
+            # update last_dir ONLY when a real move happened
+            st['last_dir'] = move_dir
+
         else:
-            # same direction -> count; double after two consecutive moves, then reset the counter
-            st['same_dir'] += 1
-            if st['same_dir'] >= 2:
-                st['step'] = st['step'] * 2.0
-                st['same_dir'] = 0  # require two more same-direction moves for next doubling
+            # We hit a border and got clamped. Do NOT adapt step. Do NOT change same_dir. Do NOT touch last_dir.
+            pass
 
-        st['last_dir'] = move_dir
         self.stair[side] = st
-
-        # feedback (practice flag from TSV)
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
         return trial
 
 class SensMotControl(Task):
     def __init__(self, info, screen, ttl_clock, const, subj_id):
         super().__init__(info, screen, ttl_clock, const, subj_id)
-        self.name = 'sensmotcontrol'
         self.feedback_type = 'acc+rt'
 
     def init_task(self):
@@ -659,15 +707,19 @@ class SensMotControl(Task):
         """
         cond = str(self.trial_info['condition'].iloc[0])
         if cond == 'blue':
-            self.instruction_text = (f"When the circle turns BLUE, press {self.corr_key[0]}.\n"
-                                     f"When the circle turns WHITE, do nothing.\n\n")
+            str1 = f"When the circle turns BLUE, press {self.corr_key[0]}."
+            str2 = f"When the circle turns WHITE, do nothing."
+            self.instruction_text = f"{self.descriptive_name} Task\n\n {str1} \n {str2}"
         elif cond == 'red':
-            self.instruction_text = (f"When the circle turns RED, press {self.corr_key[1]}.\n"
-                                     f"When the circle turns WHITE, do nothing.\n\n")
+            str1 = f"When the circle turns RED, press {self.corr_key[1]}."
+            str2 = f"When the circle turns WHITE, do nothing."
+            self.instruction_text = f"{self.descriptive_name} Task\n\n {str1} \n {str2}"
         else:
-            self.instruction_text = (f"When the circle turns BLUE, press {self.corr_key[0]}. \n"
-                                    f"When the circle turns RED, press {self.corr_key[1]}. \n"
-                                    "When the circle turns WHITE, do nothing.\n\n")
+            str1 = f"When the circle turns BLUE, press {self.corr_key[0]}."
+            str2 = f"When the circle turns RED, press {self.corr_key[1]}."
+            str3 = f"When the circle turns WHITE, do nothing."
+            self.instruction_text = f"{self.descriptive_name} Task\n\n {str1} \n {str2} \n {str3}"
+
         instr_visual = visual.TextStim(self.window, text=self.instruction_text,
                                        height=self.const.instruction_text_height, color=[-1, -1, -1], wrapWidth=25, pos=(0, 0))
         instr_visual.draw()
@@ -2302,23 +2354,44 @@ class Liking(Task):
         self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
         self.corr_key = [self.trial_info['key_one'].iloc[0],self.trial_info['key_two'].iloc[0]]
 
+        # MINIMAL: fallback if CSV has no key_one/key_two
+        if {'key_one', 'key_two'}.issubset(self.trial_info.columns):
+            self.corr_key = [str(self.trial_info['key_one'].iloc[0]), str(self.trial_info['key_two'].iloc[0])]
+        else:
+            # use constants (e.g., ['1','2','3','4']) → take first two
+            fallback = getattr(self.const, 'response_keys', ['1', '2'])[:2]
+            self.corr_key = [str(fallback[0]), str(fallback[1])]
+
     def display_instructions(self):
-        task_name = visual.TextStim(self.window, text=f'{self.descriptive_name.capitalize()}', height=self.const.instruction_text_height, color=[-1, -1, -1], bold=True, pos=(0, 3))
+        task_name = visual.TextStim(self.window, text=f'{self.descriptive_name.capitalize()}',
+                                    height=self.const.instruction_text_height, color=[-1, -1, -1],
+                                    bold=True, pos=(0, 3))
         task_name.draw()
 
-        self.instruction_text = f"You will watch two people meeting for the first time.\n"
-        if 'like' in self.task_file:
+        self.instruction_text = "You will watch two people meeting for the first time.\n"
+
+        # MINIMAL: normalize filename and set a safe default for key_text
+        fname = str(self.task_file).lower().strip()
+        key_text = f"\n{self.corr_key[0]}. Option 1 \t{self.corr_key[1]}. Option 2"
+
+        if 'like' in fname and 'control' not in fname:
             self.instruction_text += "Judge if they LIKE each other."
             key_text = f"\n{self.corr_key[0]}. Yes \t{self.corr_key[1]}. No"
-        elif 'control' in self.task_file:
+        elif 'control' in fname and 'like' not in fname:
             self.instruction_text += "Judge if one person SPEAKS MORE."
             key_text = f"\n{self.corr_key[0]}. Yes \t{self.corr_key[1]}. No"
-        elif 'liking' in self.task_file and 'control' in self.task_file:
+        elif 'like' in fname and 'control' in fname:
             self.instruction_text += "Judge if they LIKE each other or if one person SPEAKS MORE."
             key_text = f"\n{self.corr_key[0]}. Yes \t{self.corr_key[1]}. No"
-        instr_stim = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1], wrapWidth=20, pos=(0, 0))
+        # else: keep the default instruction_text + key_text
+
+        instr_stim = visual.TextStim(self.window, text=self.instruction_text,
+                                     height=self.const.instruction_text_height, color=[-1, -1, -1],
+                                     wrapWidth=20, pos=(0, 0))
         instr_stim.draw()
-        key_text = visual.TextStim(self.window, text=key_text, height=self.const.instruction_text_height, color=[-1, -1, -1],
+
+        key_text = visual.TextStim(self.window, text=key_text,
+                                   height=self.const.instruction_text_height, color=[-1, -1, -1],
                                    wrapWidth=20, pos=(-3, -3), alignHoriz='left')
         key_text.draw()
         self.window.flip()

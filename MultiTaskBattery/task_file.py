@@ -79,7 +79,7 @@ def make_run_file(task_list,
                   tfiles,
                   offset = 0,
                   instruction_dur = 5,
-                  task_dur = 30,
+                  task_dur = 300,
                   run_time = None,
                   keep_in_middle=None):
     """
@@ -128,7 +128,7 @@ class NBack(TaskFile):
     def make_task_file(self,
                        hand = 'right',
                        responses = [1,2], # 1 = match, 2 = no match
-                       task_dur =  30,
+                       task_dur =  300,
                        trial_dur = 2,
                        iti_dur   = 0.5,
                        stim = ['9.jpg','11.jpg','18.jpg','28.jpg'],
@@ -699,7 +699,7 @@ class DemandGrid(TaskFile):
                        grid_size=(3, 4),
                        num_steps=3,
                        num_boxes_lit=2,
-                       task_dur=30,
+                       task_dur=300,
                        trial_dur=7,
                        question_dur=3,
                        sequence_dur=4,
@@ -922,7 +922,7 @@ class FingerSequence(TaskFile):
     def make_task_file(self,
                        hand = 'bimanual',
                        responses = [1,2,3,4], # 1 = Key_one, 2 = Key_two, 3 = Key_three, 4 = Key_four
-                       task_dur= 10,
+                       task_dur= 300,
                        trial_dur=3.25,
                        iti_dur=0.5,
                        file_name=None):
@@ -965,7 +965,7 @@ class FingerRhythmic(TaskFile):
                        hand='right',
                        responses=[1],
                        run_number= None,
-                       task_dur = 70,
+                       task_dur = 300,
                        trial_dur=35, # 2 sec trial start text, 27.95 sec tone train, ~5 sec buffer
                        iti_dur=0,
                        file_name=None):
@@ -1005,8 +1005,8 @@ class TimePerception(TaskFile):
     def make_task_file(self,
                        modality='time',          # 'time' or 'volume'
                        responses=[1, 2],         # code 1 = left option, 2 = right option
-                       n_trials=20,              # must be even
-                       trial_dur=4.0,            # tone + question window duration
+                       n_trials= 30,              # must be even
+                       trial_dur=4,            # tone + question window duration
                        iti_dur=1.0,
                        question_dur=2.0,
                        display_feedback= True,
@@ -1055,13 +1055,13 @@ class TimePerception(TaskFile):
 class SensMotControl(TaskFile):
     def __init__(self, const):
         super().__init__(const)
-        self.name = 'sensmotcontrol'
+        self.name = 'sensmot_control'
 
     def make_task_file(self,
                        hand='right',
                        responses=[1, 2],
                        run_number=None,
-                       task_dur= 40,
+                       task_dur= 300,
                        trial_dur=3,
                        question_dur=2,
                        iti_dur= 1,
@@ -1263,7 +1263,7 @@ class RMET(TaskFile):
     def make_task_file(self, hand='right',
                        responses = [1,2,3,4],
                        run_number=None,
-                       task_dur=30,
+                       task_dur=300,
                        trial_dur=6,
                        iti_dur=1.5,
                        file_name=None,
@@ -1681,7 +1681,7 @@ class FauxPas(TaskFile):
     def make_task_file(self, hand='right',
                        responses = [1,2], # 1 = True, 2 = False
                        run_number=None,
-                       task_dur=30,
+                       task_dur=300,
                        trial_dur=14,
                        iti_dur=1,
                        story_dur=10,
@@ -1864,7 +1864,7 @@ class Liking(TaskFile):
                        hand='right',
                        responses = [1,2],
                        run_number = None,
-                       task_dur=30,
+                       task_dur=300,
                        trial_dur=28,
                        iti_dur=1,
                        question_dur=3,
