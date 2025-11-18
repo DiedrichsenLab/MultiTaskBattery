@@ -79,7 +79,7 @@ def make_run_file(task_list,
                   tfiles,
                   offset = 0,
                   instruction_dur = 5,
-                  task_dur = 300,
+                  task_dur = 30,
                   run_time = None,
                   keep_in_middle=None):
     """
@@ -128,7 +128,7 @@ class NBack(TaskFile):
     def make_task_file(self,
                        hand = 'right',
                        responses = [1,2], # 1 = match, 2 = no match
-                       task_dur =  300,
+                       task_dur = 30,
                        trial_dur = 2,
                        iti_dur   = 0.5,
                        stim = ['9.jpg','11.jpg','18.jpg','28.jpg'],
@@ -184,7 +184,7 @@ class Rest(TaskFile):
         self.name = 'rest'
 
     def make_task_file(self,
-                       task_dur =  30,
+                       task_dur = 30,
                        file_name = None):
         trial = {}
         trial['trial_num'] = [1]
@@ -203,7 +203,7 @@ class VerbGeneration(TaskFile):
 
 
     def make_task_file(self,
-                       task_dur =  30,
+                       task_dur = 30,
                        trial_dur = 2,
                        iti_dur   = 0.5,
                        file_name = None,
@@ -254,7 +254,7 @@ class TongueMovement(TaskFile):
         self.name = 'tongue_movement'
 
     def make_task_file(self,
-                       task_dur =  30,
+                       task_dur = 30,
                        trial_dur = 1,
                        iti_dur   = 0,
                        file_name = None):
@@ -965,7 +965,7 @@ class FingerRhythmic(TaskFile):
                        hand='right',
                        responses=[1],
                        run_number= None,
-                       task_dur = 300,
+                       task_dur = 30,
                        trial_dur=35, # 2 sec trial start text, 27.95 sec tone train, ~5 sec buffer
                        iti_dur=0,
                        file_name=None):
@@ -1120,7 +1120,7 @@ class FlexionExtension(TaskFile):
         self.name = 'flexion_extension'
 
     def make_task_file(self,
-                       task_dur =  30,
+                       task_dur = 30,
                        trial_dur = 30,
                        iti_dur   = 0,
                        stim_dur = 2,
@@ -1213,7 +1213,7 @@ class VisualSearch(TaskFile):
     def make_task_file(self,
                        hand = 'right',  #to recode for alternating hands: put left here, and put 3,4 in responses
                        responses = [1,2], # 1 = match, 2 = no match
-                       task_dur =  30,
+                       task_dur = 30,
                        trial_dur = 2,
                        iti_dur   = 0.5,
                        easy_prob=0.5,
