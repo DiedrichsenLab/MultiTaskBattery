@@ -965,7 +965,7 @@ class FingerRhythmic(TaskFile):
                        hand='right',
                        responses=[1],
                        run_number= None,
-                       task_dur = 30,
+                       task_dur = 70,
                        trial_dur=35, # 2 sec trial start text, 27.95 sec tone train, ~5 sec buffer
                        iti_dur=0,
                        file_name=None):
