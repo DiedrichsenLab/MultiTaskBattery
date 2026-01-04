@@ -29,10 +29,9 @@ Implemented tasks
 The task that are implemented in the repository are listed in the ``task_table.tsv`` file in the `MultiTaskBattery` folder. For more details, see the :ref:`task descriptions <task_descriptions>` .
 
 .. csv-table:: List of tasks
-   :file: task_table_for_docs.csv
-   :widths: 30,30,120
+   :file: task_table_for_docs.tsv
    :header-rows: 1
-   
+   :delim: tab
 
 Run and Task Files
 ------------------
