@@ -1,22 +1,22 @@
 name	task_class	descriptive_name	code	description	reference	conditions
 theory_of_mind	TheoryOfMind	story	tom	"short story presented with a question at the end, participants must answer the question."	"Saxe, R. and Kanwisher, N. (2003) ‘People thinking about thinking people: The role of the temporo-parietal junction in “theory of mind”’, NeuroImage, 19(4), pp. 1835–1842. Available at: https://doi.org/10.1016/S1053-8119(03)00230-1."	"belief,photo"
-n_back	NBack	memory	nbko			
-action_observation	ActionObservation	knot	acva-acvk			
-verb_generation	VerbGeneration	verb	vrbgn-wrdrd	"Words presented, participants read the words. At halfpoint, ""GENERATE"" is shown, participants need to covertly generate verbs associated with words"		
-rest	Rest	rest	rest	lie in scanner with a fixation cross	NA	
+n_back	NBack	memory	nbko	"2AFC, is the current stimulus the same as the one presented n ago "	NA	NA
+action_observation	ActionObservation	knot	acva-acvk	"watch a video where the first half a know is tied, second half a 360 view of the knot is shown"	NA	"action, knot"
+verb_generation	VerbGeneration	verb	vrbgn-wrdrd	"Words presented, participants read the words. At halfpoint, ""GENERATE"" is shown, participants need to covertly generate verbs associated with words"	NA	"generate, read"
+rest	Rest	rest	rest	lie in scanner with a fixation cross	NA	NA
 tongue_movement	TongueMovement	tongue	tongue	"move tongue from right to left, touching upper premolar teeth guided by a flashing black circle around a fixation crosshair, black circle means right no cirlce means left, 1s periods"	"A Third Somatomotor Representation in the Human Cerebellum (Bucknet et al., 2022)"	
-auditory_narrative	AuditoryNarrative	radio	audnarr	30 second snippets of a moth radiohour story (wheretheressmoke)	Novel	
-spatial_navigation	SpatialNavigation	imagine	spatialnav			
-degraded_passage	DegradedPassage	listen	degpass			
-intact_passage	IntactPassage	story_listen	intpass			
-sentence_reading	SentenceReading	sentence_reading	senread			
-nonword_reading	NonwordReading	word_reading	nwdread			
-oddball	OddBall	oddball	odbal		"Functional specificity for high-level linguistic processing in the human brain (Fedorenko et al., 2011)"	
-demand_grid	DemandGrid	grid	dmgrd			
-finger_sequence	FingerSequence	finger_sequence	fingseq			
-flexion_extension	FlexionExtension	toe	flexexten	alternating periods of flexing/extending toes		
-semantic_prediction	SemanticPrediction	complete	sempred	"sentence presented, participants decide if last word makes sense."		
-visual_search	VisualSearch	search	visrchsml	"geometric shapes presented on screen, participants must identify if 'L' is present."		
+auditory_narrative	AuditoryNarrative	radio	audnarr	30 second snippets of a moth radiohour story (wheretheressmoke)	NA	NA
+spatial_navigation	SpatialNavigation	imagine	spatialnav	imagining walking a room to a room in childhood home	NA	NA
+degraded_passage	DegradedPassage	listen	degpass	listen to muffeled passages	"Scott, T. L., Gallee, J., & Fedorenko, E. (2017). A new fun and robust version of an fMRI localizer for the frontotemporal language system. Cognitive Neuroscience, 8(3), 167�176."	NA
+intact_passage	IntactPassage	story_listen	intpass	listen to normal sentences	"Scott, T. L., Gallee, J., & Fedorenko, E. (2017). A new fun and robust version of an fMRI localizer for the frontotemporal language system. Cognitive Neuroscience, 8(3), 167�176."	NA
+sentence_reading	SentenceReading	sentence_reading	senread	"read sentences, words presented sequentially one a time. Press a button at the end of each sentence"	"Fedorenko, E., Hsieh, P.-J., Nieto-Castanon, A., Whitfield-Gabrieli, S., & Kanwisher, N. (2010). New method for fMRI investigations of language: defining ROIs functionally in individual subjects. Journal of Neurophysiology, 104(2), 1177�1194."	NA
+nonword_reading	NonwordReading	word_reading	nwdread	"read nonwords, nonwords presented sequentially one a time. Press a button at the end of each list of nonwords"	"Fedorenko, E., Hsieh, P.-J., Nieto-Castanon, A., Whitfield-Gabrieli, S., & Kanwisher, N. (2010). New method for fMRI investigations of language: defining ROIs functionally in individual subjects. Journal of Neurophysiology, 104(2), 1177�1194."	NA
+oddball	OddBall	oddball	odbal	"Black or red ""K"" or ""O"" is shown on the screen. Press a button when red ""K"" is shown"	"Functional specificity for high-level linguistic processing in the human brain (Fedorenko et al., 2011)"	NA
+demand_grid	DemandGrid	grid	dmgrd	"2AFC, a set of grids is shown one by one on the screen with certain boxes colored blue. After the sequnece, two options are given for the combination of blue boxes across shown grids"	"Fedorenko, E., Duncan, J., & Kanwisher, N. (2013). Broad domain generality in focal regions of frontal and parietal cortex. Proceedings of the National Academy of Sciences of the United States of America, 110(41), 16616�16621."	NA
+finger_sequence	FingerSequence	finger_sequence	fingseq	press a sequence of buttons	NA	NA
+flexion_extension	FlexionExtension	toe	flexexten	alternating periods of flexing/extending toes	NA	NA
+semantic_prediction	SemanticPrediction	complete	sempred	"sentence presented, participants decide if last word makes sense."	NA	NA
+visual_search	VisualSearch	search	visrchsml	"geometric shapes presented on screen, participants must identify if 'L' is present."	NA	NA
 rmet	RMET	eyes	rmet	"pictures of faces with different emotions presented (eyes only) along with four attribute words, participants must identify which attribute describes person best."	"Kim, H.A. et al. (2024) ‘Multiracial Reading the Mind in the Eyes Test (MRMET): An inclusive version of an influential measure’, Behavior Research Methods. Revised from Baron-Cohen, Wheelwright, Hill, Raste, & Plumb, 2001"	"age, emotion"
 picture_sequence	PictureSequence	cartoon	picture_sequence	"4 cartoon pictures are presented, participants must order them chronologically."	"Heleven, E., van Dun, K. and Van Overwalle, F. (2019) ‘The posterior Cerebellum is involved in constructing Social Action Sequences: An fMRI Study’, Scientific Reports, 9(1), pp. 1–11. Available at: https://doi.org/10.1038/s41598-019-46962-7."	"fbelief,tbelief,control,sscript,mechanical"
 story_sequence	StorySequence	story sequence	story_sequence	"4 sentences are presented, participants must order them chronologically."	"Heleven, E., van Dun, K. and Van Overwalle, F. (2019) ‘The posterior Cerebellum is involved in constructing Social Action Sequences: An fMRI Study’, Scientific Reports, 9(1), pp. 1–11. Available at: https://doi.org/10.1038/s41598-019-46962-7."	"fbelief,tbelief,control,sscript,mechanical"
@@ -26,5 +26,5 @@ strange_stories	StrangeStories	relationship	strange_stories	"clips of relationsh
 faux_pas	FauxPas	faux pas	faux_pas	"stories of (potential) faux pas situations, participants must answer questions about the interaction"	"Stone, V.E., Baron-Cohen, S. & Knight, R.T. (1998). Frontal lobe contributions to theory of mind. Journal of Cognitive Neuroscience, 10, 640-656. Gregory, C. , Lough, S., Stone, V.E., Erzinclioglu, S., Martin, L., Baron-Cohen, S. & Hodges, J. (2002). Theory of mind in frontotemporal dementia and Alzheimer's disease: Theoretical and practical implications. Brain, 125, 752-64."	"social,control"
 frith_happe	FrithHappe	triangle	frith_happe	"video clips of triangle animations, participants must determine whether interaction was random, goal-directed or a mentalizing interaction"	"Livingston, L.A. et al. (2021) ‘Further developing the Frith–Happé animations: A quicker, more objective, and web-based test of theory of mind for autistic and neurotypical adults’, Autism Research, 14(9), pp. 1905–1912. Available at: https://doi.org/10.1002/aur.2575.."	"random,gd,tom"
 liking	Liking	meeting	liking	"video clips of people interacting, participants must determine if the interaction was positive or negative"	"Heerey, E.A. and Gilder, T.S.E. (2019) ‘The subjective value of a smile alters social behaviour’, PLoS ONE, 14(12), pp. 1–19. Available at: https://doi.org/10.1371/journal.pone.0225284."	"like,dislike"
-pong	Pong	pong	pomg	pong game		
-affective	Affective	affective	affect	2 choice is the image pleasant or unpleasant		
+pong	Pong	pong	pong	pong game		NA
+affective	Affective	affective	affect	2 choice is the image pleasant or unpleasant		NA

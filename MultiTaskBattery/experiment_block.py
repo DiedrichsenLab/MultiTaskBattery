@@ -6,7 +6,7 @@ import pandas as pd
 import sys
 import numpy as np
 
-from psychopy import visual, core, gui, event
+from psychopy import visual, gui, event
 import MultiTaskBattery.utils as ut
 import MultiTaskBattery.task_blocks as tasks
 from MultiTaskBattery.ttl_clock import TTLClock
