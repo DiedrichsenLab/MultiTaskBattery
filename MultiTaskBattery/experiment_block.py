@@ -148,7 +148,7 @@ class Experiment:
 
             ## sending a message to the edf file specifying task name
             if self.const.eye_tracker:
-                pl.sendMessageToFile(f"task_name: {task.name} start_track: {pl.currentUsec()} real start time {r_data.real_start_time} TR count {ttl_clock.ttl_count}")
+                pl.sendMessageToFile(f"task_name: {task.name} start_track: {pl.currentUsec()} real start time {r_data.real_start_time} TR count {self.ttl_clock.ttl_count}")
 
             # display the instruction text for the task. (instructions are task specific)
             task.display_instructions()

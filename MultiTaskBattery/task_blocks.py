@@ -204,7 +204,7 @@ class Task:
         """ Checks for quit or escape key presses and quits the experiment if necessary """
         keys = event.getKeys()
         for key in keys:
-            if 'q' and 'esc' in key:
+            if 'q' in key or 'esc' in key:
                 self.window.close()
                 core.quit()
 
@@ -308,6 +308,7 @@ class VerbGeneration(Task):
         trial_info_file = self.const.task_dir / self.name / self.task_file
         self.trial_info = pd.read_csv(trial_info_file, sep='\t')
         self.trial_info['noun'] = self.trial_info['stim'].str.strip()
+        self.trial_counter = 0
 
     def display_instructions(self): # overriding the display instruction from the parent class
 
@@ -334,9 +335,11 @@ class VerbGeneration(Task):
         # Display word
         self.show_stim(trial['noun'])
 
-        # display GENERATE instruction at the halfway point (jorn check this plz, this replaces word 7 with generate)
-        if trial.name == len(self.trial_info) // 2:
+        # display GENERATE instruction at the halfway point
+        if self.trial_counter == len(self.trial_info) // 2:
             self.display_generate_instruction()
+
+        self.trial_counter += 1
 
         # wait for trial duration
         self.ttl_clock.wait_until(self.ttl_clock.get_time() + trial['trial_dur'])
@@ -1160,7 +1163,6 @@ class VisualSearch(Task):
 
         self.trial_counter+=1
 
-        randomly_select_apertures = random.sample(self.apertures, num_stimuli)
         randomly_select_apertures = random.sample(self.apertures, num_stimuli)
 
         for aperture in randomly_select_apertures:
