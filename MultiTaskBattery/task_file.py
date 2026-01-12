@@ -157,7 +157,6 @@ class NBack(TaskFile):
                 trial['stim'] = prev_stim[1]
                 while (trial['stim'] == prev_stim[0]) | (trial['stim'] == prev_stim[1]):
                     trial['stim'] = stim[np.random.randint(0,len(stim))]
-                prev_stim[0]
             else:
                 trial['stim'] = prev_stim[1]
 
