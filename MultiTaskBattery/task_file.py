@@ -1840,8 +1840,6 @@ class Affective(TaskFile):
         t = 0
         for n in range(n_trials):
             trial = {}
-            trial['key_pleasant'] = responses[0]
-            trial['key_unpleasant'] = responses[1]
             trial['trial_num'] = n
             trial['stim'] = stim[n]['imgName']
             trial['trial_type'] = stim[n]['trialType']
