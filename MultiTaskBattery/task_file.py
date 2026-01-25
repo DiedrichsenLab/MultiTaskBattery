@@ -921,7 +921,7 @@ class FingerSequence(TaskFile):
     def make_task_file(self,
                        hand = 'bimanual',
                        responses = [1,2,3,4], # 1 = Key_one, 2 = Key_two, 3 = Key_three, 4 = Key_four
-                       task_dur= 300,
+                       task_dur=300,
                        trial_dur=3.25,
                        iti_dur=0.5,
                        file_name=None):
@@ -1060,7 +1060,7 @@ class SensMotControl(TaskFile):
                        hand='right',
                        responses=[1, 2],
                        run_number=None,
-                       task_dur= 300,
+                       task_dur=300,
                        trial_dur=3,
                        question_dur=2,
                        iti_dur= 1,
