@@ -1,4 +1,3 @@
-#%%
 # Task Class definitions
 # March 2021: First version: Ladan Shahshahani  - Maedbh King - Suzanne Witt,
 # Revised 2023: Bassel Arafat, Jorn Diedrichsen, Incé Husain
@@ -8,6 +7,8 @@ from pathlib import Path
 import pandas as pd
 import numpy as np
 import random
+from psychopy import prefs
+prefs.hardware['audioLib'] = ['sounddevice']
 from psychopy import visual, sound, core, event
 from pyglet.window import key
 import MultiTaskBattery.utils as ut
@@ -17,6 +18,7 @@ from moviepy.audio.io.AudioFileClip import AudioFileClip
 import gc
 import math
 import json
+
 
 
 class Task:
@@ -69,7 +71,7 @@ class Task:
         # instr.size = 0.8
         instr_visual.draw()
         self.window.flip()
-
+    
     def run(self):
         """Loop over trials and collects data
         Data will be stored in self.trial_data
@@ -96,37 +98,37 @@ class Task:
         if self.feedback_type[-2:] == 'rt':
             rt = self.trial_data['rt'].mean()
         return acc,rt
-
+    
 
     def show_progress(self, seconds_left, show_last_seconds=5, height=1, width=10, x_pos=-5, y_pos=8):
         """ Displays a progress bar for the Picture Sequence task
    Args:
-        seconds_left (float):
-            The number of seconds remaining in the current trial.
+        seconds_left (float): 
+            The number of seconds remaining in the current trial. 
             If this value is greater than `show_last_seconds`, the progress bar is not shown.
 
-        show_last_seconds (float, optional):
-            The duration (in seconds) over which to display the progress bar at the end of a trial.
+        show_last_seconds (float, optional): 
+            The duration (in seconds) over which to display the progress bar at the end of a trial. 
             Default is 5 seconds. When `seconds_left` is less than this value, the progress bar appears.
 
-        height (float, optional):
+        height (float, optional): 
             The vertical size of the progress bar in PsychoPy window units. Default is 1.
 
-        width (float, optional):
+        width (float, optional): 
             The horizontal size of the progress bar in PsychoPy window units. Default is 10.
 
-        x_pos (float, optional):
-            The horizontal position of the center of the progress bar in window coordinates.
+        x_pos (float, optional): 
+            The horizontal position of the center of the progress bar in window coordinates. 
             Negative values move it leftward. Default is -5.
 
-        y_pos (float, optional):
-            The vertical position of the center of the progress bar in window coordinates.
+        y_pos (float, optional): 
+            The vertical position of the center of the progress bar in window coordinates. 
             Positive values move it upward. Default is 8.
         """
         # If we are in the last five seconds of the trial, display the remaining time
         if seconds_left < show_last_seconds:
             progress = visual.Progress(
-                win=self.window,
+                win=self.window, 
                 progress=1-(seconds_left/show_last_seconds),
                 size=(width, height),
                 pos=(x_pos, y_pos),
@@ -157,8 +159,8 @@ class Task:
                 current_stimuli.draw()
                 seconds_left = max_wait_time - (self.ttl_clock.get_time() - start_time)
                 self.show_progress(seconds_left,
-                                   show_last_seconds=show_last_seconds,
-                                   y_pos=6)
+                                show_last_seconds=show_last_seconds,
+                                y_pos=6)
                 self.window.flip()
             keys=event.getKeys(keyList= self.const.response_keys, timeStamped=self.ttl_clock.clock)
             if len(keys)>0:
@@ -775,9 +777,9 @@ class SpatialNavigation(Task):
         end_location = self.trial_info.iloc[0]['location_2']
 
         self.instruction_text = (f"{self.descriptive_name} Task \n\n"
-                                 f"Imagine walking around your childhood home\n"
-                                 f"Start in the {start_location} – end in the {end_location}\n"
-                                 f"Focus on the fixation cross")
+                                    f"Imagine walking around your childhood home\n"
+                                    f"Start in the {start_location} – end in the {end_location}\n"
+                                    f"Focus on the fixation cross")
         instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1],  wrapWidth=20)
         instr_visual.draw()
         self.window.flip()
@@ -2670,6 +2672,3 @@ class Affective(Task):
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
 
         return trial
-
-
-#%%
