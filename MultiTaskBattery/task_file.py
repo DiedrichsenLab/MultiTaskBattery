@@ -1,3 +1,4 @@
+#%%
 # Create TaskFile file for different tasks
 # March 2021: First version: Ladan Shahshahani  - Maedbh King - Suzanne Witt,
 # Revised 2023: Bassel Arafat, Jorn Diedrichsen, Ince Husain
@@ -24,7 +25,7 @@ def shuffle_rows(dataframe, keep_in_middle=None):
 
     if keep_in_middle is not None:
         dataframe = move_edge_tasks_to_middle(dataframe, keep_in_middle)
-        
+
     return dataframe
 
 def move_edge_tasks_to_middle(dataframe, keep_in_middle):
@@ -125,13 +126,13 @@ class NBack(TaskFile):
         self.name = 'n_back'
 
     def make_task_file(self,
-                        hand = 'right',
-                        responses = [1,2], # 1 = match, 2 = no match
-                        task_dur =  30,
-                        trial_dur = 2,
-                        iti_dur   = 0.5,
-                        stim = ['9.jpg','11.jpg','18.jpg','28.jpg'],
-                        file_name = None ):
+                       hand = 'right',
+                       responses = [1,2], # 1 = match, 2 = no match
+                       task_dur = 30,
+                       trial_dur = 2,
+                       iti_dur   = 0.5,
+                       stim = ['9.jpg','11.jpg','18.jpg','28.jpg'],
+                       file_name = None ):
         n_trials = int(np.floor(task_dur / (trial_dur+iti_dur)))
         trial_info = []
 
@@ -147,7 +148,7 @@ class NBack(TaskFile):
             trial['key_match'] = responses[0]
             trial['key_nomatch'] = responses[1]
             # Determine if this should be N-2 repetition trial
-    
+
             if n<2:
                 trial['trial_type'] = 0
             else:
@@ -182,8 +183,8 @@ class Rest(TaskFile):
         self.name = 'rest'
 
     def make_task_file(self,
-                        task_dur =  30,
-                        file_name = None):
+                       task_dur = 30,
+                       file_name = None):
         trial = {}
         trial['trial_num'] = [1]
         trial['trial_dur'] = [task_dur]
@@ -198,14 +199,14 @@ class VerbGeneration(TaskFile):
     def __init__(self, const):
         super().__init__(const)
         self.name = 'verb_generation'
-        
+
 
     def make_task_file(self,
-                        task_dur =  30,
-                        trial_dur = 2,
-                        iti_dur   = 0.5,
-                        file_name = None,
-                        stim_file = None):
+                       task_dur = 30,
+                       trial_dur = 2,
+                       iti_dur   = 0.5,
+                       file_name = None,
+                       stim_file = None):
         n_trials = int(np.floor(task_dur / (trial_dur+iti_dur)))
         trial_info = []
 
@@ -213,7 +214,7 @@ class VerbGeneration(TaskFile):
             stim = pd.read_csv(stim_file)
         else:
             stim = pd.read_csv(self.stim_dir / 'verb_generation' / 'verb_generation.csv')
-        
+
         stim = stim.sample(frac=1).reset_index(drop=True)
 
         t = 0
@@ -252,10 +253,10 @@ class TongueMovement(TaskFile):
         self.name = 'tongue_movement'
 
     def make_task_file(self,
-                        task_dur =  30,
-                        trial_dur = 1,
-                        iti_dur   = 0,
-                        file_name = None):
+                       task_dur = 30,
+                       trial_dur = 1,
+                       iti_dur   = 0,
+                       file_name = None):
         n_trials = int(np.floor(task_dur / (trial_dur+iti_dur)))
         trial_info = []
 
@@ -322,9 +323,9 @@ class SpatialNavigation(TaskFile):
         super().__init__(const)
         self.name = 'spatial_navigation'
         self.location_pairs = [('FRONT-DOOR', 'LIVING-ROOM'), ('WASHROOM', 'LIVING-ROOM'), ('BEDROOM', 'LIVING-ROOM'),
-                        ('KITCHEN', 'LIVING-ROOM'), ('FRONT-DOOR', 'WASHROOM'), ('BEDROOM', 'FRONT-DOOR'),
-                        ('KITCHEN', 'FRONT-DOOR'), ('KITCHEN', 'BEDROOM'), ('KITCHEN', 'WASHROOM'),
-                        ('BEDROOM', 'WASHROOM')]
+                               ('KITCHEN', 'LIVING-ROOM'), ('FRONT-DOOR', 'WASHROOM'), ('BEDROOM', 'FRONT-DOOR'),
+                               ('KITCHEN', 'FRONT-DOOR'), ('KITCHEN', 'BEDROOM'), ('KITCHEN', 'WASHROOM'),
+                               ('BEDROOM', 'WASHROOM')]
 
 
     def make_task_file(self,
@@ -368,14 +369,14 @@ class TheoryOfMind(TaskFile):
     def make_task_file(self, hand='right',
                        responses = [1,2], # 1 = True, 2 = False
                        run_number=None,
-                        task_dur=30,
-                        trial_dur=14,
-                        iti_dur=1, 
-                        story_dur=10,
-                        question_dur=4,
-                        file_name=None,
-                        stim_file=None,
-                        condition=None):
+                       task_dur=300,
+                       trial_dur=14,
+                       iti_dur=1,
+                       story_dur=10,
+                       question_dur=4,
+                       file_name=None,
+                       stim_file=None,
+                       condition=None):
 
         # count number of trials
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
@@ -391,7 +392,7 @@ class TheoryOfMind(TaskFile):
             stim = stim[stim['condition'] == condition]
         else:
             stim = stim.loc[~stim['condition'].str.contains('practice', na=False)]
-            
+
         start_row = (run_number - 1) * n_trials
         end_row = run_number * n_trials - 1
         stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
@@ -433,11 +434,11 @@ class DegradedPassage(TaskFile):
         self.name = 'degraded_passage'
 
     def make_task_file(self,
-                        run_number = None,
-                        task_dur=30,
-                        trial_dur=14.5,
-                        iti_dur=0.5,
-                        file_name=None):
+                       run_number = None,
+                       task_dur=30,
+                       trial_dur=14.5,
+                       iti_dur=0.5,
+                       file_name=None):
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
 
@@ -471,11 +472,11 @@ class IntactPassage(TaskFile):
         self.name = 'intact_passage'
 
     def make_task_file(self,
-                        run_number,
-                        task_dur=30,
-                        trial_dur=14.5,
-                        iti_dur=0.5, 
-                        file_name=None):
+                       run_number,
+                       task_dur=30,
+                       trial_dur=14.5,
+                       iti_dur=0.5,
+                       file_name=None):
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
 
@@ -511,27 +512,27 @@ class ActionObservation(TaskFile):
 
         # Medium/bad knot vids
         # self.knot_names = [
-        #                 'Ampere', 'Arbor', 'Baron', 'Belfry', 'Bramble', 'Chamois', 'Coffer', 
-        #                 'Farthing', 'Fissure', 'Gentry', 'Henchman', 'Magnate', 'Perry', 'Phial', 'Polka', 
+        #                 'Ampere', 'Arbor', 'Baron', 'Belfry', 'Bramble', 'Chamois', 'Coffer',
+        #                 'Farthing', 'Fissure', 'Gentry', 'Henchman', 'Magnate', 'Perry', 'Phial', 'Polka',
         #                 'Rosin', 'Shilling', 'Simper', 'Spangle', 'Squire', 'Vestment', 'Wampum', 'Wicket'
         #             ]
 
         # good knot vids
-        # self.knot_names = ['Adage', 
+        # self.knot_names = ['Adage',
         #                 'Brigand', 'Brocade', 'Casement',  'Cornice',\
         #                 'Flora', 'Frontage', 'Gadfly', 'Garret', \
         #                 'Mutton','Placard', 'Purser']
 
     def make_task_file(self,
-                        run_number = None,
-                        task_dur=30,
-                        trial_dur=14,
-                        iti_dur=1,
-                        file_name=None,
-                        knot_names = ['Adage', 
-                        'Brigand', 'Brocade', 'Casement',  'Cornice',\
-                        'Flora', 'Frontage', 'Gadfly', 'Garret', \
-                        'Mutton','Placard', 'Purser']):
+                       run_number = None,
+                       task_dur=30,
+                       trial_dur=14,
+                       iti_dur=1,
+                       file_name=None,
+                       knot_names = ['Adage',
+                                     'Brigand', 'Brocade', 'Casement',  'Cornice', \
+                                     'Flora', 'Frontage', 'Gadfly', 'Garret', \
+                                     'Mutton','Placard', 'Purser']):
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
 
@@ -672,7 +673,7 @@ class DemandGrid(TaskFile):
 
                     if not available_positions:
                         raise ValueError("Not enough valid adjacent positions available for modification.")
-                    
+
                     # Choose a random position from the available ones
                     new_pos = random.choice(list(available_positions))
                     new_step.append(new_pos)
@@ -690,19 +691,19 @@ class DemandGrid(TaskFile):
         # If all steps fail, raise an error
         raise ValueError("No valid step could be modified with the given constraints.")
 
-                        
+
     def make_task_file(self,
-                   hand='right',
-                   responses=[1, 2],  # 1 = Left, 2 = Right
-                   grid_size=(3, 4),
-                   num_steps=3,
-                   num_boxes_lit=2,
-                   task_dur=30,
-                   trial_dur=7,
-                   question_dur=3,
-                   sequence_dur=4,
-                   iti_dur=0.5,
-                   file_name=None):
+                       hand='right',
+                       responses=[1, 2],  # 1 = Left, 2 = Right
+                       grid_size=(3, 4),
+                       num_steps=3,
+                       num_boxes_lit=2,
+                       task_dur=300,
+                       trial_dur=7,
+                       question_dur=3,
+                       sequence_dur=4,
+                       iti_dur=0.5,
+                       file_name=None):
         """
         Create a task file with the specified parameters.
 
@@ -731,14 +732,14 @@ class DemandGrid(TaskFile):
                 try:
                     # Generate the original sequence
                     original_sequence = self.generate_sequence(grid_size, num_steps, num_boxes_lit)
-                    # Attempt to create a modified sequence 
+                    # Attempt to create a modified sequence
                     modified_sequence = self.modify_sequence(original_sequence, grid_size=grid_size)
                     break
                 except ValueError:
                     continue
 
             correct_side = random.choice(['left', 'right'])
-            trial_type = 0 if correct_side == 'left' else 1        
+            trial_type = 0 if correct_side == 'left' else 1
             trial = {
                 'key_left': responses[0],
                 'key_right': responses[1],
@@ -776,12 +777,12 @@ class SentenceReading(TaskFile):
         self.name = 'sentence_reading'
 
     def make_task_file(self,
-                        run_number = None,
-                        task_dur=30,
-                        trial_dur=5.8,
-                        iti_dur=0.2,
-                        file_name=None,
-                        stim_file=None):
+                       run_number = None,
+                       task_dur=30,
+                       trial_dur=5.8,
+                       iti_dur=0.2,
+                       file_name=None,
+                       stim_file=None):
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
 
@@ -819,16 +820,16 @@ class NonwordReading(TaskFile):
         self.name = 'nonword_reading'
 
     def make_task_file(self,
-                        run_number = None,
-                        task_dur=30,
-                        trial_dur=5.8,
-                        iti_dur=0.2,
-                        file_name=None,
-                        stim_file=None):
-        
+                       run_number = None,
+                       task_dur=30,
+                       trial_dur=5.8,
+                       iti_dur=0.2,
+                       file_name=None,
+                       stim_file=None):
+
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
-        
+
         if stim_file:
             stim = pd.read_csv(stim_file)
         else:
@@ -861,15 +862,15 @@ class OddBall(TaskFile):
     def __init__(self, const):
         super().__init__(const)
         self.name = 'oddball'
-        
+
 
     def make_task_file(self,
-                    hand = 'right',
-                    responses = [1,2], # 1,2 any press is ok
-                    task_dur=30,
-                    trial_dur=0.15,
-                    iti_dur=0.85,
-                    file_name=None):
+                       hand = 'right',
+                       responses = [1,2], # 1,2 any press is ok
+                       task_dur=30,
+                       trial_dur=0.15,
+                       iti_dur=0.85,
+                       file_name=None):
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
 
@@ -903,13 +904,13 @@ class OddBall(TaskFile):
             trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
 
         return trial_info
-    
+
 class FingerSequence(TaskFile):
     def __init__(self, const):
         super().__init__(const)
         self.name = 'finger_sequence'
         self.matching_stimuli = False # sequence of numbers are different for easy and hard sequence condition
-        
+
     def generate_sequence(self):
         sequence = [random.choice([1, 2, 3, 4])]
         while len(sequence) < 6:
@@ -918,12 +919,12 @@ class FingerSequence(TaskFile):
         return ' '.join(map(str, sequence))
 
     def make_task_file(self,
-                        hand = 'bimanual',
-                        responses = [1,2,3,4], # 1 = Key_one, 2 = Key_two, 3 = Key_three, 4 = Key_four
-                        task_dur=30,
-                        trial_dur=3.25,
-                        iti_dur=0.5,
-                        file_name=None):
+                       hand = 'bimanual',
+                       responses = [1,2,3,4], # 1 = Key_one, 2 = Key_two, 3 = Key_three, 4 = Key_four
+                       task_dur= 300,
+                       trial_dur=3.25,
+                       iti_dur=0.5,
+                       file_name=None):
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
 
@@ -954,17 +955,175 @@ class FingerSequence(TaskFile):
 
         return trial_info
 
+class FingerRhythmic(TaskFile):
+    def __init__(self, const):
+        super().__init__(const)
+        self.name = 'finger_rhythmic'
+
+    def make_task_file(self,
+                       hand='right',
+                       responses=[1],
+                       run_number= None,
+                       task_dur = 70,
+                       trial_dur=35, # 2 sec trial start text, 27.95 sec tone train, ~5 sec buffer
+                       iti_dur=0,
+                       file_name=None):
+
+        # count number of trials
+        n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
+        trial_info = []
+        t = 0
+
+        for n in range(n_trials):
+            trial = {}
+            trial['key_one'] = responses[0]
+            trial['trial_num'] = n
+            trial['hand'] = hand
+            trial['trial_dur'] = trial_dur
+            trial['iti_dur'] = iti_dur
+            trial['stim'] = 'generated'
+            trial['display_trial_feedback'] = False
+            trial['start_time'] = t
+            trial['end_time'] = t + trial_dur + iti_dur
+            trial_info.append(trial)
+            # Update for next trial:
+            t = trial['end_time']
+
+        trial_info = pd.DataFrame(trial_info)
+        if file_name is not None:
+            ut.dircheck(self.task_dir / self.name)
+            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
+
+        return trial_info
+
+class TimePerception(TaskFile):
+    def __init__(self, const):
+        super().__init__(const)
+        self.name = 'time_perception'  # folder: stimuli/perception/, tasks/perception/
+
+    def make_task_file(self,
+                       modality='time',          # 'time' or 'volume'
+                       responses=[1, 2],         # code 1 = left option, 2 = right option
+                       n_trials= 30,              # must be even
+                       trial_dur=4,            # tone + question window duration
+                       iti_dur=1.0,
+                       question_dur=2.0,
+                       display_feedback= True,
+                       run_number=None,
+                       file_name=None,
+                       **unused):
+
+        # sides per modality
+        if modality == 'time':
+            left_label, right_label = 'shorter', 'longer'
+        elif modality == 'volume':
+            left_label, right_label = 'quieter', 'louder'
+
+        sides = [left_label] * (n_trials // 2) + [right_label] * (n_trials // 2)
+        np.random.default_rng(run_number).shuffle(sides)
+
+        rows, t = [], 0.0
+        for i, side in enumerate(sides):
+            rows.append(dict(
+                trial_num=i,
+                modality=modality,                   # drives Task branching
+                side=side,                           # shorter/longer or softer/louder
+                key_one=int(responses[0]),           # instruction mapping only
+                key_two=int(responses[1]),
+                trial_type=1 if side in (left_label,) else 2,  # correct code
+                question_dur=float(question_dur),
+                trial_dur=float(trial_dur),
+                iti_dur=float(iti_dur),
+                display_trial_feedback= display_feedback,
+
+                # runtime logs (filled in Task)
+                comparison_ms=np.nan,
+                comparison_dba=np.nan,
+
+                start_time=float(t),
+                end_time=float(t + trial_dur + iti_dur),
+            ))
+            t = rows[-1]['end_time']
+
+        df = pd.DataFrame(rows)
+        if file_name:
+            ut.dircheck(self.task_dir / self.name)
+            df.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
+        return df
+
+class SensMotControl(TaskFile):
+    def __init__(self, const):
+        super().__init__(const)
+        self.name = 'sensmot_control'
+
+    def make_task_file(self,
+                       hand='right',
+                       responses=[1, 2],
+                       run_number=None,
+                       task_dur= 300,
+                       trial_dur=3,
+                       question_dur=2,
+                       iti_dur= 1,
+                       file_name=None,
+                       stim_file = None,
+                       condition=None):
+
+        # count number of trials
+        n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
+        trial_info = []
+        t = 0
+
+        if stim_file:
+            stim = pd.read_csv(self.stim_dir / self.name / stim_file, sep='\t')
+        else:
+            stim = pd.read_csv(self.stim_dir / self.name / f'{self.name}_block1.csv', sep='\t')
+
+        if condition:
+            stim = stim[stim['condition'] == condition]
+        else:
+            stim = stim.loc[~stim['condition'].str.contains('practice', na=False)]
+
+        start_row = (run_number - 1) * n_trials
+        end_row = run_number * n_trials - 1
+        stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
+
+        for n in range(n_trials):
+            trial = {}
+            trial['key_one'] = responses[0]
+            trial['key_two'] = responses[1]
+            trial['trial_num'] = n
+            trial['hand'] = hand
+            trial['trial_dur'] = trial_dur
+            trial['question_dur'] = question_dur
+            trial['iti_dur'] = iti_dur
+            trial['trial_type'] = stim['corr_resp'][n]
+            trial['stim'] = stim['color'][n]
+            trial['condition'] = stim['condition'][n]
+            trial['display_trial_feedback'] = True
+            trial['start_time'] = t
+            trial['end_time'] = t + trial_dur + iti_dur
+            trial_info.append(trial)
+
+            # Update for next trial:
+            t = trial['end_time']
+
+        trial_info = pd.DataFrame(trial_info)
+        if file_name is not None:
+            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
+        return trial_info
+
+
 class FlexionExtension(TaskFile):
     def __init__(self, const):
         super().__init__(const)
         self.name = 'flexion_extension'
 
     def make_task_file(self,
-                        task_dur =  30,
-                        trial_dur = 30,
-                        iti_dur   = 0,
-                        stim_dur = 2,
-                        file_name = None):
+                       task_dur = 30,
+                       trial_dur = 30,
+                       iti_dur   = 0,
+                       stim_dur = 2,
+                       file_name = None):
         n_trials = int(np.floor(task_dur / (trial_dur+iti_dur)))
         trial_info = []
 
@@ -999,11 +1158,11 @@ class SemanticPrediction(TaskFile):
     def make_task_file(self, hand='right',
                        responses = [1,2], # 1 = True, 2 = False
                        run_number=None,
-                       task_dur=30,
-                        trial_dur=15,
-                        sentence_dur=2,
-                        file_name=None,
-                        stim_file=None):
+                       task_dur=300,
+                       trial_dur=15,
+                       sentence_dur=2,
+                       file_name=None,
+                       stim_file=None):
 
         # count number of trials
         n_trials = int(np.floor(task_dur / (trial_dur)))
@@ -1019,7 +1178,7 @@ class SemanticPrediction(TaskFile):
         end_row = run_number * n_trials - 1
         stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
 
-        for n in range(n_trials):        
+        for n in range(n_trials):
             trial = {}
             trial['key_true'] = responses[0]
             trial['key_false'] = responses[1]
@@ -1028,12 +1187,12 @@ class SemanticPrediction(TaskFile):
             trial['trial_dur'] = trial_dur
             trial['sentence_dur'] = sentence_dur
             trial['sentence'] = stim['sentence'][n]
-            trial['trial_type'] = random.choice([0,1]) 
+            trial['trial_type'] = random.choice([0,1])
             last_word = [stim['wrong_word'][n], stim['right_word'][n]]
             trial['last_word'] = last_word[trial['trial_type']]
             trial['display_trial_feedback'] = True
             trial['start_time'] = t
-            trial['end_time'] = t + trial_dur 
+            trial['end_time'] = t + trial_dur
 
             trial_info.append(trial)
 
@@ -1051,16 +1210,16 @@ class VisualSearch(TaskFile):
         self.name = 'visual_search'
 
     def make_task_file(self,
-                        hand = 'right',  #to recode for alternating hands: put left here, and put 3,4 in responses
-                        responses = [1,2], # 1 = match, 2 = no match
-                        task_dur =  30,
-                        trial_dur = 2,
-                        iti_dur   = 0.5,
-                        easy_prob=0.5,
-                        file_name = None ):
+                       hand = 'right',  #to recode for alternating hands: put left here, and put 3,4 in responses
+                       responses = [1,2], # 1 = match, 2 = no match
+                       task_dur = 30,
+                       trial_dur = 2,
+                       iti_dur   = 0.5,
+                       easy_prob=0.5,
+                       file_name = None ):
         n_trials = int(np.floor(task_dur / (trial_dur+iti_dur)))
         trial_info = []
-        t = 0 
+        t = 0
 
         for n in range(n_trials):
             trial = {}
@@ -1070,15 +1229,15 @@ class VisualSearch(TaskFile):
             trial['hand'] = hand
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
-            trial['display_trial_feedback'] = True 
-            trial['trial_type'] = random.choice([0,1]) 
+            trial['display_trial_feedback'] = True
+            trial['trial_type'] = random.choice([0,1])
             trial['num_stimuli'] = '4' if random.random() < easy_prob else '8'  # Randomly select difficulty
             trial['display_trial_feedback'] = True
             trial['feedback_type'] = 'acc'
             trial['start_time'] = t
             trial['end_time'] = t + trial_dur + iti_dur
 
-             # Determine the number of stimuli to display based on trial difficulty
+            # Determine the number of stimuli to display based on trial difficulty
             num_stimuli = 4 if trial['num_stimuli'] == '4' else 8
 
             trial_info.append(trial)
@@ -1101,16 +1260,16 @@ class RMET(TaskFile):
         self.repeat_stimuli_from_previous_runs = True
 
     def make_task_file(self, hand='right',
-                        responses = [1,2,3,4],
-                        run_number=None,
-                        task_dur=30,
-                        trial_dur=6,
-                        iti_dur=1.5, 
-                        file_name=None,
-                        stim_file = None,
-                        condition=None,
-                        half=None):
-        
+                       responses = [1,2,3,4],
+                       run_number=None,
+                       task_dur=300,
+                       trial_dur=6,
+                       iti_dur=1.5,
+                       file_name=None,
+                       stim_file = None,
+                       condition=None,
+                       half=None):
+
 
         # count number of trials
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
@@ -1134,9 +1293,9 @@ class RMET(TaskFile):
             stim_age = stim[stim['condition'] == 'age']
             # Split each condition into halves
             first_half = zip(stim_emotion.iloc[:len(stim_emotion) // 2].iterrows(),
-                            stim_age.iloc[len(stim_age) // 2:].iterrows())
+                             stim_age.iloc[len(stim_age) // 2:].iterrows())
             second_half = zip(stim_emotion.iloc[len(stim_emotion) // 2:].iterrows(),
-                            stim_age.iloc[:len(stim_age) // 2].iterrows())
+                              stim_age.iloc[:len(stim_age) // 2].iterrows())
             stim = pd.concat([pd.concat([row1[1], row2[1]], axis=1).T for row1, row2 in itertools.chain(first_half, second_half)], ignore_index=True)
 
         if half: # Selects different stimuli for the social and control condition, to enable showing each story only once for each participant
@@ -1151,9 +1310,9 @@ class RMET(TaskFile):
                 stim = stim[stim['half'] != half].iloc[new_start_row:new_end_row + 1].reset_index(drop=True)
             else:
                 raise ValueError('Not enough stimuli for the run')
-        else: 
+        else:
             stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
-    
+
         for n in range(n_trials):
             trial = {}
             trial['key_one'] = responses[0]
@@ -1187,21 +1346,21 @@ class PictureSequence(TaskFile):
         super().__init__(const)
         self.name = 'picture_sequence'
         self.matching_stimuli = False # sequence of pictures are different for different conditions
-        
+
     def generate_sequence(self):
         sequence = random.sample([1, 2, 3, 4], 4)
         return ' '.join(map(str, sequence))
 
     def make_task_file(self,
-                        hand = 'right',
-                        responses = [1,2,3,4], # 1 = Key_one, 2 = Key_two, 3 = Key_three, 4 = Key_four
-                        run_number=None,
-                        task_dur=30,
-                        trial_dur=14,
-                        iti_dur=1,
-                        file_name=None,
-                        stim_file = None,
-                        condition=None):
+                       hand = 'right',
+                       responses = [1,2,3,4], # 1 = Key_one, 2 = Key_two, 3 = Key_three, 4 = Key_four
+                       run_number=None,
+                       task_dur=30,
+                       trial_dur=14,
+                       iti_dur=1,
+                       file_name=None,
+                       stim_file = None,
+                       condition=None):
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
         t = 0
@@ -1253,21 +1412,21 @@ class StorySequence(TaskFile):
         super().__init__(const)
         self.name = 'story_sequence'
         self.matching_stimuli = False # sequence of sentences are different for different conditions
-        
+
     def generate_sequence(self):
         sequence = random.sample([1, 2, 3, 4], 4)
         return ' '.join(map(str, sequence))
 
     def make_task_file(self,
-                        hand = 'right',
-                        responses = [1,2,3,4], # 1 = Key_one, 2 = Key_two, 3 = Key_three, 4 = Key_four
-                        run_number=None,
-                        task_dur=30,
-                        trial_dur=14,
-                        iti_dur=1,
-                        file_name=None,
-                        stim_file = None,
-                        condition=None):
+                       hand = 'right',
+                       responses = [1,2,3,4], # 1 = Key_one, 2 = Key_two, 3 = Key_three, 4 = Key_four
+                       run_number=None,
+                       task_dur=30,
+                       trial_dur=14,
+                       iti_dur=1,
+                       file_name=None,
+                       stim_file = None,
+                       condition=None):
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
         t = 0
@@ -1324,16 +1483,16 @@ class ActionPrediction(TaskFile):
         self.matching_stimuli = False # sequence of pictures are different for different conditions
 
     def make_task_file(self, hand='right',
-                        responses = [1,2],
-                        run_number=None,
-                        task_dur=30,
-                        trial_dur=5,
-                        iti_dur=1, 
-                        question_dur=4,
-                        file_name=None,
-                        stim_file = None,
-                        condition=None):
-        
+                       responses = [1,2],
+                       run_number=None,
+                       task_dur=300,
+                       trial_dur=5,
+                       iti_dur=1,
+                       question_dur=4,
+                       file_name=None,
+                       stim_file = None,
+                       condition=None):
+
 
         # count number of trials
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
@@ -1438,7 +1597,7 @@ class Movie(TaskFile):
             trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
 
         return trial_info
-    
+
 
 class StrangeStories(TaskFile):
     def __init__(self, const):
@@ -1508,7 +1667,7 @@ class StrangeStories(TaskFile):
             trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
 
         return trial_info
-    
+
 
 class FauxPas(TaskFile):
     def __init__(self, const):
@@ -1519,17 +1678,17 @@ class FauxPas(TaskFile):
         self.repeat_stimuli_from_previous_runs = True
 
     def make_task_file(self, hand='right',
-                    responses = [1,2], # 1 = True, 2 = False
-                    run_number=None,
-                    task_dur=30,
-                    trial_dur=14,
-                    iti_dur=1, 
-                    story_dur=10,
-                    question1_dur=4,
-                    file_name=None,
-                    stim_file=None,
-                    condition=None,
-                    half=None):
+                       responses = [1,2], # 1 = True, 2 = False
+                       run_number=None,
+                       task_dur=300,
+                       trial_dur=14,
+                       iti_dur=1,
+                       story_dur=10,
+                       question1_dur=4,
+                       file_name=None,
+                       stim_file=None,
+                       condition=None,
+                       half=None):
 
 
         # count number of trials
@@ -1549,7 +1708,7 @@ class FauxPas(TaskFile):
             stim = stim[stim['condition'] == condition]
         else:
             stim = stim.loc[~stim['condition'].str.contains('practice', na=False)]
-        
+
         if half: # Selects different stimuli for the social and control condition, to enable showing each story only once for each participant
             stim_half = stim[stim['half'] == half]
             if n_trials <= stim_half.iloc[start_row:end_row + 1].shape[0]: # Check if there are enough stimuli for the run
@@ -1562,9 +1721,9 @@ class FauxPas(TaskFile):
                 stim = stim[stim['half'] != half].iloc[new_start_row:new_end_row + 1].reset_index(drop=True)
             else:
                 raise ValueError('Not enough stimuli for the run')
-        else: 
+        else:
             stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
-    
+
         for n in range(n_trials):
             trial = {}
             trial['key_yes'] = responses[0]
@@ -1595,7 +1754,7 @@ class FauxPas(TaskFile):
         if file_name is not None:
             trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
         return trial_info
-    
+
 
 
 class FrithHappe(TaskFile):
@@ -1665,7 +1824,7 @@ class FrithHappe(TaskFile):
             trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
 
         return trial_info
-    
+
 
 
 class Liking(TaskFile):
@@ -1673,7 +1832,7 @@ class Liking(TaskFile):
         super().__init__(const)
         self.name = 'liking'
         self.matching_stimuli = False
-    
+
     def map_to_4point_scale(self, rating):
         """
         Map the liking rating from a 1-to-5 scale to the closest value on a 4-point scale
@@ -1699,12 +1858,12 @@ class Liking(TaskFile):
         # Round to the nearest integer
         return round(mapped_value)
 
-    
+
     def make_task_file(self,
                        hand='right',
                        responses = [1,2],
                        run_number = None,
-                       task_dur=30,
+                       task_dur=300,
                        trial_dur=28,
                        iti_dur=1,
                        question_dur=3,
@@ -1758,24 +1917,24 @@ class Liking(TaskFile):
             trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
 
         return trial_info
-    
+
 class Pong(TaskFile):
     def __init__(self, const):
         super().__init__(const)
         self.name = 'pong'
         self.trajectories =  [
-    (0.3, -0.15), (-0.3, -0.15), (0.1, -0.15), (-0.1, -0.15),
-    (0.4, -0.15), (-0.4, -0.15), (0.6, -0.15), (-0.6, -0.15)
+            (0.3, -0.15), (-0.3, -0.15), (0.1, -0.15), (-0.1, -0.15),
+            (0.4, -0.15), (-0.4, -0.15), (0.6, -0.15), (-0.6, -0.15)
         ]
 
     def make_task_file(self,
-                        hand = 'bimanual',
-                        responses = [3,4], #3 = Key_three, 4 = Key_four
-                        task_dur=30,
-                        trial_dur=3.25,
-                        iti_dur=0.5,
-                        file_name=None,
-                        run_number=None):
+                       hand = 'bimanual',
+                       responses = [3,4], #3 = Key_three, 4 = Key_four
+                       task_dur=30,
+                       trial_dur=3.25,
+                       iti_dur=0.5,
+                       file_name=None,
+                       run_number=None):
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
 
@@ -1817,12 +1976,12 @@ class Affective(TaskFile):
                        file_name=None,
                        run_number=None,
                        hand='left',
-                       responses=[3, 4]):  
+                       responses=[3, 4]):
 
         # check how many trials to include
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         n_pleasant = n_trials // 2
-        n_unpleasant = n_trials - n_pleasant 
+        n_unpleasant = n_trials - n_pleasant
 
         # Randomly sample numbers 1–26 (image name numbers)
         pleasant_nums = random.sample(range(1, 27), n_pleasant)
@@ -1861,3 +2020,5 @@ class Affective(TaskFile):
 
         return trial_info
 
+
+#%%
