@@ -12,7 +12,7 @@ REPO_URL = "https://api.github.com/repos/Barafat2/MTB_task_library/contents/"
 CACHE_DIR = pooch.os_cache("MTB_task_library")
 
 
-def fetch_task_library(version='V1', structures=None):
+def fetch_task_library(version='V1',atlas = 'multiatlasHCP', structures=None):
     """
     Fetch task activation library from zenodo
 
@@ -27,8 +27,8 @@ def fetch_task_library(version='V1', structures=None):
     if GITHUB_TOKEN is None:
         raise ValueError("GITHUB_TOKEN environment variable not set")
 
-    data_file = f"{version}/desc-library{version}_beta.dscalar.nii"
-    info_file = f"{version}/desc-library{version}_info.tsv"
+    data_file = f"{version}/desc-tasklibrary_space-{atlas}_{version}.dscalar.nii"
+    info_file = f"{version}/desc-tasklibrary_{version}_info.tsv"
 
     downloader = pooch.HTTPDownloader(
         headers={"Authorization": f"token {GITHUB_TOKEN}",
@@ -77,16 +77,24 @@ def load_library(data_path, info_path, structures=None):
     # Filter by structures if specified (CIFTI files only)
     if structures is not None:
         brain_models = img.header.get_axis(1)
+        
+        # Convert simple names to CIFTI structure names
+        cifti_structures = []
+        for s in structures:
+            cifti_name = nb.cifti2.CIFTI_BRAIN_STRUCTURES.get(s.upper(), s)
+            cifti_structures.append(cifti_name)
+        
         indices = []
         for bm in brain_models.iter_structures():
             struct_name, _, idx = bm
-            if struct_name in structures:
+            if struct_name in cifti_structures:
                 indices.extend(range(idx.start, idx.stop))
         if not indices:
-            raise ValueError(f"No matching structures found. Available: {[bm[0] for bm in brain_models.iter_structures()]}")
+            available = [bm[0] for bm in brain_models.iter_structures()]
+            raise ValueError(f"No matching structures found. Available: {available}")
         library_data = library_data[:, indices]
-
-    print(f"Loaded {library_data.shape[0]} conditions, {library_data.shape[1]} measurement channels")
+    
+    print(f"Loaded {library_data.shape[0]} conditions, {library_data.shape[1]} greyordinates")
     return library_data, library_info
 
 
@@ -137,7 +145,9 @@ def evaluate_battery(library_data, library_info, battery_full_codes):
     return _compute_nit(G)
 
 
-def get_top_batteries(library_data, library_info, n_samples, battery_size=8, n_top_batteries=10, forced_tasks=None):
+def get_top_batteries(library_data, library_info, n_samples,
+                    battery_size=8, n_top_batteries=10, forced_tasks=None,
+                    verbose=True):
     """
     Random search over task combinations to find highest NIT.
 
@@ -172,7 +182,8 @@ def get_top_batteries(library_data, library_info, n_samples, battery_size=8, n_t
     top_results = []
     min_nit = float('-inf')
 
-    print(f"Starting computation... (forced: {n_forced}, random: {n_random})")
+    if verbose:
+        print(f"Starting computation... (forced: {n_forced}, random: {n_random})")
     start_time = time()
 
     for i in range(n_samples):
@@ -195,11 +206,12 @@ def get_top_batteries(library_data, library_info, n_samples, battery_size=8, n_t
             top_results.sort()
             min_nit = top_results[0][0]
 
-        # Progress updates every 10%
-        if (i + 1) % (n_samples // 10) == 0:
-            elapsed = time() - start_time
-            print(f"Processed {i + 1:,} / {n_samples:,} ({100 * (i + 1) / n_samples:.0f}%) | "
-                  f"Rate: {(i + 1) / elapsed:.0f}/s")
+        if verbose:
+            # Progress updates every 10%
+            if (i + 1) % (n_samples // 10) == 0:
+                elapsed = time() - start_time
+                print(f"Processed {i + 1:,} / {n_samples:,} ({100 * (i + 1) / n_samples:.0f}%) | "
+                    f"Rate: {(i + 1) / elapsed:.0f}/s")
 
     # Sort results by NIT descending
     top_results.sort(reverse=True)
