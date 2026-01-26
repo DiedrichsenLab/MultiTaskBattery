@@ -1861,3 +1861,160 @@ class Affective(TaskFile):
 
         return trial_info
 
+
+class FingerRhythmic(TaskFile):
+    def __init__(self, const):
+        super().__init__(const)
+        self.name = 'finger_rhythmic'
+
+    def make_task_file(self,
+                       hand='right',
+                       responses=[1],
+                       run_number= None,
+                       task_dur = 70,
+                       trial_dur=35, # 2 sec trial start text, 27.95 sec tone train, ~5 sec buffer
+                       iti_dur=0,
+                       file_name=None):
+
+        # count number of trials
+        n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
+        trial_info = []
+        t = 0
+
+        for n in range(n_trials):
+            trial = {}
+            trial['key_one'] = responses[0]
+            trial['trial_num'] = n
+            trial['hand'] = hand
+            trial['trial_dur'] = trial_dur
+            trial['iti_dur'] = iti_dur
+            trial['stim'] = 'generated'
+            trial['display_trial_feedback'] = False
+            trial['start_time'] = t
+            trial['end_time'] = t + trial_dur + iti_dur
+            trial_info.append(trial)
+            # Update for next trial:
+            t = trial['end_time']
+
+        trial_info = pd.DataFrame(trial_info)
+        if file_name is not None:
+            ut.dircheck(self.task_dir / self.name)
+            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
+
+        return trial_info
+
+class TimePerception(TaskFile):
+    def __init__(self, const):
+        super().__init__(const)
+        self.name = 'time_perception'  # folder: stimuli/perception/, tasks/perception/
+
+    def make_task_file(self,
+                       modality='time',          # 'time' or 'volume'
+                       responses=[1, 2],         # code 1 = left option, 2 = right option
+                       n_trials= 30,              # must be even
+                       trial_dur=4,            # tone + question window duration
+                       iti_dur=1.0,
+                       question_dur=2.0,
+                       display_feedback= True,
+                       run_number=None,
+                       file_name=None,
+                       **unused):
+
+        # sides per modality
+        if modality == 'time':
+            left_label, right_label = 'shorter', 'longer'
+        elif modality == 'volume':
+            left_label, right_label = 'quieter', 'louder'
+
+        sides = [left_label] * (n_trials // 2) + [right_label] * (n_trials // 2)
+        np.random.default_rng(run_number).shuffle(sides)
+
+        rows, t = [], 0.0
+        for i, side in enumerate(sides):
+            rows.append(dict(
+                trial_num=i,
+                modality=modality,                   # drives Task branching
+                side=side,                           # shorter/longer or softer/louder
+                key_one=int(responses[0]),           # instruction mapping only
+                key_two=int(responses[1]),
+                trial_type=1 if side in (left_label,) else 2,  # correct code
+                question_dur=float(question_dur),
+                trial_dur=float(trial_dur),
+                iti_dur=float(iti_dur),
+                display_trial_feedback= display_feedback,
+
+                # runtime logs (filled in Task)
+                comparison_ms=np.nan,
+                comparison_dba=np.nan,
+
+                start_time=float(t),
+                end_time=float(t + trial_dur + iti_dur),
+            ))
+            t = rows[-1]['end_time']
+
+        df = pd.DataFrame(rows)
+        if file_name:
+            ut.dircheck(self.task_dir / self.name)
+            df.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
+        return df
+
+class SensMotControl(TaskFile):
+    def __init__(self, const):
+        super().__init__(const)
+        self.name = 'sensmot_control'
+
+    def make_task_file(self,
+                       hand='right',
+                       responses=[1, 2],
+                       run_number=None,
+                       task_dur=300,
+                       trial_dur=3,
+                       question_dur=2,
+                       iti_dur= 1,
+                       file_name=None,
+                       stim_file = None,
+                       condition=None):
+
+        # count number of trials
+        n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
+        trial_info = []
+        t = 0
+
+        if stim_file:
+            stim = pd.read_csv(self.stim_dir / self.name / stim_file, sep='\t')
+        else:
+            stim = pd.read_csv(self.stim_dir / self.name / f'{self.name}_block1.csv', sep='\t')
+
+        if condition:
+            stim = stim[stim['condition'] == condition]
+        else:
+            stim = stim.loc[~stim['condition'].str.contains('practice', na=False)]
+
+        start_row = (run_number - 1) * n_trials
+        end_row = run_number * n_trials - 1
+        stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
+
+        for n in range(n_trials):
+            trial = {}
+            trial['key_one'] = responses[0]
+            trial['key_two'] = responses[1]
+            trial['trial_num'] = n
+            trial['hand'] = hand
+            trial['trial_dur'] = trial_dur
+            trial['question_dur'] = question_dur
+            trial['iti_dur'] = iti_dur
+            trial['trial_type'] = stim['corr_resp'][n]
+            trial['stim'] = stim['color'][n]
+            trial['condition'] = stim['condition'][n]
+            trial['display_trial_feedback'] = True
+            trial['start_time'] = t
+            trial['end_time'] = t + trial_dur + iti_dur
+            trial_info.append(trial)
+
+            # Update for next trial:
+            t = trial['end_time']
+
+        trial_info = pd.DataFrame(trial_info)
+        if file_name is not None:
+            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
+        return trial_info
