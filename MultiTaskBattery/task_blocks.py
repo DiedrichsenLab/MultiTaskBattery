@@ -452,6 +452,9 @@ class FingerRhythmic(Task):
         ioi = 0.65
         expected = [(t_first - t0) + i*ioi for i in range(12)]  # expected, aligned to first tone
 
+        # Track beep times for timing verification (quiet by default)
+        beep_times = [t_first]
+
         taps_rel = []
 
         # --- Remaining 11 tones by absolute TTL deadlines; collect keys in-between
@@ -463,6 +466,8 @@ class FingerRhythmic(Task):
                     # Create a new Sound object for each beep to ensure it plays
                     beep = sound.Sound(value=1000, secs=0.05, sampleRate=48000, stereo=True)
                     beep.play()
+                    beep_time = clk.getTime()
+                    beep_times.append(beep_time)
                     break
                 res = event.waitKeys(maxWait=deadline - now,
                                      keyList=self.const.response_keys,
