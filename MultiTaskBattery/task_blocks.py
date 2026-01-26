@@ -500,6 +500,9 @@ class FingerRhythmic(Task):
         trial['iris_ms_json']        = json.dumps((isis * 1000.0).tolist())
         trial['expected_rel_s_json'] = json.dumps([e for e in expected])  # seconds rel to t0
         trial['tap_rel_s_json']      = json.dumps(taps_rel)
+        # Save beep times relative to trial start (t0)
+        beep_times_rel = [bt - t0 for bt in beep_times]
+        trial['beep_times_rel_s_json'] = json.dumps(beep_times_rel)
 
         return trial
 
