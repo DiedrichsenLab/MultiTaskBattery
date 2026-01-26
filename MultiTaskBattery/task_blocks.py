@@ -445,9 +445,8 @@ class FingerRhythmic(Task):
         clk = self.ttl_clock.clock
         t0 = clk.getTime()                    # trial anchor (TTL)
 
-        beep = sound.Sound(value=1000, secs=0.05, sampleRate=48000, stereo=True)
-
         # --- Play FIRST tone now, then use THIS time as the grid anchor
+        beep = sound.Sound(value=1000, secs=0.05, sampleRate=48000, stereo=True)
         beep.play()
         t_first = clk.getTime()               # when we triggered the first tone (TTL)
         ioi = 0.65
@@ -461,6 +460,8 @@ class FingerRhythmic(Task):
             while True:
                 now = clk.getTime()
                 if now >= deadline:
+                    # Create a new Sound object for each beep to ensure it plays
+                    beep = sound.Sound(value=1000, secs=0.05, sampleRate=48000, stereo=True)
                     beep.play()
                     break
                 res = event.waitKeys(maxWait=deadline - now,
