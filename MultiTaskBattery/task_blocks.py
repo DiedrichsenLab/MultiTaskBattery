@@ -449,7 +449,8 @@ class FingerRhythmic(Task):
         beep = sound.Sound(value=1000, secs=0.05, sampleRate=48000, stereo=True)
         beep.play()
         t_first = clk.getTime()               # when we triggered the first tone (TTL)
-        ioi = 0.65  # Inter-onset interval: 0.65s between beep starts (650ms)
+        # Get IOI from trial data (default: 0.6s = 600ms if not specified)
+        ioi = float(trial.get('ioi', 0.6))  # Inter-onset interval in seconds between beep starts
         expected = [(t_first - t0) + i*ioi for i in range(12)]  # expected, aligned to first tone
 
         # Track beep times for timing verification (quiet by default)
