@@ -1874,12 +1874,19 @@ class FingerRhythmic(TaskFile):
                        task_dur = 70,
                        trial_dur=35, # 2 sec trial start text, 27.95 sec tone train, ~5 sec buffer
                        iti_dur=0,
+                       ioi=0.6,  # Inter-onset interval in seconds (default: 600ms). Can be single value or list for different pace levels
                        file_name=None):
 
         # count number of trials
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
         t = 0
+
+        # Handle ioi as single value or list
+        if isinstance(ioi, (list, np.ndarray)):
+            ioi_list = list(ioi)
+        else:
+            ioi_list = [ioi] * n_trials  # Repeat single value for all trials
 
         for n in range(n_trials):
             trial = {}
@@ -1888,6 +1895,7 @@ class FingerRhythmic(TaskFile):
             trial['hand'] = hand
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
+            trial['ioi'] = ioi_list[n % len(ioi_list)]  # Cycle through ioi list if shorter than n_trials
             trial['stim'] = 'generated'
             trial['display_trial_feedback'] = False
             trial['start_time'] = t
