@@ -1442,6 +1442,11 @@ class SemanticPrediction(Task):
 
         event.clearEvents()
 
+        # Fixation cross
+        self.screen.fixation_cross()
+        self.ttl_clock.wait_until(self.ttl_clock.get_time() + 0.5)
+        event.clearEvents()
+        
         # Display last word
         last_word_stim = visual.TextStim(self.window, text=trial['last_word'], pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height= height_word, wrapWidth=30)
         last_word_stim.draw()
