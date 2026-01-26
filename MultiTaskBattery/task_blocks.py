@@ -445,7 +445,7 @@ class FingerRhythmic(Task):
         clk = self.ttl_clock.clock
         t0 = clk.getTime()                    # trial anchor (TTL)
 
-        beep = sound.Sound(1000, secs=0.05)
+        beep = sound.Sound(value=1000, secs=0.05, sampleRate=48000, stereo=True)
 
         # --- Play FIRST tone now, then use THIS time as the grid anchor
         beep.play()
