@@ -1885,8 +1885,12 @@ class FingerRhythmic(TaskFile):
         # Handle ioi as single value or list
         if isinstance(ioi, (list, np.ndarray)):
             ioi_list = list(ioi)
+            # Expand to cover all trials by repeating the list
+            ioi_list_expanded = (ioi_list * ((n_trials // len(ioi_list)) + 1))[:n_trials]
+            # Randomize the order
+            random.shuffle(ioi_list_expanded)
         else:
-            ioi_list = [ioi] * n_trials  # Repeat single value for all trials
+            ioi_list_expanded = [ioi] * n_trials  # Repeat single value for all trials
 
         for n in range(n_trials):
             trial = {}
@@ -1895,7 +1899,7 @@ class FingerRhythmic(TaskFile):
             trial['hand'] = hand
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
-            trial['ioi'] = ioi_list[n % len(ioi_list)]  # Cycle through ioi list if shorter than n_trials
+            trial['ioi'] = ioi_list_expanded[n]  # Use randomized IOI assignment
             trial['stim'] = 'generated'
             trial['display_trial_feedback'] = False
             trial['start_time'] = t
