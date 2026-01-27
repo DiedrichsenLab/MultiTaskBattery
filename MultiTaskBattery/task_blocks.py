@@ -503,6 +503,13 @@ class FingerRhythmic(Task):
 
         self.screen.fixation_cross()
         event.clearEvents()
+        
+        # Brief pause to show fixation cross and let participants get ready
+        # Add random jitter (0.2-0.4s) to prevent expectation of tone onset
+        jitter = random.uniform(0.2, 0.4)
+        wait_time = 0.5 + jitter
+        self.ttl_clock.wait_until(self.ttl_clock.get_time() + wait_time)
+        
         clk = self.ttl_clock.clock
         t0 = clk.getTime()                    # trial anchor (TTL)
         
