@@ -433,7 +433,7 @@ class FingerRhythmic(Task):
         self.window.flip()
 
     
-    def make_pulse_train(ioi, n_pulses, tone_freq=1000, tone_dur=0.05, sample_rate=48000, amplitude=0.6):
+    def make_pulse_train(self, ioi, n_pulses, tone_freq=1000, tone_dur=0.05, sample_rate=48000, amplitude=0.6):
         """
         Generate a sample-accurate pulse train waveform.
         
