@@ -411,6 +411,7 @@ class AuditoryNarrative(Task):
 
         return trial
 
+
 class FingerRhythmic(Task):
     def __init__(self, info, screen, ttl_clock, const, subj_id):
         super().__init__(info, screen, ttl_clock, const, subj_id)
@@ -431,6 +432,66 @@ class FingerRhythmic(Task):
         instr_visual.draw()
         self.window.flip()
 
+    
+    def make_pulse_train(ioi, n_pulses, tone_freq=1000, tone_dur=0.05, sample_rate=48000, amplitude=0.6):
+        """
+        Generate a sample-accurate pulse train waveform.
+        
+        This creates a single continuous audio buffer with precisely timed beeps,
+        eliminating OS scheduling jitter from repeated play() calls.
+        
+        Args:
+            ioi: Inter-onset interval in seconds
+            n_pulses: Number of beeps
+            tone_freq: Frequency of each beep in Hz
+            tone_dur: Duration of each beep in seconds
+            sample_rate: Audio sample rate
+            amplitude: Amplitude (0-1)
+        
+        Returns:
+            waveform_stereo: numpy array of shape (n_samples, 2) for stereo
+            sample_rate: sample rate (same as input)
+            total_dur: total duration in seconds
+        """
+        # Calculate number of samples for each component
+        samples_per_tone = int(tone_dur * sample_rate)
+        samples_per_ioi = int(ioi * sample_rate)
+        
+        # Total duration: (n_pulses - 1) * ioi + tone_dur
+        total_samples = (n_pulses - 1) * samples_per_ioi + samples_per_tone
+        
+        # Initialize waveform
+        waveform = np.zeros(total_samples)
+        
+        # Generate each beep at precise sample positions
+        for i in range(n_pulses):
+            # Start sample for this beep
+            start_sample = i * samples_per_ioi
+            
+            # Generate tone (sine wave)
+            t = np.linspace(0, tone_dur, samples_per_tone, False)
+            tone = amplitude * np.sin(2 * np.pi * tone_freq * t)
+            
+            # Apply envelope to avoid clicks (simple fade in/out)
+            fade_samples = int(0.001 * sample_rate)  # 1ms fade
+            if fade_samples > 0 and samples_per_tone > fade_samples * 2:
+                fade_in = np.linspace(0, 1, fade_samples)
+                fade_out = np.linspace(1, 0, fade_samples)
+                tone[:fade_samples] *= fade_in
+                tone[-fade_samples:] *= fade_out
+            
+            # Place tone in waveform
+            end_sample = start_sample + samples_per_tone
+            if end_sample <= total_samples:
+                waveform[start_sample:end_sample] = tone
+        
+        # Convert to stereo (duplicate mono to both channels)
+        waveform_stereo = np.column_stack([waveform, waveform])
+        
+        total_dur = total_samples / sample_rate
+        
+        return waveform_stereo, sample_rate, total_dur
+
     def run_trial(self, trial):
         """ Runs a single trial of the Finger Rhythmic task """
 
@@ -448,54 +509,53 @@ class FingerRhythmic(Task):
         # Get IOI from trial data (default: 0.6s = 600ms if not specified)
         ioi = float(trial.get('ioi', 0.6))  # Inter-onset interval in seconds between beep starts
         
-        # CRITICAL: Pre-create all Sound objects BEFORE timing loop to reduce latency
-        # Creating Sound objects inside the loop adds unpredictable delays (5-20ms)
-        # This is one of the main sources of timing jitter
-        beeps = [sound.Sound(value=1000, secs=0.05, sampleRate=48000, stereo=True) for _ in range(12)]
+        # ===============================
+        # PRECISE AUDIO GENERATION BLOCK
+        # ===============================
+        # Generate single waveform with sample-accurate timing
+        # This eliminates OS scheduling jitter from repeated play() calls
         
-        # Note: PsychoPy's sounddevice backend may still have OS-level scheduling jitter
-        # For sub-5ms precision, consider:
-        # 1. Using a dedicated audio interface with low-latency drivers
-        # 2. Running on a real-time OS or with higher process priority
-        # 3. Using hardware-timed audio playback if available
-
-        # --- Play FIRST tone now, then use THIS time as the grid anchor
-        beeps[0].play()
-        t_first = clk.getTime()               # when we triggered the first tone (TTL)
-        expected = [(t_first - t0) + i*ioi for i in range(12)]  # expected, aligned to first tone
-
-        # Track beep times for timing verification (quiet by default)
-        beep_times = [t_first]
-
+        n_pulses = 12
+        tone_freq = 1000
+        tone_dur = 0.05
+        sample_rate = 48000
+        amplitude = 0.6
+        
+        # Build single waveform with sample-accurate timing
+        waveform_stereo, sr, total_dur = self.make_pulse_train(
+            ioi=ioi,
+            n_pulses=n_pulses,
+            tone_freq=tone_freq,
+            tone_dur=tone_dur,
+            sample_rate=sample_rate,
+            amplitude=amplitude
+        )
+        
+        # Create PsychoPy sound object ONCE
+        stim = sound.Sound(
+            waveform_stereo,
+            sampleRate=sr,
+            stereo=True
+        )
+        
+        # Play ONCE and anchor timing here
+        stim.play()
+        t_first = clk.getTime()   # anchor time for first tone (TTL clock)
+        
+        # Expected beep times relative to trial start (sample-accurate)
+        beep_times_rel = [(t_first - t0) + i * ioi for i in range(n_pulses)]
+        
         taps_rel = []
-
-        # --- Remaining 11 tones by absolute TTL deadlines; collect keys in-between
-        # IMPROVED: Use more precise timing with minimal polling
-        for i in range(1, 12):
-            deadline = t_first + i*ioi
-            
-            # Check for keys while waiting, but prioritize precise timing
-            # Use tight polling loop with minimal overhead
-            while True:
-                now = clk.getTime()
-                if now >= deadline:
-                    break
-                
-                # Non-blocking key check (very fast)
-                res = event.getKeys(keyList=self.const.response_keys, timeStamped=clk)
-                if res:
-                    for _, ts in res:
-                        taps_rel.append(ts - t0)
-                
-                # Very short sleep to prevent CPU spinning, but allow OS scheduling
-                # Use hogCPUperiod to minimize sleep overhead
-                if deadline - now > 0.002:  # Only sleep if > 2ms remaining
-                    core.wait(0.0005, hogCPUperiod=0.0005)  # 0.5ms sleep
-            
-            # Play pre-created beep (minimal latency since it's pre-buffered)
-            beeps[i].play()
-            beep_time = clk.getTime()
-            beep_times.append(beep_time)
+        
+        # Collect taps DURING paced tones
+        t_end_paced = t_first + (n_pulses - 1) * ioi + tone_dur
+        
+        while clk.getTime() < t_end_paced:
+            res = event.getKeys(keyList=self.const.response_keys, timeStamped=clk)
+            if res:
+                for _, ts in res:
+                    taps_rel.append(ts - t0)
+            core.wait(0.0005, hogCPUperiod=0.0005)
 
         # --- Silent phase: collect until absolute end_time
         # NOTE: We continue logging raw tap timestamps here, but defer all
@@ -514,12 +574,14 @@ class FingerRhythmic(Task):
                     taps_rel.append(ts - t0)
 
 
+        # ------------------------------------------------------------------
+        # Store only RAW timestamps; all processing happens offline.
+        # ------------------------------------------------------------------
         #  - taps_rel:       all tap times, relative to trial start t0 (seconds)
         #  - beep_times_rel: all beep onset times, relative to trial start t0 (seconds)
+        #                    These are expected times based on sample-accurate waveform
         #  - ioi:            nominal inter‑onset interval (seconds) is in trial['ioi']
         trial['tap_rel_s_json'] = json.dumps(taps_rel)
-
-        beep_times_rel = [bt - t0 for bt in beep_times]
         trial['beep_times_rel_s_json'] = json.dumps(beep_times_rel)
 
         return trial
