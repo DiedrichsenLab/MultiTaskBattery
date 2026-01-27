@@ -513,18 +513,10 @@ class FingerRhythmic(Task):
                 for _, ts in res:
                     taps_rel.append(ts - t0)
 
-        # ------------------------------------------------------------------
-        # Store only RAW timestamps; all processing happens offline.
-        # ------------------------------------------------------------------
+
         #  - taps_rel:       all tap times, relative to trial start t0 (seconds)
         #  - beep_times_rel: all beep onset times, relative to trial start t0 (seconds)
         #  - ioi:            nominal inter‑onset interval (seconds) is in trial['ioi']
-        #
-        # An offline script can reconstruct:
-        #  - self‑paced IRIs (e.g. taps after last beep, with 300–900 ms window)
-        #  - clock vs motor variance (Wing–Kristofferson)
-        #  - any exclusion / trimming rules
-        # without touching timing‑critical task code.
         trial['tap_rel_s_json'] = json.dumps(taps_rel)
 
         beep_times_rel = [bt - t0 for bt in beep_times]
