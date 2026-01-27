@@ -444,13 +444,24 @@ class FingerRhythmic(Task):
         event.clearEvents()
         clk = self.ttl_clock.clock
         t0 = clk.getTime()                    # trial anchor (TTL)
-
-        # --- Play FIRST tone now, then use THIS time as the grid anchor
-        beep = sound.Sound(value=1000, secs=0.05, sampleRate=48000, stereo=True)
-        beep.play()
-        t_first = clk.getTime()               # when we triggered the first tone (TTL)
+        
         # Get IOI from trial data (default: 0.6s = 600ms if not specified)
         ioi = float(trial.get('ioi', 0.6))  # Inter-onset interval in seconds between beep starts
+        
+        # CRITICAL: Pre-create all Sound objects BEFORE timing loop to reduce latency
+        # Creating Sound objects inside the loop adds unpredictable delays (5-20ms)
+        # This is one of the main sources of timing jitter
+        beeps = [sound.Sound(value=1000, secs=0.05, sampleRate=48000, stereo=True) for _ in range(12)]
+        
+        # Note: PsychoPy's sounddevice backend may still have OS-level scheduling jitter
+        # For sub-5ms precision, consider:
+        # 1. Using a dedicated audio interface with low-latency drivers
+        # 2. Running on a real-time OS or with higher process priority
+        # 3. Using hardware-timed audio playback if available
+
+        # --- Play FIRST tone now, then use THIS time as the grid anchor
+        beeps[0].play()
+        t_first = clk.getTime()               # when we triggered the first tone (TTL)
         expected = [(t_first - t0) + i*ioi for i in range(12)]  # expected, aligned to first tone
 
         # Track beep times for timing verification (quiet by default)
@@ -459,25 +470,37 @@ class FingerRhythmic(Task):
         taps_rel = []
 
         # --- Remaining 11 tones by absolute TTL deadlines; collect keys in-between
+        # IMPROVED: Use more precise timing with minimal polling
         for i in range(1, 12):
             deadline = t_first + i*ioi
+            
+            # Check for keys while waiting, but prioritize precise timing
+            # Use tight polling loop with minimal overhead
             while True:
                 now = clk.getTime()
                 if now >= deadline:
-                    # Create a new Sound object for each beep to ensure it plays
-                    beep = sound.Sound(value=1000, secs=0.05, sampleRate=48000, stereo=True)
-                    beep.play()
-                    beep_time = clk.getTime()
-                    beep_times.append(beep_time)
                     break
-                res = event.waitKeys(maxWait=deadline - now,
-                                     keyList=self.const.response_keys,
-                                     timeStamped=clk)
+                
+                # Non-blocking key check (very fast)
+                res = event.getKeys(keyList=self.const.response_keys, timeStamped=clk)
                 if res:
                     for _, ts in res:
                         taps_rel.append(ts - t0)
+                
+                # Very short sleep to prevent CPU spinning, but allow OS scheduling
+                # Use hogCPUperiod to minimize sleep overhead
+                if deadline - now > 0.002:  # Only sleep if > 2ms remaining
+                    core.wait(0.0005, hogCPUperiod=0.0005)  # 0.5ms sleep
+            
+            # Play pre-created beep (minimal latency since it's pre-buffered)
+            beeps[i].play()
+            beep_time = clk.getTime()
+            beep_times.append(beep_time)
 
         # --- Silent phase: collect until absolute end_time
+        # NOTE: We continue logging raw tap timestamps here, but defer all
+        #       higher‑order processing (IRIs, inclusion criteria, WK model)
+        #       to an offline analysis script.
         end_abs = float(trial['end_time'])
         while True:
             now = clk.getTime()
@@ -490,18 +513,20 @@ class FingerRhythmic(Task):
                 for _, ts in res:
                     taps_rel.append(ts - t0)
 
-        # --- Self-paced ISIs only (strictly after last tone onset)
-        last_tone_t = expected[-1]            # relative to t0
-        self_taps = [t for t in taps_rel if t > last_tone_t]
-        isis = np.diff(self_taps) if len(self_taps) > 1 else np.array([], float)
-        isis = isis[(isis >= 0.300) & (isis <= 0.900)]
+        # ------------------------------------------------------------------
+        # Store only RAW timestamps; all processing happens offline.
+        # ------------------------------------------------------------------
+        #  - taps_rel:       all tap times, relative to trial start t0 (seconds)
+        #  - beep_times_rel: all beep onset times, relative to trial start t0 (seconds)
+        #  - ioi:            nominal inter‑onset interval (seconds) is in trial['ioi']
+        #
+        # An offline script can reconstruct:
+        #  - self‑paced IRIs (e.g. taps after last beep, with 300–900 ms window)
+        #  - clock vs motor variance (Wing–Kristofferson)
+        #  - any exclusion / trimming rules
+        # without touching timing‑critical task code.
+        trial['tap_rel_s_json'] = json.dumps(taps_rel)
 
-        trial['iri_ms_mean']         = float(np.mean(isis) * 1000.0) if isis.size else np.nan
-        trial['iri_ms_sd']           = float(np.std(isis)  * 1000.0) if isis.size else np.nan
-        trial['iris_ms_json']        = json.dumps((isis * 1000.0).tolist())
-        trial['expected_rel_s_json'] = json.dumps([e for e in expected])  # seconds rel to t0
-        trial['tap_rel_s_json']      = json.dumps(taps_rel)
-        # Save beep times relative to trial start (t0)
         beep_times_rel = [bt - t0 for bt in beep_times]
         trial['beep_times_rel_s_json'] = json.dumps(beep_times_rel)
 
