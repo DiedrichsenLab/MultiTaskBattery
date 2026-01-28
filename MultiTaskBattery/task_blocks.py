@@ -1,4 +1,3 @@
-#%%
 # Task Class definitions
 # March 2021: First version: Ladan Shahshahani  - Maedbh King - Suzanne Witt,
 # Revised 2023: Bassel Arafat, Jorn Diedrichsen, Incé Husain
@@ -8,6 +7,8 @@ from pathlib import Path
 import pandas as pd
 import numpy as np
 import random
+from psychopy import prefs
+prefs.hardware['audioLib'] = ['sounddevice']
 from psychopy import visual, sound, core, event
 from pyglet.window import key
 import MultiTaskBattery.utils as ut
@@ -17,6 +18,7 @@ from moviepy.audio.io.AudioFileClip import AudioFileClip
 import gc
 import math
 import json
+
 
 
 class Task:
@@ -69,7 +71,7 @@ class Task:
         # instr.size = 0.8
         instr_visual.draw()
         self.window.flip()
-
+    
     def run(self):
         """Loop over trials and collects data
         Data will be stored in self.trial_data
@@ -96,37 +98,37 @@ class Task:
         if self.feedback_type[-2:] == 'rt':
             rt = self.trial_data['rt'].mean()
         return acc,rt
-
+    
 
     def show_progress(self, seconds_left, show_last_seconds=5, height=1, width=10, x_pos=-5, y_pos=8):
         """ Displays a progress bar for the Picture Sequence task
    Args:
-        seconds_left (float):
-            The number of seconds remaining in the current trial.
+        seconds_left (float): 
+            The number of seconds remaining in the current trial. 
             If this value is greater than `show_last_seconds`, the progress bar is not shown.
 
-        show_last_seconds (float, optional):
-            The duration (in seconds) over which to display the progress bar at the end of a trial.
+        show_last_seconds (float, optional): 
+            The duration (in seconds) over which to display the progress bar at the end of a trial. 
             Default is 5 seconds. When `seconds_left` is less than this value, the progress bar appears.
 
-        height (float, optional):
+        height (float, optional): 
             The vertical size of the progress bar in PsychoPy window units. Default is 1.
 
-        width (float, optional):
+        width (float, optional): 
             The horizontal size of the progress bar in PsychoPy window units. Default is 10.
 
-        x_pos (float, optional):
-            The horizontal position of the center of the progress bar in window coordinates.
+        x_pos (float, optional): 
+            The horizontal position of the center of the progress bar in window coordinates. 
             Negative values move it leftward. Default is -5.
 
-        y_pos (float, optional):
-            The vertical position of the center of the progress bar in window coordinates.
+        y_pos (float, optional): 
+            The vertical position of the center of the progress bar in window coordinates. 
             Positive values move it upward. Default is 8.
         """
         # If we are in the last five seconds of the trial, display the remaining time
         if seconds_left < show_last_seconds:
             progress = visual.Progress(
-                win=self.window,
+                win=self.window, 
                 progress=1-(seconds_left/show_last_seconds),
                 size=(width, height),
                 pos=(x_pos, y_pos),
@@ -157,8 +159,8 @@ class Task:
                 current_stimuli.draw()
                 seconds_left = max_wait_time - (self.ttl_clock.get_time() - start_time)
                 self.show_progress(seconds_left,
-                                   show_last_seconds=show_last_seconds,
-                                   y_pos=6)
+                                show_last_seconds=show_last_seconds,
+                                y_pos=6)
                 self.window.flip()
             keys=event.getKeys(keyList= self.const.response_keys, timeStamped=self.ttl_clock.clock)
             if len(keys)>0:
@@ -201,7 +203,7 @@ class Task:
         """ Checks for quit or escape key presses and quits the experiment if necessary """
         keys = event.getKeys()
         for key in keys:
-            if 'q' and 'esc' in key:
+            if 'q' in key or 'esc' in key:
                 self.window.close()
                 core.quit()
 
@@ -305,6 +307,7 @@ class VerbGeneration(Task):
         trial_info_file = self.const.task_dir / self.name / self.task_file
         self.trial_info = pd.read_csv(trial_info_file, sep='\t')
         self.trial_info['noun'] = self.trial_info['stim'].str.strip()
+        self.trial_counter = 0
 
     def display_instructions(self): # overriding the display instruction from the parent class
 
@@ -331,9 +334,11 @@ class VerbGeneration(Task):
         # Display word
         self.show_stim(trial['noun'])
 
-        # display GENERATE instruction at the halfway point (jorn check this plz, this replaces word 7 with generate)
-        if trial.name == len(self.trial_info) // 2:
+        # display GENERATE instruction at the halfway point
+        if self.trial_counter == len(self.trial_info) // 2:
             self.display_generate_instruction()
+
+        self.trial_counter += 1
 
         # wait for trial duration
         self.ttl_clock.wait_until(self.ttl_clock.get_time() + trial['trial_dur'])
@@ -406,9 +411,13 @@ class AuditoryNarrative(Task):
 
         return trial
 
+
 class FingerRhythmic(Task):
     def __init__(self, info, screen, ttl_clock, const, subj_id):
         super().__init__(info, screen, ttl_clock, const, subj_id)
+        # Use accuracy-based feedback at the run level
+        # (scoreboard shows proportion of successful trials)
+        self.feedback_type = 'acc'
 
     def init_task(self):
         self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
@@ -426,6 +435,66 @@ class FingerRhythmic(Task):
         instr_visual.draw()
         self.window.flip()
 
+    
+    def make_pulse_train(self, ioi, n_pulses, tone_freq=1000, tone_dur=0.05, sample_rate=48000, amplitude=0.6):
+        """
+        Generate a sample-accurate pulse train waveform.
+        
+        This creates a single continuous audio buffer with precisely timed beeps,
+        eliminating OS scheduling jitter from repeated play() calls.
+        
+        Args:
+            ioi: Inter-onset interval in seconds
+            n_pulses: Number of beeps
+            tone_freq: Frequency of each beep in Hz
+            tone_dur: Duration of each beep in seconds
+            sample_rate: Audio sample rate
+            amplitude: Amplitude (0-1)
+        
+        Returns:
+            waveform_stereo: numpy array of shape (n_samples, 2) for stereo
+            sample_rate: sample rate (same as input)
+            total_dur: total duration in seconds
+        """
+        # Calculate number of samples for each component
+        samples_per_tone = int(tone_dur * sample_rate)
+        samples_per_ioi = int(ioi * sample_rate)
+        
+        # Total duration: (n_pulses - 1) * ioi + tone_dur
+        total_samples = (n_pulses - 1) * samples_per_ioi + samples_per_tone
+        
+        # Initialize waveform
+        waveform = np.zeros(total_samples)
+        
+        # Generate each beep at precise sample positions
+        for i in range(n_pulses):
+            # Start sample for this beep
+            start_sample = i * samples_per_ioi
+            
+            # Generate tone (sine wave)
+            t = np.linspace(0, tone_dur, samples_per_tone, False)
+            tone = amplitude * np.sin(2 * np.pi * tone_freq * t)
+            
+            # Apply envelope to avoid clicks (simple fade in/out)
+            fade_samples = int(0.001 * sample_rate)  # 1ms fade
+            if fade_samples > 0 and samples_per_tone > fade_samples * 2:
+                fade_in = np.linspace(0, 1, fade_samples)
+                fade_out = np.linspace(1, 0, fade_samples)
+                tone[:fade_samples] *= fade_in
+                tone[-fade_samples:] *= fade_out
+            
+            # Place tone in waveform
+            end_sample = start_sample + samples_per_tone
+            if end_sample <= total_samples:
+                waveform[start_sample:end_sample] = tone
+        
+        # Convert to stereo (duplicate mono to both channels)
+        waveform_stereo = np.column_stack([waveform, waveform])
+        
+        total_dur = total_samples / sample_rate
+        
+        return waveform_stereo, sample_rate, total_dur
+
     def run_trial(self, trial):
         """ Runs a single trial of the Finger Rhythmic task """
 
@@ -437,35 +506,67 @@ class FingerRhythmic(Task):
 
         self.screen.fixation_cross()
         event.clearEvents()
+        
+        # Brief pause to show fixation cross and let participants get ready
+        # Add random jitter (0.2-0.4s) to prevent expectation of tone onset
+        jitter = random.uniform(0.2, 0.4)
+        wait_time = 0.5 + jitter
+        self.ttl_clock.wait_until(self.ttl_clock.get_time() + wait_time)
+        
         clk = self.ttl_clock.clock
         t0 = clk.getTime()                    # trial anchor (TTL)
-
-        beep = sound.Sound(1000, secs=0.05)
-
-        # --- Play FIRST tone now, then use THIS time as the grid anchor
-        beep.play()
-        t_first = clk.getTime()               # when we triggered the first tone (TTL)
-        ioi = 0.65
-        expected = [(t_first - t0) + i*ioi for i in range(12)]  # expected, aligned to first tone
-
+        
+        # Get IOI from trial data (default: 0.6s = 600ms if not specified)
+        ioi = float(trial.get('ioi', 0.6))  # Inter-onset interval in seconds between beep starts
+        
+        # ===============================
+        # PRECISE AUDIO GENERATION BLOCK
+        # ===============================
+        # Generate single waveform with sample-accurate timing
+        # This eliminates OS scheduling jitter from repeated play() calls
+        
+        n_pulses = 12
+        tone_freq = 1000
+        tone_dur = 0.05
+        sample_rate = 48000
+        amplitude = 0.6
+        
+        # Build single waveform with sample-accurate timing
+        waveform_stereo, sr, total_dur = self.make_pulse_train(
+            ioi=ioi,
+            n_pulses=n_pulses,
+            tone_freq=tone_freq,
+            tone_dur=tone_dur,
+            sample_rate=sample_rate,
+            amplitude=amplitude
+        )
+        
+        # Create PsychoPy sound object ONCE
+        stim = sound.Sound(
+            waveform_stereo,
+            sampleRate=sr,
+            stereo=True
+        )
+        
+        # Play ONCE and anchor timing here
+        stim.play()
+        t_first = clk.getTime()   # anchor time for first tone (TTL clock)
+        
+        # Expected beep times relative to trial start (sample-accurate)
+        beep_times_rel = [(t_first - t0) + i * ioi for i in range(n_pulses)]
+        
         taps_rel = []
+        
+        # Collect taps DURING paced tones
+        t_end_paced = t_first + (n_pulses - 1) * ioi + tone_dur
+        
+        while clk.getTime() < t_end_paced:
+            res = event.getKeys(keyList=self.const.response_keys, timeStamped=clk)
+            if res:
+                for _, ts in res:
+                    taps_rel.append(ts - t0)
+            core.wait(0.0005, hogCPUperiod=0.0005)
 
-        # --- Remaining 11 tones by absolute TTL deadlines; collect keys in-between
-        for i in range(1, 12):
-            deadline = t_first + i*ioi
-            while True:
-                now = clk.getTime()
-                if now >= deadline:
-                    beep.play()
-                    break
-                res = event.waitKeys(maxWait=deadline - now,
-                                     keyList=self.const.response_keys,
-                                     timeStamped=clk)
-                if res:
-                    for _, ts in res:
-                        taps_rel.append(ts - t0)
-
-        # --- Silent phase: collect until absolute end_time
         end_abs = float(trial['end_time'])
         while True:
             now = clk.getTime()
@@ -478,17 +579,31 @@ class FingerRhythmic(Task):
                 for _, ts in res:
                     taps_rel.append(ts - t0)
 
-        # --- Self-paced ISIs only (strictly after last tone onset)
-        last_tone_t = expected[-1]            # relative to t0
-        self_taps = [t for t in taps_rel if t > last_tone_t]
-        isis = np.diff(self_taps) if len(self_taps) > 1 else np.array([], float)
-        isis = isis[(isis >= 0.300) & (isis <= 0.900)]
 
-        trial['iri_ms_mean']         = float(np.mean(isis) * 1000.0) if isis.size else np.nan
-        trial['iri_ms_sd']           = float(np.std(isis)  * 1000.0) if isis.size else np.nan
-        trial['iris_ms_json']        = json.dumps((isis * 1000.0).tolist())
-        trial['expected_rel_s_json'] = json.dumps([e for e in expected])  # seconds rel to t0
-        trial['tap_rel_s_json']      = json.dumps(taps_rel)
+        #  - taps_rel:       all tap times, relative to trial start t0 (seconds)
+        #  - beep_times_rel: all beep onset times, relative to trial start t0 (seconds)
+        #                    These are expected times based on sample-accurate waveform
+        #  - ioi:            nominal inter‑onset interval (seconds) is in trial['ioi']
+        trial['tap_rel_s_json'] = json.dumps(taps_rel)
+        trial['beep_times_rel_s_json'] = json.dumps(beep_times_rel)
+
+
+        # A trial is "successful" if every inter‑response interval (IRI)
+        # in the self‑paced phase is within ±50% of 600 ms,
+        self_paced_start_rel = beep_times_rel[-1] + tone_dur # Self‑paced phase starts after the last tone has finished.
+        self_paced_taps = [t for t in taps_rel if t >= self_paced_start_rel]
+
+        if len(self_paced_taps) >= 2:
+            iris = np.diff(self_paced_taps)
+            in_window = (iris >= 0.3) & (iris <= 0.9)
+            # 1.0 if all IRIs are in the desired window, else 0.0
+            trial['correct'] = float(np.all(in_window))
+        else:
+            # Not enough taps in self‑paced phase to form IRIs → unsuccessful
+            trial['correct'] = 0.0
+
+        # No meaningful RT for this task at the single‑trial level;
+        trial['rt'] = np.nan
 
         return trial
 
@@ -772,9 +887,9 @@ class SpatialNavigation(Task):
         end_location = self.trial_info.iloc[0]['location_2']
 
         self.instruction_text = (f"{self.descriptive_name} Task \n\n"
-                                 f"Imagine walking around your childhood home\n"
-                                 f"Start in the {start_location} – end in the {end_location}\n"
-                                 f"Focus on the fixation cross")
+                                    f"Imagine walking around your childhood home\n"
+                                    f"Start in the {start_location} – end in the {end_location}\n"
+                                    f"Focus on the fixation cross")
         instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1],  wrapWidth=20)
         instr_visual.draw()
         self.window.flip()
@@ -1437,6 +1552,11 @@ class SemanticPrediction(Task):
 
         event.clearEvents()
 
+        # Fixation cross
+        self.screen.fixation_cross()
+        self.ttl_clock.wait_until(self.ttl_clock.get_time() + 0.5)
+        event.clearEvents()
+        
         # Display last word
         last_word_stim = visual.TextStim(self.window, text=trial['last_word'], pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height= height_word, wrapWidth=30)
         last_word_stim.draw()
@@ -1513,7 +1633,6 @@ class VisualSearch(Task):
 
         self.trial_counter+=1
 
-        randomly_select_apertures = random.sample(self.apertures, num_stimuli)
         randomly_select_apertures = random.sample(self.apertures, num_stimuli)
 
         for aperture in randomly_select_apertures:
@@ -2668,6 +2787,3 @@ class Affective(Task):
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
 
         return trial
-
-
-#%%

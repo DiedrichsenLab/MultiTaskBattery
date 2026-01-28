@@ -1,0 +1,30 @@
+name	code	description
+theory_of_mind	tom	"short story presented with a question at the end, participants must answer the question."
+n_back	nbko	"2AFC, is the current stimulus the same as the one presented n ago "
+action_observation	acva-acvk	"watch a video where the first half a know is tied, second half a 360 view of the knot is shown"
+verb_generation	vrbgn-wrdrd	"Words presented, participants read the words. At halfpoint, ""GENERATE"" is shown, participants need to covertly generate verbs associated with words"
+rest	rest	lie in scanner with a fixation cross
+tongue_movement	tongue	"move tongue from right to left, touching upper premolar teeth guided by a flashing black circle around a fixation crosshair, black circle means right no cirlce means left, 1s periods"
+auditory_narrative	audnarr	30 second snippets of a moth radiohour story (wheretheressmoke)
+spatial_navigation	spatialnav	imagining walking a room to a room in childhood home
+degraded_passage	degpass	listen to muffeled passages
+intact_passage	intpass	listen to normal sentences
+sentence_reading	senread	"read sentences, words presented sequentially one a time. Press a button at the end of each sentence"
+nonword_reading	nwdread	"read nonwords, nonwords presented sequentially one a time. Press a button at the end of each list of nonwords"
+oddball	odbal	"Black or red ""K"" or ""O"" is shown on the screen. Press a button when red ""K"" is shown"
+demand_grid	dmgrd	"2AFC, a set of grids is shown one by one on the screen with certain boxes colored blue. After the sequnece, two options are given for the combination of blue boxes across shown grids"
+finger_sequence	fingseq	press a sequence of buttons
+flexion_extension	flexexten	alternating periods of flexing/extending toes
+semantic_prediction	sempred	"sentence presented, participants decide if last word makes sense."
+visual_search	visrchsml	"geometric shapes presented on screen, participants must identify if 'L' is present."
+rmet	rmet	"pictures of faces with different emotions presented (eyes only) along with four attribute words, participants must identify which attribute describes person best."
+picture_sequence	picture_sequence	"4 cartoon pictures are presented, participants must order them chronologically."
+story_sequence	story_sequence	"4 sentences are presented, participants must order them chronologically."
+action_prediction	action_prediction	"An action video is shown where an actor is either taking a penalty shot or greeting a person, participants must predict if the ball lands left or right or if the person greets with a handshake or hug."
+movie	mov	"30s clips of planet earth documentary or of a pixar movie, no audio no subtitles"
+strange_stories	strange_stories	"clips of relationship stories, participants are asked to answer questions about the interaction"
+faux_pas	faux_pas	"stories of (potential) faux pas situations, participants must answer questions about the interaction"
+frith_happe	frith_happe	"video clips of triangle animations, participants must determine whether interaction was random, goal-directed or a mentalizing interaction"
+liking	liking	"video clips of people interacting, participants must determine if the interaction was positive or negative"
+pong	pong	pong game
+affective	affect	2 choice is the image pleasant or unpleasant

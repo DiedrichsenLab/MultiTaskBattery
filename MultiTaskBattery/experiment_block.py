@@ -6,7 +6,7 @@ import pandas as pd
 import sys
 import numpy as np
 
-from psychopy import visual, core, gui, event
+from psychopy import visual, gui, event
 import MultiTaskBattery.utils as ut
 import MultiTaskBattery.task_blocks as tasks
 from MultiTaskBattery.ttl_clock import TTLClock
@@ -148,7 +148,7 @@ class Experiment:
 
             ## sending a message to the edf file specifying task name
             if self.const.eye_tracker:
-                pl.sendMessageToFile(f"task_name: {task.name} start_track: {pl.currentUsec()} real start time {r_data.real_start_time} TR count {ttl_clock.ttl_count}")
+                pl.sendMessageToFile(f"task_name: {task.name} start_track: {pl.currentUsec()} real start time {r_data.real_start_time} TR count {self.ttl_clock.ttl_count}")
 
             # display the instruction text for the task. (instructions are task specific)
             task.display_instructions()
@@ -245,8 +245,15 @@ class Experiment:
         [el.draw() for el in elements]
         self.screen.window.flip()
 
-        # Wait for a key press
-        event.waitKeys()
+        # Wait for a key press to continue.
+        # By default, *any* key will dismiss the scoreboard.
+        # If `continue_key` is defined in `constants.py`,
+        # only that key will be accepted (useful for tasks where participants press keys accidentally).
+        continue_key = getattr(self.const, "continue_key", None)
+        if continue_key:
+            event.waitKeys(keyList=[continue_key])
+        else:
+            event.waitKeys()
 
 
     def start_eyetracker(self):
