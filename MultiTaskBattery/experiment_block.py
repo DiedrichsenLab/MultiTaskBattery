@@ -245,8 +245,15 @@ class Experiment:
         [el.draw() for el in elements]
         self.screen.window.flip()
 
-        # Wait for a key press
-        event.waitKeys()
+        # Wait for a key press to continue.
+        # By default, *any* key will dismiss the scoreboard.
+        # If `scoreboard_continue_key` is defined in `constants.py`,
+        # only that key will be accepted (useful for tasks where participants press keys accidentally).
+        continue_key = getattr(self.const, "scoreboard_continue_key", None)
+        if continue_key:
+            event.waitKeys(keyList=[continue_key])
+        else:
+            event.waitKeys()
 
 
     def start_eyetracker(self):
