@@ -415,6 +415,9 @@ class AuditoryNarrative(Task):
 class FingerRhythmic(Task):
     def __init__(self, info, screen, ttl_clock, const, subj_id):
         super().__init__(info, screen, ttl_clock, const, subj_id)
+        # Use accuracy-based feedback at the run level
+        # (scoreboard shows proportion of successful trials)
+        self.feedback_type = 'acc'
 
     def init_task(self):
         self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
@@ -564,10 +567,6 @@ class FingerRhythmic(Task):
                     taps_rel.append(ts - t0)
             core.wait(0.0005, hogCPUperiod=0.0005)
 
-        # --- Silent phase: collect until absolute end_time
-        # NOTE: We continue logging raw tap timestamps here, but defer all
-        #       higher‑order processing (IRIs, inclusion criteria, WK model)
-        #       to an offline analysis script.
         end_abs = float(trial['end_time'])
         while True:
             now = clk.getTime()
@@ -581,15 +580,30 @@ class FingerRhythmic(Task):
                     taps_rel.append(ts - t0)
 
 
-        # ------------------------------------------------------------------
-        # Store only RAW timestamps; all processing happens offline.
-        # ------------------------------------------------------------------
         #  - taps_rel:       all tap times, relative to trial start t0 (seconds)
         #  - beep_times_rel: all beep onset times, relative to trial start t0 (seconds)
         #                    These are expected times based on sample-accurate waveform
         #  - ioi:            nominal inter‑onset interval (seconds) is in trial['ioi']
         trial['tap_rel_s_json'] = json.dumps(taps_rel)
         trial['beep_times_rel_s_json'] = json.dumps(beep_times_rel)
+
+
+        # A trial is "successful" if every inter‑response interval (IRI)
+        # in the self‑paced phase is within ±50% of 600 ms,
+        self_paced_start_rel = beep_times_rel[-1] + tone_dur # Self‑paced phase starts after the last tone has finished.
+        self_paced_taps = [t for t in taps_rel if t >= self_paced_start_rel]
+
+        if len(self_paced_taps) >= 2:
+            iris = np.diff(self_paced_taps)
+            in_window = (iris >= 0.3) & (iris <= 0.9)
+            # 1.0 if all IRIs are in the desired window, else 0.0
+            trial['correct'] = float(np.all(in_window))
+        else:
+            # Not enough taps in self‑paced phase to form IRIs → unsuccessful
+            trial['correct'] = 0.0
+
+        # No meaningful RT for this task at the single‑trial level;
+        trial['rt'] = np.nan
 
         return trial
 
