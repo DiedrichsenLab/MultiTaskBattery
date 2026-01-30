@@ -81,16 +81,15 @@ def load_library(data_path, info_path, structures=None):
         # Convert simple names to CIFTI structure names
         cifti_structures = []
         for s in structures:
-            cifti_name = nb.cifti2.CIFTI_BRAIN_STRUCTURES.get(s.upper(), s)
+            cifti_name = nb.cifti2.CIFTI_BRAIN_STRUCTURES.ciftiname[s.upper()]
             cifti_structures.append(cifti_name)
         
         indices = []
-        for bm in brain_models.iter_structures():
-            struct_name, _, idx = bm
+        for struct_name, idx, bm in brain_models.iter_structures():
             if struct_name in cifti_structures:
                 indices.extend(range(idx.start, idx.stop))
         if not indices:
-            available = [bm[0] for bm in brain_models.iter_structures()]
+            available = [name for name, _, _ in brain_models.iter_structures()]
             raise ValueError(f"No matching structures found. Available: {available}")
         library_data = library_data[:, indices]
     
