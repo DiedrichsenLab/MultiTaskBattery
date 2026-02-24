@@ -16,6 +16,7 @@ demand_grid	DemandGrid	grid	dmgrd	"2AFC, a set of grids is shown one by one on t
 finger_sequence	FingerSequence	finger_sequence	fingseq	press a sequence of buttons	NA	NA
 flexion_extension	FlexionExtension	toe	flexexten	alternating periods of flexing/extending toes	NA	NA
 semantic_prediction	SemanticPrediction	complete	sempred	"sentence presented, participants decide if last word makes sense."	NA	NA
+semantic_switching	SemanticSwitching	complete	semswit	"sentence presented, participants decide if last word makes sense."	NA	"predictable, switched, meaningless"
 visual_search	VisualSearch	search	visrchsml	"geometric shapes presented on screen, participants must identify if 'L' is present."	NA	NA
 rmet	RMET	eyes	rmet	"pictures of faces with different emotions presented (eyes only) along with four attribute words, participants must identify which attribute describes person best."	"Kim, H.A. et al. (2024) ‘Multiracial Reading the Mind in the Eyes Test (MRMET): An inclusive version of an influential measure’, Behavior Research Methods. Revised from Baron-Cohen, Wheelwright, Hill, Raste, & Plumb, 2001"	"age, emotion"
 picture_sequence	PictureSequence	cartoon	picture_sequence	"4 cartoon pictures are presented, participants must order them chronologically."	"Heleven, E., van Dun, K. and Van Overwalle, F. (2019) ‘The posterior Cerebellum is involved in constructing Social Action Sequences: An fMRI Study’, Scientific Reports, 9(1), pp. 1–11. Available at: https://doi.org/10.1038/s41598-019-46962-7."	"fbelief,tbelief,control,sscript,mechanical"
