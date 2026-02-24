@@ -2030,3 +2030,58 @@ class SensMotControl(TaskFile):
         if file_name is not None:
             trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
         return trial_info
+
+
+class SemanticSwitching(TaskFile):
+    def __init__(self, const):
+        super().__init__(const)
+        self.name = 'semantic_switching'
+
+    def make_task_file(self, hand='right',
+                       responses = [1,2], # 1 = True, 2 = False
+                       run_number=None,
+                       task_dur=30,
+                        trial_dur=15,
+                        sentence_dur=2,
+                        file_name=None,
+                        stim_file=None):
+
+        # count number of trials
+        n_trials = int(np.floor(task_dur / (trial_dur)))
+        trial_info = []
+        t = 0
+
+        if stim_file:
+            stim = pd.read_csv(stim_file)
+        else:
+            stim = pd.read_csv(self.stim_dir / 'semantic_switching' / 'semantic_switching.tsv')
+
+        start_row = (run_number - 1) * n_trials
+        end_row = run_number * n_trials - 1
+        stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
+
+        for n in range(n_trials):        
+            trial = {}
+            trial['key_true'] = responses[0]
+            trial['key_false'] = responses[1]
+            trial['trial_num'] = n
+            trial['hand'] = hand
+            trial['trial_dur'] = trial_dur
+            trial['sentence_dur'] = sentence_dur
+            trial['sentence'] = stim['sentence'][n]
+            trial['trial_type'] = random.choice([0,1]) 
+            last_word = [stim['wrong_word'][n], stim['right_word'][n]]
+            trial['last_word'] = last_word[trial['trial_type']]
+            trial['display_trial_feedback'] = True
+            trial['start_time'] = t
+            trial['end_time'] = t + trial_dur 
+
+            trial_info.append(trial)
+
+            # Update for next trial:
+            t = trial['end_time']
+
+        trial_info = pd.DataFrame(trial_info)
+        if file_name is not None:
+            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
+        return trial_info
