@@ -116,10 +116,13 @@ The `example_experiment` includes the following tasks:
 
 To run the `example_experiment`, follow these steps:
 
-1. **Configure `constants.py`**:  
+1. **Configure `constants.py`**:
    Ensure the file `experiments/example_experiment/constants.py` is properly configured. Adjust settings such as screen resolution, response keys, and other parameters as needed to match your experiment's requirements.
 
-2. **Run the Experiment**:  
+2. **Generate run and task files**:
+   Run `experiments/example_experiment/make_files.py` to generate the run and task files. This creates the `.tsv` files in `run_files/` and `task_files/` that define the task order and trial sequences. The example experiment comes with pre-generated files, but for a new experiment you must run this step first.
+
+3. **Run the Experiment**:
    Execute the `run.py` script located in `experiments/example_experiment/run.py`. The output files will be saved in the `data` folder, with filenames that include the subject ID provided during the experiment.
 
 
