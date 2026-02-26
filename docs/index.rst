@@ -26,6 +26,7 @@ Documentation
    task_descriptions.rst
    MRI_instructions.rst
    eye_tracking.rst
+   optimal_battery.rst
    reference.rst
 
 Indices and tables

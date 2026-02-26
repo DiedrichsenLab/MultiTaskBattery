@@ -7,47 +7,38 @@ from numba import njit
 from time import time
 
 
-GITHUB_TOKEN = os.environ.get('GITHUB_TOKEN')
-REPO_URL = "https://api.github.com/repos/Barafat2/MTB_task_library/contents/"
+ZENODO_RECORD = "18793343"
+ZENODO_URL = f"https://zenodo.org/api/records/{ZENODO_RECORD}/files"
 CACHE_DIR = pooch.os_cache("MTB_task_library")
 
 
-def fetch_task_library(version='V1',atlas = 'multiatlasHCP', structures=None):
+def fetch_task_library(version='V1', atlas='multiatlasHCP', structures=None):
     """
-    Fetch task activation library from zenodo
+    Fetch task activation library from Zenodo.
 
     Args:
         version: Library version (e.g., 'V1')
+        atlas: Atlas name (e.g., 'multiatlasHCP')
         structures: List of CIFTI structure names to include. If None, loads all.
 
     Returns:
         library_data: ndarray (n_conditions, n_measurement_channels)
         library_info: DataFrame with condition info
     """
-    if GITHUB_TOKEN is None:
-        raise ValueError("GITHUB_TOKEN environment variable not set")
-
-    data_file = f"{version}/desc-tasklibrary_space-{atlas}_{version}.dscalar.nii"
-    info_file = f"{version}/desc-tasklibrary_{version}_info.tsv"
-
-    downloader = pooch.HTTPDownloader(
-        headers={"Authorization": f"token {GITHUB_TOKEN}",
-                 "Accept": "application/vnd.github.v3.raw"}
-    )
+    data_fname = f"desc-tasklibrary_space-{atlas}_{version}.dscalar.nii"
+    info_fname = f"desc-tasklibrary_{version}_info.tsv"
 
     data_path = pooch.retrieve(
-        url=REPO_URL + data_file,
+        url=f"https://zenodo.org/records/{ZENODO_RECORD}/files/{data_fname}",
         known_hash=None,
         path=CACHE_DIR,
-        fname=data_file,
-        downloader=downloader
+        fname=data_fname,
     )
     info_path = pooch.retrieve(
-        url=REPO_URL + info_file,
+        url=f"https://zenodo.org/records/{ZENODO_RECORD}/files/{info_fname}",
         known_hash=None,
         path=CACHE_DIR,
-        fname=info_file,
-        downloader=downloader
+        fname=info_fname,
     )
 
     return load_library(data_path, info_path, structures=structures)
@@ -77,13 +68,13 @@ def load_library(data_path, info_path, structures=None):
     # Filter by structures if specified (CIFTI files only)
     if structures is not None:
         brain_models = img.header.get_axis(1)
-        
+
         # Convert simple names to CIFTI structure names
         cifti_structures = []
         for s in structures:
             cifti_name = nb.cifti2.CIFTI_BRAIN_STRUCTURES.ciftiname[s.upper()]
             cifti_structures.append(cifti_name)
-        
+
         indices = []
         for struct_name, idx, bm in brain_models.iter_structures():
             if struct_name in cifti_structures:
@@ -226,5 +217,5 @@ def get_top_batteries(library_data, library_info, n_samples,
 if __name__ == "__main__":
     structures = None
     data, info = fetch_task_library(version='V1',structures=structures)
-    batteries = get_top_batteries(data, info, n_samples=1000000, battery_size=8, n_top_batteries=10, forced_tasks=None)
-    print(batteries)
+    # batteries = get_top_batteries(data, info, n_samples=1000000, battery_size=8, n_top_batteries=10, forced_tasks=None)
+    # print(batteries)
