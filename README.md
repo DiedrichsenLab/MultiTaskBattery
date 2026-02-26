@@ -5,19 +5,20 @@ A flexible Python toolbox for running multi-domain cognitive and motor tasks dur
 
 
 This project runs multi-task batteries developed by the diedrichsenlab.
-#### Authors: Diedrichsenlab (Bassel Arafat, Ince Husain, Caroline Nettekoven, Ladan Shahshahani, Suzanne Witt, Maedbh King, Jorn Diedrichsen)
+#### Authors: Diedrichsenlab (Bassel Arafat, Caroline Nettekoven, Ince Husain, Ladan Shahshahani, Suzanne Witt, Maedbh King, Jorn Diedrichsen)
 
 
 
-## 📓 Documentation
+## Documentation
 
 Full documentation is hosted at:  
-📘 https://multitaskbattery.readthedocs.io/
+https://multitaskbattery.readthedocs.io/
 
 Covers:
 - Installation and setup
 - Task and run configuration
-- Data output and extensions
+- Optimal battery selection
+- Data output
 
 ---
 
