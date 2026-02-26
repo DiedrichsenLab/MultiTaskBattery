@@ -1,7 +1,7 @@
 Custom Experiments
 ========================
 
-To build a new experiment, first create a new project folder somewhere on your computer. Based on the example experiment ``expertiments/example_experiment``, follow the steps below:
+To build a new experiment, create a new folder inside the ``experiments/`` directory of the repository. Based on the example experiment ``experiments/example_experiment``, follow the steps below:
 
 Constants file
 --------------
@@ -31,8 +31,8 @@ Create a file called ``constants.py`` in the project folder. This file contains 
     package_dir = Path(os.path.dirname(os.path.dirname(os.path.realpath(mtb.__file__))))
     stim_dir   = package_dir / "stimuli"
 
-    # do run_file_name as a formated string
-    default_run_filename = 'run_01.tsv'
+    # Use {} so the GUI auto-fills the run number (e.g. run_01.tsv, run_02.tsv, ...)
+    default_run_filename = 'run_{}.tsv'
 
     # Is the Eye tracker being used?
     eye_tracker = False
@@ -84,7 +84,15 @@ The task file can look very different form tasks to task, but typically contains
   - key_three: Key for the third option
   - key_four: Key for the fourth option
 
-Some of the tasks require run number because the stimuli depend on the run number (e.g., movie clips have a specific order for each run)
+Some tasks require a ``run_number`` because the stimuli depend on the run (e.g., movie clips have a specific order for each run). Tasks that generate random stimuli each run do not need a run number. These are listed in ``MultiTaskBattery.utils.tasks_without_run_number``. If you add a new task that generates random stimuli, add it to this list.
+
+Some tasks also have multiple **conditions** (e.g., ``movie`` has ``romance``, ``nature``, ``landscape``). If you want a specific condition, pass it as an argument to ``make_task_file``:
+
+.. code-block:: python
+
+    myTask.make_task_file(file_name=tfile, condition='romance', **args)
+
+Check the ``conditions`` column in ``task_table.tsv`` to see which tasks have conditions.
 
 **Example Code**
 
@@ -155,4 +163,4 @@ After generating the tasks and run files, you can write your own main script `ru
         return
 
     if __name__ == "__main__":
-        main()
+        main('subject-00')
