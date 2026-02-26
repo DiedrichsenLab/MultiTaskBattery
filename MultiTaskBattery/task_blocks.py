@@ -2349,16 +2349,10 @@ class SerialReactionTime(Task):
         instr_visual.draw()
         self.window.flip()
 
-    def run_trial(self, trial):
-
-        event.clearEvents()
-
-        trial_stim = int(trial['stim'])
-        target_index = trial_stim - 1
-
-        # define boxes
+    def run(self):
+        """Override to show empty boxes during initial wait."""
         box_positions = [(-5, 2), (-3, 2), (3, 2), (5, 2)]
-        boxes = [
+        self.boxes = [
             visual.Rect(
                 self.window, width=2, height=2,
                 pos=pos, fillColor='white',
@@ -2366,27 +2360,32 @@ class SerialReactionTime(Task):
             )
             for pos in box_positions
         ]
-
-        # baseline
-        for box in boxes:
+        for box in self.boxes:
             box.draw()
         self.window.flip()
+        return super().run()
+
+    def run_trial(self, trial):
+
+        event.clearEvents()
+
+        trial_stim = int(trial['stim'])
+        target_index = trial_stim - 1
 
         # wait until absolute stimulus time
         stim_onset = self.ttl_clock.get_time()
 
         # show stimulus
-        for j, box in enumerate(boxes):
+        for j, box in enumerate(self.boxes):
             box.fillColor = 'green' if j == target_index else 'white'
             box.draw()
         self.window.flip()
-        
 
         # keep green on for trial_dur
-        self.ttl_clock.wait_until( stim_onset+ trial['trial_dur'])
+        self.ttl_clock.wait_until(stim_onset + trial['trial_dur'])
 
         # back to white
-        for box in boxes:
+        for box in self.boxes:
             box.fillColor = 'white'
             box.draw()
         self.window.flip()
