@@ -104,19 +104,56 @@ class TaskDescriptionsDirective(SphinxDirective):
             img_node = nodes.image(uri=rel_path, width="600px")
             section += img_node
 
-        # Description (short from TSV)
+        # Summary and metrics as a field list
+        field_list = nodes.field_list()
+
         desc_text = task.get("description", "").strip().strip('"')
         if desc_text and desc_text.upper() != "NA":
-            desc_para = nodes.paragraph(text=desc_text)
-            section += desc_para
+            field = nodes.field()
+            field += nodes.field_name(text="Summary")
+            field_body = nodes.field_body()
+            field_body += nodes.paragraph(text=desc_text)
+            field += field_body
+            field_list += field
 
-        # Detailed description and parameters from JSON
+        metrics_text = task.get("recorded_metrics", "").strip().strip('"')
+        if metrics_text and metrics_text.upper() != "NA":
+            field = nodes.field()
+            field += nodes.field_name(text="Recorded metrics")
+            field_body = nodes.field_body()
+            field_body += nodes.paragraph(text=metrics_text)
+            field += field_body
+            field_list += field
+
+        # Conditions
+        conditions_raw = task.get("conditions", "").strip().strip('"')
+        if conditions_raw and conditions_raw.upper() != "NA":
+            conds = [c.strip() for c in conditions_raw.split(",") if c.strip()]
+            cond_text = ", ".join(conds)
+            field = nodes.field()
+            field += nodes.field_name(text="Conditions")
+            field_body = nodes.field_body()
+            field_body += nodes.paragraph(text=cond_text)
+            field += field_body
+            field_list += field
+
+        # Detailed description from JSON
         task_detail = details.get(task["name"])
         if task_detail:
             detailed_desc = task_detail.get("detailed_description", "")
             if detailed_desc:
-                section += nodes.paragraph(text=detailed_desc)
+                field = nodes.field()
+                field += nodes.field_name(text="Details")
+                field_body = nodes.field_body()
+                field_body += nodes.paragraph(text=detailed_desc)
+                field += field_body
+                field_list += field
 
+        if len(field_list) > 0:
+            section += field_list
+
+        # Parameters dropdown from JSON
+        if task_detail:
             params = task_detail.get("task_file_parameters", {})
             if params:
                 # Build RST lines for a dropdown with a table inside
@@ -146,20 +183,6 @@ class TaskDescriptionsDirective(SphinxDirective):
                 wrapper = nodes.container()
                 self.state.nested_parse(string_list, 0, wrapper)
                 section += wrapper
-
-        # Conditions
-        conditions_raw = task.get("conditions", "").strip().strip('"')
-        if conditions_raw and conditions_raw.upper() != "NA":
-            cond_title = nodes.paragraph(text="Available conditions:")
-            cond_list = nodes.bullet_list()
-            for cond in conditions_raw.split(","):
-                cond = cond.strip()
-                if cond:
-                    item = nodes.list_item()
-                    item += nodes.paragraph(text=cond)
-                    cond_list += item
-            section += cond_title
-            section += cond_list
 
         # Reference
         ref_text = task.get("reference", "").strip().strip('"')
