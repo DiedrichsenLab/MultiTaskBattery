@@ -1,0 +1,57 @@
+{
+    "demand_grid": {
+        "detailed_description": "Participants see a sequence of boxes lighting up on a grid. They must identify the correct pattern from two options (original vs. modified). On each trial, a sequence of steps is shown, where each step lights up a set of adjacent boxes. After the sequence, two grids are displayed side by side: one showing the original pattern and one with a modified step. The participant presses left or right to indicate which grid matches the original sequence.",
+        "task_file_parameters": {
+            "hand": {
+                "type": "str",
+                "default": "right",
+                "description": "Hand used for response ('right' or 'left')."
+            },
+            "responses": {
+                "type": "list",
+                "default": "[1, 2]",
+                "description": "Response keys for left and right choices."
+            },
+            "grid_size": {
+                "type": "tuple",
+                "default": "(3, 4)",
+                "description": "Size of the grid (rows, cols)."
+            },
+            "num_steps": {
+                "type": "int",
+                "default": "3",
+                "description": "Number of steps in the sequence shown to the participant."
+            },
+            "num_boxes_lit": {
+                "type": "int",
+                "default": "2",
+                "description": "Number of boxes lit up per step."
+            },
+            "task_dur": {
+                "type": "float",
+                "default": "30",
+                "description": "Total task duration in seconds."
+            },
+            "trial_dur": {
+                "type": "float",
+                "default": "7",
+                "description": "Duration of each trial in seconds."
+            },
+            "question_dur": {
+                "type": "float",
+                "default": "3",
+                "description": "Duration of the question phase where the two options are shown."
+            },
+            "sequence_dur": {
+                "type": "float",
+                "default": "4",
+                "description": "Duration of the sequence presentation phase."
+            },
+            "iti_dur": {
+                "type": "float",
+                "default": "0.5",
+                "description": "Inter-trial interval duration in seconds."
+            }
+        }
+    }
+}

@@ -86,13 +86,19 @@ The task file can look very different form tasks to task, but typically contains
 
 Some tasks require a ``run_number`` because the stimuli depend on the run (e.g., movie clips have a specific order for each run). Tasks that generate random stimuli each run do not need a run number. These are listed in ``MultiTaskBattery.utils.tasks_without_run_number``. If you add a new task that generates random stimuli, add it to this list.
 
+Each task's ``make_task_file`` accepts parameters that control the trial structure (e.g., grid size, trial duration, number of steps). See the :ref:`task descriptions <task_descriptions>` page for available parameters and their defaults. You can pass any of these as keyword arguments:
+
+.. code-block:: python
+
+    myTask.make_task_file(file_name=tfile, trial_dur=10, grid_size=(4, 5), **args)
+
 Some tasks also have multiple **conditions** (e.g., ``movie`` has ``romance``, ``nature``, ``landscape``). If you want a specific condition, pass it as an argument to ``make_task_file``:
 
 .. code-block:: python
 
     myTask.make_task_file(file_name=tfile, condition='romance', **args)
 
-Check the ``conditions`` column in ``task_table.tsv`` to see which tasks have conditions.
+Check the :ref:`task descriptions <task_descriptions>` page to see which tasks have conditions.
 
 **Example Code**
 
