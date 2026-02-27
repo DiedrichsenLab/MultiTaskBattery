@@ -126,3 +126,9 @@ To run the `example_experiment`, follow these steps:
    Execute the `run.py` script located in `experiments/example_experiment/run.py`. The output files will be saved in the `data` folder, with filenames that include the subject ID provided during the experiment.
 
 
+Feedback
+--------
+For some tasks you will receive immediate feedback about your performance during the task. For correct responses, the fixation cross will turn green and when you made a mistake it will turn red. For other tasks you will see how you did at the end of the run. You will see a scoreboard with your performance on each task and a summary of your performance across all runs.
+
+.. image:: images/feedback.png
+   :width: 600
