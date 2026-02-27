@@ -14,6 +14,7 @@ Add a row to ``MultiTaskBattery/task_table.tsv`` with:
 - ``description``: brief description of the task
 - ``reference``: academic citation (or ``NA``)
 - ``conditions``: comma-separated conditions (or ``NA``)
+- ``recorded_metrics``: what the task records — ``Accuracy + RT``, ``Accuracy``, ``RT``, or ``None``
 
 2. Implement the task class
 ---------------------------
@@ -48,7 +49,15 @@ Drop a screenshot of your task as ``docs/images/<task_name>.png``. It will autom
 
 6. Add task details
 --------------------
-Add an entry for your task in ``MultiTaskBattery/task_details.json``. This provides a detailed description and documents the parameters of ``make_task_file`` on the task descriptions page. The key must match the task ``name`` from ``task_table.tsv``. For example, the ``demand_grid`` entry:
+Add an entry for your task in ``MultiTaskBattery/task_details.json``. This provides a detailed description and documents the parameters of ``make_task_file`` on the task descriptions page. The key must match the task ``name`` from ``task_table.tsv``.
+
+Tips for the detailed description:
+
+- Describe what the participant sees and does on each trial.
+- Mention the expected brain regions the task is designed to activate (e.g., "targets the language network").
+- If your task has conditions, describe what each condition involves and how it differs from the others.
+
+For example, the ``demand_grid`` entry:
 
 .. code-block:: json
 
