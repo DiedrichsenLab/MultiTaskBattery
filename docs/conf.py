@@ -15,7 +15,7 @@ import sys
 from unittest.mock import MagicMock
 sys.path.insert(0, os.path.abspath('../MultiTaskBattery'))
 sys.path.insert(0, os.path.abspath('..'))
-sys.path.insert(0, os.path.abspath('_ext'))
+sys.path.insert(0, os.path.abspath('extension'))
 
 # -- Project information -----------------------------------------------------
 
@@ -39,6 +39,7 @@ extensions = ['sphinx.ext.napoleon',
               'sphinx.ext.intersphinx',
               'sphinx.ext.doctest',
               'nbsphinx',
+              'sphinx_design',
               'task_docs']
 
 napoleon_custom_sections = [('Returns', 'params_style')]

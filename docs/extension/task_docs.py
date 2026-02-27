@@ -10,9 +10,11 @@ Usage in an .rst file:
 """
 
 import csv
+import json
 import os
 from pathlib import Path
 from docutils import nodes
+from docutils.statemachine import StringList
 from docutils.parsers.rst import Directive
 from sphinx.util.docutils import SphinxDirective
 
@@ -27,6 +29,14 @@ def _read_task_table(tsv_path):
                 continue
             tasks.append(row)
     return tasks
+
+
+def _read_task_details(json_path):
+    """Read the task_details.json and return a dict keyed by task name."""
+    if not json_path.exists():
+        return {}
+    with open(json_path, "r", encoding="utf-8") as f:
+        return json.load(f)
 
 
 def _find_task_images(task_name, images_dir):
@@ -58,20 +68,23 @@ class TaskDescriptionsDirective(SphinxDirective):
     def run(self):
         source_dir = Path(self.env.srcdir)
         tsv_path = source_dir.parent / "MultiTaskBattery" / "task_table.tsv"
+        json_path = source_dir.parent / "MultiTaskBattery" / "task_details.json"
         images_dir = source_dir / "images"
 
         self.env.note_dependency(str(tsv_path))
+        self.env.note_dependency(str(json_path))
 
         tasks = _read_task_table(tsv_path)
         tasks.sort(key=lambda t: t["name"])
+        details = _read_task_details(json_path)
 
         result_nodes = []
         for task in tasks:
-            result_nodes.extend(self._build_task_section(task, images_dir))
+            result_nodes.extend(self._build_task_section(task, images_dir, details))
 
         return result_nodes
 
-    def _build_task_section(self, task, images_dir):
+    def _build_task_section(self, task, images_dir, details):
         """Build docutils nodes for a single task entry."""
         section_nodes = []
 
@@ -91,11 +104,48 @@ class TaskDescriptionsDirective(SphinxDirective):
             img_node = nodes.image(uri=rel_path, width="600px")
             section += img_node
 
-        # Description
+        # Description (short from TSV)
         desc_text = task.get("description", "").strip().strip('"')
         if desc_text and desc_text.upper() != "NA":
             desc_para = nodes.paragraph(text=desc_text)
             section += desc_para
+
+        # Detailed description and parameters from JSON
+        task_detail = details.get(task["name"])
+        if task_detail:
+            detailed_desc = task_detail.get("detailed_description", "")
+            if detailed_desc:
+                section += nodes.paragraph(text=detailed_desc)
+
+            params = task_detail.get("task_file_parameters", {})
+            if params:
+                # Build RST lines for a dropdown with a table inside
+                rst_lines = [
+                    ".. dropdown:: Task file parameters",
+                    "",
+                    "   .. list-table::",
+                    "      :header-rows: 1",
+                    "      :widths: 15 10 10 65",
+                    "",
+                    "      * - Parameter",
+                    "        - Type",
+                    "        - Default",
+                    "        - Description",
+                ]
+                for param_name, param_info in params.items():
+                    ptype = param_info.get("type", "")
+                    default = param_info.get("default", "")
+                    desc = param_info.get("description", "")
+                    rst_lines.append(f"      * - ``{param_name}``")
+                    rst_lines.append(f"        - {ptype}")
+                    rst_lines.append(f"        - {default}")
+                    rst_lines.append(f"        - {desc}")
+
+                rst_lines.append("")
+                string_list = StringList(rst_lines)
+                wrapper = nodes.container()
+                self.state.nested_parse(string_list, 0, wrapper)
+                section += wrapper
 
         # Conditions
         conditions_raw = task.get("conditions", "").strip().strip('"')
