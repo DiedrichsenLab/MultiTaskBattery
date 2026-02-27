@@ -1,7 +1,7 @@
 Custom Experiments
 ========================
 
-To build a new experiment, create a new folder inside the ``experiments/`` directory of the repository. Based on the example experiment ``experiments/example_experiment``, follow the steps below:
+To build a new experiment, create a new folder anywhere on your computer. The stimuli directory is resolved automatically from the package location, so your experiment will find the stimuli regardless of where it lives. Use ``experiments/example_experiment`` as a reference for the steps below.
 
 Constants file
 --------------
