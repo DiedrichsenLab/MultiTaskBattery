@@ -20,7 +20,7 @@ class Experiment:
 
                Args: 
                     const (module):
-                        local constants.py module (see pontine_7T/constants.py) as example
+                        local constants.py module (see example_experiment/constants.py) as example
                     subj_id (str):
                         id for the subject
                 Returns:
