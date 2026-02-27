@@ -69,11 +69,13 @@ def load_library(data_path, info_path, structures=None):
     if structures is not None:
         brain_models = img.header.get_axis(1)
 
-        # Convert simple names to CIFTI structure names
+        # Convert short names to full CIFTI structure names
         cifti_structures = []
         for s in structures:
-            cifti_name = nb.cifti2.CIFTI_BRAIN_STRUCTURES.ciftiname[s.upper()]
-            cifti_structures.append(cifti_name)
+            name = s.upper()
+            if not name.startswith('CIFTI_STRUCTURE_'):
+                name = f'CIFTI_STRUCTURE_{name}'
+            cifti_structures.append(name)
 
         indices = []
         for struct_name, idx, bm in brain_models.iter_structures():
@@ -102,9 +104,9 @@ def _compute_nit(G):
     # Eigenvalues
     l_mc = np.linalg.eigvalsh(G_mc)
 
-    # Negative inverse trace
+    # Negative inverse trace (exclude zero eigenvalue from centering, otherwise it will add an offset to all batteries that makes the numbers huge and ugly)
     l_mc = l_mc[::-1]
-    l_mc[l_mc < 1e-12] = 1e-12
+    l_mc = l_mc[l_mc > 1e-12]
     nit = -np.sum(1 / l_mc)
     return nit
 
