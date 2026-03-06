@@ -2069,8 +2069,8 @@ class ActionPrediction(Task):
             self.instruction_text += "\n\n Decide if the people will hug or shake hands."
             self.instruction_text += f"\n\n\nHUG: index finger \tSHAKE HANDS: middle finger\n"
         else:
-            self.instruction_text += "\n\n Choose where the ball will land or how the people will greet each other." # General instruction for both age and emotion
-            self.instruction_text += f"\n\n\nLEFT/HUG: index finger \tRIGHT/SHAKE HANDS: middle finger\n"
+            self.instruction_text += "\n\n Choose what will happen next." # General instruction for both soccer and greeting
+            self.instruction_text += f"\n\n\nLEFT/HUG: index finger \n\tRIGHT/SHAKE HANDS: middle finger\n"
         instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1], wrapWidth=25, pos=(0, 0))
         instr_visual.draw()
         self.window.flip()
