@@ -26,12 +26,9 @@ The repository is organized into the following main folders:
 Implemented tasks
 -----------------
 
-The task that are implemented in the repository are listed in the ``task_table.tsv`` file in the `MultiTaskBattery` folder. For more details, see the :ref:`task descriptions <task_descriptions>` .
+The tasks implemented in the repository are listed in the ``task_table.tsv`` file in the ``MultiTaskBattery`` folder. For more details, see the :ref:`task descriptions <task_descriptions>`.
 
-.. csv-table:: List of tasks
-   :file: task_table_for_docs.tsv
-   :header-rows: 1
-   :delim: tab
+.. task-summary-table::
 
 Run and Task Files
 ------------------
@@ -119,10 +116,19 @@ The `example_experiment` includes the following tasks:
 
 To run the `example_experiment`, follow these steps:
 
-1. **Configure `constants.py`**:  
+1. **Configure `constants.py`**:
    Ensure the file `experiments/example_experiment/constants.py` is properly configured. Adjust settings such as screen resolution, response keys, and other parameters as needed to match your experiment's requirements.
 
-2. **Run the Experiment**:  
+2. **Generate run and task files**:
+   Run `experiments/example_experiment/make_files.py` to generate the run and task files. This creates the `.tsv` files in `run_files/` and `task_files/` that define the task order and trial sequences. The example experiment comes with pre-generated files, but for a new experiment you must run this step first.
+
+3. **Run the Experiment**:
    Execute the `run.py` script located in `experiments/example_experiment/run.py`. The output files will be saved in the `data` folder, with filenames that include the subject ID provided during the experiment.
 
 
+Feedback
+--------
+For some tasks you will receive immediate feedback about your performance during the task. For correct responses, the fixation cross will turn green and when you made a mistake it will turn red. For other tasks you will see how you did at the end of the run. You will see a scoreboard with your performance on each task and a summary of your performance across all runs.
+
+.. image:: images/feedback.png
+   :width: 600

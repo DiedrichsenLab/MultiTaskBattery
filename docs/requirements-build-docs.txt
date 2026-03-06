@@ -9,3 +9,4 @@ nbsphinx
 scipy
 seaborn
 sphinx-rtd-theme
+sphinx-design

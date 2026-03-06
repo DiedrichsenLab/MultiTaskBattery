@@ -1,7 +1,7 @@
 Custom Experiments
 ========================
 
-To build a new experiment, first create a new project folder somewhere on your computer. Based on the example experiment ``expertiments/example_experiment``, follow the steps below:
+To build a new experiment, create a new folder anywhere on your computer. The stimuli directory is resolved automatically from the package location, so your experiment will find the stimuli regardless of where it lives. Use ``experiments/example_experiment`` as a reference for the steps below.
 
 Constants file
 --------------
@@ -31,8 +31,8 @@ Create a file called ``constants.py`` in the project folder. This file contains 
     package_dir = Path(os.path.dirname(os.path.dirname(os.path.realpath(mtb.__file__))))
     stim_dir   = package_dir / "stimuli"
 
-    # do run_file_name as a formated string
-    default_run_filename = 'run_01.tsv'
+    # Use {} so the GUI auto-fills the run number (e.g. run_01.tsv, run_02.tsv, ...)
+    default_run_filename = 'run_{}.tsv'
 
     # Is the Eye tracker being used?
     eye_tracker = False
@@ -84,7 +84,21 @@ The task file can look very different form tasks to task, but typically contains
   - key_three: Key for the third option
   - key_four: Key for the fourth option
 
-Some of the tasks require run number because the stimuli depend on the run number (e.g., movie clips have a specific order for each run)
+Some tasks require a ``run_number`` because the stimuli depend on the run (e.g., movie clips have a specific order for each run). Tasks that generate random stimuli each run do not need a run number. These are listed in ``MultiTaskBattery.utils.tasks_without_run_number``. If you add a new task that generates random stimuli, add it to this list.
+
+Each task's ``make_task_file`` accepts parameters that control the trial structure (e.g., grid size, trial duration, number of steps). See the :ref:`task descriptions <task_descriptions>` page for available parameters and their defaults. You can pass any of these as keyword arguments:
+
+.. code-block:: python
+
+    myTask.make_task_file(file_name=tfile, trial_dur=10, grid_size=(4, 5), **args)
+
+Some tasks also have multiple **conditions** (e.g., ``movie`` has ``romance``, ``nature``, ``landscape``). If you want a specific condition, pass it as an argument to ``make_task_file``:
+
+.. code-block:: python
+
+    myTask.make_task_file(file_name=tfile, condition='romance', **args)
+
+Check the :ref:`task descriptions <task_descriptions>` page to see which tasks have conditions.
 
 **Example Code**
 
@@ -124,8 +138,8 @@ Some of the tasks require run number because the stimuli depend on the run numbe
             # Make task file
             myTask.make_task_file(file_name=tfile, **args)
          
-* Note that you can add an optional argument run_time to the make_task_file function to specify the duration of your run (e.g. ``myTask.make_task_file(tasks, tfiles, run_time=600)`` for a 10-minute run). After the last trial ends, this will return the screen to a fixation cross until the run_time is reached. This is usfeul for imaging experiments where you want to keep the scanner running for a fixed amount of time after the last trial to capture the remaining activation. If this is not specified, the run will end after the last trial.
-* You can also add an optional argument offset to the make_task_file function to start the stimuli presentation after some seconds of fixation cross  (e.g. ``myTask.make_task_file(tasks, tfiles, offset=5)`` for a 5-second delay after the first trigger). This is recommended for imaging experiments where you acquire dummy scans in the beginning of the scan (to account for stabilizing magnetization) that will be removed from the data in later processing. If during those dummy scans trigger signals are already being sent out, this will have the first stimulus presented only after this offset period accounting for dummy scans has passed. If the offset parameter has not been specified, the run will end after the last trial.
+* Note that you can add an optional argument ``run_time`` to ``make_run_file`` to specify the duration of your run (e.g. ``tf.make_run_file(tasks, tfiles, run_time=600)`` for a 10-minute run). After the last trial ends, this will return the screen to a fixation cross until the run_time is reached. This is useful for imaging experiments where you want to keep the scanner running for a fixed amount of time after the last trial to capture the remaining activation. If this is not specified, the run will end after the last trial.
+* You can also add an optional argument ``offset`` to ``make_run_file`` to start the stimuli presentation after some seconds of fixation cross (e.g. ``tf.make_run_file(tasks, tfiles, offset=5)`` for a 5-second delay after the first trigger). This is recommended for imaging experiments where you acquire dummy scans in the beginning of the scan (to account for stabilizing magnetization) that will be removed from the data in later processing. If during those dummy scans trigger signals are already being sent out, this will have the first stimulus presented only after this offset period accounting for dummy scans has passed.
 
 Writing your experiment function
 --------------------------------
@@ -155,4 +169,4 @@ After generating the tasks and run files, you can write your own main script `ru
         return
 
     if __name__ == "__main__":
-        main()
+        main('subject-00')

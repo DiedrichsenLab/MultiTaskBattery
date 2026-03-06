@@ -1,0 +1,242 @@
+{
+    "movie": {
+        "detailed_description": "Participants passively watch 30-second video clips without audio or subtitles. Conditions include romance clips from Pixar's Up, nature clips, and landscape clips. Each run presents one clip from the selected condition. The task requires no motor response and is designed to engage visual processing and social/emotional networks depending on the condition.",
+        "task_file_parameters": {
+            "run_number": {
+                "type": "int",
+                "default": "None",
+                "description": "Run number, used to select which clip to show from the stimulus list."
+            },
+            "task_dur": {
+                "type": "float",
+                "default": "30",
+                "description": "Total task duration in seconds."
+            },
+            "trial_dur": {
+                "type": "float",
+                "default": "30",
+                "description": "Duration of each trial (clip) in seconds."
+            },
+            "iti_dur": {
+                "type": "float",
+                "default": "0",
+                "description": "Inter-trial interval duration in seconds."
+            },
+            "condition": {
+                "type": "str",
+                "default": "None",
+                "description": "Which condition to use: 'romance', 'nature', or 'landscape'. If None, all non-practice clips are used."
+            }
+        }
+    },
+    "oddball": {
+        "detailed_description": "A rapid visual oddball detection task. On each trial a letter ('K' or 'O') is briefly shown in either black or red. Participants must press a button when they see a red 'K' (the target) and withhold responses to all other stimuli. The task is designed to engage attentional and executive control networks.",
+        "task_file_parameters": {
+            "hand": {
+                "type": "str",
+                "default": "right",
+                "description": "Hand used for response ('right' or 'left')."
+            },
+            "responses": {
+                "type": "list",
+                "default": "[1, 2]",
+                "description": "Response keys."
+            },
+            "task_dur": {
+                "type": "float",
+                "default": "30",
+                "description": "Total task duration in seconds."
+            },
+            "trial_dur": {
+                "type": "float",
+                "default": "0.15",
+                "description": "Duration the stimulus is displayed in seconds."
+            },
+            "iti_dur": {
+                "type": "float",
+                "default": "0.85",
+                "description": "Inter-trial interval duration in seconds."
+            }
+        }
+    },
+    "demand_grid": {
+        "detailed_description": "Participants see a sequence of boxes lighting up on a grid. They must identify the correct pattern from two options (original vs. modified). On each trial, a sequence of steps is shown, where each step lights up a set of adjacent boxes. After the sequence, two grids are displayed side by side: one showing the original pattern and one with a modified step. The participant presses left or right to indicate which grid matches the original sequence. The task is designed to engage domain-general frontal and parietal regions.",
+        "task_file_parameters": {
+            "hand": {
+                "type": "str",
+                "default": "right",
+                "description": "Hand used for response ('right' or 'left')."
+            },
+            "responses": {
+                "type": "list",
+                "default": "[1, 2]",
+                "description": "Response keys for left and right choices."
+            },
+            "grid_size": {
+                "type": "tuple",
+                "default": "(3, 4)",
+                "description": "Size of the grid (rows, cols)."
+            },
+            "num_steps": {
+                "type": "int",
+                "default": "3",
+                "description": "Number of steps in the sequence shown to the participant."
+            },
+            "num_boxes_lit": {
+                "type": "int",
+                "default": "2",
+                "description": "Number of boxes lit up per step."
+            },
+            "task_dur": {
+                "type": "float",
+                "default": "30",
+                "description": "Total task duration in seconds."
+            },
+            "trial_dur": {
+                "type": "float",
+                "default": "7",
+                "description": "Duration of each trial in seconds."
+            },
+            "question_dur": {
+                "type": "float",
+                "default": "3",
+                "description": "Duration of the question phase where the two options are shown."
+            },
+            "sequence_dur": {
+                "type": "float",
+                "default": "4",
+                "description": "Duration of the sequence presentation phase."
+            },
+            "iti_dur": {
+                "type": "float",
+                "default": "0.5",
+                "description": "Inter-trial interval duration in seconds."
+            }
+        }
+    },
+    "action_observation": {
+        "detailed_description": "Participants watch videos of knots being tied (action condition) and 360-degree views of completed knots (knot condition). The first trial in a block shows the knot-tying action, and subsequent trials show the static knot view. No motor response is required. The task is designed to engage action observation and premotor regions.",
+        "task_file_parameters": {
+            "run_number": {
+                "type": "int",
+                "default": "None",
+                "description": "Run number, used to select which knot stimulus to show."
+            },
+            "task_dur": {
+                "type": "float",
+                "default": "30",
+                "description": "Total task duration in seconds."
+            },
+            "trial_dur": {
+                "type": "float",
+                "default": "14",
+                "description": "Duration of each video trial in seconds."
+            },
+            "iti_dur": {
+                "type": "float",
+                "default": "1",
+                "description": "Inter-trial interval duration in seconds."
+            }
+        }
+    },
+    "visual_search": {
+        "detailed_description": "Participants view a display of geometric shapes at different rotations (90, 180, 270, 360 degrees) and must determine whether the target shape (at 90 degrees) is present. On easy trials 4 shapes are shown, on hard trials 8 shapes are shown. Participants press one button if the target is present and another if it is absent. The task is designed to engage visual attention regions.",
+        "task_file_parameters": {
+            "hand": {
+                "type": "str",
+                "default": "right",
+                "description": "Hand used for response ('right' or 'left')."
+            },
+            "responses": {
+                "type": "list",
+                "default": "[1, 2]",
+                "description": "Response keys for target present and absent."
+            },
+            "task_dur": {
+                "type": "float",
+                "default": "30",
+                "description": "Total task duration in seconds."
+            },
+            "trial_dur": {
+                "type": "float",
+                "default": "2",
+                "description": "Duration of each trial in seconds."
+            },
+            "iti_dur": {
+                "type": "float",
+                "default": "0.5",
+                "description": "Inter-trial interval duration in seconds."
+            },
+            "easy_prob": {
+                "type": "float",
+                "default": "0.5",
+                "description": "Probability of an easy trial (4 stimuli vs. 8)."
+            }
+        }
+    },
+    "serial_reaction_time": {
+        "detailed_description": "Four boxes are displayed in a row. On each trial one box lights up green and the participant presses the corresponding button as fast as possible. Stimuli are randomized with the constraint that the same box never lights up on consecutive trials. The task measures basic visuomotor response speed and is designed to engage sensorimotor regions.",
+        "task_file_parameters": {
+            "hand": {
+                "type": "str",
+                "default": "bimanual",
+                "description": "Hand used for response."
+            },
+            "responses": {
+                "type": "list",
+                "default": "[1, 2, 3, 4]",
+                "description": "Response keys mapped to each box position."
+            },
+            "task_dur": {
+                "type": "float",
+                "default": "30",
+                "description": "Total task duration in seconds."
+            },
+            "initial_wait": {
+                "type": "float",
+                "default": "1.0",
+                "description": "Wait time in seconds before the first stimulus, showing empty boxes."
+            },
+            "trial_dur": {
+                "type": "float",
+                "default": "0.5",
+                "description": "Duration the green box is displayed in seconds."
+            },
+            "iti_dur": {
+                "type": "float",
+                "default": "1.0",
+                "description": "Inter-trial interval duration in seconds."
+            }
+        }
+    },
+    "verb_generation": {
+        "detailed_description": "Words are presented one at a time. In the first half of trials (read condition), participants silently read each word. In the second half (generate condition), a 'GENERATE' cue appears and participants covertly generate a verb associated with each presented word. The task is designed to engage the language areas",
+        "task_file_parameters": {
+            "task_dur": {
+                "type": "float",
+                "default": "30",
+                "description": "Total task duration in seconds."
+            },
+            "trial_dur": {
+                "type": "float",
+                "default": "2",
+                "description": "Duration each word is displayed in seconds."
+            },
+            "iti_dur": {
+                "type": "float",
+                "default": "0.5",
+                "description": "Inter-trial interval duration in seconds."
+            }
+        }
+    },
+    "rest": {
+        "detailed_description": "Participants lie still and fixate on a central crosshair. No stimuli are presented and no response is required. Used as a baseline condition.",
+        "task_file_parameters": {
+            "task_dur": {
+                "type": "float",
+                "default": "30",
+                "description": "Total rest duration in seconds."
+            }
+        }
+    }
+}
