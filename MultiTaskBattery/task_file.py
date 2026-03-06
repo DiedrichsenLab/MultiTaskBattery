@@ -1972,6 +1972,58 @@ class Affective(TaskFile):
             trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
 
         return trial_info
+    
+class SerialReactionTime(TaskFile):
+      def __init__(self, const):
+          super().__init__(const)
+          self.name = 'serial_reaction_time'
+
+      def make_task_file(self,
+                         hand='bimanual',
+                         responses=[1, 2, 3, 4],
+                         task_dur=30,
+                         initial_wait=1.0,
+                         trial_dur=0.5,
+                         iti_dur=1.0,
+                         file_name=None):
+          # wait one second at the start
+          effective_dur = task_dur - initial_wait
+          n_trials = int(np.floor(effective_dur / (trial_dur + iti_dur)))
+          trial_info = []
+
+          t = initial_wait
+          prev_stim = 0
+
+          for n in range(n_trials):
+              trial = {}
+              trial['key_one'] = responses[0]
+              trial['key_two'] = responses[1]
+              trial['key_three'] = responses[2]
+              trial['key_four'] = responses[3]
+              trial['trial_num'] = n + 1
+              trial['hand'] = hand
+              trial['trial_dur'] = trial_dur
+              trial['iti_dur'] = iti_dur
+              trial['display_trial_feedback'] = False
+            
+            # Ensure the same stimulus doesn't appear on consecutive trials
+              stim = prev_stim
+              while stim == prev_stim:
+                  stim = random.randint(1, 4)
+              trial['stim'] = stim
+              prev_stim = stim
+
+              trial['start_time'] = t
+              trial['end_time'] = t + trial_dur + iti_dur
+              trial_info.append(trial)
+              t = trial['end_time']
+
+          trial_info = pd.DataFrame(trial_info)
+          if file_name is not None:
+              ut.dircheck(self.task_dir / self.name)
+              trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
+
+          return trial_info
 
 
 class FingerRhythmic(TaskFile):
