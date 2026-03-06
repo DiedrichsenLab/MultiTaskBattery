@@ -412,467 +412,6 @@ class AuditoryNarrative(Task):
         return trial
 
 
-class FingerRhythmic(Task):
-    def __init__(self, info, screen, ttl_clock, const, subj_id):
-        super().__init__(info, screen, ttl_clock, const, subj_id)
-        # Use accuracy-based feedback at the run level
-        # (scoreboard shows proportion of successful trials)
-        self.feedback_type = 'acc'
-
-    def init_task(self):
-        self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
-        self.corr_key = [self.trial_info['key_one'].iloc[0]]
-
-    def display_instructions(self):
-        """
-        displays the instruction for the task
-        """
-
-        str1 = f"Tap along to the tones using the {self.corr_key[0]} key."
-        str2 = f"Keep tapping at the same pace when the tones stop."
-        self.instruction_text = f"{self.descriptive_name} Task\n\n {str1} \n {str2}"
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1])
-        instr_visual.draw()
-        self.window.flip()
-
-    
-    def make_pulse_train(self, ioi, n_pulses, tone_freq=1000, tone_dur=0.05, sample_rate=48000, amplitude=0.6):
-        """
-        Generate a sample-accurate pulse train waveform.
-        
-        This creates a single continuous audio buffer with precisely timed beeps,
-        eliminating OS scheduling jitter from repeated play() calls.
-        
-        Args:
-            ioi: Inter-onset interval in seconds
-            n_pulses: Number of beeps
-            tone_freq: Frequency of each beep in Hz
-            tone_dur: Duration of each beep in seconds
-            sample_rate: Audio sample rate
-            amplitude: Amplitude (0-1)
-        
-        Returns:
-            waveform_stereo: numpy array of shape (n_samples, 2) for stereo
-            sample_rate: sample rate (same as input)
-            total_dur: total duration in seconds
-        """
-        # Calculate number of samples for each component
-        samples_per_tone = int(tone_dur * sample_rate)
-        samples_per_ioi = int(ioi * sample_rate)
-        
-        # Total duration: (n_pulses - 1) * ioi + tone_dur
-        total_samples = (n_pulses - 1) * samples_per_ioi + samples_per_tone
-        
-        # Initialize waveform
-        waveform = np.zeros(total_samples)
-        
-        # Generate each beep at precise sample positions
-        for i in range(n_pulses):
-            # Start sample for this beep
-            start_sample = i * samples_per_ioi
-            
-            # Generate tone (sine wave)
-            t = np.linspace(0, tone_dur, samples_per_tone, False)
-            tone = amplitude * np.sin(2 * np.pi * tone_freq * t)
-            
-            # Apply envelope to avoid clicks (simple fade in/out)
-            fade_samples = int(0.001 * sample_rate)  # 1ms fade
-            if fade_samples > 0 and samples_per_tone > fade_samples * 2:
-                fade_in = np.linspace(0, 1, fade_samples)
-                fade_out = np.linspace(1, 0, fade_samples)
-                tone[:fade_samples] *= fade_in
-                tone[-fade_samples:] *= fade_out
-            
-            # Place tone in waveform
-            end_sample = start_sample + samples_per_tone
-            if end_sample <= total_samples:
-                waveform[start_sample:end_sample] = tone
-        
-        # Convert to stereo (duplicate mono to both channels)
-        waveform_stereo = np.column_stack([waveform, waveform])
-        
-        total_dur = total_samples / sample_rate
-        
-        return waveform_stereo, sample_rate, total_dur
-
-    def run_trial(self, trial):
-        """ Runs a single trial of the Finger Rhythmic task """
-
-        event.clearEvents()
-        txt = (f"New trial starts now") # this text shows when a new trials starts
-        visual.TextStim(self.window, text=txt,height=self.const.instruction_text_height, color=[-1, -1, -1]).draw()
-        self.window.flip()
-        self.ttl_clock.wait_until(self.ttl_clock.get_time() + 2)
-
-        self.screen.fixation_cross()
-        event.clearEvents()
-        
-        # Brief pause to show fixation cross and let participants get ready
-        # Add random jitter (0.2-0.4s) to prevent expectation of tone onset
-        jitter = random.uniform(0.2, 0.4)
-        wait_time = 0.5 + jitter
-        self.ttl_clock.wait_until(self.ttl_clock.get_time() + wait_time)
-        
-        clk = self.ttl_clock.clock
-        t0 = clk.getTime()                    # trial anchor (TTL)
-        
-        # Get IOI from trial data (default: 0.6s = 600ms if not specified)
-        ioi = float(trial.get('ioi', 0.6))  # Inter-onset interval in seconds between beep starts
-        
-        # ===============================
-        # PRECISE AUDIO GENERATION BLOCK
-        # ===============================
-        # Generate single waveform with sample-accurate timing
-        # This eliminates OS scheduling jitter from repeated play() calls
-        
-        n_pulses = 12
-        tone_freq = 1000
-        tone_dur = 0.05
-        sample_rate = 48000
-        amplitude = 0.6
-        
-        # Build single waveform with sample-accurate timing
-        waveform_stereo, sr, total_dur = self.make_pulse_train(
-            ioi=ioi,
-            n_pulses=n_pulses,
-            tone_freq=tone_freq,
-            tone_dur=tone_dur,
-            sample_rate=sample_rate,
-            amplitude=amplitude
-        )
-        
-        # Create PsychoPy sound object ONCE
-        stim = sound.Sound(
-            waveform_stereo,
-            sampleRate=sr,
-            stereo=True
-        )
-        
-        # Play ONCE and anchor timing here
-        stim.play()
-        t_first = clk.getTime()   # anchor time for first tone (TTL clock)
-        
-        # Expected beep times relative to trial start (sample-accurate)
-        beep_times_rel = [(t_first - t0) + i * ioi for i in range(n_pulses)]
-        
-        taps_rel = []
-        
-        # Collect taps DURING paced tones
-        t_end_paced = t_first + (n_pulses - 1) * ioi + tone_dur
-        
-        while clk.getTime() < t_end_paced:
-            res = event.getKeys(keyList=self.const.response_keys, timeStamped=clk)
-            if res:
-                for _, ts in res:
-                    taps_rel.append(ts - t0)
-            core.wait(0.0005, hogCPUperiod=0.0005)
-
-        end_abs = float(trial['end_time'])
-        while True:
-            now = clk.getTime()
-            if now >= end_abs:
-                break
-            res = event.waitKeys(maxWait=end_abs - now,
-                                 keyList=self.const.response_keys,
-                                 timeStamped=clk)
-            if res:
-                for _, ts in res:
-                    taps_rel.append(ts - t0)
-
-
-        #  - taps_rel:       all tap times, relative to trial start t0 (seconds)
-        #  - beep_times_rel: all beep onset times, relative to trial start t0 (seconds)
-        #                    These are expected times based on sample-accurate waveform
-        #  - ioi:            nominal inter‑onset interval (seconds) is in trial['ioi']
-        trial['tap_rel_s_json'] = json.dumps(taps_rel)
-        trial['beep_times_rel_s_json'] = json.dumps(beep_times_rel)
-
-
-        # A trial is "successful" if every inter‑response interval (IRI)
-        # in the self‑paced phase is within ±50% of 600 ms,
-        self_paced_start_rel = beep_times_rel[-1] + tone_dur # Self‑paced phase starts after the last tone has finished.
-        self_paced_taps = [t for t in taps_rel if t >= self_paced_start_rel]
-
-        if len(self_paced_taps) >= 2:
-            iris = np.diff(self_paced_taps)
-            in_window = (iris >= 0.3) & (iris <= 0.9)
-            # 1.0 if all IRIs are in the desired window, else 0.0
-            trial['correct'] = float(np.all(in_window))
-        else:
-            # Not enough taps in self‑paced phase to form IRIs → unsuccessful
-            trial['correct'] = 0.0
-
-        # No meaningful RT for this task at the single‑trial level;
-        trial['rt'] = np.nan
-
-        return trial
-
-
-class TimePerception(Task):
-    def __init__(self, info, screen, ttl_clock, const, subj_id):
-        super().__init__(info, screen, ttl_clock, const, subj_id)
-        self.feedback_type = 'acc+rt'
-
-    def init_task(self):
-        self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
-        self.corr_key = [self.trial_info['key_one'].iloc[0], self.trial_info['key_two'].iloc[0]]
-        # one tone for both modalities
-        self.tone = sound.Sound(value=1000, secs=0.050, sampleRate=48000, stereo=True)  # 1000 Hz, 50 ms
-
-        # PEST state per side
-        mod = str(self.trial_info['modality'].iloc[0]).lower()
-        if mod == 'time':
-            # start ±120 ms from 400; step 40; min step 8; directions tracked
-            self.stair = {
-                'shorter': {'curr': 280.0, 'step': 40.0, 'min_step': 8.0,  'last_dir': 0, 'same_dir': 0},
-                'longer':  {'curr': 520.0, 'step': 40.0, 'min_step': 8.0,  'last_dir': 0, 'same_dir': 0},
-            }
-        else:  # 'volume' (quieter/louder)
-            # start ±1.62 dB from 73; step 1.08; min step 0.27
-            self.stair = {
-                'quieter': {'curr': 71.38, 'step': 1.08, 'min_step': 0.27, 'last_dir': 0, 'same_dir': 0},
-                'louder':  {'curr': 74.62, 'step': 1.08, 'min_step': 0.27, 'last_dir': 0, 'same_dir': 0},
-            }
-
-    def display_instructions(self):
-        mod = str(self.trial_info['modality'].iloc[0]).lower()
-        if mod == 'time':
-            str1 = f"You will hear two pairs of tones."
-            str2 = f"Press [{self.corr_key[0]}] if the SECOND interval is shorter."
-            str3 = f"Press [{self.corr_key[1]}] if the SECOND interval is longer."
-            str4 = "The first pair is always the same."
-            self.instruction_text = f"{self.descriptive_name} Task\n\n {str1} \n {str2} \n {str3} \n {str4}"
-
-        else:
-            str1 = f"You will hear two pairs of tones."
-            str2 = f"Press [{self.corr_key[0]}] if the SECOND interval is quieter."
-            str3 = f"Press [{self.corr_key[1]}] if the SECOND interval is louder."
-            str4 = "The first pair is always the same."
-            self.instruction_text = f"{self.descriptive_name} Task\n\n {str1} \n {str2} \n {str3} \n {str4}"
-        visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1]).draw()
-        self.window.flip()
-
-    def run_trial(self, trial):
-        event.clearEvents()
-        clk  = self.ttl_clock
-        mod  = str(trial['modality']).lower()
-        side = str(trial['side']).lower()
-
-        # fixation
-        self.screen.fixation_cross()
-
-        # --- Pair 1 (standard @ 0.7 amp, 400 ms gap) ---
-        self.tone.setVolume(0.7)
-        t1 = clk.get_time()
-        self.tone.play()
-        clk.wait_until(t1 + 0.050)
-        clk.wait_until(t1 + 0.050 + 0.400)
-        self.tone.play()
-        clk.wait_until(t1 + 2*0.050 + 0.400)
-
-        # inter-pair gap
-        clk.wait_until(clk.get_time() + 1.000)
-
-        # --- Pair 2 (comparison) ---
-        st = self.stair[side]  # PEST state for this side
-
-        if mod == 'time':
-            # snap to 8 ms grid within side range
-            if side == 'shorter':
-                comp_ms = max(160, min(392, int(round(st['curr'] / 8.0) * 8)))
-            else:
-                comp_ms = max(408, min(640, int(round(st['curr'] / 8.0) * 8)))
-
-            t2 = clk.get_time()
-            self.tone.setVolume(0.7)
-            self.tone.play()
-            clk.wait_until(t2 + 0.050)
-            clk.wait_until(t2 + 0.050 + (comp_ms / 1000.0))
-            self.tone.play()
-            clk.wait_until(t2 + 2*0.050 + (comp_ms / 1000.0))
-
-            trial['comparison_ms'] = float(comp_ms)
-            trial['stair_step_ms'] = float(st['step'])  # log step used this trial
-
-        else:  # volume (quieter/louder), grid 0.27 dB
-            if side == 'quieter':
-                comp_db = max(64.9, min(72.73, float(st['curr'])))
-            else:
-                comp_db = min(81.1, max(73.27, float(st['curr'])))
-
-            comp_amp = float(min(1.0, 0.7 * (10 ** ((comp_db - 73.0) / 20.0))))
-
-            t2 = clk.get_time()
-            self.tone.setVolume(comp_amp)
-            self.tone.play()
-            clk.wait_until(t2 + 0.050)
-            clk.wait_until(t2 + 0.050 + 0.400)
-            self.tone.setVolume(comp_amp)
-            self.tone.play()
-            clk.wait_until(t2 + 2*0.050 + 0.400)
-            self.tone.setVolume(1.0)
-
-            trial['comparison_dba']  = float(comp_db)
-            trial['stair_step_dba']  = float(st['step'])  # log step used this trial
-
-        # --- response window ---
-        trial['response'], trial['rt'] = self.wait_response(clk.get_time(), float(trial['question_dur']))
-        trial['correct'] = (trial['response'] == trial['trial_type'])
-
-        # --- PEST update (classic + border-safe): halve on reversal; double after two same-direction moves ---
-        # Define movement: toward standard if correct, away if incorrect.
-        # Use unified sign for direction comparison: toward = -1, away = +1.
-        move_dir = (-1 if trial['correct'] else +1)
-
-        # Store the old level so we can tell if we actually moved after clamping.
-        old_curr = st['curr']
-
-        # 1. Propose + clamp
-        if mod == 'time':
-            if side == 'shorter':
-                # correct => toward standard => make interval longer => +step
-                # incorrect => away => make interval even shorter => -step
-                st['curr'] += (+st['step'] if trial['correct'] else -st['step'])
-                # snap to 8 ms grid and clamp to that side's allowed range
-                st['curr']  = float(int(round(st['curr'] / 8.0) * 8))
-                if st['curr'] < 160.0:
-                    st['curr'] = 160.0
-                if st['curr'] > 392.0:
-                    st['curr'] = 392.0
-
-            else:  # side == 'longer'
-                # correct => toward standard => make interval shorter => -step
-                # incorrect => away => make interval even longer => +step
-                st['curr'] += (-st['step'] if trial['correct'] else +st['step'])
-                st['curr']  = float(int(round(st['curr'] / 8.0) * 8))
-                if st['curr'] < 408.0:
-                    st['curr'] = 408.0
-                if st['curr'] > 640.0:
-                    st['curr'] = 640.0
-
-        else:
-            # volume
-            if side == 'quieter':
-                # correct => toward standard (louder) => +step in dB toward 73
-                # incorrect => away (quieter) => -step
-                st['curr'] += (+st['step'] if trial['correct'] else -st['step'])
-                if st['curr'] < 64.9:
-                    st['curr'] = 64.9
-                if st['curr'] > 72.73:
-                    st['curr'] = 72.73
-
-            else:  # side == 'louder'
-                # correct => toward standard (quieter) => -step
-                # incorrect => away (louder) => +step
-                st['curr'] += (-st['step'] if trial['correct'] else +st['step'])
-                if st['curr'] < 73.27:
-                    st['curr'] = 73.27
-                if st['curr'] > 81.1:
-                    st['curr'] = 81.1
-
-        # 2. Did we actually move?
-        actually_moved = (st['curr'] != old_curr)
-
-        if actually_moved:
-            # Normal PESt adaptation only if we escaped the boundary.
-
-            if st['last_dir'] != 0 and move_dir != st['last_dir']:
-                # reversal -> halve step (but not below min_step), reset consecutive counter
-                st['step'] = max(st['min_step'], st['step'] / 2.0)
-                st['same_dir'] = 0
-
-            else:
-                # same direction as last (or first informative move)
-                if st['last_dir'] == 0 or move_dir == st['last_dir']:
-                    st['same_dir'] += 1
-                else:
-                    # new direction but last_dir was 0 should already be covered above,
-                    # but keep a safe fallback
-                    st['same_dir'] = 1
-
-                # after two same-direction moves -> double step
-                if st['same_dir'] >= 2:
-                    st['step'] = st['step'] * 2.0
-                    st['same_dir'] = 0  # require two more same-direction moves for next doubling
-
-            # update last_dir ONLY when a real move happened
-            st['last_dir'] = move_dir
-
-        else:
-            # We hit a border and got clamped. Do NOT adapt step. Do NOT change same_dir. Do NOT touch last_dir.
-            pass
-
-        self.stair[side] = st
-        self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
-        return trial
-
-class SensMotControl(Task):
-    def __init__(self, info, screen, ttl_clock, const, subj_id):
-        super().__init__(info, screen, ttl_clock, const, subj_id)
-        self.feedback_type = 'acc+rt'
-
-    def init_task(self):
-        trial_info_file = self.const.task_dir / self.name / self.task_file
-        self.trial_info = pd.read_csv(trial_info_file, sep='\t')
-        self.corr_key = [self.trial_info['key_one'].iloc[0], self.trial_info['key_two'].iloc[0]]
-
-    def display_instructions(self):
-        """
-        displays the instruction for the task
-        """
-        cond = str(self.trial_info['condition'].iloc[0])
-        if cond == 'blue':
-            str1 = f"When the circle turns BLUE, press {self.corr_key[0]}."
-            str2 = f"When the circle turns WHITE, do nothing."
-            self.instruction_text = f"{self.descriptive_name} Task\n\n {str1} \n {str2}"
-        elif cond == 'red':
-            str1 = f"When the circle turns RED, press {self.corr_key[1]}."
-            str2 = f"When the circle turns WHITE, do nothing."
-            self.instruction_text = f"{self.descriptive_name} Task\n\n {str1} \n {str2}"
-        else:
-            str1 = f"When the circle turns BLUE, press {self.corr_key[0]}."
-            str2 = f"When the circle turns RED, press {self.corr_key[1]}."
-            str3 = f"When the circle turns WHITE, do nothing."
-            self.instruction_text = f"{self.descriptive_name} Task\n\n {str1} \n {str2} \n {str3}"
-
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text,
-                                       height=self.const.instruction_text_height, color=[-1, -1, -1], wrapWidth=25, pos=(0, 0))
-        instr_visual.draw()
-        self.window.flip()
-
-    def run_trial(self, trial):
-
-        event.clearEvents()
-
-        # --- 1) Fixation circle (1000 ms) ---
-        visual.Circle(self.window, radius=3, edges=128, lineWidth=4, lineColor='black', fillColor=None).draw()
-        self.window.flip()
-        self.ttl_clock.wait_until(self.ttl_clock.get_time() + 1)
-        self.ttl_clock.update()
-
-        # --- 2) Colored circle (2000 ms) ---
-        visual.Circle(self.window, radius=3, edges=128,lineWidth=6, fillColor= trial['stim'], lineColor=trial['stim']).draw()
-        self.window.flip()
-
-        # collect responses 0: no response 1-4: key pressed
-        trial['response'], trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['question_dur'])
-        trial['correct'] = (trial['response'] == trial['trial_type'])
-
-        # display trial feedback
-        if trial['display_trial_feedback']:
-            # show feedback, then let the schedule absorb any remaining time
-            self.display_trial_feedback(True, trial['correct'])
-        else:
-            # no feedback: go BLANK immediately and stay blank until end_time (we don't want the fixation cross here)
-            self.window.flip(clearBuffer=True)
-            while self.ttl_clock.get_time() < trial['end_time']:
-                # flip blank frames so the window stays responsive
-                self.window.flip()
-                self.ttl_clock.update()
-
-        return trial
-
-
 class SpatialNavigation(Task):
     def __init__(self, info, screen, ttl_clock, const, subj_id):
         super().__init__(info, screen, ttl_clock, const, subj_id)
@@ -1570,6 +1109,110 @@ class SemanticPrediction(Task):
 
         # display trial feedback
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
+
+        return trial
+    
+class SemanticSwitching(Task):
+    """
+    Read a sentence and decide if the last word of the sentence makes sense.
+    Click "3" if the last word makes sense; click "4" if not. Be as accurate
+    and fast as possible.
+    """
+
+    def __init__(self, info, screen, ttl_clock, const, subj_id):
+        super().__init__(info, screen, ttl_clock, const, subj_id)
+        self.feedback_type = 'acc+rt'
+
+    def init_task(self):
+        """
+        Initialize task - default is to read the target information into the
+        trial_info dataframe.
+        """
+        self.trial_info = pd.read_csv(
+            self.const.task_dir / self.name / self.task_file, sep='\t'
+        )
+        self.corr_key = [
+            self.trial_info['key_false'].iloc[0],
+            self.trial_info['key_true'].iloc[0],
+        ]
+
+    def display_instructions(self):
+        """
+        Display instructions for the semantic switching task.
+        """
+        str1 = "You will read a sentence and decide if the last word makes sense."
+        str2 = f"If it makes sense, press {self.corr_key[1]}"
+        str3 = f"If it doesn't make sense, press {self.corr_key[0]}"
+        self.instruction_text = (
+            f"{self.descriptive_name} Task\n\n {str1} \n {str2} \n {str3}"
+        )
+        instr_visual = visual.TextStim(
+            self.window,
+            text=self.instruction_text,
+            height=self.const.instruction_text_height,
+            color=[-1, -1, -1],
+        )
+        instr_visual.draw()
+        self.window.flip()
+
+    def run_trial(self, trial):
+        """Runs a single trial of the semantic switching task."""
+        height_word = 2
+
+        event.clearEvents()
+
+        # Sentence is stored with '|' delimiters
+        sentence = trial['sentence']
+        words = sentence.split('|')
+
+        # Show words sequentially, 800 ms each
+        for word in words:
+            word_stim = visual.TextStim(
+                self.window,
+                text=word,
+                pos=(0.0, 0.0),
+                color=(-1, -1, -1),
+                units='deg',
+                height=height_word,
+            )
+            word_stim.draw()
+            self.window.flip()
+            self.ttl_clock.wait_until(self.ttl_clock.get_time() + 0.8)
+
+        event.clearEvents()
+
+        # Fixation cross
+        self.screen.fixation_cross()
+        self.ttl_clock.wait_until(self.ttl_clock.get_time() + 0.5)
+        event.clearEvents()
+
+        # Display last word
+        last_word_stim = visual.TextStim(
+            self.window,
+            text=trial['last_word'],
+            pos=(0.0, 0.0),
+            color=(-1, -1, -1),
+            units='deg',
+            height=height_word,
+            wrapWidth=30,
+        )
+        last_word_stim.draw()
+        self.window.flip()
+
+        event.clearEvents()
+
+        # Collect response
+        trial['response'], trial['rt'] = self.wait_response(
+            self.ttl_clock.get_time(),
+            trial['sentence_dur'],
+        )
+        trial['correct'] = (trial['response'] == self.corr_key[trial['trial_type']])
+
+        # Feedback
+        self.display_trial_feedback(
+            trial['display_trial_feedback'],
+            trial['correct'],
+        )
 
         return trial
 
@@ -2788,73 +2431,439 @@ class Affective(Task):
 
         return trial
 
-
-class SemanticSwitching(Task):
-
+class SerialReactionTime(Task):
     """
-    Read a sentence and decide if the last word of the sentence makes sense. Click "3" if the last word makes sense; click "4" if not. Be as accurate and fast as possible.
+    Serial reaction time task
     """
-
     def __init__(self, info, screen, ttl_clock, const, subj_id):
         super().__init__(info, screen, ttl_clock, const, subj_id)
-        self.feedback_type = 'acc+rt'
 
     def init_task(self):
         """
         Initialize task - default is to read the target information into the trial_info dataframe
         """
+        trial_info_file = self.const.task_dir / self.name / self.task_file
+        self.trial_info = pd.read_csv(trial_info_file, sep='\t')
+        self.corr_key = [self.trial_info['key_one'].iloc[0],self.trial_info['key_two'].iloc[0],self.trial_info['key_three'].iloc[0],self.trial_info['key_four'].iloc[0]]
+
+
+    def display_instructions(self): # overriding the display instruction from the parent class
+        self.instruction_text = f"Press the buttons that match the green boxes"
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1],pos=(0, 0.3))
+        instr_visual.draw()
+        self.window.flip()
+
+    def run(self):
+        """Override to show empty boxes during initial wait."""
+        box_positions = [(-5, 2), (-3, 2), (3, 2), (5, 2)]
+        self.boxes = [
+            visual.Rect(
+                self.window, width=2, height=2,
+                pos=pos, fillColor='white',
+                lineColor='black', units='deg'
+            )
+            for pos in box_positions
+        ]
+        for box in self.boxes:
+            box.draw()
+        self.window.flip()
+        return super().run()
+
+    def run_trial(self, trial):
+
+        event.clearEvents()
+
+        trial_stim = int(trial['stim'])
+        target_index = trial_stim - 1
+
+        # wait until absolute stimulus time
+        stim_onset = self.ttl_clock.get_time()
+
+        # show stimulus
+        for j, box in enumerate(self.boxes):
+            box.fillColor = 'green' if j == target_index else 'white'
+            box.draw()
+        self.window.flip()
+
+        # keep green on for trial_dur
+        self.ttl_clock.wait_until(stim_onset + trial['trial_dur'])
+
+        # back to white
+        for box in self.boxes:
+            box.fillColor = 'white'
+            box.draw()
+        self.window.flip()
+
+        # collect responses until absolute end_time
+        responses = []
+        while self.ttl_clock.get_time() < (stim_onset + trial['trial_dur'] + trial['iti_dur']):
+            keys = event.getKeys(
+                keyList=self.const.response_keys,
+                timeStamped=self.ttl_clock.clock
+            )
+            for key, timestamp in keys:
+                rt = timestamp - stim_onset
+                responses.append((key, rt))
+
+        trial['responses'] = responses
+        return trial
+    
+class FingerRhythmic(Task):
+    def __init__(self, info, screen, ttl_clock, const, subj_id):
+        super().__init__(info, screen, ttl_clock, const, subj_id)
+
+    def init_task(self):
         self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
-        self.corr_key = [self.trial_info['key_false'].iloc[0],self.trial_info['key_true'].iloc[0]]
+        self.corr_key = [self.trial_info['key_one'].iloc[0]]
 
     def display_instructions(self):
         """
         displays the instruction for the task
         """
-        str1 = f"You will read a sentence and decide if the last word makes sense."
-        str2 = f"If it makes sense, press {self.corr_key[1]}"
-        str3 = f"if it doesn't make sense, press {self.corr_key[0]}"
-        self.instruction_text = f"{self.descriptive_name} Task\n\n {str1} \n {str2} \n {str3}"
+
+        str1 = f"Tap along to the tones using the {self.corr_key[0]} key."
+        str2 = f"Keep tapping at the same pace when the tones stop."
+        self.instruction_text = f"{self.descriptive_name} Task\n\n {str1} \n {str2}"
         instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1])
         instr_visual.draw()
         self.window.flip()
 
     def run_trial(self, trial):
-        """ Runs a single trial of the semantic switching task """
-
-        height_word = 2
+        """ Runs a single trial of the Finger Rhythmic task """
 
         event.clearEvents()
+        txt = (f"New trial starts now") # this text shows when a new trials starts
+        visual.TextStim(self.window, text=txt,height=self.const.instruction_text_height, color=[-1, -1, -1]).draw()
+        self.window.flip()
+        self.ttl_clock.wait_until(self.ttl_clock.get_time() + 2)
 
-        # get sentence and split into words by space
-        sentence = trial['sentence']
-        words = sentence.split('|')
-
-        #show words seqeuntially each for 800ms
-        for word in words:
-            word_stim = visual.TextStim(self.window, text=word, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height=height_word)
-            word_stim.draw()
-            self.window.flip()
-            self.ttl_clock.wait_until(self.ttl_clock.get_time() + 0.8)
-
-        event.clearEvents()
-
-        # Fixation cross
         self.screen.fixation_cross()
-        self.ttl_clock.wait_until(self.ttl_clock.get_time() + 0.5)
         event.clearEvents()
-        
-        # Display last word
-        last_word_stim = visual.TextStim(self.window, text=trial['last_word'], pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height= height_word, wrapWidth=30)
-        last_word_stim.draw()
+        clk = self.ttl_clock.clock
+        t0 = clk.getTime()                    # trial anchor (TTL)
+
+        # --- Play FIRST tone now, then use THIS time as the grid anchor
+        beep = sound.Sound(value=1000, secs=0.05, sampleRate=48000, stereo=True)
+        beep.play()
+        t_first = clk.getTime()               # when we triggered the first tone (TTL)
+        ioi = 0.65
+        expected = [(t_first - t0) + i*ioi for i in range(12)]  # expected, aligned to first tone
+
+        # Track beep times for timing verification (quiet by default)
+        beep_times = [t_first]
+
+        taps_rel = []
+
+        # --- Remaining 11 tones by absolute TTL deadlines; collect keys in-between
+        for i in range(1, 12):
+            deadline = t_first + i*ioi
+            while True:
+                now = clk.getTime()
+                if now >= deadline:
+                    # Create a new Sound object for each beep to ensure it plays
+                    beep = sound.Sound(value=1000, secs=0.05, sampleRate=48000, stereo=True)
+                    beep.play()
+                    beep_time = clk.getTime()
+                    beep_times.append(beep_time)
+                    break
+                res = event.waitKeys(maxWait=deadline - now,
+                                     keyList=self.const.response_keys,
+                                     timeStamped=clk)
+                if res:
+                    for _, ts in res:
+                        taps_rel.append(ts - t0)
+
+        # --- Silent phase: collect until absolute end_time
+        end_abs = float(trial['end_time'])
+        while True:
+            now = clk.getTime()
+            if now >= end_abs:
+                break
+            res = event.waitKeys(maxWait=end_abs - now,
+                                 keyList=self.const.response_keys,
+                                 timeStamped=clk)
+            if res:
+                for _, ts in res:
+                    taps_rel.append(ts - t0)
+
+        # --- Self-paced ISIs only (strictly after last tone onset)
+        last_tone_t = expected[-1]            # relative to t0
+        self_taps = [t for t in taps_rel if t > last_tone_t]
+        isis = np.diff(self_taps) if len(self_taps) > 1 else np.array([], float)
+        isis = isis[(isis >= 0.300) & (isis <= 0.900)]
+
+        trial['iri_ms_mean']         = float(np.mean(isis) * 1000.0) if isis.size else np.nan
+        trial['iri_ms_sd']           = float(np.std(isis)  * 1000.0) if isis.size else np.nan
+        trial['iris_ms_json']        = json.dumps((isis * 1000.0).tolist())
+        trial['expected_rel_s_json'] = json.dumps([e for e in expected])  # seconds rel to t0
+        trial['tap_rel_s_json']      = json.dumps(taps_rel)
+        # Save beep times relative to trial start (t0)
+        beep_times_rel = [bt - t0 for bt in beep_times]
+        trial['beep_times_rel_s_json'] = json.dumps(beep_times_rel)
+
+        return trial
+
+
+class TimePerception(Task):
+    def __init__(self, info, screen, ttl_clock, const, subj_id):
+        super().__init__(info, screen, ttl_clock, const, subj_id)
+        self.feedback_type = 'acc+rt'
+
+    def init_task(self):
+        self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
+        self.corr_key = [self.trial_info['key_one'].iloc[0], self.trial_info['key_two'].iloc[0]]
+        # one tone for both modalities
+        self.tone = sound.Sound(value=1000, secs=0.050, sampleRate=48000, stereo=True)  # 1000 Hz, 50 ms
+
+        # PEST state per side
+        mod = str(self.trial_info['modality'].iloc[0]).lower()
+        if mod == 'time':
+            # start ±120 ms from 400; step 40; min step 8; directions tracked
+            self.stair = {
+                'shorter': {'curr': 280.0, 'step': 40.0, 'min_step': 8.0,  'last_dir': 0, 'same_dir': 0},
+                'longer':  {'curr': 520.0, 'step': 40.0, 'min_step': 8.0,  'last_dir': 0, 'same_dir': 0},
+            }
+        else:  # 'volume' (quieter/louder)
+            # start ±1.62 dB from 73; step 1.08; min step 0.27
+            self.stair = {
+                'quieter': {'curr': 71.38, 'step': 1.08, 'min_step': 0.27, 'last_dir': 0, 'same_dir': 0},
+                'louder':  {'curr': 74.62, 'step': 1.08, 'min_step': 0.27, 'last_dir': 0, 'same_dir': 0},
+            }
+
+    def display_instructions(self):
+        mod = str(self.trial_info['modality'].iloc[0]).lower()
+        if mod == 'time':
+            str1 = f"You will hear two pairs of tones."
+            str2 = f"Press [{self.corr_key[0]}] if the SECOND interval is shorter."
+            str3 = f"Press [{self.corr_key[1]}] if the SECOND interval is longer."
+            str4 = "The first pair is always the same."
+            self.instruction_text = f"{self.descriptive_name} Task\n\n {str1} \n {str2} \n {str3} \n {str4}"
+
+        else:
+            str1 = f"You will hear two pairs of tones."
+            str2 = f"Press [{self.corr_key[0]}] if the SECOND interval is quieter."
+            str3 = f"Press [{self.corr_key[1]}] if the SECOND interval is louder."
+            str4 = "The first pair is always the same."
+            self.instruction_text = f"{self.descriptive_name} Task\n\n {str1} \n {str2} \n {str3} \n {str4}"
+        visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1]).draw()
         self.window.flip()
 
+    def run_trial(self, trial):
+        event.clearEvents()
+        clk  = self.ttl_clock
+        mod  = str(trial['modality']).lower()
+        side = str(trial['side']).lower()
+
+        # fixation
+        self.screen.fixation_cross()
+
+        # --- Pair 1 (standard @ 0.7 amp, 400 ms gap) ---
+        self.tone.setVolume(0.7)
+        t1 = clk.get_time()
+        self.tone.play()
+        clk.wait_until(t1 + 0.050)
+        clk.wait_until(t1 + 0.050 + 0.400)
+        self.tone.play()
+        clk.wait_until(t1 + 2*0.050 + 0.400)
+
+        # inter-pair gap
+        clk.wait_until(clk.get_time() + 1.000)
+
+        # --- Pair 2 (comparison) ---
+        st = self.stair[side]  # PEST state for this side
+
+        if mod == 'time':
+            # snap to 8 ms grid within side range
+            if side == 'shorter':
+                comp_ms = max(160, min(392, int(round(st['curr'] / 8.0) * 8)))
+            else:
+                comp_ms = max(408, min(640, int(round(st['curr'] / 8.0) * 8)))
+
+            t2 = clk.get_time()
+            self.tone.setVolume(0.7)
+            self.tone.play()
+            clk.wait_until(t2 + 0.050)
+            clk.wait_until(t2 + 0.050 + (comp_ms / 1000.0))
+            self.tone.play()
+            clk.wait_until(t2 + 2*0.050 + (comp_ms / 1000.0))
+
+            trial['comparison_ms'] = float(comp_ms)
+            trial['stair_step_ms'] = float(st['step'])  # log step used this trial
+
+        else:  # volume (quieter/louder), grid 0.27 dB
+            if side == 'quieter':
+                comp_db = max(64.9, min(72.73, float(st['curr'])))
+            else:
+                comp_db = min(81.1, max(73.27, float(st['curr'])))
+
+            comp_amp = float(min(1.0, 0.7 * (10 ** ((comp_db - 73.0) / 20.0))))
+
+            t2 = clk.get_time()
+            self.tone.setVolume(comp_amp)
+            self.tone.play()
+            clk.wait_until(t2 + 0.050)
+            clk.wait_until(t2 + 0.050 + 0.400)
+            self.tone.setVolume(comp_amp)
+            self.tone.play()
+            clk.wait_until(t2 + 2*0.050 + 0.400)
+            self.tone.setVolume(1.0)
+
+            trial['comparison_dba']  = float(comp_db)
+            trial['stair_step_dba']  = float(st['step'])  # log step used this trial
+
+        # --- response window ---
+        trial['response'], trial['rt'] = self.wait_response(clk.get_time(), float(trial['question_dur']))
+        trial['correct'] = (trial['response'] == trial['trial_type'])
+
+        # --- PEST update (classic + border-safe): halve on reversal; double after two same-direction moves ---
+        # Define movement: toward standard if correct, away if incorrect.
+        # Use unified sign for direction comparison: toward = -1, away = +1.
+        move_dir = (-1 if trial['correct'] else +1)
+
+        # Store the old level so we can tell if we actually moved after clamping.
+        old_curr = st['curr']
+
+        # 1. Propose + clamp
+        if mod == 'time':
+            if side == 'shorter':
+                # correct => toward standard => make interval longer => +step
+                # incorrect => away => make interval even shorter => -step
+                st['curr'] += (+st['step'] if trial['correct'] else -st['step'])
+                # snap to 8 ms grid and clamp to that side's allowed range
+                st['curr']  = float(int(round(st['curr'] / 8.0) * 8))
+                if st['curr'] < 160.0:
+                    st['curr'] = 160.0
+                if st['curr'] > 392.0:
+                    st['curr'] = 392.0
+
+            else:  # side == 'longer'
+                # correct => toward standard => make interval shorter => -step
+                # incorrect => away => make interval even longer => +step
+                st['curr'] += (-st['step'] if trial['correct'] else +st['step'])
+                st['curr']  = float(int(round(st['curr'] / 8.0) * 8))
+                if st['curr'] < 408.0:
+                    st['curr'] = 408.0
+                if st['curr'] > 640.0:
+                    st['curr'] = 640.0
+
+        else:
+            # volume
+            if side == 'quieter':
+                # correct => toward standard (louder) => +step in dB toward 73
+                # incorrect => away (quieter) => -step
+                st['curr'] += (+st['step'] if trial['correct'] else -st['step'])
+                if st['curr'] < 64.9:
+                    st['curr'] = 64.9
+                if st['curr'] > 72.73:
+                    st['curr'] = 72.73
+
+            else:  # side == 'louder'
+                # correct => toward standard (quieter) => -step
+                # incorrect => away (louder) => +step
+                st['curr'] += (-st['step'] if trial['correct'] else +st['step'])
+                if st['curr'] < 73.27:
+                    st['curr'] = 73.27
+                if st['curr'] > 81.1:
+                    st['curr'] = 81.1
+
+        # 2. Did we actually move?
+        actually_moved = (st['curr'] != old_curr)
+
+        if actually_moved:
+            # Normal PESt adaptation only if we escaped the boundary.
+
+            if st['last_dir'] != 0 and move_dir != st['last_dir']:
+                # reversal -> halve step (but not below min_step), reset consecutive counter
+                st['step'] = max(st['min_step'], st['step'] / 2.0)
+                st['same_dir'] = 0
+
+            else:
+                # same direction as last (or first informative move)
+                if st['last_dir'] == 0 or move_dir == st['last_dir']:
+                    st['same_dir'] += 1
+                else:
+                    # new direction but last_dir was 0 should already be covered above,
+                    # but keep a safe fallback
+                    st['same_dir'] = 1
+
+                # after two same-direction moves -> double step
+                if st['same_dir'] >= 2:
+                    st['step'] = st['step'] * 2.0
+                    st['same_dir'] = 0  # require two more same-direction moves for next doubling
+
+            # update last_dir ONLY when a real move happened
+            st['last_dir'] = move_dir
+
+        else:
+            # We hit a border and got clamped. Do NOT adapt step. Do NOT change same_dir. Do NOT touch last_dir.
+            pass
+
+        self.stair[side] = st
+        self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
+        return trial
+
+class SensMotControl(Task):
+    def __init__(self, info, screen, ttl_clock, const, subj_id):
+        super().__init__(info, screen, ttl_clock, const, subj_id)
+        self.feedback_type = 'acc+rt'
+
+    def init_task(self):
+        trial_info_file = self.const.task_dir / self.name / self.task_file
+        self.trial_info = pd.read_csv(trial_info_file, sep='\t')
+        self.corr_key = [self.trial_info['key_one'].iloc[0], self.trial_info['key_two'].iloc[0]]
+
+    def display_instructions(self):
+        """
+        displays the instruction for the task
+        """
+        cond = str(self.trial_info['condition'].iloc[0])
+        if cond == 'blue':
+            str1 = f"When the circle turns BLUE, press {self.corr_key[0]}."
+            str2 = f"When the circle turns WHITE, do nothing."
+            self.instruction_text = f"{self.descriptive_name} Task\n\n {str1} \n {str2}"
+        elif cond == 'red':
+            str1 = f"When the circle turns RED, press {self.corr_key[1]}."
+            str2 = f"When the circle turns WHITE, do nothing."
+            self.instruction_text = f"{self.descriptive_name} Task\n\n {str1} \n {str2}"
+        else:
+            str1 = f"When the circle turns BLUE, press {self.corr_key[0]}."
+            str2 = f"When the circle turns RED, press {self.corr_key[1]}."
+            str3 = f"When the circle turns WHITE, do nothing."
+            self.instruction_text = f"{self.descriptive_name} Task\n\n {str1} \n {str2} \n {str3}"
+
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text,
+                                       height=self.const.instruction_text_height, color=[-1, -1, -1], wrapWidth=25, pos=(0, 0))
+        instr_visual.draw()
+        self.window.flip()
+
+    def run_trial(self, trial):
+
         event.clearEvents()
 
+        # --- 1) Fixation circle (1000 ms) ---
+        visual.Circle(self.window, radius=3, edges=128, lineWidth=4, lineColor='black', fillColor=None).draw()
+        self.window.flip()
+        self.ttl_clock.wait_until(self.ttl_clock.get_time() + 1)
+        self.ttl_clock.update()
+
+        # --- 2) Colored circle (2000 ms) ---
+        visual.Circle(self.window, radius=3, edges=128,lineWidth=6, fillColor= trial['stim'], lineColor=trial['stim']).draw()
+        self.window.flip()
+
         # collect responses 0: no response 1-4: key pressed
-        trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['sentence_dur'])
-        trial['correct'] = (trial['response'] == self.corr_key[trial['trial_type']])
+        trial['response'], trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['question_dur'])
+        trial['correct'] = (trial['response'] == trial['trial_type'])
 
         # display trial feedback
-        self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
+        if trial['display_trial_feedback']:
+            # show feedback, then let the schedule absorb any remaining time
+            self.display_trial_feedback(True, trial['correct'])
+        else:
+            # no feedback: go BLANK immediately and stay blank until end_time (we don't want the fixation cross here)
+            self.window.flip(clearBuffer=True)
+            while self.ttl_clock.get_time() < trial['end_time']:
+                # flip blank frames so the window stays responsive
+                self.window.flip()
+                self.ttl_clock.update()
 
         return trial

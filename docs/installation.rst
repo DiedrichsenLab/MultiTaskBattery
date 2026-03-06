@@ -56,3 +56,13 @@ Make sure you upgrade pip first, then install the required packages from the `re
     pip install --upgrade pip
     pip install -r requirements.txt
 
+Step 5: Add to Python Path
+--------------------------
+Add the repository to your Python path so that ``MultiTaskBattery`` can be imported from anywhere. Add the following line to your shell profile (e.g., ``~/.bashrc``, ``~/.zshrc``, or ``~/.bash_profile``)::
+
+    export PYTHONPATH="/path/to/MultiTaskBattery:$PYTHONPATH"
+
+On Windows, add the repository path to the ``PYTHONPATH`` environment variable via System Settings > Environment Variables.
+
+Replace ``/path/to/MultiTaskBattery`` with the actual path to the cloned repository.
+
