@@ -9,31 +9,23 @@ import MultiTaskBattery.utils as ut
 import itertools
 
 
-def _sample_balanced_by_condition(
-    stim: pd.DataFrame,
-    n_trials: int,
-    condition_col: str,
-    stimulus_seed: int | None,
-    exclude_col: str | None = None,
-    exclude_stimuli: set | list | None = None,
-) -> pd.DataFrame:
+def sample_balanced_by_condition(stim, n_trials, condition_col, stimulus_seed,
+                                 exclude_col = None, exclude_stimuli = None):
     """
     Sample n_trials with equal representation per condition, then shuffle.
-
     When no specific condition is requested, ensures each condition contributes
     equally (or as evenly as possible) and randomizes presentation order.
 
     Args:
-        stim: Full stimulus DataFrame.
-        n_trials: Target number of trials.
-        condition_col: Column name for condition labels (e.g. 'condition', 'cloze_descript').
-        stimulus_seed: Random seed for reproducibility; None for non-deterministic.
-        exclude_col: Optional column for exclusion (e.g. 'picture', 'story', 'sentence').
-        exclude_stimuli: Optional set/list of values to exclude from that column.
+        stim (DataFrame): Full stimulus DataFrame.
+        n_trials (int): Target number of trials.
+        condition_col (str): Column name for condition labels (e.g. 'condition', 'cloze_descript').
+        stimulus_seed (int or None): Random seed for reproducibility; None for non-deterministic.
+        exclude_col (str or None): Optional column for exclusion (e.g. 'picture', 'story', 'sentence').
+        exclude_stimuli (set or list or None): Optional set/list of values to exclude from that column.
 
     Returns:
-        DataFrame with n_trials rows (or fewer if insufficient stimuli), balanced
-        by condition and shuffled.
+        DataFrame: n_trials rows (or fewer if insufficient stimuli), balanced by condition and shuffled.
     """
     if condition_col not in stim.columns:
         # No condition column: fall back to simple random sample
@@ -58,7 +50,7 @@ def _sample_balanced_by_condition(
     # Sample equally per condition (distribute remainder to first conditions)
     n_per_cond = n_trials // len(conditions)
     remainder = n_trials % len(conditions)
-    sampled: list[pd.DataFrame] = []
+    sampled = []
     for i, cond in enumerate(conditions):
         n_take = n_per_cond + (1 if i < remainder else 0)
         cond_stim = stim[stim[condition_col] == cond]
@@ -1093,7 +1085,7 @@ class SemanticPrediction(TaskFile):
         # Condition column: use 'condition' if present, else 'cloze_descript' (high/low cloze)
         cond_col = 'condition' if 'condition' in stim.columns else 'cloze_descript'
         if stimulus_seed is not None:
-            stim = _sample_balanced_by_condition(
+            stim = sample_balanced_by_condition(
                 stim, n_trials, cond_col, stimulus_seed,
                 exclude_col='sentence', exclude_stimuli=exclude_stimuli,
             )
@@ -1214,7 +1206,7 @@ class RMET(TaskFile):
             stim = stim.loc[~stim['condition'].str.contains('practice', na=False)]
             if stimulus_seed is not None:
                 # Balanced sampling: equal per condition, randomized order
-                stim = _sample_balanced_by_condition(
+                stim = sample_balanced_by_condition(
                     stim, n_trials, 'condition', stimulus_seed,
                     exclude_col='picture', exclude_stimuli=exclude_stimuli,
                 )
@@ -1431,7 +1423,9 @@ class ActionPrediction(TaskFile):
                         question_dur=4,
                         file_name=None,
                         stim_file = None,
-                        condition=None):
+                        condition=None,
+                        stimulus_seed=None,
+                        exclude_stimuli=None):
         
 
         # count number of trials
@@ -1449,9 +1443,20 @@ class ActionPrediction(TaskFile):
         else:
             stim = stim.loc[~stim['condition'].str.contains('practice', na=False)]
 
-        start_row = (run_number - 1) * n_trials
-        end_row = run_number * n_trials - 1
-        stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
+        if stimulus_seed is not None or (condition is None and run_number is not None):
+            # Balanced sampling: equal per condition, randomized order.
+            # Use stimulus_seed if provided, else run_number for reproducibility.
+            seed = stimulus_seed if stimulus_seed is not None else run_number
+            stim = sample_balanced_by_condition(
+                stim, n_trials, 'condition', seed,
+                exclude_col='video', exclude_stimuli=exclude_stimuli,
+            )
+        else:
+            start_row = (run_number - 1) * n_trials
+            end_row = run_number * n_trials - 1
+            stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
+
+        n_actual = min(n_trials, len(stim))
 
         for n in range(n_trials):
             trial = {}
@@ -1648,7 +1653,7 @@ class FauxPas(TaskFile):
         else:
             stim = stim.loc[~stim['condition'].str.contains('practice', na=False)]
             if stimulus_seed is not None:
-                stim = _sample_balanced_by_condition(
+                stim = sample_balanced_by_condition(
                     stim, n_trials, 'condition', stimulus_seed,
                     exclude_col='story', exclude_stimuli=exclude_stimuli,
                 )
@@ -2226,7 +2231,7 @@ class SemanticSwitching(TaskFile):
         # else 'cloze_descript' (high/low cloze)
         cond_col = 'condition' if 'condition' in stim.columns else 'cloze_descript'
         if stimulus_seed is not None:
-            stim = _sample_balanced_by_condition(
+            stim = sample_balanced_by_condition(
                 stim, n_trials, cond_col, stimulus_seed,
                 exclude_col='sentence', exclude_stimuli=exclude_stimuli,
             )
