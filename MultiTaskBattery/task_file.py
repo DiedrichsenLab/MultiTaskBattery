@@ -37,9 +37,12 @@ def sample_balanced_by_condition(stim, n_trials, condition_col, stimulus_seed,
     if exclude_col and exclude_stimuli is not None:
         stim = stim[~stim[exclude_col].isin(exclude_stimuli)]
 
-    # Exclude practice and invalid conditions
-    valid = stim[condition_col].notna() & (
-        ~stim[condition_col].astype(str).str.lower().str.contains('practice', na=False)
+    # Exclude practice, exclude, and invalid conditions
+    cond_str = stim[condition_col].astype(str).str.lower()
+    valid = (
+        stim[condition_col].notna()
+        & ~cond_str.str.contains('practice', na=False)
+        & (cond_str != 'exclude')
     )
     stim = stim[valid].copy()
     conditions = [c for c in stim[condition_col].unique() if c and str(c).strip()]
@@ -450,13 +453,22 @@ class TheoryOfMind(TaskFile):
         if condition:
             stim = stim[stim['condition'] == condition]
         else:
-            stim = stim.loc[~stim['condition'].str.contains('practice', na=False)]
+            stim = stim.loc[
+                ~stim['condition'].str.contains('practice', na=False)
+                & (stim['condition'].astype(str).str.lower() != 'exclude')
+            ]
+            if stimulus_seed is not None:
+                stim = sample_balanced_by_condition(
+                    stim, n_trials, 'condition', stimulus_seed,
+                    exclude_col='story', exclude_stimuli=exclude_stimuli,
+                )
 
         if stimulus_seed is not None:
-            if exclude_stimuli is not None:
-                stim = stim[~stim['story'].isin(exclude_stimuli)]
-            stim = stim.sample(n=n_trials, random_state=stimulus_seed).reset_index(drop=True)
-        else:
+            if condition is not None:
+                if exclude_stimuli is not None:
+                    stim = stim[~stim['story'].isin(exclude_stimuli)]
+                stim = stim.sample(n=n_trials, random_state=stimulus_seed).reset_index(drop=True)
+        elif stimulus_seed is None:
             start_row = (run_number - 1) * n_trials
             end_row = run_number * n_trials - 1
             stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
@@ -1203,7 +1215,10 @@ class RMET(TaskFile):
         if condition:
             stim = stim[stim['condition'] == condition]
         else:
-            stim = stim.loc[~stim['condition'].str.contains('practice', na=False)]
+            stim = stim.loc[
+                ~stim['condition'].str.contains('practice', na=False)
+                & (stim['condition'].astype(str).str.lower() != 'exclude')
+            ]
             if stimulus_seed is not None:
                 # Balanced sampling: equal per condition, randomized order
                 stim = sample_balanced_by_condition(
@@ -1306,7 +1321,10 @@ class PictureSequence(TaskFile):
         if condition:
             stim = stim[stim['condition'] == condition]
         else:
-            stim = stim.loc[~stim['condition'].str.contains('practice', na=False)]
+            stim = stim.loc[
+                ~stim['condition'].str.contains('practice', na=False)
+                & (stim['condition'].astype(str).str.lower() != 'exclude')
+            ]
 
         start_row = (run_number - 1) * n_trials
         end_row = run_number * n_trials - 1
@@ -1372,7 +1390,10 @@ class StorySequence(TaskFile):
         if condition:
             stim = stim[stim['condition'] == condition]
         else:
-            stim = stim.loc[~stim['condition'].str.contains('practice', na=False)]
+            stim = stim.loc[
+                ~stim['condition'].str.contains('practice', na=False)
+                & (stim['condition'].astype(str).str.lower() != 'exclude')
+            ]
 
         start_row = (run_number - 1) * n_trials
         end_row = run_number * n_trials - 1
@@ -1441,7 +1462,10 @@ class ActionPrediction(TaskFile):
         if condition:
             stim = stim[stim['condition'] == condition]
         else:
-            stim = stim.loc[~stim['condition'].str.contains('practice', na=False)]
+            stim = stim.loc[
+                ~stim['condition'].str.contains('practice', na=False)
+                & (stim['condition'].astype(str).str.lower() != 'exclude')
+            ]
 
         if condition is None:
             if stimulus_seed is not None or run_number is not None:
@@ -1516,7 +1540,10 @@ class Movie(TaskFile):
         if condition:
             stim = stim[stim['condition'] == condition]
         else:
-            stim = stim.loc[~stim['condition'].str.contains('practice', na=False)]
+            stim = stim.loc[
+                ~stim['condition'].str.contains('practice', na=False)
+                & (stim['condition'].astype(str).str.lower() != 'exclude')
+            ]
 
         start_row = (run_number - 1) * n_trials
         end_row = run_number * n_trials - 1
@@ -1579,7 +1606,10 @@ class StrangeStories(TaskFile):
         if condition:
             stim = stim[stim['condition'] == condition]
         else:
-            stim = stim.loc[~stim['condition'].str.contains('practice', na=False)]
+            stim = stim.loc[
+                ~stim['condition'].str.contains('practice', na=False)
+                & (stim['condition'].astype(str).str.lower() != 'exclude')
+            ]
 
         if half: # Selects different stimuli for the social and control condition, to enable showing each video only once for each participant (assign half the subjects one type of video as social and the other the other half of the videos as social)
             stim = stim[stim['half'] == half]
@@ -1653,7 +1683,10 @@ class FauxPas(TaskFile):
         if condition:
             stim = stim[stim['condition'] == condition]
         else:
-            stim = stim.loc[~stim['condition'].str.contains('practice', na=False)]
+            stim = stim.loc[
+                ~stim['condition'].str.contains('practice', na=False)
+                & (stim['condition'].astype(str).str.lower() != 'exclude')
+            ]
             if stimulus_seed is not None:
                 stim = sample_balanced_by_condition(
                     stim, n_trials, 'condition', stimulus_seed,
@@ -1748,7 +1781,10 @@ class FrithHappe(TaskFile):
         if condition:
             stim = stim[stim['condition'] == condition]
         else:
-            stim = stim.loc[~stim['condition'].str.contains('practice', na=False)]
+            stim = stim.loc[
+                ~stim['condition'].str.contains('practice', na=False)
+                & (stim['condition'].astype(str).str.lower() != 'exclude')
+            ]
 
         start_row = (run_number - 1) * n_trials
         end_row = run_number * n_trials - 1
@@ -1846,7 +1882,10 @@ class Liking(TaskFile):
             # Randomize order with seed
             stim = stim.sample(frac=1, random_state=84).reset_index(drop=True)
         else:
-            stim = stim.loc[~stim['condition'].str.contains('practice', na=False)]
+            stim = stim.loc[
+                ~stim['condition'].str.contains('practice', na=False)
+                & (stim['condition'].astype(str).str.lower() != 'exclude')
+            ]
 
         start_row = (run_number - 1) * n_trials
         end_row = run_number * n_trials - 1
@@ -2171,7 +2210,10 @@ class SensMotControl(TaskFile):
         if condition:
             stim = stim[stim['condition'] == condition]
         else:
-            stim = stim.loc[~stim['condition'].str.contains('practice', na=False)]
+            stim = stim.loc[
+                ~stim['condition'].str.contains('practice', na=False)
+                & (stim['condition'].astype(str).str.lower() != 'exclude')
+            ]
 
         start_row = (run_number - 1) * n_trials
         end_row = run_number * n_trials - 1
