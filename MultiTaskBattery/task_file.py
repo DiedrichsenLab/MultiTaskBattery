@@ -8,6 +8,72 @@ import random
 import MultiTaskBattery.utils as ut
 import itertools
 
+
+def _sample_balanced_by_condition(
+    stim: pd.DataFrame,
+    n_trials: int,
+    condition_col: str,
+    stimulus_seed: int | None,
+    exclude_col: str | None = None,
+    exclude_stimuli: set | list | None = None,
+) -> pd.DataFrame:
+    """
+    Sample n_trials with equal representation per condition, then shuffle.
+
+    When no specific condition is requested, ensures each condition contributes
+    equally (or as evenly as possible) and randomizes presentation order.
+
+    Args:
+        stim: Full stimulus DataFrame.
+        n_trials: Target number of trials.
+        condition_col: Column name for condition labels (e.g. 'condition', 'cloze_descript').
+        stimulus_seed: Random seed for reproducibility; None for non-deterministic.
+        exclude_col: Optional column for exclusion (e.g. 'picture', 'story', 'sentence').
+        exclude_stimuli: Optional set/list of values to exclude from that column.
+
+    Returns:
+        DataFrame with n_trials rows (or fewer if insufficient stimuli), balanced
+        by condition and shuffled.
+    """
+    if condition_col not in stim.columns:
+        # No condition column: fall back to simple random sample
+        if exclude_col and exclude_stimuli is not None:
+            stim = stim[~stim[exclude_col].isin(exclude_stimuli)]
+        n = min(n_trials, len(stim))
+        return stim.sample(n=n, random_state=stimulus_seed).reset_index(drop=True)
+
+    if exclude_col and exclude_stimuli is not None:
+        stim = stim[~stim[exclude_col].isin(exclude_stimuli)]
+
+    # Exclude practice and invalid conditions
+    valid = stim[condition_col].notna() & (
+        ~stim[condition_col].astype(str).str.lower().str.contains('practice', na=False)
+    )
+    stim = stim[valid].copy()
+    conditions = [c for c in stim[condition_col].unique() if c and str(c).strip()]
+    if len(conditions) < 2:
+        n = min(n_trials, len(stim))
+        return stim.sample(n=n, random_state=stimulus_seed).reset_index(drop=True)
+
+    # Sample equally per condition (distribute remainder to first conditions)
+    n_per_cond = n_trials // len(conditions)
+    remainder = n_trials % len(conditions)
+    sampled: list[pd.DataFrame] = []
+    for i, cond in enumerate(conditions):
+        n_take = n_per_cond + (1 if i < remainder else 0)
+        cond_stim = stim[stim[condition_col] == cond]
+        n_take = min(n_take, len(cond_stim))
+        if n_take > 0:
+            s = cond_stim.sample(n=n_take, random_state=stimulus_seed)
+            sampled.append(s)
+
+    if not sampled:
+        return stim.iloc[0:0].reset_index(drop=True)
+    result = pd.concat(sampled, ignore_index=True)
+    result = result.sample(frac=1, random_state=stimulus_seed).reset_index(drop=True)
+    return result
+
+
 def shuffle_rows(dataframe, keep_in_middle=None):
     """
     randomly shuffles rows of the dataframe
@@ -1024,16 +1090,20 @@ class SemanticPrediction(TaskFile):
         else:
             stim = pd.read_csv(self.stim_dir / 'semantic_prediction' / 'semantic_prediction.csv')
 
+        # Condition column: use 'condition' if present, else 'cloze_descript' (high/low cloze)
+        cond_col = 'condition' if 'condition' in stim.columns else 'cloze_descript'
         if stimulus_seed is not None:
-            if exclude_stimuli is not None:
-                stim = stim[~stim['sentence'].isin(exclude_stimuli)]
-            stim = stim.sample(n=n_trials, random_state=stimulus_seed).reset_index(drop=True)
+            stim = _sample_balanced_by_condition(
+                stim, n_trials, cond_col, stimulus_seed,
+                exclude_col='sentence', exclude_stimuli=exclude_stimuli,
+            )
         else:
             start_row = (run_number - 1) * n_trials
             end_row = run_number * n_trials - 1
             stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
 
-        for n in range(n_trials):        
+        n_actual = min(n_trials, len(stim))
+        for n in range(n_actual):        
             trial = {}
             trial['key_true'] = responses[0]
             trial['key_false'] = responses[1]
@@ -1041,9 +1111,9 @@ class SemanticPrediction(TaskFile):
             trial['hand'] = hand
             trial['trial_dur'] = trial_dur
             trial['sentence_dur'] = sentence_dur
-            trial['sentence'] = stim['sentence'][n]
+            trial['sentence'] = stim['sentence'].iloc[n]
             trial['trial_type'] = random.choice([0,1]) 
-            last_word = [stim['wrong_word'][n], stim['right_word'][n]]
+            last_word = [stim['wrong_word'].iloc[n], stim['right_word'].iloc[n]]
             trial['last_word'] = last_word[trial['trial_type']]
             trial['display_trial_feedback'] = True
             trial['start_time'] = t
@@ -1142,20 +1212,28 @@ class RMET(TaskFile):
             stim = stim[stim['condition'] == condition]
         else:
             stim = stim.loc[~stim['condition'].str.contains('practice', na=False)]
-            # Alternate between emotion and age conditions
-            stim_emotion = stim[stim['condition'] == 'emotion']
-            stim_age = stim[stim['condition'] == 'age']
-            # Split each condition into halves
-            first_half = zip(stim_emotion.iloc[:len(stim_emotion) // 2].iterrows(),
-                            stim_age.iloc[len(stim_age) // 2:].iterrows())
-            second_half = zip(stim_emotion.iloc[len(stim_emotion) // 2:].iterrows(),
-                            stim_age.iloc[:len(stim_age) // 2].iterrows())
-            stim = pd.concat([pd.concat([row1[1], row2[1]], axis=1).T for row1, row2 in itertools.chain(first_half, second_half)], ignore_index=True)
+            if stimulus_seed is not None:
+                # Balanced sampling: equal per condition, randomized order
+                stim = _sample_balanced_by_condition(
+                    stim, n_trials, 'condition', stimulus_seed,
+                    exclude_col='picture', exclude_stimuli=exclude_stimuli,
+                )
+            else:
+                # Legacy: alternate between emotion and age conditions
+                stim_emotion = stim[stim['condition'] == 'emotion']
+                stim_age = stim[stim['condition'] == 'age']
+                first_half = zip(stim_emotion.iloc[:len(stim_emotion) // 2].iterrows(),
+                                stim_age.iloc[len(stim_age) // 2:].iterrows())
+                second_half = zip(stim_emotion.iloc[len(stim_emotion) // 2:].iterrows(),
+                                stim_age.iloc[:len(stim_age) // 2].iterrows())
+                stim = pd.concat([pd.concat([row1[1], row2[1]], axis=1).T for row1, row2 in itertools.chain(first_half, second_half)], ignore_index=True)
 
         if stimulus_seed is not None:
-            if exclude_stimuli is not None:
-                stim = stim[~stim['picture'].isin(exclude_stimuli)]
-            stim = stim.sample(n=n_trials, random_state=stimulus_seed).reset_index(drop=True)
+            if condition is not None:
+                if exclude_stimuli is not None:
+                    stim = stim[~stim['picture'].isin(exclude_stimuli)]
+                stim = stim.sample(n=n_trials, random_state=stimulus_seed).reset_index(drop=True)
+            # else: stim already set by balanced sampling when condition was None
         elif half: # Selects different stimuli for the social and control condition, to enable showing each story only once for each participant
             start_row = (run_number - 1) * n_trials
             end_row = run_number * n_trials - 1
@@ -1569,11 +1647,17 @@ class FauxPas(TaskFile):
             stim = stim[stim['condition'] == condition]
         else:
             stim = stim.loc[~stim['condition'].str.contains('practice', na=False)]
+            if stimulus_seed is not None:
+                stim = _sample_balanced_by_condition(
+                    stim, n_trials, 'condition', stimulus_seed,
+                    exclude_col='story', exclude_stimuli=exclude_stimuli,
+                )
 
         if stimulus_seed is not None:
-            if exclude_stimuli is not None:
-                stim = stim[~stim['story'].isin(exclude_stimuli)]
-            stim = stim.sample(n=n_trials, random_state=stimulus_seed).reset_index(drop=True)
+            if condition is not None:
+                if exclude_stimuli is not None:
+                    stim = stim[~stim['story'].isin(exclude_stimuli)]
+                stim = stim.sample(n=n_trials, random_state=stimulus_seed).reset_index(drop=True)
         elif half: # Selects different stimuli for the social and control condition, to enable showing each story only once for each participant
             start_row = (run_number - 1) * n_trials
             end_row = run_number * n_trials - 1
@@ -2086,16 +2170,21 @@ class SemanticSwitching(TaskFile):
         else:
             stim = pd.read_csv(self.stim_dir / 'semantic_switching' / 'semantic_switching.csv')
 
+        # Condition column: use 'condition' if present (predictable/switched/meaningless),
+        # else 'cloze_descript' (high/low cloze)
+        cond_col = 'condition' if 'condition' in stim.columns else 'cloze_descript'
         if stimulus_seed is not None:
-            if exclude_stimuli is not None:
-                stim = stim[~stim['sentence'].isin(exclude_stimuli)]
-            stim = stim.sample(n=n_trials, random_state=stimulus_seed).reset_index(drop=True)
+            stim = _sample_balanced_by_condition(
+                stim, n_trials, cond_col, stimulus_seed,
+                exclude_col='sentence', exclude_stimuli=exclude_stimuli,
+            )
         else:
             start_row = (run_number - 1) * n_trials
             end_row = run_number * n_trials - 1
             stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
 
-        for n in range(n_trials):        
+        n_actual = min(n_trials, len(stim))
+        for n in range(n_actual):        
             trial = {}
             trial['key_true'] = responses[0]
             trial['key_false'] = responses[1]
@@ -2103,9 +2192,9 @@ class SemanticSwitching(TaskFile):
             trial['hand'] = hand
             trial['trial_dur'] = trial_dur
             trial['sentence_dur'] = sentence_dur
-            trial['sentence'] = stim['sentence'][n]
+            trial['sentence'] = stim['sentence'].iloc[n]
             trial['trial_type'] = random.choice([0,1]) 
-            last_word = [stim['wrong_word'][n], stim['right_word'][n]]
+            last_word = [stim['wrong_word'].iloc[n], stim['right_word'].iloc[n]]
             trial['last_word'] = last_word[trial['trial_type']]
             trial['display_trial_feedback'] = True
             trial['start_time'] = t
