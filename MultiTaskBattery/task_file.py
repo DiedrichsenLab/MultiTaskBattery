@@ -1443,22 +1443,24 @@ class ActionPrediction(TaskFile):
         else:
             stim = stim.loc[~stim['condition'].str.contains('practice', na=False)]
 
-        if stimulus_seed is not None or (condition is None and run_number is not None):
-            # Balanced sampling: equal per condition, randomized order.
-            # Use stimulus_seed if provided, else run_number for reproducibility.
-            seed = stimulus_seed if stimulus_seed is not None else run_number
-            stim = sample_balanced_by_condition(
-                stim, n_trials, 'condition', seed,
-                exclude_col='video', exclude_stimuli=exclude_stimuli,
-            )
+        if condition is None:
+            if stimulus_seed is not None or run_number is not None:
+                # Balanced sampling: equal per condition, randomized order.
+                # Use stimulus_seed if provided, else run_number for reproducibility.
+                seed = stimulus_seed if stimulus_seed is not None else run_number
+                stim = sample_balanced_by_condition(
+                    stim, n_trials, 'condition', seed,
+                    exclude_col='video', exclude_stimuli=exclude_stimuli,
+                )
+            else:
+                stim = stim.iloc[:n_trials].reset_index(drop=True)
         else:
-            start_row = (run_number - 1) * n_trials
-            end_row = run_number * n_trials - 1
+            start_row = (run_number - 1) * n_trials if run_number is not None else 0
+            end_row = start_row + n_trials - 1
             stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
 
         n_actual = min(n_trials, len(stim))
-
-        for n in range(n_trials):
+        for n in range(n_actual):
             trial = {}
             trial['key_one'] = responses[0]
             trial['key_two'] = responses[1]
