@@ -15,6 +15,7 @@ import sys
 from unittest.mock import MagicMock
 sys.path.insert(0, os.path.abspath('../MultiTaskBattery'))
 sys.path.insert(0, os.path.abspath('..'))
+sys.path.insert(0, os.path.abspath('extension'))
 
 # -- Project information -----------------------------------------------------
 
@@ -37,7 +38,9 @@ extensions = ['sphinx.ext.napoleon',
               'sphinx.ext.mathjax',
               'sphinx.ext.intersphinx',
               'sphinx.ext.doctest',
-              'nbsphinx']
+              'nbsphinx',
+              'sphinx_design',
+              'task_docs']
 
 napoleon_custom_sections = [('Returns', 'params_style')]
 
@@ -79,5 +82,20 @@ MOCK_MODULES = [
     "psychopy.sound",
     "psychopy.event",
     "psychopy.gui",
+    "psychopy.prefs",
+    "pyglet",
+    "pyglet.window",
+    "pyglet.window.key",
+    "pyglet.canvas",
+    "moviepy",
+    "moviepy.audio",
+    "moviepy.audio.io",
+    "moviepy.audio.io.AudioFileClip",
+    "nibabel",
+    "nibabel.cifti2",
+    "numba",
+    "pooch",
+    "sounddevice",
+    "soundfile",
 ]
 sys.modules.update({mod_name: Mock() for mod_name in MOCK_MODULES})
