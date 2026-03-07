@@ -1111,7 +1111,7 @@ class SemanticPrediction(Task):
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
 
         return trial
-    
+
 class SemanticSwitching(Task):
     """
     Read a sentence and decide if the last word of the sentence makes sense.
@@ -1215,7 +1215,7 @@ class SemanticSwitching(Task):
         )
 
         return trial
-
+    
 class VisualSearch(Task):
 
     """
