@@ -22,8 +22,8 @@ task_dir = exp_dir / "task_files"  # contains target files for the task
 run_dir    = exp_dir / "run_files"     # contains run files for each session
 data_dir   = exp_dir / "data"          # This is where the result files are being saved
 
-# do run_file_name as a formated string
-default_run_filename = 'run_01.tsv'
+# Use {} so the GUI auto-fills the run number (e.g. run_01.tsv, run_02.tsv, ...)
+default_run_filename = 'run_{}.tsv'
 
 # This is were the stimuli for the different task are stored
 package_dir = Path(os.path.dirname(os.path.dirname(os.path.realpath(mtb.__file__))))
