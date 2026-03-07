@@ -8,7 +8,6 @@ import random
 import MultiTaskBattery.utils as ut
 import itertools
 
-
 def shuffle_rows(dataframe, keep_in_middle=None):
     """
     randomly shuffles rows of the dataframe
@@ -376,15 +375,8 @@ class TheoryOfMind(TaskFile):
                         question_dur=4,
                         file_name=None,
                         stim_file=None,
-                        condition=None,
-                        stimulus_seed=None,
-                        exclude_stimuli=None,
-                        stim=None):
-        """
-        stim (list or None): If provided, use only these story names (in order) instead of
-            stimulus_seed or run_number sampling. Overrides seeding and row slicing.
-        """
-        stim_list = stim
+                        condition=None):
+
         # count number of trials
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
@@ -398,30 +390,13 @@ class TheoryOfMind(TaskFile):
         if condition:
             stim = stim[stim['condition'] == condition]
         else:
-            stim = stim.loc[
-                ~stim['condition'].str.contains('practice', na=False)
-                & (stim['condition'].astype(str).str.lower() != 'exclude')
-            ]
+            stim = stim.loc[~stim['condition'].str.contains('practice', na=False)]
+            
+        start_row = (run_number - 1) * n_trials
+        end_row = run_number * n_trials - 1
+        stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
 
-        if stim_list is not None and len(stim_list) > 0:
-            stim = stim[stim['story'].isin(stim_list)]
-            result = []
-            for s in stim_list:
-                match = stim[stim['story'] == s]
-                if len(match) > 0:
-                    result.append(match.iloc[:1])
-            stim = pd.concat(result, ignore_index=True) if result else stim.iloc[0:0]
-        elif stimulus_seed is not None:
-            if exclude_stimuli is not None:
-                stim = stim[~stim['story'].isin(exclude_stimuli)]
-            stim = stim.sample(n=min(n_trials, len(stim)), random_state=stimulus_seed).reset_index(drop=True)
-        elif stimulus_seed is None:
-            start_row = (run_number - 1) * n_trials
-            end_row = run_number * n_trials - 1
-            stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
-
-        n_actual = min(n_trials, len(stim))
-        for n in range(n_actual):
+        for n in range(n_trials):
             trial = {}
             trial['key_true'] = responses[0]
             trial['key_false'] = responses[1]
@@ -1028,15 +1003,8 @@ class SemanticPrediction(TaskFile):
                         trial_dur=15,
                         sentence_dur=2,
                         file_name=None,
-                        stim_file=None,
-                        stimulus_seed=None,
-                        exclude_stimuli=None,
-                        stim=None):
-        """
-        stim (list or None): If provided, use only these sentence strings (in order) instead of
-            stimulus_seed or run_number sampling. Overrides seeding and row slicing.
-        """
-        stim_list = stim
+                        stim_file=None):
+
         # count number of trials
         n_trials = int(np.floor(task_dur / (trial_dur)))
         trial_info = []
@@ -1047,25 +1015,11 @@ class SemanticPrediction(TaskFile):
         else:
             stim = pd.read_csv(self.stim_dir / 'semantic_prediction' / 'semantic_prediction.csv')
 
-        if stim_list is not None and len(stim_list) > 0:
-            stim = stim[stim['sentence'].isin(stim_list)]
-            result = []
-            for s in stim_list:
-                match = stim[stim['sentence'] == s]
-                if len(match) > 0:
-                    result.append(match.iloc[:1])
-            stim = pd.concat(result, ignore_index=True) if result else stim.iloc[0:0]
-        elif stimulus_seed is not None:
-            if exclude_stimuli is not None:
-                stim = stim[~stim['sentence'].isin(exclude_stimuli)]
-            stim = stim.sample(n=min(n_trials, len(stim)), random_state=stimulus_seed).reset_index(drop=True)
-        else:
-            start_row = (run_number - 1) * n_trials
-            end_row = run_number * n_trials - 1
-            stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
+        start_row = (run_number - 1) * n_trials
+        end_row = run_number * n_trials - 1
+        stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
 
-        n_actual = min(n_trials, len(stim))
-        for n in range(n_actual):        
+        for n in range(n_trials):        
             trial = {}
             trial['key_true'] = responses[0]
             trial['key_false'] = responses[1]
@@ -1073,9 +1027,9 @@ class SemanticPrediction(TaskFile):
             trial['hand'] = hand
             trial['trial_dur'] = trial_dur
             trial['sentence_dur'] = sentence_dur
-            trial['sentence'] = stim['sentence'].iloc[n]
+            trial['sentence'] = stim['sentence'][n]
             trial['trial_type'] = random.choice([0,1]) 
-            last_word = [stim['wrong_word'].iloc[n], stim['right_word'].iloc[n]]
+            last_word = [stim['wrong_word'][n], stim['right_word'][n]]
             trial['last_word'] = last_word[trial['trial_type']]
             trial['display_trial_feedback'] = True
             trial['start_time'] = t
@@ -1155,19 +1109,16 @@ class RMET(TaskFile):
                         file_name=None,
                         stim_file = None,
                         condition=None,
-                        half=None,
-                        stimulus_seed=None,
-                        exclude_stimuli=None,
-                        stim=None):
-        """
-        stim (list or None): If provided, use only these picture names (in order) instead of
-            stimulus_seed or run_number sampling. Overrides seeding and row slicing.
-        """
-        stim_list = stim
+                        half=None):
+        
+
         # count number of trials
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
         t = 0
+
+        start_row = (run_number - 1) * n_trials
+        end_row = run_number * n_trials - 1
 
         if stim_file:
             stim = pd.read_csv(self.stim_dir / self.name / stim_file)
@@ -1177,40 +1128,18 @@ class RMET(TaskFile):
         if condition:
             stim = stim[stim['condition'] == condition]
         else:
-            stim = stim.loc[
-                ~stim['condition'].str.contains('practice', na=False)
-                & (stim['condition'].astype(str).str.lower() != 'exclude')
-            ]
-            if stimulus_seed is not None and stim_list is None:
-                if exclude_stimuli is not None:
-                    stim = stim[~stim['picture'].isin(exclude_stimuli)]
-                stim = stim.sample(n=min(n_trials, len(stim)), random_state=stimulus_seed).reset_index(drop=True)
-            elif stimulus_seed is None and stim_list is None:
-                # Legacy: alternate between emotion and age conditions
-                stim_emotion = stim[stim['condition'] == 'emotion']
-                stim_age = stim[stim['condition'] == 'age']
-                first_half = zip(stim_emotion.iloc[:len(stim_emotion) // 2].iterrows(),
-                                stim_age.iloc[len(stim_age) // 2:].iterrows())
-                second_half = zip(stim_emotion.iloc[len(stim_emotion) // 2:].iterrows(),
-                                stim_age.iloc[:len(stim_age) // 2].iterrows())
-                stim = pd.concat([pd.concat([row1[1], row2[1]], axis=1).T for row1, row2 in itertools.chain(first_half, second_half)], ignore_index=True)
+            stim = stim.loc[~stim['condition'].str.contains('practice', na=False)]
+            # Alternate between emotion and age conditions
+            stim_emotion = stim[stim['condition'] == 'emotion']
+            stim_age = stim[stim['condition'] == 'age']
+            # Split each condition into halves
+            first_half = zip(stim_emotion.iloc[:len(stim_emotion) // 2].iterrows(),
+                            stim_age.iloc[len(stim_age) // 2:].iterrows())
+            second_half = zip(stim_emotion.iloc[len(stim_emotion) // 2:].iterrows(),
+                            stim_age.iloc[:len(stim_age) // 2].iterrows())
+            stim = pd.concat([pd.concat([row1[1], row2[1]], axis=1).T for row1, row2 in itertools.chain(first_half, second_half)], ignore_index=True)
 
-        if stim_list is not None and len(stim_list) > 0:
-            stim = stim[stim['picture'].isin(stim_list)]
-            result = []
-            for s in stim_list:
-                match = stim[stim['picture'] == s]
-                if len(match) > 0:
-                    result.append(match.iloc[:1])
-            stim = pd.concat(result, ignore_index=True) if result else stim.iloc[0:0]
-        elif stimulus_seed is not None:
-            if condition is not None:
-                if exclude_stimuli is not None:
-                    stim = stim[~stim['picture'].isin(exclude_stimuli)]
-                stim = stim.sample(n=min(n_trials, len(stim)), random_state=stimulus_seed).reset_index(drop=True)
-        elif half: # Selects different stimuli for the social and control condition, to enable showing each story only once for each participant
-            start_row = (run_number - 1) * n_trials
-            end_row = run_number * n_trials - 1
+        if half: # Selects different stimuli for the social and control condition, to enable showing each story only once for each participant
             stim_half = stim[stim['half'] == half]
             if n_trials <= stim_half.iloc[start_row:end_row + 1].shape[0]: # Check if there are enough stimuli for the run
                 stim = stim_half.iloc[start_row:end_row + 1].reset_index(drop=True)
@@ -1222,13 +1151,10 @@ class RMET(TaskFile):
                 stim = stim[stim['half'] != half].iloc[new_start_row:new_end_row + 1].reset_index(drop=True)
             else:
                 raise ValueError('Not enough stimuli for the run')
-        else:
-            start_row = (run_number - 1) * n_trials
-            end_row = run_number * n_trials - 1
+        else: 
             stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
-
-        n_actual = min(n_trials, len(stim))
-        for n in range(n_actual):
+    
+        for n in range(n_trials):
             trial = {}
             trial['key_one'] = responses[0]
             trial['key_two'] = responses[1]
@@ -1289,10 +1215,7 @@ class PictureSequence(TaskFile):
         if condition:
             stim = stim[stim['condition'] == condition]
         else:
-            stim = stim.loc[
-                ~stim['condition'].str.contains('practice', na=False)
-                & (stim['condition'].astype(str).str.lower() != 'exclude')
-            ]
+            stim = stim.loc[~stim['condition'].str.contains('practice', na=False)]
 
         start_row = (run_number - 1) * n_trials
         end_row = run_number * n_trials - 1
@@ -1358,10 +1281,7 @@ class StorySequence(TaskFile):
         if condition:
             stim = stim[stim['condition'] == condition]
         else:
-            stim = stim.loc[
-                ~stim['condition'].str.contains('practice', na=False)
-                & (stim['condition'].astype(str).str.lower() != 'exclude')
-            ]
+            stim = stim.loc[~stim['condition'].str.contains('practice', na=False)]
 
         start_row = (run_number - 1) * n_trials
         end_row = run_number * n_trials - 1
@@ -1412,15 +1332,9 @@ class ActionPrediction(TaskFile):
                         question_dur=4,
                         file_name=None,
                         stim_file = None,
-                        condition=None,
-                        stimulus_seed=None,
-                        exclude_stimuli=None,
-                        stim=None):
-        """
-        stim (list or None): If provided, use only these video names (in order) instead of
-            stimulus_seed or run_number sampling. Overrides seeding and row slicing.
-        """
-        stim_list = stim
+                        condition=None):
+        
+
         # count number of trials
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
@@ -1434,34 +1348,13 @@ class ActionPrediction(TaskFile):
         if condition:
             stim = stim[stim['condition'] == condition]
         else:
-            stim = stim.loc[
-                ~stim['condition'].str.contains('practice', na=False)
-                & (stim['condition'].astype(str).str.lower() != 'exclude')
-            ]
+            stim = stim.loc[~stim['condition'].str.contains('practice', na=False)]
 
-        if stim_list is not None and len(stim_list) > 0:
-            stim = stim[stim['video'].isin(stim_list)]
-            result = []
-            for s in stim_list:
-                match = stim[stim['video'] == s]
-                if len(match) > 0:
-                    result.append(match.iloc[:1])
-            stim = pd.concat(result, ignore_index=True) if result else stim.iloc[0:0]
-        elif condition is None:
-            if stimulus_seed is not None or run_number is not None:
-                if exclude_stimuli is not None:
-                    stim = stim[~stim['video'].isin(exclude_stimuli)]
-                seed = stimulus_seed if stimulus_seed is not None else run_number
-                stim = stim.sample(n=min(n_trials, len(stim)), random_state=seed).reset_index(drop=True)
-            else:
-                stim = stim.iloc[:n_trials].reset_index(drop=True)
-        else:
-            start_row = (run_number - 1) * n_trials if run_number is not None else 0
-            end_row = start_row + n_trials - 1
-            stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
+        start_row = (run_number - 1) * n_trials
+        end_row = run_number * n_trials - 1
+        stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
 
-        n_actual = min(n_trials, len(stim))
-        for n in range(n_actual):
+        for n in range(n_trials):
             trial = {}
             trial['key_one'] = responses[0]
             trial['key_two'] = responses[1]
@@ -1517,10 +1410,7 @@ class Movie(TaskFile):
         if condition:
             stim = stim[stim['condition'] == condition]
         else:
-            stim = stim.loc[
-                ~stim['condition'].str.contains('practice', na=False)
-                & (stim['condition'].astype(str).str.lower() != 'exclude')
-            ]
+            stim = stim.loc[~stim['condition'].str.contains('practice', na=False)]
 
         start_row = (run_number - 1) * n_trials
         end_row = run_number * n_trials - 1
@@ -1583,10 +1473,7 @@ class StrangeStories(TaskFile):
         if condition:
             stim = stim[stim['condition'] == condition]
         else:
-            stim = stim.loc[
-                ~stim['condition'].str.contains('practice', na=False)
-                & (stim['condition'].astype(str).str.lower() != 'exclude')
-            ]
+            stim = stim.loc[~stim['condition'].str.contains('practice', na=False)]
 
         if half: # Selects different stimuli for the social and control condition, to enable showing each video only once for each participant (assign half the subjects one type of video as social and the other the other half of the videos as social)
             stim = stim[stim['half'] == half]
@@ -1642,15 +1529,16 @@ class FauxPas(TaskFile):
                     file_name=None,
                     stim_file=None,
                     condition=None,
-                    half=None,
-                    stimulus_seed=None,
-                    exclude_stimuli=None):
+                    half=None):
 
 
         # count number of trials
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
         t = 0
+
+        start_row = (run_number - 1) * n_trials
+        end_row = run_number * n_trials - 1
 
         if stim_file:
             stim = pd.read_csv(stim_file)
@@ -1660,23 +1548,9 @@ class FauxPas(TaskFile):
         if condition:
             stim = stim[stim['condition'] == condition]
         else:
-            stim = stim.loc[
-                ~stim['condition'].str.contains('practice', na=False)
-                & (stim['condition'].astype(str).str.lower() != 'exclude')
-            ]
-            if stimulus_seed is not None:
-                if exclude_stimuli is not None:
-                    stim = stim[~stim['story'].isin(exclude_stimuli)]
-                stim = stim.sample(n=min(n_trials, len(stim)), random_state=stimulus_seed).reset_index(drop=True)
-
-        if stimulus_seed is not None:
-            if condition is not None:
-                if exclude_stimuli is not None:
-                    stim = stim[~stim['story'].isin(exclude_stimuli)]
-                stim = stim.sample(n=n_trials, random_state=stimulus_seed).reset_index(drop=True)
-        elif half: # Selects different stimuli for the social and control condition, to enable showing each story only once for each participant
-            start_row = (run_number - 1) * n_trials
-            end_row = run_number * n_trials - 1
+            stim = stim.loc[~stim['condition'].str.contains('practice', na=False)]
+        
+        if half: # Selects different stimuli for the social and control condition, to enable showing each story only once for each participant
             stim_half = stim[stim['half'] == half]
             if n_trials <= stim_half.iloc[start_row:end_row + 1].shape[0]: # Check if there are enough stimuli for the run
                 stim = stim_half.iloc[start_row:end_row + 1].reset_index(drop=True)
@@ -1688,9 +1562,7 @@ class FauxPas(TaskFile):
                 stim = stim[stim['half'] != half].iloc[new_start_row:new_end_row + 1].reset_index(drop=True)
             else:
                 raise ValueError('Not enough stimuli for the run')
-        else:
-            start_row = (run_number - 1) * n_trials
-            end_row = run_number * n_trials - 1
+        else: 
             stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
     
         for n in range(n_trials):
@@ -1757,10 +1629,7 @@ class FrithHappe(TaskFile):
         if condition:
             stim = stim[stim['condition'] == condition]
         else:
-            stim = stim.loc[
-                ~stim['condition'].str.contains('practice', na=False)
-                & (stim['condition'].astype(str).str.lower() != 'exclude')
-            ]
+            stim = stim.loc[~stim['condition'].str.contains('practice', na=False)]
 
         start_row = (run_number - 1) * n_trials
         end_row = run_number * n_trials - 1
@@ -1858,10 +1727,7 @@ class Liking(TaskFile):
             # Randomize order with seed
             stim = stim.sample(frac=1, random_state=84).reset_index(drop=True)
         else:
-            stim = stim.loc[
-                ~stim['condition'].str.contains('practice', na=False)
-                & (stim['condition'].astype(str).str.lower() != 'exclude')
-            ]
+            stim = stim.loc[~stim['condition'].str.contains('practice', na=False)]
 
         start_row = (run_number - 1) * n_trials
         end_row = run_number * n_trials - 1
@@ -2060,23 +1926,12 @@ class FingerRhythmic(TaskFile):
                        task_dur = 70,
                        trial_dur=35, # 2 sec trial start text, 27.95 sec tone train, ~5 sec buffer
                        iti_dur=0,
-                       ioi=0.6,  # Inter-onset interval in seconds (default: 600ms). Can be single value or list for different pace levels
                        file_name=None):
 
         # count number of trials
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
         t = 0
-
-        # Handle ioi as single value or list
-        if isinstance(ioi, (list, np.ndarray)):
-            ioi_list = list(ioi)
-            # Expand to cover all trials by repeating the list
-            ioi_list_expanded = (ioi_list * ((n_trials // len(ioi_list)) + 1))[:n_trials]
-            # Randomize the order
-            random.shuffle(ioi_list_expanded)
-        else:
-            ioi_list_expanded = [ioi] * n_trials  # Repeat single value for all trials
 
         for n in range(n_trials):
             trial = {}
@@ -2085,7 +1940,6 @@ class FingerRhythmic(TaskFile):
             trial['hand'] = hand
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
-            trial['ioi'] = ioi_list_expanded[n]  # Use randomized IOI assignment
             trial['stim'] = 'generated'
             trial['display_trial_feedback'] = False
             trial['start_time'] = t
@@ -2186,10 +2040,7 @@ class SensMotControl(TaskFile):
         if condition:
             stim = stim[stim['condition'] == condition]
         else:
-            stim = stim.loc[
-                ~stim['condition'].str.contains('practice', na=False)
-                & (stim['condition'].astype(str).str.lower() != 'exclude')
-            ]
+            stim = stim.loc[~stim['condition'].str.contains('practice', na=False)]
 
         start_row = (run_number - 1) * n_trials
         end_row = run_number * n_trials - 1
@@ -2210,82 +2061,6 @@ class SensMotControl(TaskFile):
             trial['display_trial_feedback'] = True
             trial['start_time'] = t
             trial['end_time'] = t + trial_dur + iti_dur
-            trial_info.append(trial)
-
-            # Update for next trial:
-            t = trial['end_time']
-
-        trial_info = pd.DataFrame(trial_info)
-        if file_name is not None:
-            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
-        return trial_info
-
-
-class SemanticSwitching(TaskFile):
-    def __init__(self, const):
-        super().__init__(const)
-        self.name = 'semantic_switching'
-
-    def make_task_file(self, hand='right',
-                       responses = [1,2], # 1 = True, 2 = False
-                       run_number=None,
-                       task_dur=30,
-                        trial_dur=15,
-                        sentence_dur=2,
-                        file_name=None,
-                        stim_file=None,
-                        stimulus_seed=None,
-                        exclude_stimuli=None,
-                        stim=None):
-        """
-        stim (list or None): If provided, use only these sentence strings (in order) instead of
-            stimulus_seed or run_number sampling. Overrides seeding and row slicing.
-        """
-        stim_list = stim
-        # count number of trials
-        n_trials = int(np.floor(task_dur / (trial_dur)))
-        trial_info = []
-        t = 0
-
-        if stim_file:
-            stim = pd.read_csv(stim_file)
-        else:
-            stim = pd.read_csv(self.stim_dir / 'semantic_switching' / 'semantic_switching.csv')
-
-        if stim_list is not None and len(stim_list) > 0:
-            stim = stim[stim['sentence'].isin(stim_list)]
-            result = []
-            for s in stim_list:
-                match = stim[stim['sentence'] == s]
-                if len(match) > 0:
-                    result.append(match.iloc[:1])
-            stim = pd.concat(result, ignore_index=True) if result else stim.iloc[0:0]
-        elif stimulus_seed is not None:
-            if exclude_stimuli is not None:
-                stim = stim[~stim['sentence'].isin(exclude_stimuli)]
-            stim = stim.sample(n=min(n_trials, len(stim)), random_state=stimulus_seed).reset_index(drop=True)
-        else:
-            start_row = (run_number - 1) * n_trials
-            end_row = run_number * n_trials - 1
-            stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
-
-        n_actual = min(n_trials, len(stim))
-        for n in range(n_actual):        
-            trial = {}
-            trial['key_true'] = responses[0]
-            trial['key_false'] = responses[1]
-            trial['trial_num'] = n
-            trial['hand'] = hand
-            trial['trial_dur'] = trial_dur
-            trial['sentence_dur'] = sentence_dur
-            trial['sentence'] = stim['sentence'].iloc[n]
-            trial['trial_type'] = random.choice([0,1]) 
-            last_word = [stim['wrong_word'].iloc[n], stim['right_word'].iloc[n]]
-            trial['last_word'] = last_word[trial['trial_type']]
-            trial['display_trial_feedback'] = True
-            trial['start_time'] = t
-            trial['end_time'] = t + trial_dur 
-
             trial_info.append(trial)
 
             # Update for next trial:
