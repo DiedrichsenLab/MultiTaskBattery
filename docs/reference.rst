@@ -24,4 +24,5 @@ The main function will create an Experiment object, will all the settings specif
    reference_screen.rst
    reference_clock.rst
    reference_utils.rst
+   reference_battery.rst
 

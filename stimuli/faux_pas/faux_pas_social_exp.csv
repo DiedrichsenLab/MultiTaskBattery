@@ -30,7 +30,7 @@ Sitting with him the next day, Jake said, “The other stories were terrible.”
 Christine asked, “Where will you put your trophy?”",15,faux pas,Did anyone say something they shouldn't have said or something awkward?,"Yes, No",Yes,Who said something they shouldn't have said or something awkward?,"Christine, Jake, Nobody",Jake,social,2
 "Tim spilled coffee on the floor at a restaurant. The waiter said, “I’ll get you another cup,” and left.
 Tim approached Jack, a customer by the cashier, and asked, “I spilled coffee by my table. Can you mop it up?”",16,faux pas,Did anyone say something they shouldn't have said or something awkward?,"Yes, No",Yes,Who said something they shouldn't have said or something awkward?,"Tim, The waiter, Jack, Nobody",Tim,social,2
-"Eleanor, an older lady, tiredly stood waiting 20 minutes for a late bus. When it arrived there were no seats left.
+"Eleanor, any older lady, tiredly stood waiting 20 minutes for a late bus. When it arrived there were no seats left.
 Eleanor greated her neighbour Paul, speaking about the wait.
 A young man stood and said, “Ma’am, would you like my seat?”",17,control,Did anyone say something they shouldn't have said or something awkward?,"Yes, No",No,Who said something they shouldn't have said or something awkward?,"Paul, Eleanor, Nobody",Nobody,social,2
 "Roger, new at the office, told Andrew, “My wife’s a lawyer.” Moments later, Claire walked into the coffee room, complaining, “Lawyers are so arrogant and greedy.”
@@ -81,7 +81,7 @@ Sitting with him the next day, Jake said, “The other stories were terrible.”
 Christine asked, “Where will you put your trophy?”",15,faux pas,Did Christine’s story win anything?,"Yes, No",No,What did Jake win?,"A trophy, A medal, A pen, Nothing",A trophy,control,1
 "Tim spilled coffee on the floor at a restaurant. The waiter said, “I’ll get you another cup,” and left.
 Tim approached Jack, a customer by the cashier, and asked, “I spilled coffee by my table. Can you mop it up?”",16,faux pas,Did Jack spill the coffee?,"Yes, No",No,Where was Tim?,"In a restaurant, At home, At school, None of the above",In a restaurant,control,1
-"Eleanor, an older lady, tiredly stood waiting 20 minutes for a late bus. When it arrived there were no seats left.
+"Eleanor, any older lady, tiredly stood waiting 20 minutes for a late bus. When it arrived there were no seats left.
 Eleanor greated her neighbour Paul, speaking about the wait.
 A young man stood and said, “Ma’am, would you like my seat?”",17,control,Did Eleanor get on the bus?,"Yes, No",Yes,How long had Eleanor waited?,"50 minutes, 20 minutes, Neither",20 minutes,control,1
 "Roger, new at the office, told Andrew, “My wife’s a lawyer.” Moments later, Claire walked into the coffee room, complaining, “Lawyers are so arrogant and greedy.”
