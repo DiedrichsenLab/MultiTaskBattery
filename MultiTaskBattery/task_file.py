@@ -1196,10 +1196,15 @@ class RMET(TaskFile):
                 stim = pd.concat([pd.concat([row1[1], row2[1]], axis=1).T for row1, row2 in itertools.chain(first_half, second_half)], ignore_index=True)
 
         if stim_list is not None and len(stim_list) > 0:
-            stim = stim[stim['picture'].isin(stim_list)]
+            stim = stim[stim['picture'].isin([s[0] if isinstance(s, (list, tuple)) else s for s in stim_list])]
             result = []
             for s in stim_list:
-                match = stim[stim['picture'] == s]
+                if isinstance(s, (list, tuple)) and len(s) >= 2:
+                    pic, cond = s[0], s[1]
+                    match = stim[(stim['picture'] == pic) & (stim['condition'].astype(str) == str(cond))]
+                else:
+                    pic = s
+                    match = stim[stim['picture'] == pic]
                 if len(match) > 0:
                     result.append(match.iloc[:1])
             stim = pd.concat(result, ignore_index=True) if result else stim.iloc[0:0]
