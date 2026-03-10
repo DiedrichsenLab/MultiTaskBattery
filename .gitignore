@@ -25,3 +25,4 @@ stimuli/liking/clips
 .idea/
 
 /stimuli/semantic_switching
+stimuli/semantic_switching/semantic_switching.csv
