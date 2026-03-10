@@ -230,11 +230,14 @@ class NBack(Task):
         """
         trial_info_file = self.const.task_dir / self.name / self.task_file
         self.trial_info = pd.read_csv(trial_info_file, sep='\t')
-        self.stim=[]
+        self.stim = []
+        picture_scale = getattr(self.const, 'n_back_picture_scale', None) or 1.0
         for stim in self.trial_info['stim']:
             stim_path = self.const.stim_dir / self.name / stim
-            self.stim.append(visual.ImageStim(self.window, str(stim_path)))
-        self.corr_key = [self.trial_info['key_nomatch'].iloc[0],self.trial_info['key_match'].iloc[0]]
+            img = visual.ImageStim(self.window, str(stim_path))
+            img.size = img.size * picture_scale
+            self.stim.append(img)
+        self.corr_key = [self.trial_info['key_nomatch'].iloc[0], self.trial_info['key_match'].iloc[0]]
 
     def display_instructions(self):
         """
