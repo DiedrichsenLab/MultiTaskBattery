@@ -2255,7 +2255,7 @@ class SemanticSwitching(TaskFile):
         if stim_file:
             stim = pd.read_csv(stim_file)
         else:
-            stim = pd.read_csv(self.stim_dir / 'semantic_switching' / 'semantic_switching.csv')
+            stim = pd.read_csv(self.stim_dir / 'semantic_switching' / 'semantic_switching_new.csv')
 
         if stim_list is not None and len(stim_list) > 0:
             stim = stim[stim['sentence'].isin(stim_list)]
