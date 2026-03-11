@@ -1392,28 +1392,26 @@ class RMET(Task):
         answer_options = trial['options']
         # Separate them into four strings
         answer_options = answer_options.split(',')
-        # Create TextStim objects for each answer option
+        # Create TextStim objects for each answer option (number to the left of text, same line)
         answer_stims = []
+        # Height of the option text: use experiment-specific override if provided,
+        # otherwise fall back to the original MultiTaskBattery default (1.2 deg).
+        option_height = getattr(self.const, 'rmet_option_text_height', None) or 1.2
+
         for i, option in enumerate(answer_options):
-            # 0 and 1 should be on the left and right of the top line (y position 7 and x positions -7 and 7)
-            # 2 and 3 should be on the left and right of the bottom line (y position -7 and x positions -7 and 7)
+            # 0 and 1 on top left/right; 2 and 3 on bottom left/right
             x = -8 if i % 2 == 0 else 6
             y = 5 if i < 2 else -5
-
-            if len (option) < 3:
-                tabs = 2
-            elif len(option) < 9:
-                tabs = 3
-            else:
-                tabs = 4
-            tab_string = ''.join(["\t"] * tabs)
-            answer_stim = visual.TextStim(self.window, text=f'{i+1}.{tab_string}',
-                                          pos=(x, y-0.04), color='blue', height=1, alignHoriz='center')
-
-            answer_stims.append(answer_stim)
-            tab_string = ''.join(["\t"] * (tabs-1))
-            answer_stim = visual.TextStim(self.window, text=f'{tab_string}{option}',
-                                          pos=(x, y), color=[-1, -1, -1], height=1.4, alignHoriz='center')
+            # Left-align so "1.  option" has number left of text (no overlap)
+            label = f'{i+1}.  {option.strip()}'
+            answer_stim = visual.TextStim(
+                self.window,
+                text=label,
+                pos=(x, y),
+                color=[-1, -1, -1],
+                height=option_height,
+                alignHoriz='left',
+            )
             answer_stims.append(answer_stim)
 
         # Display stimuli
