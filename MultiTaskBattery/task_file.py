@@ -385,7 +385,9 @@ class TheoryOfMind(TaskFile):
             stimulus_seed or run_number sampling. Overrides seeding and row slicing.
         """
         stim_list = stim
-        # count number of trials
+        # Count number of trials based on timing; may be overridden below when an
+        # explicit stimulus list is provided (so distribution, not timing, sets
+        # the exact trial count).
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
         t = 0
@@ -1208,6 +1210,12 @@ class RMET(TaskFile):
                 if len(match) > 0:
                     result.append(match.iloc[:1])
             stim = pd.concat(result, ignore_index=True) if result else stim.iloc[0:0]
+            # When an explicit stimulus list is supplied (as in UltraTaskBattery),
+            # ensure the number of trials matches the list length, independent of
+            # task_dur / trial_dur. This keeps trial counts in the generated task
+            # files aligned with the stimulus distribution design even if per-trial
+            # durations are adjusted.
+            n_trials = len(stim)
         elif stimulus_seed is not None:
             if condition is not None:
                 if exclude_stimuli is not None:
