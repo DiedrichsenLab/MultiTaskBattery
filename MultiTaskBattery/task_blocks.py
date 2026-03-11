@@ -1407,11 +1407,16 @@ class RMET(Task):
         # spacing of the four options without changing their logical layout.
         pos_scale = getattr(self.const, 'rmet_option_position_scale', None) or 1.0
 
+        # Small horizontal offset so that, visually, the options sit slightly
+        # closer to the centre and the eye picture looks better centered between
+        # them on wide screens.
+        x_offset = -1.0
+
         for i, option in enumerate(answer_options):
             # 0 and 1 on top left/right; 2 and 3 on bottom left/right.
             base_x = -8 if i % 2 == 0 else 6
             base_y = 5 if i < 2 else -5
-            x = base_x * pos_scale
+            x = base_x * pos_scale + x_offset
             y = base_y * pos_scale
 
             option_str = option.strip()
