@@ -1400,7 +1400,7 @@ class RMET(Task):
         option_height = getattr(self.const, 'rmet_option_text_height', None) or 1.2
         # Make the response index slightly smaller than the option text for clearer
         # visual separation.
-        index_height = option_height * 0.85
+        index_height = option_height * 0.7
 
         for i, option in enumerate(answer_options):
             # 0 and 1 on top left/right; 2 and 3 on bottom left/right
