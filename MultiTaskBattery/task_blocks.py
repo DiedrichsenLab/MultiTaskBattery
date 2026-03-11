@@ -1388,11 +1388,12 @@ class RMET(Task):
 
 
         # --- Answers ---
-        # Get the answer options
-        answer_options = trial['options']
-        # Separate them into four strings
-        answer_options = answer_options.split(',')
-        # Create TextStim objects for each answer option (number to the left of text, same line)
+        # Get the answer options and split into four strings
+        answer_options = str(trial['options']).split(',')
+
+        # Create TextStim objects for each answer option with a colored index and
+        # black option text. The spatial layout and string breakup are preserved:
+        # only formatting (height and color) is controlled here.
         answer_stims = []
         # Height of the option text: use experiment-specific override if provided,
         # otherwise fall back to the original MultiTaskBattery default (1.2 deg).
@@ -1402,17 +1403,34 @@ class RMET(Task):
             # 0 and 1 on top left/right; 2 and 3 on bottom left/right
             x = -8 if i % 2 == 0 else 6
             y = 5 if i < 2 else -5
-            # Left-align so "1.  option" has number left of text (no overlap)
-            label = f'{i+1}.  {option.strip()}'
-            answer_stim = visual.TextStim(
+
+            option_str = option.strip()
+            index_label = f'{i+1}.'
+            text_label = f'  {option_str}'
+
+            # Draw the numeric index in a distinct color (blue-ish) to visually
+            # separate it from the age/feeling text.
+            index_stim = visual.TextStim(
                 self.window,
-                text=label,
+                text=index_label,
                 pos=(x, y),
+                color=[-1, -1, 1],  # blue index on grey/white background
+                height=option_height,
+                alignHoriz='left',
+            )
+
+            # Draw the actual answer text in standard black, slightly to the right
+            # of the index so the combined appearance matches "1.  option".
+            text_stim = visual.TextStim(
+                self.window,
+                text=text_label,
+                pos=(x + 0.8, y),
                 color=[-1, -1, -1],
                 height=option_height,
                 alignHoriz='left',
             )
-            answer_stims.append(answer_stim)
+
+            answer_stims.extend([index_stim, text_stim])
 
         # Display stimuli
         picture.draw()
