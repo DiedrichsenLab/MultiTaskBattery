@@ -1379,8 +1379,9 @@ class RMET(Task):
         picture_path = Path(self.const.stim_dir) / self.name / 'pictures' / picture_file_name
         # Convert Pathself object to string for compatibility
         picture_path_str = str(picture_path)
-        # Create an ImageStim object
-        picture = visual.ImageStim(self.window, str(picture_path_str))
+        # Create an ImageStim object, explicitly centered so that the four answer
+        # options (placed symmetrically above and below) straddle the image.
+        picture = visual.ImageStim(self.window, str(picture_path_str), pos=(0, 0))
         # Make the picture smaller
         picture_scale = getattr(self.const, 'rmet_picture_scale', None) or 0.7
         picture.size = picture.size * picture_scale
@@ -1400,12 +1401,18 @@ class RMET(Task):
         option_height = getattr(self.const, 'rmet_option_text_height', None) or 1.2
         # Make the response index slightly smaller than the option text for clearer
         # visual separation.
-        index_height = option_height * 0.7
+        index_height = option_height * 0.85
+
+        # Optional spatial scaling: allow experiments to compress or expand the
+        # spacing of the four options without changing their logical layout.
+        pos_scale = getattr(self.const, 'rmet_option_position_scale', None) or 1.0
 
         for i, option in enumerate(answer_options):
-            # 0 and 1 on top left/right; 2 and 3 on bottom left/right
-            x = -8 if i % 2 == 0 else 6
-            y = 5 if i < 2 else -5
+            # 0 and 1 on top left/right; 2 and 3 on bottom left/right.
+            base_x = -8 if i % 2 == 0 else 6
+            base_y = 5 if i < 2 else -5
+            x = base_x * pos_scale
+            y = base_y * pos_scale
 
             option_str = option.strip()
             index_label = f'{i+1}.'
