@@ -2293,7 +2293,7 @@ class SemanticSwitching(TaskFile):
             trial['sentence_dur'] = sentence_dur
             trial['sentence'] = stim['Sentence'].iloc[n]
             trial['condition'] = stim['Condition'].iloc[n]
-            trial['trial_type'] = stim['Meaningful'].iloc[n] == "TRUE"
+            trial['trial_type'] = 1 if stim['Meaningful'].iloc[n] else 0 # 1 = meaningful, 0 = meaningless
             trial['last_word'] = stim['LastWord'].iloc[n]
             trial['display_trial_feedback'] = True
             trial['start_time'] = t
