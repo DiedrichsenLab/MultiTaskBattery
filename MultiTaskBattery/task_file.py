@@ -25,7 +25,7 @@ def shuffle_rows(dataframe, keep_in_middle=None):
 
     if keep_in_middle is not None:
         dataframe = move_edge_tasks_to_middle(dataframe, keep_in_middle)
-        
+
     return dataframe
 
 def move_edge_tasks_to_middle(dataframe, keep_in_middle):
@@ -148,7 +148,7 @@ class NBack(TaskFile):
             trial['key_match'] = responses[0]
             trial['key_nomatch'] = responses[1]
             # Determine if this should be N-2 repetition trial
-    
+
             if n<2:
                 trial['trial_type'] = 0
             else:
@@ -199,7 +199,7 @@ class VerbGeneration(TaskFile):
     def __init__(self, const):
         super().__init__(const)
         self.name = 'verb_generation'
-        
+
 
     def make_task_file(self,
                         task_dur =  30,
@@ -214,7 +214,7 @@ class VerbGeneration(TaskFile):
             stim = pd.read_csv(stim_file)
         else:
             stim = pd.read_csv(self.stim_dir / 'verb_generation' / 'verb_generation.csv')
-        
+
         stim = stim.sample(frac=1).reset_index(drop=True)
 
         t = 0
@@ -371,7 +371,7 @@ class TheoryOfMind(TaskFile):
                        run_number=None,
                         task_dur=30,
                         trial_dur=14,
-                        iti_dur=1, 
+                        iti_dur=1,
                         story_dur=10,
                         question_dur=4,
                         file_name=None,
@@ -385,7 +385,9 @@ class TheoryOfMind(TaskFile):
             stimulus_seed or run_number sampling. Overrides seeding and row slicing.
         """
         stim_list = stim
-        # count number of trials
+        # Count number of trials based on timing; may be overridden below when an
+        # explicit stimulus list is provided (so distribution, not timing, sets
+        # the exact trial count).
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
         t = 0
@@ -499,7 +501,7 @@ class IntactPassage(TaskFile):
                         run_number,
                         task_dur=30,
                         trial_dur=14.5,
-                        iti_dur=0.5, 
+                        iti_dur=0.5,
                         file_name=None):
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
@@ -536,13 +538,13 @@ class ActionObservation(TaskFile):
 
         # Medium/bad knot vids
         # self.knot_names = [
-        #                 'Ampere', 'Arbor', 'Baron', 'Belfry', 'Bramble', 'Chamois', 'Coffer', 
-        #                 'Farthing', 'Fissure', 'Gentry', 'Henchman', 'Magnate', 'Perry', 'Phial', 'Polka', 
+        #                 'Ampere', 'Arbor', 'Baron', 'Belfry', 'Bramble', 'Chamois', 'Coffer',
+        #                 'Farthing', 'Fissure', 'Gentry', 'Henchman', 'Magnate', 'Perry', 'Phial', 'Polka',
         #                 'Rosin', 'Shilling', 'Simper', 'Spangle', 'Squire', 'Vestment', 'Wampum', 'Wicket'
         #             ]
 
         # good knot vids
-        # self.knot_names = ['Adage', 
+        # self.knot_names = ['Adage',
         #                 'Brigand', 'Brocade', 'Casement',  'Cornice',\
         #                 'Flora', 'Frontage', 'Gadfly', 'Garret', \
         #                 'Mutton','Placard', 'Purser']
@@ -553,7 +555,7 @@ class ActionObservation(TaskFile):
                         trial_dur=14,
                         iti_dur=1,
                         file_name=None,
-                        knot_names = ['Adage', 
+                        knot_names = ['Adage',
                         'Brigand', 'Brocade', 'Casement',  'Cornice',\
                         'Flora', 'Frontage', 'Gadfly', 'Garret', \
                         'Mutton','Placard', 'Purser']):
@@ -697,7 +699,7 @@ class DemandGrid(TaskFile):
 
                     if not available_positions:
                         raise ValueError("Not enough valid adjacent positions available for modification.")
-                    
+
                     # Choose a random position from the available ones
                     new_pos = random.choice(list(available_positions))
                     new_step.append(new_pos)
@@ -715,7 +717,7 @@ class DemandGrid(TaskFile):
         # If all steps fail, raise an error
         raise ValueError("No valid step could be modified with the given constraints.")
 
-                        
+
     def make_task_file(self,
                    hand='right',
                    responses=[1, 2],  # 1 = Left, 2 = Right
@@ -756,14 +758,14 @@ class DemandGrid(TaskFile):
                 try:
                     # Generate the original sequence
                     original_sequence = self.generate_sequence(grid_size, num_steps, num_boxes_lit)
-                    # Attempt to create a modified sequence 
+                    # Attempt to create a modified sequence
                     modified_sequence = self.modify_sequence(original_sequence, grid_size=grid_size)
                     break
                 except ValueError:
                     continue
 
             correct_side = random.choice(['left', 'right'])
-            trial_type = 0 if correct_side == 'left' else 1        
+            trial_type = 0 if correct_side == 'left' else 1
             trial = {
                 'key_left': responses[0],
                 'key_right': responses[1],
@@ -850,10 +852,10 @@ class NonwordReading(TaskFile):
                         iti_dur=0.2,
                         file_name=None,
                         stim_file=None):
-        
+
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
-        
+
         if stim_file:
             stim = pd.read_csv(stim_file)
         else:
@@ -886,7 +888,7 @@ class OddBall(TaskFile):
     def __init__(self, const):
         super().__init__(const)
         self.name = 'oddball'
-        
+
 
     def make_task_file(self,
                     hand = 'right',
@@ -928,13 +930,13 @@ class OddBall(TaskFile):
             trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
 
         return trial_info
-    
+
 class FingerSequence(TaskFile):
     def __init__(self, const):
         super().__init__(const)
         self.name = 'finger_sequence'
         self.matching_stimuli = False # sequence of numbers are different for easy and hard sequence condition
-        
+
     def generate_sequence(self):
         sequence = [random.choice([1, 2, 3, 4])]
         while len(sequence) < 6:
@@ -1065,7 +1067,7 @@ class SemanticPrediction(TaskFile):
             stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
 
         n_actual = min(n_trials, len(stim))
-        for n in range(n_actual):        
+        for n in range(n_actual):
             trial = {}
             trial['key_true'] = responses[0]
             trial['key_false'] = responses[1]
@@ -1074,12 +1076,12 @@ class SemanticPrediction(TaskFile):
             trial['trial_dur'] = trial_dur
             trial['sentence_dur'] = sentence_dur
             trial['sentence'] = stim['sentence'].iloc[n]
-            trial['trial_type'] = random.choice([0,1]) 
+            trial['trial_type'] = random.choice([0,1]) # 0 = meaningless, 1 = meaningful; randomize trial type for each sentence
             last_word = [stim['wrong_word'].iloc[n], stim['right_word'].iloc[n]]
             trial['last_word'] = last_word[trial['trial_type']]
             trial['display_trial_feedback'] = True
             trial['start_time'] = t
-            trial['end_time'] = t + trial_dur 
+            trial['end_time'] = t + trial_dur
 
             trial_info.append(trial)
 
@@ -1106,7 +1108,7 @@ class VisualSearch(TaskFile):
                         file_name = None ):
         n_trials = int(np.floor(task_dur / (trial_dur+iti_dur)))
         trial_info = []
-        t = 0 
+        t = 0
 
         for n in range(n_trials):
             trial = {}
@@ -1116,8 +1118,8 @@ class VisualSearch(TaskFile):
             trial['hand'] = hand
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
-            trial['display_trial_feedback'] = True 
-            trial['trial_type'] = random.choice([0,1]) 
+            trial['display_trial_feedback'] = True
+            trial['trial_type'] = random.choice([0,1])
             trial['num_stimuli'] = '4' if random.random() < easy_prob else '8'  # Randomly select difficulty
             trial['display_trial_feedback'] = True
             trial['feedback_type'] = 'acc'
@@ -1151,7 +1153,7 @@ class RMET(TaskFile):
                         run_number=None,
                         task_dur=30,
                         trial_dur=6,
-                        iti_dur=1.5, 
+                        iti_dur=1.5,
                         file_name=None,
                         stim_file = None,
                         condition=None,
@@ -1196,13 +1198,24 @@ class RMET(TaskFile):
                 stim = pd.concat([pd.concat([row1[1], row2[1]], axis=1).T for row1, row2 in itertools.chain(first_half, second_half)], ignore_index=True)
 
         if stim_list is not None and len(stim_list) > 0:
-            stim = stim[stim['picture'].isin(stim_list)]
+            stim = stim[stim['picture'].isin([s[0] if isinstance(s, (list, tuple)) else s for s in stim_list])]
             result = []
             for s in stim_list:
-                match = stim[stim['picture'] == s]
+                if isinstance(s, (list, tuple)) and len(s) >= 2:
+                    pic, cond = s[0], s[1]
+                    match = stim[(stim['picture'] == pic) & (stim['condition'].astype(str) == str(cond))]
+                else:
+                    pic = s
+                    match = stim[stim['picture'] == pic]
                 if len(match) > 0:
                     result.append(match.iloc[:1])
             stim = pd.concat(result, ignore_index=True) if result else stim.iloc[0:0]
+            # When an explicit stimulus list is supplied (as in UltraTaskBattery),
+            # ensure the number of trials matches the list length, independent of
+            # task_dur / trial_dur. This keeps trial counts in the generated task
+            # files aligned with the stimulus distribution design even if per-trial
+            # durations are adjusted.
+            n_trials = len(stim)
         elif stimulus_seed is not None:
             if condition is not None:
                 if exclude_stimuli is not None:
@@ -1261,7 +1274,7 @@ class PictureSequence(TaskFile):
         super().__init__(const)
         self.name = 'picture_sequence'
         self.matching_stimuli = False # sequence of pictures are different for different conditions
-        
+
     def generate_sequence(self):
         sequence = random.sample([1, 2, 3, 4], 4)
         return ' '.join(map(str, sequence))
@@ -1330,7 +1343,7 @@ class StorySequence(TaskFile):
         super().__init__(const)
         self.name = 'story_sequence'
         self.matching_stimuli = False # sequence of sentences are different for different conditions
-        
+
     def generate_sequence(self):
         sequence = random.sample([1, 2, 3, 4], 4)
         return ' '.join(map(str, sequence))
@@ -1408,7 +1421,7 @@ class ActionPrediction(TaskFile):
                         run_number=None,
                         task_dur=30,
                         trial_dur=5,
-                        iti_dur=1, 
+                        iti_dur=1,
                         question_dur=4,
                         file_name=None,
                         stim_file = None,
@@ -1548,7 +1561,7 @@ class Movie(TaskFile):
             trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
 
         return trial_info
-    
+
 
 class StrangeStories(TaskFile):
     def __init__(self, const):
@@ -1621,7 +1634,7 @@ class StrangeStories(TaskFile):
             trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
 
         return trial_info
-    
+
 
 class FauxPas(TaskFile):
     def __init__(self, const):
@@ -1636,7 +1649,7 @@ class FauxPas(TaskFile):
                     run_number=None,
                     task_dur=30,
                     trial_dur=14,
-                    iti_dur=1, 
+                    iti_dur=1,
                     story_dur=10,
                     question1_dur=4,
                     file_name=None,
@@ -1692,7 +1705,7 @@ class FauxPas(TaskFile):
             start_row = (run_number - 1) * n_trials
             end_row = run_number * n_trials - 1
             stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
-    
+
         for n in range(n_trials):
             trial = {}
             trial['key_yes'] = responses[0]
@@ -1723,7 +1736,7 @@ class FauxPas(TaskFile):
         if file_name is not None:
             trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
         return trial_info
-    
+
 
 
 class FrithHappe(TaskFile):
@@ -1796,7 +1809,7 @@ class FrithHappe(TaskFile):
             trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
 
         return trial_info
-    
+
 
 
 class Liking(TaskFile):
@@ -1804,7 +1817,7 @@ class Liking(TaskFile):
         super().__init__(const)
         self.name = 'liking'
         self.matching_stimuli = False
-    
+
     def map_to_4point_scale(self, rating):
         """
         Map the liking rating from a 1-to-5 scale to the closest value on a 4-point scale
@@ -1830,7 +1843,7 @@ class Liking(TaskFile):
         # Round to the nearest integer
         return round(mapped_value)
 
-    
+
     def make_task_file(self,
                        hand='right',
                        responses = [1,2],
@@ -1892,7 +1905,7 @@ class Liking(TaskFile):
             trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
 
         return trial_info
-    
+
 class Pong(TaskFile):
     def __init__(self, const):
         super().__init__(const)
@@ -1951,12 +1964,12 @@ class Affective(TaskFile):
                        file_name=None,
                        run_number=None,
                        hand='left',
-                       responses=[3, 4]):  
+                       responses=[3, 4]):
 
         # check how many trials to include
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         n_pleasant = n_trials // 2
-        n_unpleasant = n_trials - n_pleasant 
+        n_unpleasant = n_trials - n_pleasant
 
         # Randomly sample numbers 1–26 (image name numbers)
         pleasant_nums = random.sample(range(1, 27), n_pleasant)
@@ -1994,7 +2007,7 @@ class Affective(TaskFile):
             trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
 
         return trial_info
-    
+
 class SerialReactionTime(TaskFile):
       def __init__(self, const):
           super().__init__(const)
@@ -2027,7 +2040,7 @@ class SerialReactionTime(TaskFile):
               trial['trial_dur'] = trial_dur
               trial['iti_dur'] = iti_dur
               trial['display_trial_feedback'] = False
-            
+
             # Ensure the same stimulus doesn't appear on consecutive trials
               stim = prev_stim
               while stim == prev_stim:
@@ -2250,7 +2263,7 @@ class SemanticSwitching(TaskFile):
         if stim_file:
             stim = pd.read_csv(stim_file)
         else:
-            stim = pd.read_csv(self.stim_dir / 'semantic_switching' / 'semantic_switching.csv')
+            stim = pd.read_csv(self.stim_dir / 'semantic_switching' / 'semantic_switching_new.csv')
 
         if stim_list is not None and len(stim_list) > 0:
             stim = stim[stim['sentence'].isin(stim_list)]
@@ -2270,7 +2283,7 @@ class SemanticSwitching(TaskFile):
             stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
 
         n_actual = min(n_trials, len(stim))
-        for n in range(n_actual):        
+        for n in range(n_actual):
             trial = {}
             trial['key_true'] = responses[0]
             trial['key_false'] = responses[1]
@@ -2278,13 +2291,13 @@ class SemanticSwitching(TaskFile):
             trial['hand'] = hand
             trial['trial_dur'] = trial_dur
             trial['sentence_dur'] = sentence_dur
-            trial['sentence'] = stim['sentence'].iloc[n]
-            trial['trial_type'] = random.choice([0,1]) 
-            last_word = [stim['wrong_word'].iloc[n], stim['right_word'].iloc[n]]
-            trial['last_word'] = last_word[trial['trial_type']]
+            trial['sentence'] = stim['Sentence'].iloc[n]
+            trial['condition'] = stim['Condition'].iloc[n]
+            trial['trial_type'] = 1 if stim['Meaningful'].iloc[n] else 0 # 0 = meaningless, 1 = meaningful
+            trial['last_word'] = stim['LastWord'].iloc[n]
             trial['display_trial_feedback'] = True
             trial['start_time'] = t
-            trial['end_time'] = t + trial_dur 
+            trial['end_time'] = t + trial_dur
 
             trial_info.append(trial)
 

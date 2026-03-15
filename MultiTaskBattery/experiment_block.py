@@ -214,7 +214,9 @@ class Experiment:
                 scores.append([task_name, accuracy, rt])
         
         # Display settings
-        height = 1.3 # Height of the text elements
+        # Height of the text elements: allow experiment-specific override via
+        # const.scoreboard_text_height; fall back to original default (1.3 deg).
+        height = getattr(self.const, 'scoreboard_text_height', None) or 1.3
         gap = [8,1.6] # Gap between entries for the score column [gap_between_columns, gap_between_rows]
         cols=len(scores[0])
         rws=len(scores)
