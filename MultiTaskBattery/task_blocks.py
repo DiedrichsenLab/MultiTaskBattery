@@ -1060,15 +1060,15 @@ class SemanticPrediction(Task):
         Initialize task - default is to read the target information into the trial_info dataframe
         """
         self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
-        self.corr_key = [self.trial_info['key_true'].iloc[0],self.trial_info['key_false'].iloc[0]]
+        self.corr_key = [self.trial_info['key_false'].iloc[0], self.trial_info['key_true'].iloc[0]]
 
     def display_instructions(self):
         """
         displays the instruction for the task
         """
         str1 = f"You will read a sentence and decide if the last word makes sense."
-        str2 = f"If it makes sense, press {self.corr_key[0]}"
-        str3 = f"if it doesn't make sense, press {self.corr_key[1]}"
+        str2 = f"If it makes sense, press {self.corr_key[1]}"
+        str3 = f"if it doesn't make sense, press {self.corr_key[0]}"
         self.instruction_text = f"{self.descriptive_name} Task\n\n {str1} \n {str2} \n {str3}"
         instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1])
         instr_visual.draw()
@@ -1135,8 +1135,8 @@ class SemanticSwitching(Task):
             self.const.task_dir / self.name / self.task_file, sep='\t'
         )
         self.corr_key = [
-            self.trial_info['key_true'].iloc[0],
             self.trial_info['key_false'].iloc[0],
+            self.trial_info['key_true'].iloc[0],
         ]
 
     def display_instructions(self):
@@ -1144,8 +1144,8 @@ class SemanticSwitching(Task):
         Display instructions for the semantic switching task.
         """
         str1 = "You will read a sentence and decide if the last word makes sense."
-        str2 = f"If it makes sense, press {self.corr_key[0]}"
-        str3 = f"If it doesn't make sense, press {self.corr_key[1]}"
+        str2 = f"If it makes sense, press {self.corr_key[1]}"
+        str3 = f"If it doesn't make sense, press {self.corr_key[0]}"
         self.instruction_text = (
             f"{self.descriptive_name} Task\n\n {str1} \n {str2} \n {str3}"
         )
@@ -1209,7 +1209,7 @@ class SemanticSwitching(Task):
             self.ttl_clock.get_time(),
             trial['sentence_dur'],
         )
-        trial['correct'] = (trial['response'] == self.corr_key[trial['trial_type']])
+        trial['correct'] = (trial['response'] == self.corr_key[trial['trial_type']]) # mapping needs to be turned around 
 
         # Feedback
         self.display_trial_feedback(
