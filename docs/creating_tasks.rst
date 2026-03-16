@@ -54,7 +54,7 @@ Add an entry for your task in ``MultiTaskBattery/task_details.json``. This provi
 Tips for the detailed description:
 
 - Describe what the participant sees and does on each trial.
-- Mention the expected brain regions the task is designed to activate (e.g., "targets the language network").
+- Mention the expected mental processes or brain regions that this task is designed to activate (e.g., "targets the language network").
 - If your task has conditions, describe what each condition involves and how it differs from the others.
 
 For example, the ``demand_grid`` entry:
