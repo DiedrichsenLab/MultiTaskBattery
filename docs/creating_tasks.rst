@@ -39,7 +39,7 @@ If your task generates random stimuli (no fixed stimulus file), add it to the ``
 --------------------------
 If your task uses stimulus files (images, audio, video), add them to ``stimuli/<task_name>/``.
 
-5. Add a documentation image (optional)
+5. Add a documentation image
 ----------------------------------------
 Drop a screenshot of your task as ``docs/images/<task_name>.png``. It will automatically appear on the task descriptions page. For multiple images use ``<task_name>_2.png``, ``<task_name>_3.png``, etc.
 
