@@ -1,6 +1,6 @@
 {
     "movie": {
-        "detailed_description": "Participants passively watch 30-second video clips without audio or subtitles. Conditions include romance clips from Pixar's Up, nature clips, and landscape clips. Each run presents one clip from the selected condition. The task requires no motor response and is designed to engage visual processing and social/emotional networks depending on the condition.",
+        "detailed_description": "Participants passively watch 30-second video clips without audio or subtitles. Conditions include romance clips from Pixar's Up, nature clips, and landscape clips. Each run presents one clip from the selected condition. The Movie clips are usually shown in sequence across runs, so participant can follow a consistent narrative across runs. The task requires no motor response and is designed to engage visual processing and social/emotional networks depending on the condition.",
         "task_file_parameters": {
             "run_number": {
                 "type": "int",
@@ -60,7 +60,7 @@
         }
     },
     "demand_grid": {
-        "detailed_description": "Participants see a sequence of boxes lighting up on a grid. They must identify the correct pattern from two options (original vs. modified). On each trial, a sequence of steps is shown, where each step lights up a set of adjacent boxes. After the sequence, two grids are displayed side by side: one showing the original pattern and one with a modified step. The participant presses left or right to indicate which grid matches the original sequence. The task is designed to engage domain-general frontal and parietal regions.",
+        "detailed_description": "On each trial, a sequence of steps is shown, where each step lights up a set of boxes in a grid. participants need to mentally add these steps together to build up a representation of the final pattern. After the sequence, two grids are displayed side by side: one showing the integrated pattern and one with a modified step. The participant presses left or right to indicate which grid matches the original sequence. The task is designed to tap spatial working memory and engage domain-general frontal and parietal regions. The size of the grid, the number of steps and the number of boxes per step can be manipulated to adjust task difficulty and working memory load.",
         "task_file_parameters": {
             "hand": {
                 "type": "str",
@@ -140,7 +140,7 @@
         }
     },
     "visual_search": {
-        "detailed_description": "Participants view a display of geometric shapes at different rotations (90, 180, 270, 360 degrees) and must determine whether the target shape (at 90 degrees) is present. On easy trials 4 shapes are shown, on hard trials 8 shapes are shown. Participants press one button if the target is present and another if it is absent. The task is designed to engage visual attention regions.",
+        "detailed_description": "Participants view a display of geometric shapes at different rotations (90, 180, 270, 360 degrees) and must determine whether the target shape (at 90 degrees) is present. On easy trials 4 shapes are shown, on hard trials 8 shapes are shown. Participants press one button if the target is present and another if it is absent. The task is designed to engage selective visual attention and strongly engages eye-movement regions.",
         "task_file_parameters": {
             "hand": {
                 "type": "str",
@@ -230,7 +230,7 @@
         }
     },
     "rest": {
-        "detailed_description": "Participants lie still and fixate on a central crosshair. No stimuli are presented and no response is required. Used as a baseline condition.",
+        "detailed_description": "Participants lie still and fixate on a central crosshair. No stimuli are presented and no response is required. For most fMRI experiments, rest is used as the baseline condition, and it is recommended to include it into every task battery to allow for alignment with other datasets.",
         "task_file_parameters": {
             "task_dur": {
                 "type": "float",
