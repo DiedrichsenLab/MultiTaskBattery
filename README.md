@@ -1,5 +1,8 @@
+<p align="center">
+  <img src="docs/assets/icon_MTB.png" alt="MTB Logo" width="200">
+</p>
+
 # Multi Task Battery (MTB)
-============
 
 A flexible Python toolbox for running multi-domain cognitive and motor tasks during fMRI sessions — all within a single scanning run. Built on [PsychoPy](https://www.psychopy.org/)
 
