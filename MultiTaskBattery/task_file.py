@@ -380,11 +380,6 @@ class TheoryOfMind(TaskFile):
                         stimulus_seed=None,
                         exclude_stimuli=None,
                         stim=None):
-        """
-        stim (list or None): If provided, use only these story names (in order) instead of
-            stimulus_seed or run_number sampling. Overrides seeding and row slicing.
-        """
-        stim_list = stim
         # Count number of trials based on timing; may be overridden below when an
         # explicit stimulus list is provided (so distribution, not timing, sets
         # the exact trial count).
@@ -405,22 +400,11 @@ class TheoryOfMind(TaskFile):
                 & (stim['condition'].astype(str).str.lower() != 'exclude')
             ]
 
-        if stim_list is not None and len(stim_list) > 0:
-            stim = stim[stim['story'].isin(stim_list)]
-            result = []
-            for s in stim_list:
-                match = stim[stim['story'] == s]
-                if len(match) > 0:
-                    result.append(match.iloc[:1])
-            stim = pd.concat(result, ignore_index=True) if result else stim.iloc[0:0]
-        elif stimulus_seed is not None:
-            if exclude_stimuli is not None:
-                stim = stim[~stim['story'].isin(exclude_stimuli)]
-            stim = stim.sample(n=min(n_trials, len(stim)), random_state=stimulus_seed).reset_index(drop=True)
-        elif stimulus_seed is None:
-            start_row = (run_number - 1) * n_trials
-            end_row = run_number * n_trials - 1
-            stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
+        # Ignore stim_list and stimulus_seed: selection is driven entirely by
+        # the provided stim_file (if any) or by run_number-based slicing.
+        start_row = (run_number - 1) * n_trials
+        end_row = run_number * n_trials - 1
+        stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
 
         n_actual = min(n_trials, len(stim))
         for n in range(n_actual):
@@ -1034,11 +1018,6 @@ class SemanticPrediction(TaskFile):
                         stimulus_seed=None,
                         exclude_stimuli=None,
                         stim=None):
-        """
-        stim (list or None): If provided, use only these sentence strings (in order) instead of
-            stimulus_seed or run_number sampling. Overrides seeding and row slicing.
-        """
-        stim_list = stim
         # count number of trials
         n_trials = int(np.floor(task_dur / (trial_dur)))
         trial_info = []
@@ -1049,22 +1028,11 @@ class SemanticPrediction(TaskFile):
         else:
             stim = pd.read_csv(self.stim_dir / 'semantic_prediction' / 'semantic_prediction.csv')
 
-        if stim_list is not None and len(stim_list) > 0:
-            stim = stim[stim['sentence'].isin(stim_list)]
-            result = []
-            for s in stim_list:
-                match = stim[stim['sentence'] == s]
-                if len(match) > 0:
-                    result.append(match.iloc[:1])
-            stim = pd.concat(result, ignore_index=True) if result else stim.iloc[0:0]
-        elif stimulus_seed is not None:
-            if exclude_stimuli is not None:
-                stim = stim[~stim['sentence'].isin(exclude_stimuli)]
-            stim = stim.sample(n=min(n_trials, len(stim)), random_state=stimulus_seed).reset_index(drop=True)
-        else:
-            start_row = (run_number - 1) * n_trials
-            end_row = run_number * n_trials - 1
-            stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
+        # Ignore stim_list and stimulus_seed: selection is driven entirely by
+        # the provided stim_file (if any) or by run_number-based slicing.
+        start_row = (run_number - 1) * n_trials
+        end_row = run_number * n_trials - 1
+        stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
 
         n_actual = min(n_trials, len(stim))
         for n in range(n_actual):
@@ -1161,11 +1129,6 @@ class RMET(TaskFile):
                         stimulus_seed=None,
                         exclude_stimuli=None,
                         stim=None):
-        """
-        stim (list or None): If provided, use only these picture names (in order) instead of
-            stimulus_seed or run_number sampling. Overrides seeding and row slicing.
-        """
-        stim_list = stim
         # count number of trials
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
@@ -1183,47 +1146,10 @@ class RMET(TaskFile):
                 ~stim['condition'].str.contains('practice', na=False)
                 & (stim['condition'].astype(str).str.lower() != 'exclude')
             ]
-            # When a custom stim_file is provided (e.g. pre-selected practice stimuli),
-            # use it as-is and skip the internal sampling / pairing logic below.
-            if stimulus_seed is not None and stim_list is None and not stim_file:
-                if exclude_stimuli is not None:
-                    stim = stim[~stim['picture'].isin(exclude_stimuli)]
-                stim = stim.sample(n=min(n_trials, len(stim)), random_state=stimulus_seed).reset_index(drop=True)
-            elif stimulus_seed is None and stim_list is None and not stim_file:
-                # Legacy: alternate between emotion and age conditions
-                stim_emotion = stim[stim['condition'] == 'emotion']
-                stim_age = stim[stim['condition'] == 'age']
-                first_half = zip(stim_emotion.iloc[:len(stim_emotion) // 2].iterrows(),
-                                stim_age.iloc[len(stim_age) // 2:].iterrows())
-                second_half = zip(stim_emotion.iloc[len(stim_emotion) // 2:].iterrows(),
-                                stim_age.iloc[:len(stim_age) // 2].iterrows())
-                stim = pd.concat([pd.concat([row1[1], row2[1]], axis=1).T for row1, row2 in itertools.chain(first_half, second_half)], ignore_index=True)
 
-        if stim_list is not None and len(stim_list) > 0:
-            stim = stim[stim['picture'].isin([s[0] if isinstance(s, (list, tuple)) else s for s in stim_list])]
-            result = []
-            for s in stim_list:
-                if isinstance(s, (list, tuple)) and len(s) >= 2:
-                    pic, cond = s[0], s[1]
-                    match = stim[(stim['picture'] == pic) & (stim['condition'].astype(str) == str(cond))]
-                else:
-                    pic = s
-                    match = stim[stim['picture'] == pic]
-                if len(match) > 0:
-                    result.append(match.iloc[:1])
-            stim = pd.concat(result, ignore_index=True) if result else stim.iloc[0:0]
-            # When an explicit stimulus list is supplied (as in UltraTaskBattery),
-            # ensure the number of trials matches the list length, independent of
-            # task_dur / trial_dur. This keeps trial counts in the generated task
-            # files aligned with the stimulus distribution design even if per-trial
-            # durations are adjusted.
-            n_trials = len(stim)
-        elif stimulus_seed is not None:
-            if condition is not None:
-                if exclude_stimuli is not None:
-                    stim = stim[~stim['picture'].isin(exclude_stimuli)]
-                stim = stim.sample(n=min(n_trials, len(stim)), random_state=stimulus_seed).reset_index(drop=True)
-        elif half: # Selects different stimuli for the social and control condition, to enable showing each story only once for each participant
+        # Ignore stim_list and stimulus_seed: selection is driven entirely by
+        # the provided stim_file (if any), half-based slicing, or run_number.
+        if half: # Selects different stimuli for the social and control condition, to enable showing each story only once for each participant
             start_row = (run_number - 1) * n_trials
             end_row = run_number * n_trials - 1
             stim_half = stim[stim['half'] == half]
