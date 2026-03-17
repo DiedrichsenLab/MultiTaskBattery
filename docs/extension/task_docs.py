@@ -108,9 +108,10 @@ class TaskDescriptionsDirective(SphinxDirective):
         field_list = nodes.field_list()
         task_detail = details.get(task["name"])
 
+        # All content fields come from JSON (task_details.json)
         # 1. Summary
-        desc_text = task.get("description", "").strip().strip('"')
-        if desc_text and desc_text.upper() != "NA":
+        desc_text = task_detail.get("short_description", "") if task_detail else ""
+        if desc_text:
             field = nodes.field()
             field += nodes.field_name(text="Summary")
             field_body = nodes.field_body()
@@ -118,20 +119,19 @@ class TaskDescriptionsDirective(SphinxDirective):
             field += field_body
             field_list += field
 
-        # 2. Details (from JSON)
-        if task_detail:
-            detailed_desc = task_detail.get("detailed_description", "")
-            if detailed_desc:
-                field = nodes.field()
-                field += nodes.field_name(text="Details")
-                field_body = nodes.field_body()
-                field_body += nodes.paragraph(text=detailed_desc)
-                field += field_body
-                field_list += field
+        # 2. Details
+        detailed_desc = task_detail.get("detailed_description", "") if task_detail else ""
+        if detailed_desc:
+            field = nodes.field()
+            field += nodes.field_name(text="Details")
+            field_body = nodes.field_body()
+            field_body += nodes.paragraph(text=detailed_desc)
+            field += field_body
+            field_list += field
 
         # 3. Recorded metrics
-        metrics_text = task.get("recorded_metrics", "").strip().strip('"')
-        if metrics_text and metrics_text.upper() != "NA":
+        metrics_text = task_detail.get("recorded_metrics", "") if task_detail else ""
+        if metrics_text:
             field = nodes.field()
             field += nodes.field_name(text="Recorded metrics")
             field_body = nodes.field_body()
@@ -140,8 +140,8 @@ class TaskDescriptionsDirective(SphinxDirective):
             field_list += field
 
         # 4. Conditions
-        conditions_raw = task.get("conditions", "").strip().strip('"')
-        if conditions_raw and conditions_raw.upper() != "NA":
+        conditions_raw = task_detail.get("conditions", "") if task_detail else ""
+        if conditions_raw:
             conds = [c.strip() for c in conditions_raw.split(",") if c.strip()]
             cond_text = ", ".join(conds)
             field = nodes.field()
@@ -152,8 +152,8 @@ class TaskDescriptionsDirective(SphinxDirective):
             field_list += field
 
         # 5. Reference
-        ref_text = task.get("reference", "").strip().strip('"')
-        if ref_text and ref_text.upper() != "NA":
+        ref_text = task_detail.get("reference", "") if task_detail else ""
+        if ref_text:
             field = nodes.field()
             field += nodes.field_name(text="Reference")
             field_body = nodes.field_body()
@@ -222,14 +222,14 @@ class TaskSummaryTableDirective(SphinxDirective):
         tgroup = nodes.tgroup(cols=3)
         table += tgroup
 
-        for width in [20, 15, 65]:
+        for width in [30, 20, 50]:
             tgroup += nodes.colspec(colwidth=width)
 
         # Header
         thead = nodes.thead()
         tgroup += thead
         header_row = nodes.row()
-        for header_text in ["Name", "Code", "Description"]:
+        for header_text in ["Name", "Code", "Descriptive Name"]:
             entry = nodes.entry()
             entry += nodes.paragraph(text=header_text)
             header_row += entry
@@ -240,7 +240,7 @@ class TaskSummaryTableDirective(SphinxDirective):
         tgroup += tbody
         for task in tasks:
             row = nodes.row()
-            for field in ["name", "code", "description"]:
+            for field in ["name", "code", "descriptive_name"]:
                 entry = nodes.entry()
                 text = task.get(field, "").strip().strip('"')
                 entry += nodes.paragraph(text=text)
