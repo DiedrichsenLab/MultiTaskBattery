@@ -63,7 +63,7 @@
             }
         },
         "short_description": "Black or red \"K\" or \"O\" is shown on the screen. Press a button when red \"K\" is shown",
-        "reference": "Functional specificity for high-level linguistic processing in the human brain (Fedorenko et al., 2011)",
+        "reference": "Du, J., DiNicola, L. M., Angeli, P. A., Saadon-Grosman, N., Sun, W., Kaiser, S., ... & Buckner, R. L. (2024). Organization of the human cerebral cortex estimated within individuals: networks, global topography, and function. Journal of neurophysiology, 131(6), 1014-1082.",
         "recorded_metrics": "Accuracy + RT"
     },
     "demand_grid": {
