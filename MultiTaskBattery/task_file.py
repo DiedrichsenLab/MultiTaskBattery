@@ -1183,11 +1183,13 @@ class RMET(TaskFile):
                 ~stim['condition'].str.contains('practice', na=False)
                 & (stim['condition'].astype(str).str.lower() != 'exclude')
             ]
-            if stimulus_seed is not None and stim_list is None:
+            # When a custom stim_file is provided (e.g. pre-selected practice stimuli),
+            # use it as-is and skip the internal sampling / pairing logic below.
+            if stimulus_seed is not None and stim_list is None and not stim_file:
                 if exclude_stimuli is not None:
                     stim = stim[~stim['picture'].isin(exclude_stimuli)]
                 stim = stim.sample(n=min(n_trials, len(stim)), random_state=stimulus_seed).reset_index(drop=True)
-            elif stimulus_seed is None and stim_list is None:
+            elif stimulus_seed is None and stim_list is None and not stim_file:
                 # Legacy: alternate between emotion and age conditions
                 stim_emotion = stim[stim['condition'] == 'emotion']
                 stim_age = stim[stim['condition'] == 'age']
