@@ -231,7 +231,7 @@ class NBack(Task):
         trial_info_file = self.const.task_dir / self.name / self.task_file
         self.trial_info = pd.read_csv(trial_info_file, sep='\t')
         self.stim = []
-        picture_scale = getattr(self.const, 'n_back_picture_scale', None) or 1.0
+        picture_scale = self.trial_info['picture_scale'].iloc[0] if 'picture_scale' in self.trial_info.columns else 1.0
         for stim in self.trial_info['stim']:
             stim_path = self.const.stim_dir / self.name / stim
             img = visual.ImageStim(self.window, str(stim_path))
@@ -479,8 +479,7 @@ class TheoryOfMind(Task):
 
         event.clearEvents()
 
-        # Set text height according to constants or default value
-        height = getattr(self.const, 'theory_of_mind_text_height', None) or 1.25
+        height = trial.get('text_height', 1.25)
         wrapWidth=25
 
         # Display story
@@ -1396,16 +1395,9 @@ class RMET(Task):
         # black option text. The spatial layout and string breakup are preserved:
         # only formatting (height and color) is controlled here.
         answer_stims = []
-        # Height of the option text: use experiment-specific override if provided,
-        # otherwise fall back to the original MultiTaskBattery default (1.2 deg).
-        option_height = getattr(self.const, 'rmet_option_text_height', None) or 1.2
-        # Make the response index slightly smaller than the option text for clearer
-        # visual separation.
+        option_height = trial.get('option_text_height', 1.2)
         index_height = option_height * 0.85
-
-        # Optional spatial scaling: allow experiments to compress or expand the
-        # spacing of the four options without changing their logical layout.
-        pos_scale = getattr(self.const, 'rmet_option_position_scale', None) or 1.0
+        pos_scale = trial.get('option_position_scale', 1.0)
 
         # Small horizontal offset so that, visually, the options sit slightly
         # closer to the centre and the eye picture looks better centered between
@@ -2014,7 +2006,7 @@ class FauxPas(Task):
 
         event.clearEvents()
 
-        height = getattr(self.const, 'faux_pas_text_height', None) or 1.25
+        height = trial.get('text_height', 1.25)
         # Display story
         story = trial['story']
         # story = '.\n'.join(story.split('. '))

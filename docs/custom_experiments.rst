@@ -46,6 +46,37 @@ Create a file called ``constants.py`` in the project folder. This file contains 
     screen['fullscr'] = False           # full screen?
     screen['number'] = 1                # 0 = main display, 1 = secondary display
 
+Optional constants
+^^^^^^^^^^^^^^^^^^
+
+The following attributes can be added to ``constants.py`` to customise
+experiment-wide behaviour.  They are all optional. If absent, sensible
+defaults are used.
+
+.. list-table::
+   :header-rows: 1
+   :widths: 30 12 58
+
+   * - Attribute
+     - Default
+     - Description
+   * - ``continue_key``
+     - ``None``
+     - If set to a key name (e.g. ``'space'``), only that key will dismiss
+       the run-feedback scoreboard screen. If ``None``, any key continues.
+   * - ``scoreboard_text_height``
+     - ``1.3``
+     - Height (in degrees of visual angle) of the text on the run-feedback
+       scoreboard.  Reduce for smaller screens.
+
+.. note::
+
+   Task-specific display parameters (text height, picture scale, option
+   layout, etc.) are **not** set in ``constants.py``.  They are written
+   into the task TSV files via ``make_task_file()`` parameters.  See the
+   :ref:`task descriptions <task_descriptions>` page for available
+   parameters and their defaults.
+
 
 Generating run and task files
 -----------------------------
