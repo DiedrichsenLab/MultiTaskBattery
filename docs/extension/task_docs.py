@@ -104,11 +104,14 @@ class TaskDescriptionsDirective(SphinxDirective):
             img_node = nodes.image(uri=rel_path, width="600px")
             section += img_node
 
-        # Summary and metrics as a field list
+        # Field list for task info
         field_list = nodes.field_list()
+        task_detail = details.get(task["name"])
 
-        desc_text = task.get("description", "").strip().strip('"')
-        if desc_text and desc_text.upper() != "NA":
+        # All content fields come from JSON (task_details.json)
+        # 1. Summary
+        desc_text = task_detail.get("short_description", "") if task_detail else ""
+        if desc_text:
             field = nodes.field()
             field += nodes.field_name(text="Summary")
             field_body = nodes.field_body()
@@ -116,8 +119,19 @@ class TaskDescriptionsDirective(SphinxDirective):
             field += field_body
             field_list += field
 
-        metrics_text = task.get("recorded_metrics", "").strip().strip('"')
-        if metrics_text and metrics_text.upper() != "NA":
+        # 2. Details
+        detailed_desc = task_detail.get("detailed_description", "") if task_detail else ""
+        if detailed_desc:
+            field = nodes.field()
+            field += nodes.field_name(text="Details")
+            field_body = nodes.field_body()
+            field_body += nodes.paragraph(text=detailed_desc)
+            field += field_body
+            field_list += field
+
+        # 3. Recorded metrics
+        metrics_text = task_detail.get("recorded_metrics", "") if task_detail else ""
+        if metrics_text:
             field = nodes.field()
             field += nodes.field_name(text="Recorded metrics")
             field_body = nodes.field_body()
@@ -125,9 +139,9 @@ class TaskDescriptionsDirective(SphinxDirective):
             field += field_body
             field_list += field
 
-        # Conditions
-        conditions_raw = task.get("conditions", "").strip().strip('"')
-        if conditions_raw and conditions_raw.upper() != "NA":
+        # 4. Conditions
+        conditions_raw = task_detail.get("conditions", "") if task_detail else ""
+        if conditions_raw:
             conds = [c.strip() for c in conditions_raw.split(",") if c.strip()]
             cond_text = ", ".join(conds)
             field = nodes.field()
@@ -137,26 +151,23 @@ class TaskDescriptionsDirective(SphinxDirective):
             field += field_body
             field_list += field
 
-        # Detailed description from JSON
-        task_detail = details.get(task["name"])
-        if task_detail:
-            detailed_desc = task_detail.get("detailed_description", "")
-            if detailed_desc:
-                field = nodes.field()
-                field += nodes.field_name(text="Details")
-                field_body = nodes.field_body()
-                field_body += nodes.paragraph(text=detailed_desc)
-                field += field_body
-                field_list += field
+        # 5. Reference
+        ref_text = task_detail.get("reference", "") if task_detail else ""
+        if ref_text:
+            field = nodes.field()
+            field += nodes.field_name(text="Reference")
+            field_body = nodes.field_body()
+            field_body += nodes.paragraph(text=ref_text)
+            field += field_body
+            field_list += field
 
         if len(field_list) > 0:
             section += field_list
 
-        # Parameters dropdown from JSON
+        # 6. Task file parameters dropdown (from JSON)
         if task_detail:
             params = task_detail.get("task_file_parameters", {})
             if params:
-                # Build RST lines for a dropdown with a table inside
                 rst_lines = [
                     ".. dropdown:: Task file parameters",
                     "",
@@ -184,13 +195,8 @@ class TaskDescriptionsDirective(SphinxDirective):
                 self.state.nested_parse(string_list, 0, wrapper)
                 section += wrapper
 
-        # Reference
-        ref_text = task.get("reference", "").strip().strip('"')
-        if ref_text and ref_text.upper() != "NA":
-            ref_para = nodes.paragraph()
-            ref_para += nodes.strong(text="Reference: ")
-            ref_para += nodes.Text(ref_text)
-            section += ref_para
+        # Horizontal divider between tasks
+        section += nodes.transition()
 
         return section_nodes
 
@@ -216,14 +222,14 @@ class TaskSummaryTableDirective(SphinxDirective):
         tgroup = nodes.tgroup(cols=3)
         table += tgroup
 
-        for width in [20, 15, 65]:
+        for width in [30, 20, 50]:
             tgroup += nodes.colspec(colwidth=width)
 
         # Header
         thead = nodes.thead()
         tgroup += thead
         header_row = nodes.row()
-        for header_text in ["Name", "Code", "Description"]:
+        for header_text in ["Name", "Code", "Descriptive Name"]:
             entry = nodes.entry()
             entry += nodes.paragraph(text=header_text)
             header_row += entry
@@ -234,7 +240,7 @@ class TaskSummaryTableDirective(SphinxDirective):
         tgroup += tbody
         for task in tasks:
             row = nodes.row()
-            for field in ["name", "code", "description"]:
+            for field in ["name", "code", "descriptive_name"]:
                 entry = nodes.entry()
                 text = task.get(field, "").strip().strip('"')
                 entry += nodes.paragraph(text=text)
