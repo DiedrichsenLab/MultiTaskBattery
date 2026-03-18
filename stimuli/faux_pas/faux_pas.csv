@@ -101,3 +101,19 @@ The butcher nodded and began wrapping a roasted chicken.
 "Emily was meeting her friend Alice’s boyfriend for the first time. While chatting, she said, “You and your brother don’t look alike at all!” Sam said. “He’s actually my boyfriend,” he said.",27,faux pas,Did Alice bring her boyfriend?,"Yes, No",Yes,,,,control,1
 "Mia got home and reached into her bag, but her keys weren’t there. She checked again and sighed. “I must have left them at the café,” she thought. She called her friend, who found them on the table.",28,control,Did Mia find her keys at home?,"Yes, No",No,,,,control,1
 "Laura gave her friend Nina a handmade scarf for her birthday. Nina unwrapped it and said, “Oh… this is nice. My grandma used to make scarves like these, but I never really wore them.” Laura forced a smile.",29,faux pas,Did Nina like the gift?,"Yes, No",No,,,,control,1
+stand in sentence,1,faux pas,stand in question,"Yes, No",No,stand in question ,stand in answer,Oliver,practice_control,1
+stand in sentence,1,faux pas,stand in question,"Yes, No",No,stand in question ,stand in answer,Oliver,practice_control,1
+stand in sentence,1,faux pas,stand in question,"Yes, No",No,stand in question ,stand in answer,Oliver,practice_control,1
+stand in sentence,1,faux pas,stand in question,"Yes, No",No,stand in question ,stand in answer,Oliver,practice_control,1
+stand in sentence,1,faux pas,stand in question,"Yes, No",No,stand in question ,stand in answer,Oliver,practice_control,2
+stand in sentence,1,faux pas,stand in question,"Yes, No",No,stand in question ,stand in answer,Oliver,practice_control,2
+stand in sentence,1,faux pas,stand in question,"Yes, No",No,stand in question ,stand in answer,Oliver,practice_control,2
+stand in sentence,1,faux pas,stand in question,"Yes, No",No,stand in question ,stand in answer,Oliver,practice_control,2
+stand in sentence,1,faux pas,stand in question,"Yes, No",No,stand in question ,stand in answer,Oliver,practice_social,1
+stand in sentence,1,faux pas,stand in question,"Yes, No",No,stand in question ,stand in answer,Oliver,practice_social,1
+stand in sentence,1,faux pas,stand in question,"Yes, No",No,stand in question ,stand in answer,Oliver,practice_social,1
+stand in sentence,1,faux pas,stand in question,"Yes, No",No,stand in question ,stand in answer,Oliver,practice_social,1
+stand in sentence,1,faux pas,stand in question,"Yes, No",No,stand in question ,stand in answer,Oliver,practice_social,2
+stand in sentence,1,faux pas,stand in question,"Yes, No",No,stand in question ,stand in answer,Oliver,practice_social,2
+stand in sentence,1,faux pas,stand in question,"Yes, No",No,stand in question ,stand in answer,Oliver,practice_social,2
+stand in sentence,1,faux pas,stand in question,"Yes, No",No,stand in question ,stand in answer,Oliver,practice_social,2
