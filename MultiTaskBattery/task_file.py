@@ -131,6 +131,7 @@ class NBack(TaskFile):
                         task_dur =  30,
                         trial_dur = 2,
                         iti_dur   = 0.5,
+                        picture_scale = 1.0,
                         stim = ['9.jpg','11.jpg','18.jpg','28.jpg'],
                         file_name = None ):
         n_trials = int(np.floor(task_dur / (trial_dur+iti_dur)))
@@ -144,6 +145,7 @@ class NBack(TaskFile):
             trial['hand'] = hand
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
+            trial['picture_scale'] = picture_scale
             trial['display_trial_feedback'] = True
             trial['key_match'] = responses[0]
             trial['key_nomatch'] = responses[1]
@@ -374,6 +376,7 @@ class TheoryOfMind(TaskFile):
                         iti_dur=1,
                         story_dur=10,
                         question_dur=4,
+                        text_height=1.25,
                         file_name=None,
                         stim_file=None,
                         condition=None,
@@ -425,6 +428,7 @@ class TheoryOfMind(TaskFile):
             trial['answer'] = stim['answer'][n]
             trial['story_dur'] = story_dur
             trial['question_dur'] = question_dur
+            trial['text_height'] = text_height
             trial['display_trial_feedback'] = True
             trial['start_time'] = t
             trial['end_time'] = t + trial_dur + iti_dur
@@ -1122,6 +1126,8 @@ class RMET(TaskFile):
                         task_dur=30,
                         trial_dur=6,
                         iti_dur=1.5,
+                        option_text_height=1.2,
+                        option_position_scale=1.0,
                         file_name=None,
                         stim_file = None,
                         condition=None,
@@ -1179,6 +1185,8 @@ class RMET(TaskFile):
             trial['hand'] = hand
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
+            trial['option_text_height'] = option_text_height
+            trial['option_position_scale'] = option_position_scale
             trial['stim'] = stim['picture'][n]
             trial['options'] = stim['options'][n]
             trial['condition'] = stim['condition'][n]
@@ -1580,6 +1588,7 @@ class FauxPas(TaskFile):
                     iti_dur=1,
                     story_dur=10,
                     question1_dur=4,
+                    text_height=1.25,
                     file_name=None,
                     stim_file=None,
                     condition=None,
@@ -1652,6 +1661,7 @@ class FauxPas(TaskFile):
             trial['condition'] = stim['condition'][n]
             trial['story_dur'] = story_dur
             trial['question_dur'] = question1_dur
+            trial['text_height'] = text_height
             trial['display_trial_feedback'] = True
             trial['start_time'] = t
             trial['end_time'] = t + trial_dur + iti_dur

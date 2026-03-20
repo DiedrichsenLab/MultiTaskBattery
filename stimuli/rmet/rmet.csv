@@ -1,5 +1,5 @@
 picture,condition,options,answer,stimulus_id,half
-3Shocked-J.jpg,practice,"anxious,disappointed,shocked,concerned",shocked,practice,1
+3Shocked-J.jpg,practice_emotion,"anxious,disappointed,shocked,concerned",shocked,practice,1
 37Friendly-J.jpg,emotion,"nervous,sarcastic,curious,friendly",friendly,1,1
 52Panicked-M.jpg,emotion,"threatening,disappointed,panicked,concerned",panicked,2,1
 60Relieved-S.jpg,emotion,"indifferent,relieved,puzzled,terrified",relieved,3,1
@@ -39,7 +39,7 @@ picture,condition,options,answer,stimulus_id,half
 41Hostile-R.jpg,emotion,"hostile,threatening,shocked,tentative",hostile,37,2
 3Shocked-J.jpg,age,"22,50,60,72",50,practice,2
 37Friendly-J.jpg,age,"26,48,50,58",50,1,2
-52Panicked-M.jpg,practice,"23,37,41,55",41,2,2
+52Panicked-M.jpg,practice_age,"23,37,41,55",41,2,2
 60Relieved-S.jpg,age,"19,51,63,76",19,3,2
 33Excited-J.jpg,age,"24,31,39,42",24,4,2
 52Panicked-J.jpg,age,"38,41,50,80",50,5,2

@@ -238,5 +238,320 @@
                 "description": "Total rest duration in seconds."
             }
         }
+    },
+    "n_back": {
+        "detailed_description": "A 2-back working memory task. On each trial a picture is shown and participants must decide whether the current picture matches the picture shown two trials ago. Participants press one key for a match and another for a non-match. The task engages fronto-parietal working memory regions.",
+        "task_file_parameters": {
+            "hand": {
+                "type": "str",
+                "default": "right",
+                "description": "Hand used for response ('right' or 'left')."
+            },
+            "responses": {
+                "type": "list",
+                "default": "[1, 2]",
+                "description": "Response keys: 1 = match, 2 = no match."
+            },
+            "task_dur": {
+                "type": "float",
+                "default": "30",
+                "description": "Total task duration in seconds."
+            },
+            "trial_dur": {
+                "type": "float",
+                "default": "2",
+                "description": "Duration each stimulus is displayed in seconds."
+            },
+            "iti_dur": {
+                "type": "float",
+                "default": "0.5",
+                "description": "Inter-trial interval duration in seconds."
+            },
+            "picture_scale": {
+                "type": "float",
+                "default": "1.0",
+                "description": "Scaling factor for stimulus images. Values > 1 enlarge the pictures."
+            },
+            "stim": {
+                "type": "list",
+                "default": "['9.jpg', '11.jpg', '18.jpg', '28.jpg']",
+                "description": "List of stimulus image filenames to draw from."
+            }
+        }
+    },
+    "theory_of_mind": {
+        "detailed_description": "On each trial a short story is presented followed by a true/false comprehension question. Half of the stories require understanding of characters' false beliefs (belief condition), while the other half ask about outdated factual records like photographs or maps (photo condition). The task is designed to engage mentalizing and theory-of-mind regions.",
+        "task_file_parameters": {
+            "hand": {
+                "type": "str",
+                "default": "right",
+                "description": "Hand used for response ('right' or 'left')."
+            },
+            "responses": {
+                "type": "list",
+                "default": "[1, 2]",
+                "description": "Response keys: 1 = True, 2 = False."
+            },
+            "run_number": {
+                "type": "int",
+                "default": "None",
+                "description": "Run number, used to select which stories to present."
+            },
+            "task_dur": {
+                "type": "float",
+                "default": "30",
+                "description": "Total task duration in seconds."
+            },
+            "trial_dur": {
+                "type": "float",
+                "default": "14",
+                "description": "Total duration of each trial in seconds."
+            },
+            "iti_dur": {
+                "type": "float",
+                "default": "1",
+                "description": "Inter-trial interval duration in seconds."
+            },
+            "story_dur": {
+                "type": "float",
+                "default": "10",
+                "description": "Duration the story text is displayed in seconds."
+            },
+            "question_dur": {
+                "type": "float",
+                "default": "4",
+                "description": "Duration the comprehension question is displayed in seconds."
+            },
+            "text_height": {
+                "type": "float",
+                "default": "1.25",
+                "description": "Height of the story and question text in degrees of visual angle."
+            },
+            "condition": {
+                "type": "str",
+                "default": "None",
+                "description": "If set, only trials of this condition are included ('belief' or 'photo')."
+            }
+        }
+    },
+    "faux_pas": {
+        "detailed_description": "On each trial a short social scenario is presented followed by a yes/no question about whether anyone said something they should not have said. Half of the stories contain a social faux pas and the other half are control stories with no faux pas. The task is designed to engage social cognition and mentalizing regions.",
+        "task_file_parameters": {
+            "hand": {
+                "type": "str",
+                "default": "right",
+                "description": "Hand used for response ('right' or 'left')."
+            },
+            "responses": {
+                "type": "list",
+                "default": "[1, 2]",
+                "description": "Response keys: 1 = Yes, 2 = No."
+            },
+            "run_number": {
+                "type": "int",
+                "default": "None",
+                "description": "Run number, used to select which stories to present."
+            },
+            "task_dur": {
+                "type": "float",
+                "default": "30",
+                "description": "Total task duration in seconds."
+            },
+            "trial_dur": {
+                "type": "float",
+                "default": "14",
+                "description": "Total duration of each trial in seconds."
+            },
+            "iti_dur": {
+                "type": "float",
+                "default": "1",
+                "description": "Inter-trial interval duration in seconds."
+            },
+            "story_dur": {
+                "type": "float",
+                "default": "10",
+                "description": "Duration the story text is displayed in seconds."
+            },
+            "question1_dur": {
+                "type": "float",
+                "default": "4",
+                "description": "Duration the faux-pas detection question is displayed in seconds."
+            },
+            "text_height": {
+                "type": "float",
+                "default": "1.25",
+                "description": "Height of the story and question text in degrees of visual angle."
+            },
+            "condition": {
+                "type": "str",
+                "default": "None",
+                "description": "If set, only trials of this condition are included ('social' or 'control')."
+            }
+        }
+    },
+    "rmet": {
+        "detailed_description": "The Reading the Mind in the Eyes Test. On each trial a photograph of a person's eye region is shown together with four response options. In the emotion condition, participants select which word best describes the mental state shown; in the age condition, they estimate the person's age. The task engages mentalizing and face-processing regions.",
+        "task_file_parameters": {
+            "hand": {
+                "type": "str",
+                "default": "right",
+                "description": "Hand used for response ('right' or 'left')."
+            },
+            "responses": {
+                "type": "list",
+                "default": "[1, 2, 3, 4]",
+                "description": "Response keys mapped to the four options."
+            },
+            "run_number": {
+                "type": "int",
+                "default": "None",
+                "description": "Run number, used to select which stimuli to present."
+            },
+            "task_dur": {
+                "type": "float",
+                "default": "30",
+                "description": "Total task duration in seconds."
+            },
+            "trial_dur": {
+                "type": "float",
+                "default": "6",
+                "description": "Duration each stimulus is displayed in seconds."
+            },
+            "iti_dur": {
+                "type": "float",
+                "default": "1.5",
+                "description": "Inter-trial interval duration in seconds."
+            },
+            "option_text_height": {
+                "type": "float",
+                "default": "1.2",
+                "description": "Height of the answer-option text in degrees of visual angle."
+            },
+            "option_position_scale": {
+                "type": "float",
+                "default": "1.0",
+                "description": "Spatial scaling factor for option positions. Values < 1 bring options closer together."
+            },
+            "condition": {
+                "type": "str",
+                "default": "None",
+                "description": "If set, only trials of this condition are included ('emotion' or 'age')."
+            }
+        }
+    },
+    "action_prediction": {
+        "detailed_description": "Participants watch short video clips of either soccer kicks or greeting interactions that are occluded partway through. They must predict the outcome: whether a ball will land left or right (soccer), or whether people will hug or shake hands (greeting). Easy and hard variants differ in occlusion timing. The task engages action-prediction and social-perception regions.",
+        "task_file_parameters": {
+            "hand": {
+                "type": "str",
+                "default": "right",
+                "description": "Hand used for response ('right' or 'left')."
+            },
+            "responses": {
+                "type": "list",
+                "default": "[1, 2]",
+                "description": "Response keys for the two prediction options."
+            },
+            "run_number": {
+                "type": "int",
+                "default": "None",
+                "description": "Run number, used to select which stimuli to present."
+            },
+            "task_dur": {
+                "type": "float",
+                "default": "30",
+                "description": "Total task duration in seconds."
+            },
+            "trial_dur": {
+                "type": "float",
+                "default": "5",
+                "description": "Duration of the video presentation in seconds."
+            },
+            "iti_dur": {
+                "type": "float",
+                "default": "1",
+                "description": "Inter-trial interval duration in seconds."
+            },
+            "question_dur": {
+                "type": "float",
+                "default": "4",
+                "description": "Duration the prediction question is displayed in seconds."
+            },
+            "condition": {
+                "type": "str",
+                "default": "None",
+                "description": "If set, only trials of this condition are included (e.g. 'soccer_easy', 'greeting_hard')."
+            }
+        }
+    },
+    "finger_rhythmic": {
+        "detailed_description": "A timing production task in which participants listen to a train of auditory tones and tap along at the same pace. The inter-onset interval (IOI) of the tones can vary across trials, creating different pace levels. The task engages motor timing and cerebellar regions.",
+        "task_file_parameters": {
+            "hand": {
+                "type": "str",
+                "default": "right",
+                "description": "Hand used for response ('right' or 'left')."
+            },
+            "responses": {
+                "type": "list",
+                "default": "[1]",
+                "description": "Response key for tapping."
+            },
+            "task_dur": {
+                "type": "float",
+                "default": "70",
+                "description": "Total task duration in seconds."
+            },
+            "trial_dur": {
+                "type": "float",
+                "default": "35",
+                "description": "Duration of each trial (includes start text, tone train, and buffer) in seconds."
+            },
+            "iti_dur": {
+                "type": "float",
+                "default": "0",
+                "description": "Inter-trial interval duration in seconds."
+            },
+            "ioi": {
+                "type": "float or list",
+                "default": "0.6",
+                "description": "Inter-onset interval(s) in seconds. A single value gives one pace; a list (e.g. [0.3, 0.6, 1.2]) creates trials at different paces, randomly assigned."
+            }
+        }
+    },
+    "semantic_prediction": {
+        "detailed_description": "On each trial a sentence stem is displayed and participants must decide whether the final word makes the sentence meaningful or meaningless. Trial types are randomized so that on each trial the last word is either the correct completion (meaningful) or a semantically unrelated word (meaningless). The task engages language comprehension and semantic processing regions.",
+        "task_file_parameters": {
+            "hand": {
+                "type": "str",
+                "default": "right",
+                "description": "Hand used for response ('right' or 'left')."
+            },
+            "responses": {
+                "type": "list",
+                "default": "[1, 2]",
+                "description": "Response keys: 1 = meaningful, 2 = meaningless."
+            },
+            "run_number": {
+                "type": "int",
+                "default": "None",
+                "description": "Run number, used to select which sentences to present."
+            },
+            "task_dur": {
+                "type": "float",
+                "default": "30",
+                "description": "Total task duration in seconds."
+            },
+            "trial_dur": {
+                "type": "float",
+                "default": "15",
+                "description": "Duration of each trial in seconds."
+            },
+            "sentence_dur": {
+                "type": "float",
+                "default": "2",
+                "description": "Duration the sentence stem is displayed before the final word appears, in seconds."
+            }
+        }
     }
 }
