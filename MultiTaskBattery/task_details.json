@@ -125,7 +125,7 @@
         "recorded_metrics": "Accuracy + RT"
     },
     "action_observation": {
-        "detailed_description": "Participants watch videos of knots being tied (action condition) and 360-degree views of completed knots (knot condition). The first trial in a block shows the knot-tying action, and subsequent trials show the static knot view. No motor response is required. The task is designed to engage action observation processing.",
+        "detailed_description": "Participants watch videos of knots being tied (action condition) and 360-degree views of completed knots (knot condition). The first trial in a block shows the knot-tying action, and subsequent trials show the static knot view. No motor response is required. The task is designed to engage action observation.",
         "reference": "Cross, E. S., Cohen, N. R., Hamilton, A. F. de C., Ramsey, R., Wolford, G., & Grafton, S. T. (2012). Physical experience leads to enhanced object perception in parietal cortex: Insights from knot tying. Neuropsychologia, 50(14), 3207–3217.",
         "task_file_parameters": {
             "run_number": {
