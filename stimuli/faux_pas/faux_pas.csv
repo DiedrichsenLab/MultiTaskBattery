@@ -101,19 +101,7 @@ The butcher nodded and began wrapping a roasted chicken.
 "Emily was meeting her friend Alice’s boyfriend for the first time. While chatting, she said, “You and your brother don’t look alike at all!” Sam said. “He’s actually my boyfriend,” he said.",27,faux pas,Did Alice bring her boyfriend?,"Yes, No",Yes,,,,control,1
 "Mia got home and reached into her bag, but her keys weren’t there. She checked again and sighed. “I must have left them at the café,” she thought. She called her friend, who found them on the table.",28,control,Did Mia find her keys at home?,"Yes, No",No,,,,control,1
 "Laura gave her friend Nina a handmade scarf for her birthday. Nina unwrapped it and said, “Oh… this is nice. My grandma used to make scarves like these, but I never really wore them.” Laura forced a smile.",29,faux pas,Did Nina like the gift?,"Yes, No",No,,,,control,1
-stand in sentence,1,faux pas,stand in question,"Yes, No",No,stand in question ,stand in answer,Oliver,practice_control,1
-stand in sentence,1,faux pas,stand in question,"Yes, No",No,stand in question ,stand in answer,Oliver,practice_control,1
-stand in sentence,1,faux pas,stand in question,"Yes, No",No,stand in question ,stand in answer,Oliver,practice_control,1
-stand in sentence,1,faux pas,stand in question,"Yes, No",No,stand in question ,stand in answer,Oliver,practice_control,1
-stand in sentence,1,faux pas,stand in question,"Yes, No",No,stand in question ,stand in answer,Oliver,practice_control,2
-stand in sentence,1,faux pas,stand in question,"Yes, No",No,stand in question ,stand in answer,Oliver,practice_control,2
-stand in sentence,1,faux pas,stand in question,"Yes, No",No,stand in question ,stand in answer,Oliver,practice_control,2
-stand in sentence,1,faux pas,stand in question,"Yes, No",No,stand in question ,stand in answer,Oliver,practice_control,2
-stand in sentence,1,faux pas,stand in question,"Yes, No",No,stand in question ,stand in answer,Oliver,practice_social,1
-stand in sentence,1,faux pas,stand in question,"Yes, No",No,stand in question ,stand in answer,Oliver,practice_social,1
-stand in sentence,1,faux pas,stand in question,"Yes, No",No,stand in question ,stand in answer,Oliver,practice_social,1
-stand in sentence,1,faux pas,stand in question,"Yes, No",No,stand in question ,stand in answer,Oliver,practice_social,1
-stand in sentence,1,faux pas,stand in question,"Yes, No",No,stand in question ,stand in answer,Oliver,practice_social,2
-stand in sentence,1,faux pas,stand in question,"Yes, No",No,stand in question ,stand in answer,Oliver,practice_social,2
-stand in sentence,1,faux pas,stand in question,"Yes, No",No,stand in question ,stand in answer,Oliver,practice_social,2
-stand in sentence,1,faux pas,stand in question,"Yes, No",No,stand in question ,stand in answer,Oliver,practice_social,2
+"Shelly was sitting at her dining room table playing on her phone. Josh opened the door and turned the lights off. ""Oh sorry"" Josh said ""I didn't realize the lights were already on"". He turned the lights back on. ""That's okay"" Shelly said.",P1,control,Did anyone say something they shouldn't have said or something awkward?,"Yes, No",No,Who said something they shouldn't have said or something awkward?,"Shelly, Josh, Nobody",Nobody,practice_social,1
+"Hope was cycling when her tyre popped. She stopped  and pulled her bike onto the pavement. A pedestrian, Lauren, was walking past. ""Are you okay?"" Lauren said ""Can I help?"". ""No, I will have to take it to the bike-shop"" said Hope, ""I am going to be an hour late for my meeting"".",P2,control,Did Hope break her bike?,"Yes, No",Yes,How late was Hope going to be for her meeting?,"10 mins, an hour, two hours, none of the above",an hour,practice_control,1
+"Rowan was asked to write an essay for his English class and asked George if he would help edit his first draft. When he was finished, George said ""I think this is a good start but maybe try making your sentences more concise"". Later on the playground, Rowan overheard George telling Sarah ""A four year old could have written a better paper""",P3,faux pas,Did George edit Rowans paper?,"Yes, No",Yes,What did George tell Rowan to edit?,"words, sentences, paragraphs, none of the above",sentences,practice_control,2
+"Keiran bought a bracelet for Susan as a birthday present. Keiran told Victoria ""I can't wait to give Susan this bracelet."" Later, Kieran, Victoria and Susan went to the shopping center. Susan saw the bracelet in the window ""Who would buy that?"" she said, ""It is so out of fashion.""",P4,faux pas,Did anyone say something they shouldn't have said or something awkward?,"Yes, No",Yes,Who said something they shouldn't have said or something awkward?,"Keiran, Victoria, Susan, Nobody",Susan,practice_social,2
