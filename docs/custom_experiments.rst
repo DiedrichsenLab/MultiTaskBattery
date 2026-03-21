@@ -68,6 +68,11 @@ defaults are used.
      - ``1.3``
      - Height (in degrees of visual angle) of the text on the run-feedback
        scoreboard.  Reduce for smaller screens.
+   * - ``record_run_end_timestamp``
+     - ``False``
+     - If ``True``, adds an ISO-format ``run_end_timestamp`` column to the run
+       summary when each run completes (captured when the last task ends).
+       Useful for post-processing that needs actual run-end wall-clock time.
 
 .. note::
 
