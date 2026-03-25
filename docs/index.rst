@@ -13,7 +13,7 @@ Licence and Acknowledgements
 ----------------------------
 The software written and maintained by members of the Diedrichsen lab and collaborators (Bassel Arafat, Ince Husain, Caroline Nettekoven, Ladan Shahshahani, Suzanne Witt, Maedbh King, Jorn Diedrichsen). The software is distributed under the MIT License: The software is provided as is, without any warranty. If you use the toolbox please cite the following reference:
 
-Arafat, B., Nettekoven, C., Xiang, J. D., & Diedrichsen, J. (2026). Multi-Task Batteries for Functional Precision Mapping. *bioRxiv*, 2026-03.
+Arafat, B., Nettekoven, C., Xiang, J. D., & Diedrichsen, J. (2026). Multi-Task Batteries for Precision Functional Mapping. *bioRxiv*, 2026-03.
 
 Documentation
 -------------
