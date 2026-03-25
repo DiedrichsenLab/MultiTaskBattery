@@ -10,6 +10,9 @@ A flexible Python toolbox for running multi-domain cognitive and motor tasks dur
 This project runs multi-task batteries developed by the diedrichsenlab.
 #### Authors: Diedrichsenlab (Bassel Arafat, Caroline Nettekoven, Ince Husain, Ladan Shahshahani, Suzanne Witt, Maedbh King, Jorn Diedrichsen)
 
+If you use the toolbox please cite the following reference:
+
+Arafat, B., Nettekoven, C., Xiang, J. D., & Diedrichsen, J. (2026). Multi-Task Batteries for Functional Precision Mapping. *bioRxiv*, 2026-03.
 
 
 ## Documentation
