@@ -11,10 +11,6 @@ Add a row to ``MultiTaskBattery/task_table.tsv`` with:
 - ``task_class``: Python class name (e.g. ``SerialReactionTime``)
 - ``descriptive_name``: short label for the GUI
 - ``code``: unique short code (e.g. ``srt``)
-- ``description``: brief description of the task
-- ``reference``: academic citation (or ``NA``)
-- ``conditions``: comma-separated conditions (or ``NA``)
-- ``recorded_metrics``: what the task records — ``Accuracy + RT``, ``Accuracy``, ``RT``, or ``None``
 
 2. Implement the task class
 ---------------------------
@@ -43,18 +39,25 @@ If your task generates random stimuli (no fixed stimulus file), add it to the ``
 --------------------------
 If your task uses stimulus files (images, audio, video), add them to ``stimuli/<task_name>/``.
 
-5. Add a documentation image (optional)
+5. Add a documentation image
 ----------------------------------------
 Drop a screenshot of your task as ``docs/images/<task_name>.png``. It will automatically appear on the task descriptions page. For multiple images use ``<task_name>_2.png``, ``<task_name>_3.png``, etc.
 
 6. Add task details
 --------------------
-Add an entry for your task in ``MultiTaskBattery/task_details.json``. This provides a detailed description and documents the parameters of ``make_task_file`` on the task descriptions page. The key must match the task ``name`` from ``task_table.tsv``.
+Add an entry for your task in ``MultiTaskBattery/task_details.json``. The key must match the task ``name`` from ``task_table.tsv``. Each entry should include:
+
+- ``short_description``: a brief one-line summary of the task.
+- ``detailed_description``: a longer description of what the task involves.
+- ``recorded_metrics``: what the task records — ``Accuracy + RT``, ``Accuracy``, ``RT``, or ``None``.
+- ``conditions``: comma-separated list of conditions (omit if none).
+- ``reference``: academic citation (omit if none).
+- ``task_file_parameters``: documents the parameters of ``make_task_file``.
 
 Tips for the detailed description:
 
 - Describe what the participant sees and does on each trial.
-- Mention the expected brain regions the task is designed to activate (e.g., "targets the language network").
+- Mention the expected mental processes or brain regions that this task is designed to activate (e.g., "targets the language network").
 - If your task has conditions, describe what each condition involves and how it differs from the others.
 
 For example, the ``demand_grid`` entry:
@@ -63,28 +66,21 @@ For example, the ``demand_grid`` entry:
 
     {
         "demand_grid": {
-            "detailed_description": "Participants see a sequence of boxes lighting up on a grid. They must identify the correct pattern from two options (original vs. modified).",
+            "short_description": "2AFC spatial working memory task on a grid.",
+            "detailed_description": "Participants see a sequence of boxes lighting up on a grid...",
+            "recorded_metrics": "Accuracy + RT",
+            "reference": "Fedorenko et al. (2013)...",
             "task_file_parameters": {
                 "grid_size": {
                     "type": "tuple",
                     "default": "(3, 4)",
                     "description": "Size of the grid (rows, cols)."
-                },
-                "num_steps": {
-                    "type": "int",
-                    "default": "3",
-                    "description": "Number of steps in the sequence shown to the participant."
-                },
-                "trial_dur": {
-                    "type": "float",
-                    "default": "7",
-                    "description": "Duration of each trial in seconds."
                 }
             }
         }
     }
 
-The detailed description appears below the short description on the :ref:`task descriptions <task_descriptions>` page, and the parameters appear in a collapsible table.
+All fields appear on the :ref:`task descriptions <task_descriptions>` page, with the parameters shown in a collapsible table.
 
 7. Test
 -------

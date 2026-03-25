@@ -1,6 +1,6 @@
 {
     "movie": {
-        "detailed_description": "Participants passively watch 30-second video clips without audio or subtitles. Conditions include romance clips from Pixar's Up, nature clips, and landscape clips. Each run presents one clip from the selected condition. The task requires no motor response and is designed to engage visual processing and social/emotional networks depending on the condition.",
+        "detailed_description": "Participants passively watch 30-second video clips without audio or subtitles. Conditions include romance clips from Pixar's Up, nature clips, and landscape clips. Each run presents one clip from the selected condition. The Movie clips are usually shown in sequence across runs, so participant can follow a consistent narrative across runs. The task requires no motor response and is designed to engage visual processing and social/emotional processes depending on the condition.",
         "task_file_parameters": {
             "run_number": {
                 "type": "int",
@@ -27,10 +27,14 @@
                 "default": "None",
                 "description": "Which condition to use: 'romance', 'nature', or 'landscape'. If None, all non-practice clips are used."
             }
-        }
+        },
+        "short_description": "30s clips of planet earth documentary or of a pixar movie, no audio no subtitles",
+        "reference": "Planet Earth and Pixar UP\" movie as used in King, M. et al. (2019) ‘Functional boundaries in the human cerebellum revealed by a multi-domain task battery’, Nature Neuroscience, 22(8), pp. 1371–1378. Available at: https://doi.org/10.1038/s41593-019-0436-x.",
+        "conditions": "romance,landscape,nature",
+        "recorded_metrics": "None"
     },
     "oddball": {
-        "detailed_description": "A rapid visual oddball detection task. On each trial a letter ('K' or 'O') is briefly shown in either black or red. Participants must press a button when they see a red 'K' (the target) and withhold responses to all other stimuli. The task is designed to engage attentional and executive control networks.",
+        "detailed_description": "A rapid visual oddball detection task. On each trial a letter ('K' or 'O') is briefly shown in either black or red. Participants must press a button when they see a red 'K' (the target) and withhold responses to all other stimuli. The task is designed to engage attention and executive control .",
         "task_file_parameters": {
             "hand": {
                 "type": "str",
@@ -57,10 +61,13 @@
                 "default": "0.85",
                 "description": "Inter-trial interval duration in seconds."
             }
-        }
+        },
+        "short_description": "Black or red \"K\" or \"O\" is shown on the screen. Press a button when red \"K\" is shown",
+        "reference": "Du, J., DiNicola, L. M., Angeli, P. A., Saadon-Grosman, N., Sun, W., Kaiser, S., ... & Buckner, R. L. (2024). Organization of the human cerebral cortex estimated within individuals: networks, global topography, and function. Journal of neurophysiology, 131(6), 1014-1082.",
+        "recorded_metrics": "Accuracy + RT"
     },
     "demand_grid": {
-        "detailed_description": "Participants see a sequence of boxes lighting up on a grid. They must identify the correct pattern from two options (original vs. modified). On each trial, a sequence of steps is shown, where each step lights up a set of adjacent boxes. After the sequence, two grids are displayed side by side: one showing the original pattern and one with a modified step. The participant presses left or right to indicate which grid matches the original sequence. The task is designed to engage domain-general frontal and parietal regions.",
+        "detailed_description": "On each trial, a sequence of steps is shown, where each step lights up a set of boxes in a grid. participants need to mentally add these steps together to build up a representation of the final pattern. After the sequence, two grids are displayed side by side: one showing the integrated pattern and one with a modified step. The participant presses left or right to indicate which grid matches the original sequence. The task is designed to tap spatial working memory and engage domain-general processing. The size of the grid, the number of steps and the number of boxes per step can be manipulated to adjust task difficulty and working memory load.",
         "task_file_parameters": {
             "hand": {
                 "type": "str",
@@ -112,10 +119,14 @@
                 "default": "0.5",
                 "description": "Inter-trial interval duration in seconds."
             }
-        }
+        },
+        "short_description": "2AFC, a set of grids is shown one by one on the screen with certain boxes colored blue. After the sequnece, two options are given for the combination of blue boxes across shown grids",
+        "reference": "Fedorenko, E., Duncan, J., & Kanwisher, N. (2013). Broad domain generality in focal regions of frontal and parietal cortex. Proceedings of the National Academy of Sciences of the United States of America, 110(41), 16616�16621.",
+        "recorded_metrics": "Accuracy + RT"
     },
     "action_observation": {
-        "detailed_description": "Participants watch videos of knots being tied (action condition) and 360-degree views of completed knots (knot condition). The first trial in a block shows the knot-tying action, and subsequent trials show the static knot view. No motor response is required. The task is designed to engage action observation and premotor regions.",
+        "detailed_description": "Participants watch videos of knots being tied (action condition) and 360-degree views of completed knots (knot condition). The first trial in a block shows the knot-tying action, and subsequent trials show the static knot view. No motor response is required. The task is designed to engage action observation.",
+        "reference": "Cross, E. S., Cohen, N. R., Hamilton, A. F. de C., Ramsey, R., Wolford, G., & Grafton, S. T. (2012). Physical experience leads to enhanced object perception in parietal cortex: Insights from knot tying. Neuropsychologia, 50(14), 3207–3217.",
         "task_file_parameters": {
             "run_number": {
                 "type": "int",
@@ -137,10 +148,13 @@
                 "default": "1",
                 "description": "Inter-trial interval duration in seconds."
             }
-        }
+        },
+        "short_description": "Watch a video where the first half a knot is tied, second half a 360 view of the knot is shown.",
+        "conditions": "action, knot",
+        "recorded_metrics": "None"
     },
     "visual_search": {
-        "detailed_description": "Participants view a display of geometric shapes at different rotations (90, 180, 270, 360 degrees) and must determine whether the target shape (at 90 degrees) is present. On easy trials 4 shapes are shown, on hard trials 8 shapes are shown. Participants press one button if the target is present and another if it is absent. The task is designed to engage visual attention regions.",
+        "detailed_description": "Participants view a display of geometric shapes at different rotations (90, 180, 270, 360 degrees) and must determine whether the target shape (at 90 degrees) is present. On easy trials 4 shapes are shown, on hard trials 8 shapes are shown. Participants press one button if the target is present and another if it is absent. The task is designed to engage selective visual attention and eye-movement control.",
         "task_file_parameters": {
             "hand": {
                 "type": "str",
@@ -172,10 +186,12 @@
                 "default": "0.5",
                 "description": "Probability of an easy trial (4 stimuli vs. 8)."
             }
-        }
+        },
+        "short_description": "Geometric shapes presented on screen, participants must identify if 'L' is present.",
+        "recorded_metrics": "Accuracy + RT"
     },
     "serial_reaction_time": {
-        "detailed_description": "Four boxes are displayed in a row. On each trial one box lights up green and the participant presses the corresponding button as fast as possible. Stimuli are randomized with the constraint that the same box never lights up on consecutive trials. The task measures basic visuomotor response speed and is designed to engage sensorimotor regions.",
+        "detailed_description": "Four boxes are displayed in a row. On each trial one box lights up green and the participant presses the corresponding button as fast as possible. Stimuli are randomized with the constraint that the same box never lights up on consecutive trials. The task measures basic visuomotor response speed.",
         "task_file_parameters": {
             "hand": {
                 "type": "str",
@@ -207,10 +223,12 @@
                 "default": "1.0",
                 "description": "Inter-trial interval duration in seconds."
             }
-        }
+        },
+        "short_description": "Single boxes light up one at a time in a row of four. Press corrosponding button as fast as possible.",
+        "recorded_metrics": "RT"
     },
     "verb_generation": {
-        "detailed_description": "Words are presented one at a time. In the first half of trials (read condition), participants silently read each word. In the second half (generate condition), a 'GENERATE' cue appears and participants covertly generate a verb associated with each presented word. The task is designed to engage the language areas",
+        "detailed_description": "Words are presented one at a time. In the first half of trials (read condition), participants silently read each word. In the second half (generate condition), a 'GENERATE' cue appears and participants covertly generate a verb associated with each presented word. The task is designed to engage the language prcoessing.",
         "task_file_parameters": {
             "task_dur": {
                 "type": "float",
@@ -227,16 +245,432 @@
                 "default": "0.5",
                 "description": "Inter-trial interval duration in seconds."
             }
-        }
+        },
+        "short_description": "Words presented, participants read the words. At halfpoint, \"GENERATE\" is shown, participants need to covertly generate verbs associated with words",
+        "conditions": "generate, read",
+        "recorded_metrics": "None"
     },
     "rest": {
-        "detailed_description": "Participants lie still and fixate on a central crosshair. No stimuli are presented and no response is required. Used as a baseline condition.",
+        "detailed_description": "Participants lie still and fixate on a central crosshair. No stimuli are presented and no response is required. For most fMRI experiments, rest is used as the baseline condition, and it is recommended to include it into every task battery to allow for alignment with other datasets.",
         "task_file_parameters": {
             "task_dur": {
                 "type": "float",
                 "default": "30",
                 "description": "Total rest duration in seconds."
             }
+        },
+        "short_description": "Lie in scanner with a fixation cross.",
+        "recorded_metrics": "None"
+    },
+    "theory_of_mind": {
+        "short_description": "Short story presented with a question at the end, participants must answer the question.",
+        "reference": "Saxe, R. and Kanwisher, N. (2003) ‘People thinking about thinking people: The role of the temporo-parietal junction in “theory of mind”’, NeuroImage, 19(4), pp. 1835–1842. Available at: https://doi.org/10.1016/S1053-8119(03)00230-1.",
+        "conditions": "belief,photo",
+        "recorded_metrics": "Accuracy + RT",
+        "detailed_description": "Participants read a short story followed by a true/false question. In the belief condition, stories involve understanding another person's mental state (false beliefs, intentions). In the photo condition, stories involve factual reasoning about outdated photographs. The task is designed to engage mentalizing processes and social cognition.",
+        "task_file_parameters": {
+            "hand": {
+                "type": "str",
+                "default": "right",
+                "description": "Hand used for response."
+            },
+            "responses": {
+                "type": "list",
+                "default": "[1, 2]",
+                "description": "Response keys for True and False."
+            },
+            "run_number": {
+                "type": "int",
+                "default": "None",
+                "description": "Run number, used to select stimuli."
+            },
+            "task_dur": {
+                "type": "float",
+                "default": "30",
+                "description": "Total task duration in seconds."
+            },
+            "trial_dur": {
+                "type": "float",
+                "default": "14",
+                "description": "Duration of each trial in seconds."
+            },
+            "story_dur": {
+                "type": "float",
+                "default": "10",
+                "description": "Duration the story is displayed in seconds."
+            },
+            "question_dur": {
+                "type": "float",
+                "default": "4",
+                "description": "Duration the question is displayed in seconds."
+            },
+            "iti_dur": {
+                "type": "float",
+                "default": "1",
+                "description": "Inter-trial interval duration in seconds."
+            },
+            "condition": {
+                "type": "str",
+                "default": "None",
+                "description": "Which condition to use: belief or photo."
+            }
         }
+    },
+    "n_back": {
+        "short_description": "2AFC, is the current stimulus the same as the one presented n ago",
+        "recorded_metrics": "Accuracy + RT",
+        "detailed_description": "A 2-back working memory task. Participants view a sequence of images and must indicate whether the current image matches the one shown two items ago. The task engages working memory networks.",
+        "task_file_parameters": {
+            "hand": {
+                "type": "str",
+                "default": "right",
+                "description": "Hand used for response."
+            },
+            "responses": {
+                "type": "list",
+                "default": "[1, 2]",
+                "description": "Response keys for match and no-match."
+            },
+            "task_dur": {
+                "type": "float",
+                "default": "30",
+                "description": "Total task duration in seconds."
+            },
+            "trial_dur": {
+                "type": "float",
+                "default": "2",
+                "description": "Duration each stimulus is displayed in seconds."
+            },
+            "iti_dur": {
+                "type": "float",
+                "default": "0.5",
+                "description": "Inter-trial interval duration in seconds."
+            }
+        }
+    },
+    "tongue_movement": {
+        "short_description": "Move tongue from right to left, touching upper premolar teeth guided by a flashing black circle around a fixation crosshair. Black circle means right, no circle means left, 1s periods.",
+        "reference": "A Third Somatomotor Representation in the Human Cerebellum (Bucknet et al., 2022)",
+        "recorded_metrics": "None",
+        "detailed_description": "Participants move their tongue from right to left, touching their upper premolar teeth on each side. A flashing black circle around a fixation crosshair guides the rhythm (1-second periods). The task is designed to activate somatomotor tongue representations.",
+        "task_file_parameters": {
+            "task_dur": {
+                "type": "float",
+                "default": "30",
+                "description": "Total task duration in seconds."
+            },
+            "trial_dur": {
+                "type": "float",
+                "default": "1",
+                "description": "Duration of each tongue movement cycle in seconds."
+            },
+            "iti_dur": {
+                "type": "float",
+                "default": "0",
+                "description": "Inter-trial interval duration in seconds."
+            }
+        }
+    },
+    "auditory_narrative": {
+        "short_description": "30 second snippets of a moth radiohour story (wheretheressmoke)",
+        "recorded_metrics": "None",
+        "detailed_description": "Participants listen to 30-second audio snippets from The Moth Radio Hour story 'Where There's Smoke'. The clips are presented sequentially across runs so the participant follows the narrative. The task is designed to engage auditory cortex and the language network.",
+        "task_file_parameters": {
+            "run_number": {
+                "type": "int",
+                "default": "None",
+                "description": "Run number, used to select which audio clip to play."
+            },
+            "task_dur": {
+                "type": "float",
+                "default": "30",
+                "description": "Total task duration in seconds."
+            },
+            "trial_dur": {
+                "type": "float",
+                "default": "30",
+                "description": "Duration of each audio clip in seconds."
+            },
+            "iti_dur": {
+                "type": "float",
+                "default": "0",
+                "description": "Inter-trial interval duration in seconds."
+            }
+        }
+    },
+    "spatial_navigation": {
+        "short_description": "Imagining walking room to room in childhood home.",
+        "recorded_metrics": "None",
+        "detailed_description": "Participants imagine walking from room to room in their childhood home. No visual stimuli are presented beyond the instruction. The task is designed to engage spatial memory and mental navigation.",
+        "task_file_parameters": {
+            "task_dur": {
+                "type": "float",
+                "default": "30",
+                "description": "Total task duration in seconds."
+            },
+            "trial_dur": {
+                "type": "float",
+                "default": "30",
+                "description": "Duration of the imagination period in seconds."
+            },
+            "iti_dur": {
+                "type": "float",
+                "default": "0",
+                "description": "Inter-trial interval duration in seconds."
+            }
+        }
+    },
+    "degraded_passage": {
+        "short_description": "Listen to muffled passages.",
+        "reference": "Scott, T. L., Gallee, J., & Fedorenko, E. (2017). A new fun and robust version of an fMRI localizer for the frontotemporal language system. Cognitive Neuroscience, 8(3), 167�176.",
+        "recorded_metrics": "None",
+        "detailed_description": "Participants listen to acoustically degraded (muffled) speech passages. The degradation makes the passages unintelligible, serving as a control for the intact passage condition. The task is designed to engage auditory processing regions without engaging higher-level language comprehension.",
+        "task_file_parameters": {
+            "run_number": {
+                "type": "int",
+                "default": "None",
+                "description": "Run number, used to select which passage to play."
+            },
+            "task_dur": {
+                "type": "float",
+                "default": "30",
+                "description": "Total task duration in seconds."
+            },
+            "trial_dur": {
+                "type": "float",
+                "default": "14.5",
+                "description": "Duration of each passage in seconds."
+            },
+            "iti_dur": {
+                "type": "float",
+                "default": "0.5",
+                "description": "Inter-trial interval duration in seconds."
+            }
+        }
+    },
+    "intact_passage": {
+        "short_description": "Listen to normal sentences.",
+        "reference": "Scott, T. L., Gallee, J., & Fedorenko, E. (2017). A new fun and robust version of an fMRI localizer for the frontotemporal language system. Cognitive Neuroscience, 8(3), 167�176.",
+        "recorded_metrics": "None",
+        "detailed_description": "Participants listen to normal, intelligible speech passages. Paired with the degraded passage condition, this allows isolation of higher-level language comprehension from basic auditory processing.",
+        "task_file_parameters": {
+            "run_number": {
+                "type": "int",
+                "default": "None",
+                "description": "Run number, used to select which passage to play."
+            },
+            "task_dur": {
+                "type": "float",
+                "default": "30",
+                "description": "Total task duration in seconds."
+            },
+            "trial_dur": {
+                "type": "float",
+                "default": "14.5",
+                "description": "Duration of each passage in seconds."
+            },
+            "iti_dur": {
+                "type": "float",
+                "default": "0.5",
+                "description": "Inter-trial interval duration in seconds."
+            }
+        }
+    },
+    "sentence_reading": {
+        "short_description": "Read sentences, words presented sequentially one at a time. Press a button at the end of each sentence.",
+        "reference": "Fedorenko, E., Hsieh, P.-J., Nieto-Castanon, A., Whitfield-Gabrieli, S., & Kanwisher, N. (2010). New method for fMRI investigations of language: defining ROIs functionally in individual subjects. Journal of Neurophysiology, 104(2), 1177-1194.",
+        "recorded_metrics": "RT",
+        "detailed_description": "Words from English sentences are presented one at a time. Participants read each word silently and press a button when a hand-press image appears at the end of the sentence. Paired with nonword reading, this isolates sentence-level language processing.",
+        "task_file_parameters": {
+            "run_number": {
+                "type": "int",
+                "default": "None",
+                "description": "Run number, used to select which sentences to show."
+            },
+            "task_dur": {
+                "type": "float",
+                "default": "30",
+                "description": "Total task duration in seconds."
+            },
+            "trial_dur": {
+                "type": "float",
+                "default": "5.8",
+                "description": "Duration of each sentence presentation in seconds."
+            },
+            "iti_dur": {
+                "type": "float",
+                "default": "0.2",
+                "description": "Inter-trial interval duration in seconds."
+            }
+        }
+    },
+    "nonword_reading": {
+        "short_description": "Read nonwords, nonwords presented sequentially one at a time. Press a button at the end of each list of nonwords.",
+        "reference": "Fedorenko, E., Hsieh, P.-J., Nieto-Castanon, A., Whitfield-Gabrieli, S., & Kanwisher, N. (2010). New method for fMRI investigations of language: defining ROIs functionally in individual subjects. Journal of Neurophysiology, 104(2), 1177�1194.",
+        "recorded_metrics": "RT",
+        "detailed_description": "Pronounceable nonwords are presented one at a time. Participants read each nonword silently and press a button when a hand-press image appears at the end of the list. Serves as a control for sentence reading, isolating low-level visual and phonological processing from sentence-level comprehension.",
+        "task_file_parameters": {
+            "run_number": {
+                "type": "int",
+                "default": "None",
+                "description": "Run number, used to select which nonwords to show."
+            },
+            "task_dur": {
+                "type": "float",
+                "default": "30",
+                "description": "Total task duration in seconds."
+            },
+            "trial_dur": {
+                "type": "float",
+                "default": "5.8",
+                "description": "Duration of each nonword list presentation in seconds."
+            },
+            "iti_dur": {
+                "type": "float",
+                "default": "0.2",
+                "description": "Inter-trial interval duration in seconds."
+            }
+        }
+    },
+    "finger_sequence": {
+        "short_description": "Press a sequence of buttons.",
+        "recorded_metrics": "Accuracy + RT",
+        "detailed_description": "A sequence of 6 digits (1-4) is displayed and participants press the corresponding buttons in order as quickly and accurately as possible. No consecutive repeats appear in the sequence.",
+        "task_file_parameters": {
+            "hand": {
+                "type": "str",
+                "default": "bimanual",
+                "description": "Hand used for response."
+            },
+            "responses": {
+                "type": "list",
+                "default": "[1, 2, 3, 4]",
+                "description": "Response keys mapped to each finger."
+            },
+            "task_dur": {
+                "type": "float",
+                "default": "30",
+                "description": "Total task duration in seconds."
+            },
+            "trial_dur": {
+                "type": "float",
+                "default": "3.25",
+                "description": "Duration of each trial in seconds."
+            },
+            "iti_dur": {
+                "type": "float",
+                "default": "0.5",
+                "description": "Inter-trial interval duration in seconds."
+            }
+        }
+    },
+    "flexion_extension": {
+        "short_description": "Alternating periods of flexing/extending toes.",
+        "recorded_metrics": "None",
+        "detailed_description": "Participants alternate between flexing and extending their toes, guided by visual cues.",
+        "task_file_parameters": {
+            "task_dur": {
+                "type": "float",
+                "default": "30",
+                "description": "Total task duration in seconds."
+            },
+            "trial_dur": {
+                "type": "float",
+                "default": "30",
+                "description": "Duration of the flexion/extension period in seconds."
+            },
+            "stim_dur": {
+                "type": "float",
+                "default": "2",
+                "description": "Duration of each flex/extend cue in seconds."
+            },
+            "iti_dur": {
+                "type": "float",
+                "default": "0",
+                "description": "Inter-trial interval duration in seconds."
+            }
+        }
+    },
+    "semantic_prediction": {
+        "short_description": "Sentence presented, participants decide if last word makes sense.",
+        "recorded_metrics": "Accuracy + RT"
+    },
+    "semantic_switching": {
+        "short_description": "sentence presented, participants decide if last word makes sense.",
+        "conditions": "predictable, switched, meaningless",
+        "recorded_metrics": "Accuracy + RT"
+    },
+    "rmet": {
+        "short_description": "Pictures of faces with different emotions presented (eyes only) along with four attribute words, participants must identify which attribute describes person best.",
+        "reference": "Kim, H.A. et al. (2024) ‘Multiracial Reading the Mind in the Eyes Test (MRMET): An inclusive version of an influential measure’, Behavior Research Methods. Revised from Baron-Cohen, Wheelwright, Hill, Raste, & Plumb, 2001",
+        "conditions": "age, emotion",
+        "recorded_metrics": "Accuracy + RT"
+    },
+    "picture_sequence": {
+        "short_description": "4 cartoon pictures are presented, participants must order them chronologically.",
+        "reference": "Heleven, E., van Dun, K. and Van Overwalle, F. (2019) ‘The posterior Cerebellum is involved in constructing Social Action Sequences: An fMRI Study’, Scientific Reports, 9(1), pp. 1–11. Available at: https://doi.org/10.1038/s41598-019-46962-7.",
+        "conditions": "fbelief,tbelief,control,sscript,mechanical",
+        "recorded_metrics": "Accuracy + RT"
+    },
+    "story_sequence": {
+        "short_description": "4 sentences are presented, participants must order them chronologically.",
+        "reference": "Heleven, E., van Dun, K. and Van Overwalle, F. (2019) ‘The posterior Cerebellum is involved in constructing Social Action Sequences: An fMRI Study’, Scientific Reports, 9(1), pp. 1–11. Available at: https://doi.org/10.1038/s41598-019-46962-7.",
+        "conditions": "fbelief,tbelief,control,sscript,mechanical",
+        "recorded_metrics": "Accuracy + RT"
+    },
+    "action_prediction": {
+        "short_description": "An action video is shown where an actor is either taking a penalty shot or greeting a person, participants must predict if the ball lands left or right or if the person greets with a handshake or hug.",
+        "reference": "King, M. (2022). Investigating cortico-cerebellar contributions to cognition. UC Berkeley. ProQuest ID: King_berkeley_0028E_21350. Merritt ID: ark:/13030/m5wb6kvd. Retrieved from https://escholarship.org/uc/item/61w6t6sk",
+        "conditions": "soccer,greeting",
+        "recorded_metrics": "Accuracy + RT"
+    },
+    "strange_stories": {
+        "short_description": "Clips of relationship stories, participants are asked to answer questions about the interaction.",
+        "reference": "Murray, K. et al. (2017) ‘A new test of advanced theory of mind: The “Strange Stories Film Task” captures social processing differences in adults with autism spectrum disorders’, Autism Research, 10(6), pp. 1120–1132. Available at: https://doi.org/10.1002/aur.1744.",
+        "conditions": "social,control",
+        "recorded_metrics": "Accuracy + RT"
+    },
+    "faux_pas": {
+        "short_description": "Stories of (potential) faux pas situations, participants must answer questions about the interaction.",
+        "reference": "Stone, V.E., Baron-Cohen, S. & Knight, R.T. (1998). Frontal lobe contributions to theory of mind. Journal of Cognitive Neuroscience, 10, 640-656. Gregory, C. , Lough, S., Stone, V.E., Erzinclioglu, S., Martin, L., Baron-Cohen, S. & Hodges, J. (2002). Theory of mind in frontotemporal dementia and Alzheimer's disease: Theoretical and practical implications. Brain, 125, 752-64.",
+        "conditions": "social,control",
+        "recorded_metrics": "Accuracy + RT"
+    },
+    "frith_happe": {
+        "short_description": "Video clips of triangle animations, participants must determine whether interaction was random, goal-directed or a mentalizing interaction.",
+        "reference": "Livingston, L.A. et al. (2021) ‘Further developing the Frith–Happé animations: A quicker, more objective, and web-based test of theory of mind for autistic and neurotypical adults’, Autism Research, 14(9), pp. 1905–1912. Available at: https://doi.org/10.1002/aur.2575..",
+        "conditions": "random,gd,tom",
+        "recorded_metrics": "Accuracy + RT"
+    },
+    "liking": {
+        "short_description": "Video clips of people interacting, participants must determine if the interaction was positive or negative.",
+        "reference": "Heerey, E.A. and Gilder, T.S.E. (2019) ‘The subjective value of a smile alters social behaviour’, PLoS ONE, 14(12), pp. 1–19. Available at: https://doi.org/10.1371/journal.pone.0225284.",
+        "conditions": "like,dislike",
+        "recorded_metrics": "Accuracy + RT"
+    },
+    "pong": {
+        "short_description": "Classic pong game. A ball moves across the screen downwards and the participant uses buttons to move a paddle left or right to catch it.",
+        "recorded_metrics": "Accuracy"
+    },
+    "affective": {
+        "short_description": "2 choice is the image pleasant or unpleasant",
+        "recorded_metrics": "Accuracy + RT"
+    },
+    "finger_rhythmic": {
+        "short_description": "Assess the precision of internal timing mechanisms through a rhythmic tapping production task. Participants are instructed to produce a regular series of taps at a prescribed target interval.",
+        "reference": "Ivry, R. B., & Keele, S. W. (1989). Timing Functions of the Cerebellum. Journal of Cognitive Neuroscience, 1(2), 136-152.",
+        "conditions": "self-paced tapping"
+    },
+    "time_perception": {
+        "short_description": "Assess the precision of internal timing mechanisms by measuring participants’ perceptual acuity in discriminating short auditory intervals. Participants are presented with sequences of tones and must decide whether a comparison interval is longer or shorter than a standard reference interval.",
+        "reference": "Ivry, R. B., & Keele, S. W. (1989). Timing Functions of the Cerebellum. Journal of Cognitive Neuroscience, 1(2), 136–152.",
+        "conditions": "time interval",
+        "recorded_metrics": "Accuracy + RT"
+    },
+    "sensmot_control": {
+        "short_description": "Assess basic sensorimotor control. Measure reaction time and response accuracy to evaluate low-level perceptual and motor processing. Part 1 is a Go/No-Go. Part 2 is a 2AFC",
+        "reference": ": Koechlin, E., & Summerfield, C. (2007). An information theoretical approach to prefrontal executive function. Trends in cognitive sciences, 11(6), 229-235.Koechlin 2007",
+        "conditions": "Go/No-Go 2AFC.",
+        "recorded_metrics": "Accuracy + RT"
     }
 }
