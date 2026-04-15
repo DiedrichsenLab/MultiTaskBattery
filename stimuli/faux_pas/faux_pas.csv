@@ -63,7 +63,7 @@ The butcher nodded and began wrapping a roasted chicken.
 “Those curtains are horrible,” Lisa said.""",6,faux pas,Did Jill just move into a new flat?,"Yes, No",Yes,What had Jill just bought? ,"A flat, Curtains, Nothing",Curtains,control,2
 "Sally, a three-year-old girl with short blonde hair was at her Aunt Carol's house. A neighbour, Mary, rang the doorbell and Carol answered. Mary looked at Sally and said, “Oh, I don’t think I’ve met this little boy. What’s your name?”",7,faux pas,Did Sally ring the doorbell?,"Yes, No",No,What colour is Sally's hair?,"Black, Blonde, Brown",Blonde,control,2
 "Joan took her dog, Zack, to the park and threw a stick for him. Pam, a neighbor, passed by and asked, “Want to walk home together?”
-“Sure,” said Joan. She called Jack but he was busy chasing pigeons. “Nevermind, we’ll stay” Joan added.",8,control,Did Joan walk home with Pam?,"Yes, No",No,What was Zack chasing?,"Squirrels, Pigeons",Pigeons,control,2
+“Sure,” said Joan. She called Zack but he was busy chasing pigeons. “Nevermind, we’ll stay” Joan added.",8,control,Did Joan walk home with Pam?,"Yes, No",No,What was Zack chasing?,"Squirrels, Pigeons",Pigeons,control,2
 "Kim’s cousin Scott was coming to visit, and Kim made an apple pie for him. After dinner, she said, “I made a pie just for you.”
 “Mmmm,” Scott replied. “It smells great! I love pies—except for apple, of course.”",9,faux pas,Is Scott Kim's brother?,"Yes, No",No,What kind of pie did Kim make?,"Cherry pie, Blueberry pie, None of the above",None of the above,control,2
 "Jeanette gave Anne a crystal bowl as a wedding gift. A year later, at Anne’s for dinner, Jeanette accidentally broke the bowl.
