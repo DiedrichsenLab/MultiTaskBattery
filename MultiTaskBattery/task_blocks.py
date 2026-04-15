@@ -2558,33 +2558,6 @@ class FingerRhythmic(Task):
     def run_trial(self, trial):
         """ Runs a single trial of the Finger Rhythmic task """
 
-        # ---- DEBUG INSTRUMENTATION (remove after diagnosis) ----
-        import sys, traceback as _tb
-        _trial_num = trial.get('trial_num', '?') if hasattr(trial, 'get') else '?'
-        _diag_prefix = f"[FingerRhythmic diag] trial={_trial_num}"
-        try:
-            import pyglet as _pyglet
-            _pyglet_ver = _pyglet.version
-        except Exception:
-            _pyglet_ver = '?'
-        try:
-            _pending_before = len(event._keyBuffer)
-        except Exception:
-            _pending_before = '?'
-        try:
-            _psychopy_ver = core.psychopyVersion
-        except Exception:
-            _psychopy_ver = '?'
-        print(f"{_diag_prefix} start  "
-              f"start_time={self.start_time:.3f}  "
-              f"trial_end_time={trial.get('end_time', '?') if hasattr(trial, 'get') else '?'}  "
-              f"pending_keys={_pending_before}  "
-              f"psychopy={_psychopy_ver}  "
-              f"pyglet={_pyglet_ver}  "
-              f"backend=pyglet",
-              file=sys.stderr)
-        # ---- END DEBUG HEADER ----
-
         event.clearEvents()
         txt = (f"New trial starts now") # this text shows when a new trials starts
         visual.TextStim(self.window, text=txt,height=self.const.instruction_text_height, color=[-1, -1, -1]).draw()
@@ -2620,65 +2593,22 @@ class FingerRhythmic(Task):
                     beep_time = clk.getTime()
                     beep_times.append(beep_time)
                     break
-                # ---- DEBUG: tone-phase waitKeys trap ----
-                _mw = deadline - now
-                try:
-                    res = event.waitKeys(maxWait=_mw,
-                                         keyList=self.const.response_keys,
-                                         timeStamped=clk)
-                except AttributeError as _e:
-                    try:
-                        _pending_now = len(event._keyBuffer)
-                    except Exception:
-                        _pending_now = '?'
-                    print(f"{_diag_prefix} *** CRASH in TONE phase ***\n"
-                          f"  tone_index={i}  now={now:.3f}  deadline={deadline:.3f}  maxWait={_mw:.6f}\n"
-                          f"  t0={t0:.3f}  t_first={t_first:.3f}  ioi={ioi}\n"
-                          f"  keyList={self.const.response_keys}\n"
-                          f"  pending_keys={_pending_now}  taps_so_far={len(taps_rel)}\n"
-                          f"  error={_e}",
-                          file=sys.stderr)
-                    _tb.print_exc(file=sys.stderr)
-                    raise  # re-raise unchanged
-                # ---- END DEBUG ----
+                res = event.waitKeys(maxWait=deadline - now,
+                                     keyList=self.const.response_keys,
+                                     timeStamped=clk)
                 if res:
                     for _, ts in res:
                         taps_rel.append(ts - t0)
 
         # --- Silent phase: collect until absolute end_time
         end_abs = self.start_time + float(trial['end_time'])
-        _silent_iter = 0
-        # ---- DEBUG: log silent phase entry ----
-        _now_entry = clk.getTime()
-        print(f"{_diag_prefix} silent phase  "
-              f"now={_now_entry:.3f}  end_abs={end_abs:.3f}  "
-              f"maxWait_initial={end_abs - _now_entry:.3f}  "
-              f"taps_from_tone={len(taps_rel)}",
-              file=sys.stderr)
-        # ---- END DEBUG ----
         while True:
             now = clk.getTime()
             if now >= end_abs:
                 break
-            _silent_iter += 1
-            _mw = end_abs - now
-            # ---- DEBUG: silent-phase waitKeys trap ----
-            try:
-                res = event.waitKeys(maxWait=_mw,
-                                     keyList=self.const.response_keys,
-                                     timeStamped=clk)
-            except AttributeError as _e:
-                _pending_now = len(event._keyBuffer) if hasattr(event, '_keyBuffer') else '?'
-                print(f"{_diag_prefix} *** CRASH in SILENT phase ***\n"
-                      f"  silent_iter={_silent_iter}  now={now:.3f}  end_abs={end_abs:.3f}  maxWait={_mw:.6f}\n"
-                      f"  t0={t0:.3f}  start_time={self.start_time:.3f}\n"
-                      f"  keyList={self.const.response_keys}\n"
-                      f"  pending_keys={_pending_now}  taps_so_far={len(taps_rel)}\n"
-                      f"  error={_e}",
-                      file=sys.stderr)
-                _tb.print_exc(file=sys.stderr)
-                raise  # re-raise unchanged
-            # ---- END DEBUG ----
+            res = event.waitKeys(maxWait=end_abs - now,
+                                 keyList=self.const.response_keys,
+                                 timeStamped=clk)
             if res:
                 for _, ts in res:
                     taps_rel.append(ts - t0)
