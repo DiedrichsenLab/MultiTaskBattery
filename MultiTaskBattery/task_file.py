@@ -1128,6 +1128,7 @@ class RMET(TaskFile):
                         iti_dur=1.5,
                         option_text_height=1.2,
                         option_position_scale=1.0,
+                        show_last_seconds=0,
                         file_name=None,
                         stim_file = None,
                         condition=None,
@@ -1192,6 +1193,8 @@ class RMET(TaskFile):
             trial['condition'] = stim['condition'][n]
             trial['answer'] = stim['answer'][n]
             trial['display_trial_feedback'] = True
+            if show_last_seconds:
+                trial['show_last_seconds'] = show_last_seconds
             trial['start_time'] = t
             trial['end_time'] = t + trial_dur + iti_dur
             trial_info.append(trial)

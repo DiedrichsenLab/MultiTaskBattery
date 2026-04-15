@@ -145,6 +145,12 @@ class Task:
         Args:
             start_time (float): the time the RT-period started
             max_wait_time (float): How long to wait maximally
+            show_last_seconds (float or None): If set, show a progress bar
+                during the final *show_last_seconds* of the response window.
+                Requires *current_stimuli* to be set so the display can be
+                redrawn each frame.
+            current_stimuli: A single PsychoPy stimulus or a list of stimuli
+                to redraw each frame when the progress bar is active.
         Returns:
             key (str): the key that was pressed (1-4) (0 if no key was pressed)
             rt (float): the reaction time (nan if no key was pressed)
@@ -156,7 +162,11 @@ class Task:
         while (self.ttl_clock.get_time() - start_time <= max_wait_time) and not response_made:
             self.ttl_clock.update()
             if show_last_seconds is not None:
-                current_stimuli.draw()
+                if isinstance(current_stimuli, (list, tuple)):
+                    for stim in current_stimuli:
+                        stim.draw()
+                else:
+                    current_stimuli.draw()
                 seconds_left = max_wait_time - (self.ttl_clock.get_time() - start_time)
                 self.show_progress(seconds_left,
                                 show_last_seconds=show_last_seconds,
@@ -1446,7 +1456,12 @@ class RMET(Task):
         self.window.flip()
 
         # collect responses 0: no response 1-4: key pressed
-        trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['trial_dur'])
+        show_last_seconds = float(trial.get('show_last_seconds', 0)) or None
+        trial['response'],trial['rt'] = self.wait_response(
+            self.ttl_clock.get_time(), trial['trial_dur'],
+            show_last_seconds=show_last_seconds,
+            current_stimuli=[picture] + answer_stims,
+        )
         trial['correct'] = (trial['response'] == answer_options.index(str(trial['answer']))+1)
 
         # display trial feedback
