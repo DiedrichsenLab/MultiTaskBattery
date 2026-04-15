@@ -649,11 +649,37 @@ class DemandGrid(TaskFile):
 
         return sequence
 
+    @staticmethod
+    def _count_connected_components(positions):
+        """Count connected components in a set of grid positions (4-directional)."""
+        from collections import deque
+        if not positions:
+            return 0
+        remaining = set(positions)
+        components = 0
+        while remaining:
+            components += 1
+            start = next(iter(remaining))
+            queue = deque([start])
+            remaining.remove(start)
+            while queue:
+                x, y = queue.popleft()
+                for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+                    neighbor = (x + dx, y + dy)
+                    if neighbor in remaining:
+                        remaining.remove(neighbor)
+                        queue.append(neighbor)
+        return components
+
     def modify_sequence(self, sequence, grid_size):
         """
         Modify the original sequence to create a new sequence for comparison,
         ensuring adjacency and uniqueness within the modified step. If a step
         cannot be modified due to lack of valid adjacent positions, try another step.
+
+        The modified sequence is constrained to have the same number of connected
+        components as the original, so the distractor is not visually distinguishable
+        by spatial continuity alone.
 
         Args:
             sequence (list): Original sequence of steps.
@@ -662,6 +688,9 @@ class DemandGrid(TaskFile):
         Returns:
             list: Modified sequence of steps.
         """
+        original_positions = [pos for step in sequence for pos in step]
+        original_cc = self._count_connected_components(original_positions)
+
         modified_sequence = sequence[:]
         available_step_indices = list(range(len(sequence)))  # List of all step indices to try
 
@@ -672,14 +701,17 @@ class DemandGrid(TaskFile):
             # Gather all used positions from the entire sequence
             used_positions = {t for step in sequence for t in step}
 
-            # Generate a new step with the same number of boxes, ensuring adjacency and uniqueness
+            # Use all remaining steps (not the step being replaced) as the adjacency
+            # source, matching the rule used by generate_sequence().
+            remaining_steps = [s for i, s in enumerate(sequence) if i != random_step_index]
+
             new_step = []
             try:
                 while len(new_step) < len(original_step):
-                    # Get all available adjacent positions for the current step
                     available_positions = {
                         adj
-                        for pos in original_step
+                        for step in remaining_steps
+                        for pos in step
                         for adj in self.get_adjacent_positions(pos, grid_size)
                     }
                     available_positions -= used_positions  # Exclude already-used positions
@@ -693,9 +725,18 @@ class DemandGrid(TaskFile):
                     new_step.append(new_pos)
                     used_positions.add(new_pos)  # Mark the position as used
 
-                # Replace the chosen step with the new step
-                modified_sequence[random_step_index] = new_step
-                return modified_sequence  # Return immediately after successfully modifying a step
+                # Check that the modified grid has the same connectivity as the original.
+                # Reject if the replacement creates extra disconnected components.
+                candidate = sequence[:]
+                candidate[random_step_index] = new_step
+                candidate_positions = [pos for step in candidate for pos in step]
+                candidate_cc = self._count_connected_components(candidate_positions)
+
+                if candidate_cc <= original_cc:
+                    modified_sequence[random_step_index] = new_step
+                    return modified_sequence
+                else:
+                    raise ValueError("Modified sequence has more connected components than original.")
 
             except ValueError:
                 # Remove this step index from the list of available steps to try
