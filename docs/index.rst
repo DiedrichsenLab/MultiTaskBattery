@@ -11,7 +11,9 @@ The main benefit of using this framework is that you can include standardized ta
 
 Licence and Acknowledgements
 ----------------------------
-The software written and maintained by members of the Diedrichsen lab and collaborators (Bassel Arafat, Ince Husain, Caroline Nettekoven, Ladan Shahshahani, Suzanne Witt, Maedbh King, Jorn Diedrichsen). We are are still working a formal paper on the framework - until then the software should be cited as a github repository. For description of the underlying approach please cite King et al. (2019). The software distributed under the MIT License: The software is provided as is, without any warranty.
+The software written and maintained by members of the Diedrichsen lab and collaborators (Bassel Arafat, Ince Husain, Caroline Nettekoven, Ladan Shahshahani, Suzanne Witt, Maedbh King, Jorn Diedrichsen). The software is distributed under the MIT License: The software is provided as is, without any warranty. If you use the toolbox please cite the following reference:
+
+Arafat, B., Nettekoven, C., Xiang, J. D., & Diedrichsen, J. (2026). Multi-Task Batteries for Precision Functional Mapping. *bioRxiv*, 2026-03.
 
 Documentation
 -------------
