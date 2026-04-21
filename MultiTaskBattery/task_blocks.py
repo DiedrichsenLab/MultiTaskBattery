@@ -145,6 +145,12 @@ class Task:
         Args:
             start_time (float): the time the RT-period started
             max_wait_time (float): How long to wait maximally
+            show_last_seconds (float or None): If set, show a progress bar
+                during the final *show_last_seconds* of the response window.
+                Requires *current_stimuli* to be set so the display can be
+                redrawn each frame.
+            current_stimuli: A single PsychoPy stimulus or a list of stimuli
+                to redraw each frame when the progress bar is active.
         Returns:
             key (str): the key that was pressed (1-4) (0 if no key was pressed)
             rt (float): the reaction time (nan if no key was pressed)
@@ -156,7 +162,11 @@ class Task:
         while (self.ttl_clock.get_time() - start_time <= max_wait_time) and not response_made:
             self.ttl_clock.update()
             if show_last_seconds is not None:
-                current_stimuli.draw()
+                if isinstance(current_stimuli, (list, tuple)):
+                    for stim in current_stimuli:
+                        stim.draw()
+                else:
+                    current_stimuli.draw()
                 seconds_left = max_wait_time - (self.ttl_clock.get_time() - start_time)
                 self.show_progress(seconds_left,
                                 show_last_seconds=show_last_seconds,
@@ -230,11 +240,14 @@ class NBack(Task):
         """
         trial_info_file = self.const.task_dir / self.name / self.task_file
         self.trial_info = pd.read_csv(trial_info_file, sep='\t')
-        self.stim=[]
+        self.stim = []
+        picture_scale = self.trial_info['picture_scale'].iloc[0] if 'picture_scale' in self.trial_info.columns else 1.0
         for stim in self.trial_info['stim']:
             stim_path = self.const.stim_dir / self.name / stim
-            self.stim.append(visual.ImageStim(self.window, str(stim_path)))
-        self.corr_key = [self.trial_info['key_nomatch'].iloc[0],self.trial_info['key_match'].iloc[0]]
+            img = visual.ImageStim(self.window, str(stim_path))
+            img.size = img.size * picture_scale
+            self.stim.append(img)
+        self.corr_key = [self.trial_info['key_nomatch'].iloc[0], self.trial_info['key_match'].iloc[0]]
 
     def display_instructions(self):
         """
@@ -476,8 +489,7 @@ class TheoryOfMind(Task):
 
         event.clearEvents()
 
-        # Set text height according to constants or default value
-        height = getattr(self.const, 'theory_of_mind_text_height', None) or 1.25
+        height = trial.get('text_height', 1.25)
         wrapWidth=25
 
         # Display story
@@ -1057,7 +1069,7 @@ class SemanticPrediction(Task):
         Initialize task - default is to read the target information into the trial_info dataframe
         """
         self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
-        self.corr_key = [self.trial_info['key_false'].iloc[0],self.trial_info['key_true'].iloc[0]]
+        self.corr_key = [self.trial_info['key_false'].iloc[0], self.trial_info['key_true'].iloc[0]]
 
     def display_instructions(self):
         """
@@ -1111,7 +1123,7 @@ class SemanticPrediction(Task):
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
 
         return trial
-
+    
 class SemanticSwitching(Task):
     """
     Read a sentence and decide if the last word of the sentence makes sense.
@@ -1206,7 +1218,7 @@ class SemanticSwitching(Task):
             self.ttl_clock.get_time(),
             trial['sentence_dur'],
         )
-        trial['correct'] = (trial['response'] == self.corr_key[trial['trial_type']])
+        trial['correct'] = (trial['response'] == self.corr_key[trial['trial_type']]) # mapping needs to be turned around 
 
         # Feedback
         self.display_trial_feedback(
@@ -1215,6 +1227,7 @@ class SemanticSwitching(Task):
         )
 
         return trial
+
     
 class VisualSearch(Task):
 
@@ -1375,8 +1388,9 @@ class RMET(Task):
         picture_path = Path(self.const.stim_dir) / self.name / 'pictures' / picture_file_name
         # Convert Pathself object to string for compatibility
         picture_path_str = str(picture_path)
-        # Create an ImageStim object
-        picture = visual.ImageStim(self.window, str(picture_path_str))
+        # Create an ImageStim object, explicitly centered so that the four answer
+        # options (placed symmetrically above and below) straddle the image.
+        picture = visual.ImageStim(self.window, str(picture_path_str), pos=(0, 0))
         # Make the picture smaller
         picture_scale = getattr(self.const, 'rmet_picture_scale', None) or 0.7
         picture.size = picture.size * picture_scale
@@ -1384,33 +1398,56 @@ class RMET(Task):
 
 
         # --- Answers ---
-        # Get the answer options
-        answer_options = trial['options']
-        # Separate them into four strings
-        answer_options = answer_options.split(',')
-        # Create TextStim objects for each answer option
+        # Get the answer options and split into four strings
+        answer_options = str(trial['options']).split(',')
+
+        # Create TextStim objects for each answer option with a colored index and
+        # black option text. The spatial layout and string breakup are preserved:
+        # only formatting (height and color) is controlled here.
         answer_stims = []
+        option_height = trial.get('option_text_height', 1.2)
+        index_height = option_height * 0.85
+        pos_scale = trial.get('option_position_scale', 1.0)
+
+        # Small horizontal offset so that, visually, the options sit slightly
+        # closer to the centre and the eye picture looks better centered between
+        # them on wide screens.
+        x_offset = -1.0
+
         for i, option in enumerate(answer_options):
-            # 0 and 1 should be on the left and right of the top line (y position 7 and x positions -7 and 7)
-            # 2 and 3 should be on the left and right of the bottom line (y position -7 and x positions -7 and 7)
-            x = -8 if i % 2 == 0 else 6
-            y = 5 if i < 2 else -5
+            # 0 and 1 on top left/right; 2 and 3 on bottom left/right.
+            base_x = -8 if i % 2 == 0 else 6
+            base_y = 5 if i < 2 else -5
+            x = base_x * pos_scale + x_offset
+            y = base_y * pos_scale
 
-            if len (option) < 3:
-                tabs = 2
-            elif len(option) < 9:
-                tabs = 3
-            else:
-                tabs = 4
-            tab_string = ''.join(["\t"] * tabs)
-            answer_stim = visual.TextStim(self.window, text=f'{i+1}.{tab_string}',
-                                          pos=(x, y-0.04), color='blue', height=1, alignHoriz='center')
+            option_str = option.strip()
+            index_label = f'{i+1}.'
+            text_label = f'  {option_str}'
 
-            answer_stims.append(answer_stim)
-            tab_string = ''.join(["\t"] * (tabs-1))
-            answer_stim = visual.TextStim(self.window, text=f'{tab_string}{option}',
-                                          pos=(x, y), color=[-1, -1, -1], height=1.4, alignHoriz='center')
-            answer_stims.append(answer_stim)
+            # Draw the numeric index in a distinct color (blue-ish) to visually
+            # separate it from the age/feeling text.
+            index_stim = visual.TextStim(
+                self.window,
+                text=index_label,
+                pos=(x, y),
+                color=[-1, -1, 1],  # blue index on grey/white background
+                height=index_height,
+                alignHoriz='left',
+            )
+
+            # Draw the actual answer text in standard black, slightly to the right
+            # of the index so the combined appearance matches "1.  option".
+            text_stim = visual.TextStim(
+                self.window,
+                text=text_label,
+                pos=(x + 0.8, y),
+                color=[-1, -1, -1],
+                height=option_height,
+                alignHoriz='left',
+            )
+
+            answer_stims.extend([index_stim, text_stim])
 
         # Display stimuli
         picture.draw()
@@ -1419,7 +1456,12 @@ class RMET(Task):
         self.window.flip()
 
         # collect responses 0: no response 1-4: key pressed
-        trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['trial_dur'])
+        show_last_seconds = float(trial.get('show_last_seconds', 0)) or None
+        trial['response'],trial['rt'] = self.wait_response(
+            self.ttl_clock.get_time(), trial['trial_dur'],
+            show_last_seconds=show_last_seconds,
+            current_stimuli=[picture] + answer_stims,
+        )
         trial['correct'] = (trial['response'] == answer_options.index(str(trial['answer']))+1)
 
         # display trial feedback
@@ -1979,7 +2021,7 @@ class FauxPas(Task):
 
         event.clearEvents()
 
-        height = getattr(self.const, 'faux_pas_text_height', None) or 1.25
+        height = trial.get('text_height', 1.25)
         # Display story
         story = trial['story']
         # story = '.\n'.join(story.split('. '))
@@ -2546,7 +2588,7 @@ class FingerRhythmic(Task):
         beep = sound.Sound(value=1000, secs=0.05, sampleRate=48000, stereo=True)
         beep.play()
         t_first = clk.getTime()               # when we triggered the first tone (TTL)
-        ioi = 0.65
+        ioi = float(trial['ioi'])
         expected = [(t_first - t0) + i*ioi for i in range(12)]  # expected, aligned to first tone
 
         # Track beep times for timing verification (quiet by default)
@@ -2574,7 +2616,7 @@ class FingerRhythmic(Task):
                         taps_rel.append(ts - t0)
 
         # --- Silent phase: collect until absolute end_time
-        end_abs = float(trial['end_time'])
+        end_abs = self.start_time + float(trial['end_time'])
         while True:
             now = clk.getTime()
             if now >= end_abs:
