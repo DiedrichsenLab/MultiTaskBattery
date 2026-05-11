@@ -4,6 +4,7 @@ n_back	NBack	memory	nbko
 action_observation	ActionObservation	knot	acva-acvk
 verb_generation	VerbGeneration	verb	vrbgn-wrdrd
 rest	Rest	rest	rest
+rest_surprise	RestSurprise	rest_surprise	rest_surprise
 tongue_movement	TongueMovement	tongue	tongue
 auditory_narrative	AuditoryNarrative	radio	audnarr
 spatial_navigation	SpatialNavigation	imagine	spatialnav

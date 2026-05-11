@@ -308,6 +308,72 @@ class Rest(Task):
         self.screen.fixation_cross()
         self.ttl_clock.wait_until(self.start_time + trial['trial_dur'])
         return trial
+    
+class RestSurprise(Task):
+    def __init__(self, info, screen, ttl_clock, const, subj_id):
+        super().__init__(info, screen, ttl_clock, const, subj_id)
+
+        self.name = 'rest_surprise'
+
+        # Surprise timing parameters
+        self.min_interval = 3
+        self.max_interval = 8
+
+    def run_trial(self, trial):
+        
+        trial_end = trial['end_time']
+
+        now = self.ttl_clock.get_time()
+
+        # Schedule first surprise
+        next_surprise = (
+            now + random.uniform(self.min_interval, self.max_interval))
+        
+        surprise_active = False
+        surprise_end = None
+
+        while self.ttl_clock.get_time() < trial_end:
+            
+            now = self.ttl_clock.get_time()
+
+        # Always draw fixation cross
+            self.screen.fixation_cross()
+
+        # Trigger surprise event
+            if now >= next_surprise:
+
+                if trial['stimulus_type'] in ['audio','audiovisual']:
+                    self.beep = sound.Sound(trial['freq'], secs=0.2)
+                    self.beep.play()
+
+                elif trial['stimulus_type'] in ['visual','audiovisual']:
+                    self.flash = visual.Circle(
+                    self.window,
+                    radius=2,
+                    fillColor=trial['color'],
+                    lineColor=trial['color']
+                )
+                
+                    surprise_active = True 
+                    surprise_end = now + 0.3
+
+                next_surprise = (
+                    now +
+                    random.uniform(self.min_interval, self.max_interval)
+                )
+
+            self.screen.fixation_cross()    
+
+            if surprise_active and now < surprise_end:
+                if hasattr(self, 'flash'): self.flash.draw()
+                    
+            if surprise_active and now >= surprise_end:
+                surprise_active = False
+
+            self.window.flip()
+            self.screen_quit()
+
+        return trial
 
 class VerbGeneration(Task):
     def __init__(self, info, screen, ttl_clock, const, subj_id):

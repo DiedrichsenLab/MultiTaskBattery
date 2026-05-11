@@ -196,6 +196,75 @@ class Rest(TaskFile):
         if file_name is not None:
             trial_info.to_csv(self.task_dir / self.name / file_name,sep='\t',index=False)
         return trial_info
+    
+
+class RestSurprise(TaskFile):
+
+    def __init__(self, const):
+        super().__init__(const)
+        self.name = 'rest_surprise'
+
+    def make_task_file(
+        self,
+        task_dur=30,
+        min_interval=3,
+        max_interval=8,
+        file_name=None
+    ):
+
+        trial_info = []
+
+        t = random.uniform(min_interval, max_interval)
+        event_num = 0
+
+        while t < task_dur:
+
+            trial = {}
+
+            surprise_type = random.choice([
+                'audio',
+                'visual',
+                'audiovisual'
+            ])
+
+            if surprise_type == 'audio':
+                freq = random.choice([400, 800])
+                color = "None"
+
+            elif surprise_type == 'visual':
+                color = random.choice([
+                    'red',
+                    'blue'
+                ])
+                freq = "None" 
+
+            elif surprise_type == 'audiovisual':
+                color = random.choice([
+                    'red',
+                    'blue'
+                ])
+                freq = random.choice([400,800])
+
+            trial['trial_num']=1
+            trial['event_num']=event_num
+            trial['surprise_time']=round(t, 2)
+            trial['stimulus_type']=surprise_type
+            trial['color']=color
+            trial['freq']=freq 
+            trial['start_time']=0
+            trial['end_time']=task_dur
+            trial_info.append(trial)
+
+            t += random.uniform(min_interval, max_interval)
+            event_num += 1
+
+        trial_info = pd.DataFrame(trial_info)
+        if file_name is not None:
+            ut.dircheck(self.task_dir / self.name)
+            trial_info.to_csv(self.task_dir / self.name / file_name,sep='\t',index=False)
+
+
+        return trial_info
 
 class VerbGeneration(TaskFile):
     def __init__(self, const):
