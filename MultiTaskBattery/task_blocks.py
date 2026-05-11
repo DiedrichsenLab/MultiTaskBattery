@@ -331,13 +331,11 @@ class RestSurprise(Task):
         
         surprise_active = False
         surprise_end = None
+        self.flash = None
 
         while self.ttl_clock.get_time() < trial_end:
             
             now = self.ttl_clock.get_time()
-
-        # Always draw fixation cross
-            self.screen.fixation_cross()
 
         # Trigger surprise event
             if now >= next_surprise:
@@ -346,7 +344,7 @@ class RestSurprise(Task):
                     self.beep = sound.Sound(trial['freq'], secs=0.2)
                     self.beep.play()
 
-                elif trial['stimulus_type'] in ['visual','audiovisual']:
+                if trial['stimulus_type'] in ['visual','audiovisual']:
                     self.flash = visual.Circle(
                     self.window,
                     radius=2,
@@ -364,11 +362,12 @@ class RestSurprise(Task):
 
             self.screen.fixation_cross()    
 
-            if surprise_active and now < surprise_end:
-                if hasattr(self, 'flash'): self.flash.draw()
+            if surprise_active and self.flash is not None and now < surprise_end:
+                self.flash.draw()
                     
             if surprise_active and now >= surprise_end:
                 surprise_active = False
+                self.flash = None 
 
             self.window.flip()
             self.screen_quit()
