@@ -209,6 +209,7 @@ class RestSurprise(TaskFile):
         task_dur=30,
         min_interval=3,
         max_interval=8,
+        stim_dur=0.5,
         file_name=None
     ):
 
@@ -247,7 +248,10 @@ class RestSurprise(TaskFile):
 
             trial['trial_num']=1
             trial['event_num']=event_num
-            trial['surprise_time']=round(t, 2)
+            trial['surprise_onset']=round(t, 2)
+            trial['duration']=stim_dur
+            trial['surprise_end'] = round(t + stim_dur, 2)   
+
             trial['stimulus_type']=surprise_type
             trial['color']=color
             trial['freq']=freq 
@@ -1067,6 +1071,100 @@ class FingerSequence(TaskFile):
             trial['display_trial_feedback'] = True
             # choose random sequence
             trial['stim'] = self.generate_sequence()
+            trial['start_time'] = t
+            trial['end_time'] = t + trial_dur + iti_dur
+            trial_info.append(trial)
+            t = trial['end_time']
+
+        trial_info = pd.DataFrame(trial_info)
+        if file_name is not None:
+            ut.dircheck(self.task_dir / self.name)
+            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
+
+        return trial_info
+    
+class FingerSequenceSurprise(TaskFile):
+    def __init__(self, const):
+        super().__init__(const)
+        self.name = 'finger_sequence_surprise'
+        self.matching_stimuli = False # sequence of numbers are different for easy and hard sequence condition
+
+    def generate_sequence(self):
+        sequence = [random.choice([1, 2, 3, 4])]
+        while len(sequence) < 6:
+            next_digit = random.choice([d for d in [1, 2, 3, 4] if d != sequence[-1]])
+            sequence.append(next_digit)
+        return sequence
+
+    def make_task_file(self,
+                        hand = 'unimanual',
+                        responses = [1,2,3,4], # 1 = Key_one, 2 = Key_two, 3 = Key_three, 4 = Key_four
+                        task_dur=30,
+                        trial_dur=3.25,
+                        iti_dur=0.5,
+                        file_name=None):
+        n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
+        trial_info = []
+
+        # randomly choose 50% of trials to contain changes
+        change_trials = random.sample(
+            range(n_trials),
+            k=n_trials // 2) 
+
+        t = 0
+
+        for n in range(n_trials):
+            trial = {}
+            trial['key_one'] = responses[0]
+            trial['key_two'] = responses[1]
+            trial['key_three'] = responses[2]
+            trial['key_four'] = responses[3]
+            trial['trial_num'] = n
+            trial['hand'] = hand
+            trial['trial_dur'] = trial_dur
+            trial['iti_dur'] = iti_dur
+            trial['display_trial_feedback'] = True
+            # choose random sequence
+            sequence = self.generate_sequence()
+            trial['change_type']="None"
+            trial['change_time']="None"
+            trial['position_change']="None"
+            trial['change_to']= "None"
+            trial['stim_original']=' '.join(map(str, sequence))
+
+            if n in change_trials:
+                shift = random.choice([1,2])
+                base_position = random.choice(range(0,6-shift))
+                change_position = base_position + shift
+                original_digit = sequence[change_position]
+                possible_digits = [1,2,3,4] 
+                possible_digits.remove(original_digit)  
+
+                if change_position > 0: 
+                    prev_digit = sequence[change_position - 1]  
+                    if prev_digit in possible_digits:
+                        possible_digits.remove(prev_digit)
+
+                if change_position < 5:
+                    next_digit = sequence[change_position + 1]  
+                    if next_digit in possible_digits:
+                        possible_digits.remove(next_digit)
+
+                new_digit = random.choice(possible_digits)  
+
+                sequence[change_position] = new_digit
+
+                digit_time = trial_dur / 6 
+
+                change_time = t+((base_position+1)*digit_time)  
+
+                trial['change_type']='first_horizon' if shift ==1 else "second_horizon"
+                trial['change_time'] = round(change_time, 2)
+                trial['position_change'] = change_position + 1 
+                trial['change_to'] = new_digit
+            
+            trial['stim_final'] = ' '.join(map(str, sequence))
+
             trial['start_time'] = t
             trial['end_time'] = t + trial_dur + iti_dur
             trial_info.append(trial)

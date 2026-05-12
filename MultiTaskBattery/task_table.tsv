@@ -15,6 +15,7 @@ nonword_reading	NonwordReading	nonword_reading	nwdread
 oddball	OddBall	oddball	odbal
 demand_grid	DemandGrid	grid	dmgrd
 finger_sequence	FingerSequence	finger_sequence	fingseq
+finger_sequence_surprise	FingerSequenceSurprise	finger_sequence_surprise	fingseqsurp
 flexion_extension	FlexionExtension	toe	flexexten
 semantic_prediction	SemanticPrediction	complete	sempred
 semantic_switching	SemanticSwitching	complete	semswit

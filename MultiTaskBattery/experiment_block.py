@@ -6,7 +6,6 @@ import pandas as pd
 import sys
 import numpy as np
 from datetime import datetime
-
 from psychopy import visual, gui, event
 import MultiTaskBattery.utils as ut
 import MultiTaskBattery.task_blocks as tasks
