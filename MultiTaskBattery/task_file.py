@@ -2457,3 +2457,147 @@ class SemanticSwitching(TaskFile):
         if file_name is not None:
             trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
         return trial_info
+    
+class TempDeviant(TaskFile):
+
+    def __init__(self, const):
+        super().__init__(const)
+        self.name = 'temp_deviant'
+
+    def make_task_file(
+        self,
+        task_dur=30,
+        sequence_dur=13,
+        response_dur=2,
+        frequency=1,
+        deviant_shift=0.2,
+        display_trial_feedback=True,
+        file_name=None
+    ):
+        
+        trial_info = []
+
+        trial_total_dur = sequence_dur + response_dur
+
+        n_trials = int(np.floor(task_dur / trial_total_dur))
+
+        t = 0
+
+        # 50% no-deviant trials
+        n_deviant_trials = n_trials // 2
+
+        deviant_trials = random.sample(
+            range(n_trials),
+            k=n_deviant_trials
+        )
+
+        for n in range(n_trials):
+
+            trial = {}
+
+            isi = 1 / frequency
+
+            # expected flash times
+            flash_times = np.arange(
+                0,
+                sequence_dur,
+                isi
+            )
+
+            trial['trial_num'] = n
+            trial['frequency'] = frequency
+            trial['stim_interval'] = isi
+            trial['trial_duration'] = sequence_dur
+            trial['response_duration'] = response_dur
+            trial['display_trial_feedback'] = display_trial_feedback
+
+            trial['start_time'] = t
+            trial['end_time'] = t + trial_total_dur
+
+            trial['n_deviants'] = 0
+            trial['deviant_times'] = "None"
+            trial['deviant_type'] = "None"
+            trial["deviant_positions"] = "None"
+
+
+            modified_times = flash_times.copy()
+
+            if n in deviant_trials:
+
+                # choose 1,2, or 3 deviants equally
+                n_dev = random.choice([1, 2, 3])
+
+                trial['n_deviants'] = n_dev
+
+                # avoid first and last flashes
+                possible_positions = list(
+                    range(1, len(flash_times) - 1)
+                )
+
+                deviant_positions = sorted(
+                    random.sample(
+                        possible_positions,
+                        k=n_dev
+                    )
+                )
+                trial['deviant_positions'] = ';'.join(map(str, [p + 1 for p in deviant_positions]))
+
+                deviant_times = []
+                deviant_types = []
+
+                for pos in deviant_positions:
+
+                    shift_direction = random.choice(
+                        [-1, 1]
+                    )
+
+                    shift_label = (
+                        'early'
+                        if shift_direction < 0
+                        else 'late'
+                    )
+
+                    modified_times[pos] += (
+                        shift_direction * deviant_shift
+                    )
+
+                    deviant_times.append(
+                        round(
+                            t + modified_times[pos],
+                            2
+                        )
+                    )
+
+                    deviant_types.append(
+                        shift_label
+                    )
+
+                trial['deviant_times'] = (
+                    ';'.join(map(str, deviant_times))
+                )
+
+                trial['deviant_type'] = (
+                    ';'.join(deviant_types)
+                )
+
+            trial_info.append(trial)
+
+            t += trial_total_dur
+
+        trial_info = pd.DataFrame(trial_info)
+
+        if file_name is not None:
+
+            ut.dircheck(self.task_dir / self.name)
+
+            trial_info.to_csv(
+                self.task_dir / self.name / file_name,
+                sep='\t',
+                index=False
+            )
+
+        return trial_info
+
+
+
+
