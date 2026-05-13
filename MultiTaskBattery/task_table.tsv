@@ -1,5 +1,6 @@
 name	task_class	descriptive_name	code
 theory_of_mind	TheoryOfMind	story	tom
+theory_of_mind_diff_reward	TheoryOfMindDiffReward	story_diff_reward	tom_diff_reward
 n_back	NBack	memory	nbko
 action_observation	ActionObservation	knot	acva-acvk
 verb_generation	VerbGeneration	verb	vrbgn-wrdrd

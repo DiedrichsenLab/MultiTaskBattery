@@ -1,4 +1,5 @@
 task_name	task_code	task_file	instruction_dur	start_time	end_time
-finger_sequence_surprise	fingseqsurp	finger_sequence_surprise_01.tsv	5	0	35
-temp_deviant	temp_deviant	temp_deviant_01.tsv	5	35	70
-rest_surprise	rest_surprise	rest_surprise_01.tsv	5	70	105
+rest_surprise	rest_surprise	rest_surprise_01.tsv	5	0	35
+finger_sequence_surprise	fingseqsurp	finger_sequence_surprise_01.tsv	5	35	70
+theory_of_mind_diff_reward	tom_diff_reward	theory_of_mind_diff_reward_01.tsv	5	70	105
+temp_deviant	temp_deviant	temp_deviant_01.tsv	5	105	140

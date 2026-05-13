@@ -583,6 +583,68 @@ class TheoryOfMind(Task):
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
 
         return trial
+    
+class TheoryOfMindDiffReward(Task):
+    def __init__(self, info, screen, ttl_clock, const, subj_id):
+        super().__init__(info, screen, ttl_clock, const, subj_id)
+        self.feedback_type = 'acc+rt'
+
+    def init_task(self):
+        """
+        Initialize task - default is to read the target information into the trial_info dataframe
+        """
+        self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
+        self.corr_key = [self.trial_info['key_false'].iloc[0],self.trial_info['key_true'].iloc[0]]
+
+
+    def display_instructions(self):
+        """
+        displays the instruction for the task
+        """
+        task_name = visual.TextStim(self.window, text=f'{self.descriptive_name.capitalize()}', height=self.const.instruction_text_height, color=[-1, -1, -1], bold=True, pos=(0, 3))
+        task_name.draw()
+        str1 = f"You will read a story and decide if the answer to the question is True or False."
+        str2 = f"if true, press {self.corr_key[1]}"
+        str3 = f"if false, press {self.corr_key[0]}"
+        self.instruction_text = f"\n\n {str1} \n\n {str2} \n {str3}"
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1])
+        instr_visual.draw()
+        self.window.flip()
+
+    def run_trial(self, trial):
+        """ Runs a single trial of the Theory of Mind task """
+
+        event.clearEvents()
+
+        height = trial.get('text_height', 1.25)
+        wrapWidth=25
+
+        # Display story
+        story_clean = ' '.join(trial['story'].split('\n'))
+        story_formatted = '.\n'.join(story_clean.split('. '))
+        story_stim = visual.TextStim(self.window, text=story_formatted, alignHoriz='center', wrapWidth=wrapWidth, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height=height)
+        story_stim.draw()
+        self.window.flip()
+
+        # wait until story duration
+        self.ttl_clock.wait_until(self.ttl_clock.get_time() + trial['story_dur'])
+
+        # Flush any keys in buffer
+        event.clearEvents()
+
+        # Display question
+        question_stim = visual.TextStim(self.window, text=trial['question'], pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height=height, wrapWidth=25)
+        question_stim.draw()
+        self.window.flip()
+
+        # collect responses 0: no response 1-4: key pressed
+        trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['question_dur'])
+        trial['correct'] = (trial['response'] == self.corr_key[trial['trial_type']])
+
+        # display trial feedback
+        self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
+
+        return trial
 
 class DegradedPassage(Task):
     def __init__(self, info, screen, ttl_clock, const, subj_id):
