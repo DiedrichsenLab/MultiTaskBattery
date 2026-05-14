@@ -992,6 +992,267 @@ class DemandGrid(TaskFile):
             trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
 
         return trial_info
+    
+class DemandGridEasyDiff(TaskFile):
+    def __init__(self, const):
+        super().__init__(const)
+        self.name = 'demand_grid_easy_diff'
+
+    def get_adjacent_positions(self,pos, grid_size):
+        """
+        Get all adjacent positions within the grid boundaries.
+
+        Args:
+            pos (tuple): Current position (x, y).
+            grid_size (tuple): Size of the grid (rows, cols).
+
+        Returns:
+            list: List of adjacent positions.
+        """
+        x, y = pos
+        adjacent = [
+            (x + dx, y + dy)
+            for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]
+            if 0 <= x + dx < grid_size[0] and 0 <= y + dy < grid_size[1]
+        ]
+        return adjacent
+
+    def generate_sequence(self, grid_size, num_steps, num_boxes_lit):
+        """
+        Generate the original sequence of lit-up boxes, ensuring adjacency between boxes
+        in each step and no reuse of positions across the entire sequence.
+
+        Args:
+            grid_size (tuple): Size of the grid (rows, cols).
+            num_steps (int): Number of steps in the sequence.
+            num_boxes_lit (int): Number of boxes lit up per step.
+
+        Returns:
+            list: Original sequence of steps, where each step is a list of positions.
+        """
+        sequence = []
+        used_positions = set()  # Tracks all positions that have been used
+
+        for _ in range(num_steps):
+            step = []
+            if not sequence:
+                # First step: Randomly choose starting positions
+                while len(step) < num_boxes_lit:
+                    pos = (
+                        random.randint(0, grid_size[0] - 1),
+                        random.randint(0, grid_size[1] - 1)
+                    )
+                    if pos not in used_positions:
+                        step.append(pos)
+                        used_positions.add(pos)
+            else:
+                # Subsequent steps: Ensure adjacency and uniqueness
+                available_positions = {
+                    adj
+                    for prev_step in sequence
+                    for pos in prev_step
+                    for adj in self.get_adjacent_positions(pos, grid_size)
+                }
+                available_positions -= used_positions  # Remove already-used positions
+
+                while len(step) < num_boxes_lit:
+                    if not available_positions:
+                        raise ValueError("not enough valid adjacent positions available")
+                    pos = random.choice(list(available_positions))
+                    step.append(pos)
+                    used_positions.add(pos)
+                    available_positions.remove(pos)  # Avoid duplicates in the current step
+
+            sequence.append(step)
+
+        return sequence
+
+    @staticmethod
+    def _count_connected_components(positions):
+        """Count connected components in a set of grid positions (4-directional)."""
+        from collections import deque
+        if not positions:
+            return 0
+        remaining = set(positions)
+        components = 0
+        while remaining:
+            components += 1
+            start = next(iter(remaining))
+            queue = deque([start])
+            remaining.remove(start)
+            while queue:
+                x, y = queue.popleft()
+                for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+                    neighbor = (x + dx, y + dy)
+                    if neighbor in remaining:
+                        remaining.remove(neighbor)
+                        queue.append(neighbor)
+        return components
+
+    def modify_sequence(self, sequence, grid_size):
+        """
+        Modify the original sequence to create a new sequence for comparison,
+        ensuring adjacency and uniqueness within the modified step. If a step
+        cannot be modified due to lack of valid adjacent positions, try another step.
+
+        The modified sequence is constrained to have the same number of connected
+        components as the original, so the distractor is not visually distinguishable
+        by spatial continuity alone.
+
+        Args:
+            sequence (list): Original sequence of steps.
+            grid_size (tuple): Size of the grid (rows, cols).
+
+        Returns:
+            list: Modified sequence of steps.
+        """
+        original_positions = [pos for step in sequence for pos in step]
+        original_cc = self._count_connected_components(original_positions)
+
+        modified_sequence = sequence[:]
+        available_step_indices = list(range(len(sequence)))  # List of all step indices to try
+
+        while available_step_indices:
+            random_step_index = random.choice(available_step_indices)  # Choose a random step
+            original_step = sequence[random_step_index]
+
+            # Gather all used positions from the entire sequence
+            used_positions = {t for step in sequence for t in step}
+
+            # Use all remaining steps (not the step being replaced) as the adjacency
+            # source, matching the rule used by generate_sequence().
+            remaining_steps = [s for i, s in enumerate(sequence) if i != random_step_index]
+
+            new_step = []
+            try:
+                while len(new_step) < len(original_step):
+                    available_positions = {
+                        adj
+                        for step in remaining_steps
+                        for pos in step
+                        for adj in self.get_adjacent_positions(pos, grid_size)
+                    }
+                    available_positions -= used_positions  # Exclude already-used positions
+                    available_positions -= set(new_step)  # Exclude positions already added to the new step
+
+                    if not available_positions:
+                        raise ValueError("Not enough valid adjacent positions available for modification.")
+
+                    # Choose a random position from the available ones
+                    new_pos = random.choice(list(available_positions))
+                    new_step.append(new_pos)
+                    used_positions.add(new_pos)  # Mark the position as used
+
+                # Check that the modified grid has the same connectivity as the original.
+                # Reject if the replacement creates extra disconnected components.
+                candidate = sequence[:]
+                candidate[random_step_index] = new_step
+                candidate_positions = [pos for step in candidate for pos in step]
+                candidate_cc = self._count_connected_components(candidate_positions)
+
+                if candidate_cc <= original_cc:
+                    modified_sequence[random_step_index] = new_step
+                    return modified_sequence
+                else:
+                    raise ValueError("Modified sequence has more connected components than original.")
+
+            except ValueError:
+                # Remove this step index from the list of available steps to try
+                available_step_indices.remove(random_step_index)
+                continue  # Try another step
+
+        # If all steps fail, raise an error
+        raise ValueError("No valid step could be modified with the given constraints.")
+
+    def make_task_file(self,
+                   hand='right',
+                   responses=[1, 2],  # 1 = Left, 2 = Right
+                   grid_size=(3, 4),
+                   num_steps=3,
+                   num_boxes_lit=2,
+                   task_dur=30,
+                   trial_dur=7,
+                   question_dur=3,
+                   sequence_dur=4,
+                   iti_dur=0.5,
+                   file_name=None):
+        """
+        Create a task file with the specified parameters.
+
+        Args:
+            hand (str): Hand used for response ('right' or 'left').
+            responses (list): Response keys for left and right.
+            grid_size (tuple): Size of the grid (rows, cols).
+            num_steps (int): Number of steps in the sequence.
+            num_boxes_lit (int): Number of boxes lit up per step.
+            task_dur (float): Total task duration in seconds.
+            trial_dur (float): Duration of each trial.
+            question_dur (float): Duration of the question phase.
+            sequence_dur (float): Duration of the sequence presentation phase.
+            iti_dur (float): Inter-trial interval duration.
+            file_name (str): Name of the file to save the task data.
+
+        Returns:
+            pd.DataFrame: Task information as a DataFrame.
+        """
+        n_trials = int(task_dur / (trial_dur + iti_dur))
+        trial_info = []
+        current_time = 0
+
+        for n in range(n_trials):
+            if n < n_trials // 2:
+                condition = 'easy'
+                current_grid_size = (3, 4)
+                current_num_boxes_lit = 2
+            else:
+                condition = 'hard'
+                current_grid_size = (4, 4)
+                current_num_boxes_lit = 3 
+
+            while True:  # Retry logic
+                try:
+                    # Generate the original sequence
+                    original_sequence = self.generate_sequence(current_grid_size, num_steps, current_num_boxes_lit)
+                    # Attempt to create a modified sequence
+                    modified_sequence = self.modify_sequence(original_sequence, grid_size=current_grid_size)
+                    break
+                except ValueError:
+                    continue
+
+            correct_side = random.choice(['left', 'right'])
+            trial_type = 0 if correct_side == 'left' else 1
+            trial = {
+                'key_left': responses[0],
+                'key_right': responses[1],
+                'correct_side': correct_side,
+                'trial_type': trial_type,
+                'trial_num': n,
+                'hand': hand,
+                'condition': condition,
+                'grid_size': current_grid_size,
+                'num_boxes_lit': current_num_boxes_lit,
+                'num_steps': num_steps,
+                'original_sequence': list(itertools.chain.from_iterable(original_sequence)),
+                'modified_sequence': list(itertools.chain.from_iterable(modified_sequence))  ,
+                **{f'original_step_{i+1}': step for i, step in enumerate(original_sequence)},  # Unpack original steps (each grid shown in the exp)
+                'display_trial_feedback': True,
+                'trial_dur': trial_dur,
+                'sequence_dur': sequence_dur,
+                'question_dur': question_dur,
+                'iti_dur': iti_dur,
+                'start_time': current_time,
+                'end_time': current_time + trial_dur + iti_dur
+            }
+            trial_info.append(trial)
+
+            # Update for the next trial:
+            current_time = trial['end_time']
+
+        trial_info = pd.DataFrame(trial_info)
+        if file_name is not None:
+            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
+
+        return trial_info
 
 class SentenceReading(TaskFile):
     def __init__(self, const):

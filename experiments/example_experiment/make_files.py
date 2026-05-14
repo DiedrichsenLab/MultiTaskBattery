@@ -2,7 +2,7 @@ import MultiTaskBattery.task_file as tf
 import MultiTaskBattery.utils as ut
 import constants as const
 
-tasks = ['rest_surprise','finger_sequence_surprise','temp_deviant','theory_of_mind_diff_reward']
+tasks = ['rest_surprise','finger_sequence_surprise','temp_deviant','theory_of_mind_diff_reward','demand_grid_easy_diff']
 
 num_runs = 8  # Number of imaging runs
 

@@ -15,6 +15,7 @@ sentence_reading	SentenceReading	sentence_reading	senread
 nonword_reading	NonwordReading	nonword_reading	nwdread
 oddball	OddBall	oddball	odbal
 demand_grid	DemandGrid	grid	dmgrd
+demand_grid_easy_diff	DemandGridEasyDiff	grid_easy_diff	dmgrid_easy_diff
 finger_sequence	FingerSequence	finger_sequence	fingseq
 finger_sequence_surprise	FingerSequenceSurprise	finger_sequence_surprise	fingseqsurp
 flexion_extension	FlexionExtension	toe	flexexten
