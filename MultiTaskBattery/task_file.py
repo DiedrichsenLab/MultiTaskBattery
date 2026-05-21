@@ -2886,7 +2886,7 @@ class TempDeviant(TaskFile):
 
                 # avoid first and last flashes
                 possible_positions = list(
-                    range(1, len(flash_times) - 1)
+                    range(3, len(flash_times) - 1)
                 )
 
                 deviant_positions = sorted(

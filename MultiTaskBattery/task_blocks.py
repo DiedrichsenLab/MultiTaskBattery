@@ -3175,3 +3175,280 @@ class SensMotControl(Task):
                 self.ttl_clock.update()
 
         return trial
+    
+
+class TempDeviant(Task):
+    """
+    Subjects see a flashing disk and must indicate
+    how many temporal deviants occurred (0,1,2,3 or 4)
+    """
+
+    def __init__(self, info, screen, ttl_clock, const, subj_id):
+        super().__init__(info, screen, ttl_clock, const, subj_id)
+        self.feedback_type = 'acc'
+
+    def init_task(self):
+
+        trial_info_file = (
+            self.const.task_dir
+            / self.name
+            / self.task_file
+        )
+
+        self.trial_info = pd.read_csv(
+            trial_info_file,
+            sep='\t'
+        )
+
+        self.response_options = [0, 1, 2, 3]
+
+    def display_instructions(self):
+
+        self.instruction_text = (
+            f"{self.descriptive_name} Task\n\n"
+            "Watch the flashing disk.\n\n"
+            "Indicate how many flashes were temporally irregular.\n\n"
+            "Response mapping:\n"
+            "1 key = 0 deviants\n"
+            "2 key = 1 deviant\n"
+            "3 key = 2 deviants\n"
+            "4 key = 3 deviants"
+        )
+
+        instr_visual = visual.TextStim(
+            self.window,
+            text=self.instruction_text,
+            height=self.const.instruction_text_height,
+            color=[-1, -1, -1]
+        )
+
+        instr_visual.draw()
+
+        self.window.flip()
+
+    def run_trial(self, trial):
+
+        event.clearEvents()
+
+        # ----------------------------------------------
+        # Wait until scanner-aligned trial onset
+        # ----------------------------------------------
+
+        real_start_time, start_ttl, start_ttl_time = (
+            self.ttl_clock.wait_until(
+                trial['start_time']
+            )
+        )
+
+        isi = float(trial['stim_interval'])
+
+        sequence_duration = float(
+            trial['trial_duration']
+        )
+
+        response_duration = float(
+            trial['response_duration']
+        )
+
+        n_deviants = int(trial['n_deviants'])
+
+        # Expected flash times
+        flash_times = np.arange(
+            0,
+            sequence_duration,
+            isi
+        )
+
+        modified_times = flash_times.copy()
+
+        if pd.notna(trial['deviant_positions']):
+
+            dev_positions = [
+                int(float(x)) - 1
+                for x in str(
+                    trial['deviant_positions']
+                ).split(';')
+            ]
+
+            dev_times = [
+                float(x)
+                for x in str(
+                    trial['deviant_times']
+                ).split(';')
+            ]
+
+            relative_dev_times = [
+                t - trial['start_time']
+                for t in dev_times
+            ]
+
+            for pos, dev_time in zip(
+                dev_positions,
+                relative_dev_times
+            ):
+
+                modified_times[pos] = dev_time
+
+        disk = visual.Circle(
+            self.window,
+            radius=2.0,
+            fillColor='white',
+            lineColor='white',
+            units='deg'
+        )
+
+        fixation = visual.TextStim(
+            self.window,
+            text='+',
+            color='white',
+            height=1.0
+        )
+
+        sequence_start = self.ttl_clock.get_time()
+
+        flash_duration = 0.1
+
+        for flash_time in modified_times:
+
+            # Wait until flash onset
+            self.ttl_clock.wait_until(
+                sequence_start + flash_time
+            )
+
+            # Draw flash
+            disk.draw()
+
+            self.window.flip()
+
+            # Hold flash briefly
+            self.ttl_clock.wait_until(
+                sequence_start
+                + flash_time
+                + flash_duration
+            )
+
+            fixation.draw()
+
+            self.window.flip()
+
+        self.window.flip()
+
+        response_text = visual.TextStim(
+            self.window,
+            text=(
+                "How many temporal deviants?\n\n"
+                "1 = 0\n"
+                "2 = 1\n"
+                "3 = 2\n"
+                "4 = 3"
+            ),
+            color='white',
+            height=0.8
+        )
+
+        response_text.draw()
+
+        self.window.flip()
+
+        response_start = self.ttl_clock.get_time()
+
+        response = None
+        rt = np.nan
+
+        response_keys = self.const.response_keys[:4]
+
+        while (
+            self.ttl_clock.get_time()
+            - response_start
+            < response_duration
+        ):
+
+            keys = event.getKeys(
+                keyList=response_keys,
+                timeStamped=self.ttl_clock.clock
+            )
+
+            if keys:
+                
+                key_char, key_press_time = keys[0]
+
+                response_idx = (
+                    response_keys.index(key_char)
+                )
+
+                response = self.response_options[
+                    response_idx
+                ]
+
+                rt = (
+                    key_press_time
+                    - response_start
+                )
+
+                break
+
+        
+        if response is None:
+
+            correct = False
+
+        else:
+
+            correct = (
+                response == n_deviants
+            )
+
+        trial['response'] = response
+        trial['correct'] = int(correct)
+        trial['rt'] = rt
+
+        self.display_trial_feedback(
+            trial['display_trial_feedback'],
+            correct
+        )
+
+        trial['real_start_time'] = (
+            real_start_time
+        )
+
+        trial['start_ttl'] = start_ttl
+
+        trial['start_ttl_time'] = (
+            start_ttl_time
+        )
+
+        return trial
+
+            
+
+
+
+
+
+
+
+
+
+
+
+        
+
+        
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+
+
+    
