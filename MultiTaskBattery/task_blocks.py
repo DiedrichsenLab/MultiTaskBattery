@@ -3331,8 +3331,6 @@ class TempDeviant(Task):
 
             self.window.flip()
 
-        self.window.flip()
-
         response_text = visual.TextStim(
             self.window,
             text=(
