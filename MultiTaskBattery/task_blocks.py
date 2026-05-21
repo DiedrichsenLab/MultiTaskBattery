@@ -1137,6 +1137,147 @@ class FingerSequence(Task):
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct']== 1)
 
         return trial
+    
+
+class FingerSequenceSurprise(Task):
+    """
+    Finger sequence task
+    """
+    def __init__(self, info, screen, ttl_clock, const, subj_id):
+        super().__init__(info, screen, ttl_clock, const, subj_id)
+        self.feedback_type = 'acc+rt'
+
+    def init_task(self):
+        """
+        Initialize task - default is to read the target information into the trial_info dataframe
+        """
+        trial_info_file = self.const.task_dir / self.name / self.task_file
+        self.trial_info = pd.read_csv(trial_info_file, sep='\t')
+        self.corr_key = [self.trial_info['key_one'].iloc[0],self.trial_info['key_two'].iloc[0],self.trial_info['key_three'].iloc[0],self.trial_info['key_four'].iloc[0]]
+
+
+    def display_instructions(self):
+        self.instruction_text = f"{self.descriptive_name} Task \n\n Using your four fingers, press the keys in the order shown on the screen\n Use all four fingers for this task"
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1])
+        instr_visual.draw()
+        self.window.flip()
+
+
+    def run_trial(self, trial):
+        """ Run a single trial of the finger sequence surprise task. """
+        #clear buffer
+        event.clearEvents()
+
+        real_start_time, start_ttl, start_ttl_time = self.ttl_clock.wait_until(
+        trial['start_time']
+    )
+
+        # Display the sequence
+        original_sequence = trial['stim_original'].split()
+        final_sequence = trial['stim_final'].split()
+
+        displayed_sequence = original_sequence.copy()
+
+        num_items = len(displayed_sequence)
+
+        # Calculate the start position for the sequence and determine the spacing between numbers
+        spacing = 2.0
+        start_x = -(num_items - 1) * spacing / 2
+
+        has_change = pd.notna(trial['change_type'])
+
+        if has_change:
+            change_position = int(trial['position_change']) - 1
+            shift = 1 if trial['change_type'] == 'first_horizon' else 2
+            trigger_press = change_position - shift
+        else:
+            trigger_press = None
+
+
+        rt_list = np.full(num_items, np.nan)
+        correct_list = np.zeros(num_items)
+        num_presses = 0
+        sequence_start_time = self.ttl_clock.get_time()
+        digit_start_time = sequence_start_time
+        change_applied = False
+
+        stim_objects = []
+        
+        for i, number in enumerate(displayed_sequence):
+            pos = (start_x + i * spacing, 0.0)  # Horizontal position is adjusted based on index
+            stim = visual.TextStim(self.window, text=number, pos=pos, color='black', units='deg', height=1.5)
+            stim_objects.append(stim)
+
+        while (
+            self.ttl_clock.get_time() - sequence_start_time < trial['trial_dur']) and (num_presses < num_items):
+            self.ttl_clock.update()
+            elapsed = self.ttl_clock.get_time() - sequence_start_time
+
+            if (
+                has_change
+                and not change_applied
+                and num_presses > trigger_press
+              ):
+                
+                displayed_sequence[change_position] = final_sequence[change_position]
+
+                stim_objects[change_position].text = final_sequence[change_position]
+                
+                change_applied = True
+
+            keys = event.getKeys(
+                keyList=self.const.response_keys,
+            timeStamped=self.ttl_clock.clock
+        )
+            
+            if keys:
+                
+                key_char, key_press_time = keys[0]
+
+                response = self.const.response_keys.index(key_char) + 1
+                
+                rt = key_press_time - digit_start_time
+                
+                rt_list[num_presses] = rt
+                
+                digit_start_time = key_press_time
+
+                correct_digit = int(displayed_sequence[num_presses])
+                
+                is_correct = response == correct_digit
+                
+                correct_list[num_presses] = is_correct
+                
+                stim_objects[num_presses].color = (
+                    'green' if is_correct else 'red'
+                    )
+                
+                num_presses += 1
+
+        # Show the numbers in the sequence next to each other ( using the spacing and start_x calculated above)
+
+            for stim in stim_objects:
+                stim.draw()
+
+            self.window.flip()
+
+        self.ttl_clock.wait_until(sequence_start_time + trial['trial_dur'])
+
+        trial['correct'] = correct_list.sum() / num_items
+
+        if np.all(np.isnan(rt_list)):
+            trial['rt'] = np.nan
+        else:
+            trial['rt'] = np.nanmean(rt_list)
+
+        # display trial feedback (for whole trial)
+        self.display_trial_feedback(trial['display_trial_feedback'], trial['correct']== 1)
+
+        trial['real_start_time'] = real_start_time
+        trial['start_ttl'] = start_ttl
+        trial['start_ttl_time'] = start_ttl_time
+
+        return trial
 
 class FlexionExtension(Task):
     """
@@ -1178,8 +1319,6 @@ class FlexionExtension(Task):
 
         # No response is expected in this task, so return trial as is
         return trial
-
-    #semantic prediction runs (slight bug for response feedback: last word is not synced with last word in task_file..)
 
 class SemanticPrediction(Task):
 
