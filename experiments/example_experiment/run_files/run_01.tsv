@@ -1,2 +1,2 @@
 task_name	task_code	task_file	instruction_dur	start_time	end_time
-demand_grid_easy_diff	dmgrid_easy_diff	demand_grid_easy_diff_01.tsv	5	0	35
+theory_of_mind_diff_reward	tom_diff_reward	theory_of_mind_diff_reward_01.tsv	5	0	35

@@ -596,14 +596,13 @@ class TheoryOfMindDiffReward(Task):
         self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
         self.corr_key = [self.trial_info['key_false'].iloc[0],self.trial_info['key_true'].iloc[0]]
 
-
     def display_instructions(self):
         """
         displays the instruction for the task
         """
         task_name = visual.TextStim(self.window, text=f'{self.descriptive_name.capitalize()}', height=self.const.instruction_text_height, color=[-1, -1, -1], bold=True, pos=(0, 3))
         task_name.draw()
-        str1 = f"You will read a story and decide if the answer to the question is True or False."
+        str1 = f"You will read a story and decide if the answer to the question is True or False. Before each story, you will see how many points the trial is worth."
         str2 = f"if true, press {self.corr_key[1]}"
         str3 = f"if false, press {self.corr_key[0]}"
         self.instruction_text = f"\n\n {str1} \n\n {str2} \n {str3}"
@@ -614,12 +613,39 @@ class TheoryOfMindDiffReward(Task):
     def run_trial(self, trial):
         """ Runs a single trial of the Theory of Mind task """
 
+        real_start_time, start_ttl, start_ttl_time = (
+            self.ttl_clock.wait_until(
+            trial['start_time']
+            )
+        )
+
         event.clearEvents()
 
         height = trial.get('text_height', 1.25)
         wrapWidth=25
 
-        # Display story
+        reward_text = trial['reward_cue']
+
+        reward_stim = visual.TextStim(
+            self.window,
+            text=reward_text,
+            height=2.0,
+            color='yellow',
+            bold=True,
+            pos=(0, 0)
+        )
+
+        reward_stim.draw()
+
+        self.window.flip()
+
+        reward_start = self.ttl_clock.get_time()
+
+        self.ttl_clock.wait_until(
+            reward_start
+            + trial['reward_cue_dur']
+        )
+
         story_clean = ' '.join(trial['story'].split('\n'))
         story_formatted = '.\n'.join(story_clean.split('. '))
         story_stim = visual.TextStim(self.window, text=story_formatted, alignHoriz='center', wrapWidth=wrapWidth, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height=height)
@@ -627,7 +653,12 @@ class TheoryOfMindDiffReward(Task):
         self.window.flip()
 
         # wait until story duration
-        self.ttl_clock.wait_until(self.ttl_clock.get_time() + trial['story_dur'])
+
+        story_start = self.ttl_clock.get_time()
+
+        self.ttl_clock.wait_until(
+            story_start + trial['story_dur']
+        )
 
         # Flush any keys in buffer
         event.clearEvents()
@@ -641,8 +672,28 @@ class TheoryOfMindDiffReward(Task):
         trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['question_dur'])
         trial['correct'] = (trial['response'] == self.corr_key[trial['trial_type']])
 
+        if trial['correct']:
+
+            trial['points_earned'] = (
+                trial['reward_value']
+            )
+
+        else:
+
+            trial['points_earned'] = 0
+
         # display trial feedback
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
+
+        trial['real_start_time'] = (
+            real_start_time
+        )
+
+        trial['start_ttl'] = start_ttl
+
+        trial['start_ttl_time'] = (
+            start_ttl_time
+        )
 
         return trial
 
