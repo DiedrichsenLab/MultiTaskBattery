@@ -4,7 +4,7 @@ import constants as const
 
 #tasks = ['rest_surprise','finger_sequence_surprise','temp_deviant','theory_of_mind_diff_reward','demand_grid_easy_diff']
 
-tasks = ['theory_of_mind_diff_reward']
+tasks = ['rest_surprise']
 
 num_runs = 1  # Number of imaging runs
 

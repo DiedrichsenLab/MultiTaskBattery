@@ -308,71 +308,172 @@ class Rest(Task):
         self.screen.fixation_cross()
         self.ttl_clock.wait_until(self.start_time + trial['trial_dur'])
         return trial
-    
+
 class RestSurprise(Task):
+
     def __init__(self, info, screen, ttl_clock, const, subj_id):
+        
         super().__init__(info, screen, ttl_clock, const, subj_id)
 
         self.name = 'rest_surprise'
 
-        # Surprise timing parameters
-        self.min_interval = 3
-        self.max_interval = 8
+        trial_info_file = (self.const.task_dir /self.name /self.task_file)
+        self.trial_info = pd.read_csv(trial_info_file,sep='\t')
 
-    def run_trial(self, trial):
+        self.trials = []
+
+        grouped = self.trial_info.groupby('trial_num')
+
+        for trial_num, group in grouped:
+
+            group = group.sort_values('surprise_onset')
+
+            # Convert rows into dictionaries
+            trial_events = group.to_dict('records')
+
+            self.trials.append(trial_events)
+
+        self.red_flash = visual.Circle(
+            win=self.window,
+            radius=2,
+            fillColor='red',
+            lineColor='red',
+            units='deg'
+        )
+
+        self.blue_flash = visual.Circle(
+            win=self.window,
+            radius=2,
+            fillColor='blue',
+            lineColor='blue',
+            units='deg'
+        )
+
+        #self.low_beep = sound.Sound(
+       # value=400,
+       # secs=0.5
+       # )
+
+        #self.high_beep = sound.Sound(
+        ##value=800,
+        #secs=0.5
+       # )
         
-        trial_end = trial['end_time']
+    def display_instructions(self): # overriding the display instruction routine from the parent
+        self.instruction_text = 'Rest: Fixate on the cross'
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1])
+        # instr.size = 0.8
+        instr_visual.draw()
+        self.window.flip()
+    
+    def run(self):
 
-        now = self.ttl_clock.get_time()
+        for trial_events in self.trials:
 
-        # Schedule first surprise
-        next_surprise = (
-            now + random.uniform(self.min_interval, self.max_interval))
-        
-        surprise_active = False
-        surprise_end = None
-        self.flash = None
+            self.run_trial(trial_events)
+        return None, None
 
-        while self.ttl_clock.get_time() < trial_end:
-            
-            now = self.ttl_clock.get_time()
+    def run_trial(self, trial_events):
 
-        # Trigger surprise event
-            if now >= next_surprise:
+        # Trial timing
+        trial_start = self.ttl_clock.get_time()
 
-                if trial['stimulus_type'] in ['audio','audiovisual']:
-                    self.beep = sound.Sound(trial['freq'], secs=0.2)
-                    self.beep.play()
+        trial_duration = max(
+            float(event['end_time'])
+            for event in trial_events
+        )
 
-                if trial['stimulus_type'] in ['visual','audiovisual']:
-                    self.flash = visual.Circle(
-                    self.window,
-                    radius=2,
-                    fillColor=trial['color'],
-                    lineColor=trial['color']
-                )
-                
-                    surprise_active = True 
-                    surprise_end = now + 0.3
+        # Track current event
+        current_event_idx = 0
 
-                next_surprise = (
-                    now +
-                    random.uniform(self.min_interval, self.max_interval)
-                )
+        # Visual stimulus state
+        active_flash = None
+        flash_end_time = None
 
-            self.screen.fixation_cross()    
+        # -------------------------------------------------
+        # Main trial loop
+        # -------------------------------------------------
+        while (
+            self.ttl_clock.get_time() - trial_start
+            < trial_duration
+        ):
 
-            if surprise_active and self.flash is not None and now < surprise_end:
-                self.flash.draw()
-                    
-            if surprise_active and now >= surprise_end:
-                surprise_active = False
-                self.flash = None 
+            # Elapsed trial time
+            elapsed = (
+                self.ttl_clock.get_time() - trial_start
+            )
 
+            # Draw fixation cross
+            self.screen.fixation_cross()
+
+            while (current_event_idx < len(trial_events) and elapsed >= float(trial_events[current_event_idx]['surprise_onset'])):
+                    event = trial_events[current_event_idx]
+                    stim_type = event['stimulus_type']
+                    duration = float(event['duration'])
+
+                    # -----------------------------------------
+                    # AUDIO STIMULUS
+                    # -----------------------------------------
+                    if stim_type in ['audio', 'audiovisual']:
+
+                        freq = event['freq']
+
+                        if pd.notna(freq):
+                            freq = float(freq)
+
+                        #if freq == 400:
+                         #   self.low_beep.play()
+
+                        #elif freq == 800:
+                         #   self.high_beep.play()
+
+                    # -----------------------------------------
+                    # VISUAL STIMULUS
+                    # -----------------------------------------
+                    if stim_type in ['visual', 'audiovisual']:
+
+                        color = event['color']
+
+                        if pd.notna(color):
+
+                            if color == 'red':
+                                active_flash = self.red_flash
+
+                            elif color == 'blue':
+                                active_flash = self.blue_flash
+
+                        else:
+                            active_flash = None
+
+                        flash_end_time = (
+                            elapsed + duration
+                        )
+
+                    # Move to next event
+                    current_event_idx += 1
+
+            # -------------------------------------------------
+            # Draw active flash
+            # -------------------------------------------------
+            if active_flash is not None:
+
+                if elapsed < flash_end_time:
+
+                    active_flash.draw()
+
+                else:
+
+                    active_flash = None
+
+            # Update display
             self.window.flip()
+
+            core.wait(0.001)
+
+            # Check for quit key
             self.screen_quit()
 
-        return trial
+        return trial_events
 
 class VerbGeneration(Task):
     def __init__(self, info, screen, ttl_clock, const, subj_id):
