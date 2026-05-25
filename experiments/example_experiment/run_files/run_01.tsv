@@ -1,2 +1,2 @@
 task_name	task_code	task_file	instruction_dur	start_time	end_time
-rest_surprise	rest_surprise	rest_surprise_01.tsv	5	0	35
+rest_surprise_images	rest_surp_img	rest_surprise_images_01.tsv	5	0	35

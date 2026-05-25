@@ -475,6 +475,69 @@ class RestSurprise(Task):
 
         return trial_events
 
+class RestSurpriseImages(Task):
+
+    def __init__(self, info, screen, ttl_clock, const, subj_id):
+        super().__init__(info, screen, ttl_clock, const, subj_id)
+        self.name = 'rest_surprise_images'
+
+        trial_info_file = self.const.task_dir / self.name / self.task_file
+        self.trial_info = pd.read_csv(trial_info_file, sep='\t')
+
+        self.trials = []
+        grouped = self.trial_info.groupby('trial_num')
+
+        for trial_num, group in grouped:
+            group = group.sort_values('surprise_onset')
+            trial_events = group.to_dict('records')
+            for evt in trial_events:
+                stim_path = self.const.stim_dir / 'affective' / evt['stim']
+                evt['_image'] = visual.ImageStim(self.window, str(stim_path))
+            self.trials.append(trial_events)
+
+    def display_instructions(self):
+        self.instruction_text = 'Rest: Fixate on the cross'
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text,
+                                       height=self.const.instruction_text_height, color=[-1, -1, -1])
+        instr_visual.draw()
+        self.window.flip()
+
+    def run(self):
+        for trial_events in self.trials:
+            self.run_trial(trial_events)
+        return None, None
+
+    def run_trial(self, trial_events):
+        trial_start = self.ttl_clock.get_time()
+        trial_duration = max(float(evt['end_time']) for evt in trial_events)
+
+        current_event_idx = 0
+        active_image = None
+        image_end_time = None
+
+        while self.ttl_clock.get_time() - trial_start < trial_duration:
+            elapsed = self.ttl_clock.get_time() - trial_start
+
+            while (current_event_idx < len(trial_events) and
+                   elapsed >= float(trial_events[current_event_idx]['surprise_onset'])):
+                evt = trial_events[current_event_idx]
+                active_image = evt['_image']
+                image_end_time = elapsed + float(evt['duration'])
+                current_event_idx += 1
+
+            if active_image is not None and elapsed < image_end_time:
+                active_image.draw()
+            else:
+                if active_image is not None:
+                    active_image = None
+                self.screen.fixation_cross(flip=False)
+
+            self.window.flip()
+            core.wait(0.001)
+            self.screen_quit()
+
+        return trial_events
+
 class VerbGeneration(Task):
     def __init__(self, info, screen, ttl_clock, const, subj_id):
         super().__init__(info, screen, ttl_clock, const, subj_id)

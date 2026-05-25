@@ -270,6 +270,55 @@ class RestSurprise(TaskFile):
 
         return trial_info
 
+class RestSurpriseImages(TaskFile):
+
+    def __init__(self, const):
+        super().__init__(const)
+        self.name = 'rest_surprise_images'
+
+    def make_task_file(
+        self,
+        task_dur=30,
+        min_interval=3,
+        max_interval=8,
+        stim_dur=0.5,
+        file_name=None
+    ):
+        pleasant_imgs = [f'pleasant{i}.jpg' for i in range(1, 27)]
+        unpleasant_imgs = [f'unpleasant{i}.jpg' for i in range(1, 55)]
+        all_imgs = pleasant_imgs + unpleasant_imgs
+
+        trial_info = []
+        t = random.uniform(min_interval, max_interval)
+        event_num = 0
+
+        while t < task_dur:
+            trial = {}
+            stim_file = random.choice(all_imgs)
+            category = 'pleasant' if stim_file.startswith('pleasant') else 'unpleasant'
+
+            trial['trial_num'] = 1
+            trial['event_num'] = event_num
+            trial['surprise_onset'] = round(t, 2)
+            trial['duration'] = stim_dur
+            trial['surprise_end'] = round(t + stim_dur, 2)
+            trial['stimulus_type'] = 'visual'
+            trial['stim'] = stim_file
+            trial['category'] = category
+            trial['start_time'] = 0
+            trial['end_time'] = task_dur
+            trial_info.append(trial)
+
+            t += random.uniform(min_interval, max_interval)
+            event_num += 1
+
+        trial_info = pd.DataFrame(trial_info)
+        if file_name is not None:
+            ut.dircheck(self.task_dir / self.name)
+            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
+
+        return trial_info
+
 class VerbGeneration(TaskFile):
     def __init__(self, const):
         super().__init__(const)
