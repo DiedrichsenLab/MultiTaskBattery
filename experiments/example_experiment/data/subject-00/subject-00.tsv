@@ -90,4 +90,8 @@ run_num	task_name	task_code	task_file	instruction_dur	start_time	end_time	real_s
 1	temp_deviant	temp_deviant	temp_deviant_03.tsv	5	0	35	0.0003139583859592	0	0.0003160417545586	0.0		33.85325008339714
 1	temp_deviant	temp_deviant	temp_deviant_03.tsv	5	0	35	0.0010487500112503	0	0.0010507084662094	1.0		32.75041612505447
 1	rest_surprise_images	rest_surp_img	rest_surprise_images_03.tsv	5	0	35	0.0002806666307151	0	0.0002827499993145			35.00262904167175
-1	rest_surprise_images	rest_surp_img	rest_surprise_images_03.tsv	5	0	35	0.000575666781514883	0	0.0005775417666882277			35.001616375055164
+1	rest_surprise_images	rest_surp_img	rest_surprise_images_03.tsv	5	0	35	0.0005756667815148	0	0.0005775417666882			35.001616375055164
+1	theory_of_mind_diff_reward	tom_diff_reward	theory_of_mind_diff_reward_03.tsv	5	0	35	0.000766500015743	0	0.0007683750009164	1.0	2.51037431252189	34.01904899999499
+1	theory_of_mind_diff_reward	tom_diff_reward	theory_of_mind_diff_reward_03.tsv	5	0	35	0.000359708443284	0	0.0003615834284573	0.0	1.982520145829767	32.60097441659309
+1	theory_of_mind_diff_reward	tom_diff_reward	theory_of_mind_diff_reward_03.tsv	5	0	35	0.000293125049211	0	0.0002949584741145	0.0		35.184614666737616
+1	theory_of_mind_diff_reward	tom_diff_reward	theory_of_mind_diff_reward_03.tsv	5	0	35	0.0002780833747237921	0	0.0002798750065267086	0.5	1.6295059999683872	33.81198504171334

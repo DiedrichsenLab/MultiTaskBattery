@@ -774,6 +774,26 @@ class TheoryOfMindDiffReward(Task):
         instr_visual.draw()
         self.window.flip()
 
+    def display_trial_feedback(self, give_feedback, correct_response, reward_cue=None):
+        if give_feedback:
+            if correct_response:
+                text = f"+{reward_cue}"
+                color = 'green'
+            else:
+                text = "-1"
+                color = 'red'
+            feedback_stim = visual.TextStim(
+                self.window,
+                text=text,
+                color=color,
+                height=2.0,
+                bold=True
+        )
+            feedback_stim.draw()
+            self.window.flip()
+        else:
+            self.screen.fixation_cross('white')
+
     def run_trial(self, trial):
         """ Runs a single trial of the Theory of Mind task """
 
@@ -847,7 +867,12 @@ class TheoryOfMindDiffReward(Task):
             trial['points_earned'] = 0
 
         # display trial feedback
-        self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
+        self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'], trial['reward_cue'])
+        give_feedback = trial['display_trial_feedback'] or (trial['response'] == 0)
+        self.display_trial_feedback(give_feedback, trial['correct'], trial['reward_cue'])
+
+        if trial['response'] == 0:
+            self.ttl_clock.wait_until(self.ttl_clock.get_time() + 1.0)
 
         trial['real_start_time'] = (
             real_start_time
