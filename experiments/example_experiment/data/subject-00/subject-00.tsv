@@ -88,4 +88,6 @@ run_num	task_name	task_code	task_file	instruction_dur	start_time	end_time	real_s
 1	temp_deviant	temp_deviant	temp_deviant_03.tsv	5	0	35	0.0002709166146814	0	0.0002726665697991	0.0		34.151530041592196
 1	temp_deviant	temp_deviant	temp_deviant_03.tsv	5	0	35	0.0004665000597015	0	0.000468666665256	0.0		33.11235966661479
 1	temp_deviant	temp_deviant	temp_deviant_03.tsv	5	0	35	0.0003139583859592	0	0.0003160417545586	0.0		33.85325008339714
-1	temp_deviant	temp_deviant	temp_deviant_03.tsv	5	0	35	0.0010487500112503767	0	0.0010507084662094712	1.0		32.75041612505447
+1	temp_deviant	temp_deviant	temp_deviant_03.tsv	5	0	35	0.0010487500112503	0	0.0010507084662094	1.0		32.75041612505447
+1	rest_surprise_images	rest_surp_img	rest_surprise_images_03.tsv	5	0	35	0.0002806666307151	0	0.0002827499993145			35.00262904167175
+1	rest_surprise_images	rest_surp_img	rest_surprise_images_03.tsv	5	0	35	0.000575666781514883	0	0.0005775417666882277			35.001616375055164

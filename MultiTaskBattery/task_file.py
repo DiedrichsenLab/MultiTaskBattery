@@ -279,8 +279,7 @@ class RestSurpriseImages(TaskFile):
     def make_task_file(
         self,
         task_dur=30,
-        min_interval=0,
-        max_interval=30,
+        n_stimuli=4,
         stim_dur=0.5,
         file_name=None
     ):
@@ -288,15 +287,13 @@ class RestSurpriseImages(TaskFile):
         unpleasant_imgs = [f'unpleasant{i}.jpg' for i in range(1, 55)]
         all_imgs = pleasant_imgs + unpleasant_imgs
 
-        trial_info = []
-        t = random.uniform(min_interval, max_interval)
-        event_num = 0
+        onsets = sorted([random.uniform(0, task_dur - stim_dur) for _ in range(n_stimuli)])
 
-        while t < task_dur:
-            trial = {}
+        trial_info = []
+        for event_num, t in enumerate(onsets):
             stim_file = random.choice(all_imgs)
             category = 'pleasant' if stim_file.startswith('pleasant') else 'unpleasant'
-
+            trial = {}
             trial['trial_num'] = 1
             trial['event_num'] = event_num
             trial['surprise_onset'] = round(t, 2)
@@ -308,9 +305,6 @@ class RestSurpriseImages(TaskFile):
             trial['start_time'] = 0
             trial['end_time'] = task_dur
             trial_info.append(trial)
-
-            t += random.uniform(min_interval, max_interval)
-            event_num += 1
 
         trial_info = pd.DataFrame(trial_info)
         if file_name is not None:
