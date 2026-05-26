@@ -3612,12 +3612,7 @@ class TempDeviant(Task):
         self.instruction_text = (
             f"{self.descriptive_name} Task\n\n"
             "Watch the flashing disk.\n\n"
-            "Indicate how many flashes were temporally irregular.\n\n"
-            "Response mapping:\n"
-            "1 key = 0 deviants\n"
-            "2 key = 1 deviant\n"
-            "3 key = 2 deviants\n"
-            "4 key = 3 deviants"
+            "Indicate if there are deviant stimuli."
         )
 
         instr_visual = visual.TextStim(
@@ -3650,8 +3645,6 @@ class TempDeviant(Task):
         response_duration = float(
             trial['response_duration']
         )
-
-        n_deviants = int(trial['n_deviants'])
 
         # Expected flash times
         flash_times = np.arange(
@@ -3735,11 +3728,9 @@ class TempDeviant(Task):
         response_text = visual.TextStim(
             self.window,
             text=(
-                "How many temporal deviants?\n\n"
-                "1 = 0\n"
-                "2 = 1\n"
-                "3 = 2\n"
-                "4 = 3"
+                "Were there any deviant stimuli?\n\n"
+                "Yes - press 1\n"
+                "No - press 2"
             ),
             color='white',
             height=0.8
@@ -3749,72 +3740,12 @@ class TempDeviant(Task):
 
         self.window.flip()
 
-        response_start = self.ttl_clock.get_time()
-
-        response = None
-        rt = np.nan
-
-        response_keys = self.const.response_keys[:4]
-
-        while (
-            self.ttl_clock.get_time()
-            - response_start
-            < response_duration
-        ):
-
-            keys = event.getKeys(
-                keyList=response_keys,
-                timeStamped=self.ttl_clock.clock
-            )
-
-            if keys:
-                
-                key_char, key_press_time = keys[0]
-
-                response_idx = (
-                    response_keys.index(key_char)
-                )
-
-                response = self.response_options[
-                    response_idx
-                ]
-
-                rt = (
-                    key_press_time
-                    - response_start
-                )
-
-                break
-
+        trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), response_duration)
+        trial['correct'] = (trial['response'] == (1 if trial['n_deviants'] > 0 else 2))
         
-        if response is None:
-
-            correct = False
-
-        else:
-
-            correct = (
-                response == n_deviants
-            )
-
-        trial['response'] = response
-        trial['correct'] = int(correct)
-        trial['rt'] = rt
-
-        self.display_trial_feedback(
-            trial['display_trial_feedback'],
-            correct
-        )
-
-        trial['real_start_time'] = (
-            real_start_time
-        )
-
+        self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
+        trial['real_start_time'] = real_start_time
         trial['start_ttl'] = start_ttl
-
-        trial['start_ttl_time'] = (
-            start_ttl_time
-        )
 
         return trial
 

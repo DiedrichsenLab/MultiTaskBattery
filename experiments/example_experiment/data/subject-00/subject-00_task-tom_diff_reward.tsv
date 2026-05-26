@@ -87,3 +87,21 @@ True or False "	belief	True	10	4	1.25	1	1	1	True	0	15	250.00082441675477	0	250.0
 the river is wooded. 
 
 True or False "	photo	True	10	4	1.25	3	3	1	True	15	30	265.0666579583194	0	265.0666590000037	0		False	0
+1	1	2	0	0	right	15	0	Expecting the game to be postponed because of the rain, the Garcia family took the subway home. The score was tied, 3-3. During their commute the rain stopped and the game soon ended with a score of 5-3.	"The Garcia family arrives home 
+believing the score is 5-3.
+
+True or False"	belief	False	10	4	1.25	1	1	1	True	0	15	110.00076691654976	0	110.00076791655738	0		False	0
+1	1	2	1	1	right	15	0	Accounts of the country's bustling economic  success were recorded in both fiction and non-fiction books from the early 1900s. Soon after, a horrible plague hit the country and  the country was sent into an economic depression.	"Early 1900s novels portray the
+country as experiencing economic 
+wealth.
+
+True or False"	photo	True	10	4	1.25	3	3	1	True	15	30	125.0671534583671	0	125.067154499935	3	1.4466679166071117	False	0
+1	1	2	0	0	right	15	0	Expecting the game to be postponed because of the rain, the Garcia family took the subway home. The score was tied, 3-3. During their commute the rain stopped and the game soon ended with a score of 5-3.	"The Garcia family arrives home 
+believing the score is 5-3.
+
+True or False"	belief	False	10	4	1.25	1	1	1	True	0	15	110.00076191662811	0	110.00076295831241	3	0.6576520416419953	False	0
+1	1	2	1	1	right	15	0	Accounts of the country's bustling economic  success were recorded in both fiction and non-fiction books from the early 1900s. Soon after, a horrible plague hit the country and  the country was sent into an economic depression.	"Early 1900s novels portray the
+country as experiencing economic 
+wealth.
+
+True or False"	photo	True	10	4	1.25	3	3	1	True	15	30	125.00059029168915	0	125.00059133325703	2	3.0050804583588615	False	0

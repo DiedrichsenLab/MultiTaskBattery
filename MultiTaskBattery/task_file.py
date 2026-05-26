@@ -279,8 +279,8 @@ class RestSurpriseImages(TaskFile):
     def make_task_file(
         self,
         task_dur=30,
-        min_interval=3,
-        max_interval=8,
+        min_interval=0,
+        max_interval=30,
         stim_dur=0.5,
         file_name=None
     ):

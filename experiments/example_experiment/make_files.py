@@ -4,8 +4,7 @@ import constants as const
 
 #tasks = ['rest_surprise','finger_sequence_surprise','temp_deviant','theory_of_mind_diff_reward','demand_grid_easy_diff']
 
-tasks = ['rest_surprise_images','finger_sequence_surprise','theory_of_mind_diff_reward','temp_deviant','demand_grid_easy_diff',
-         'rest','faux_pas','action_observation','spatial_navigation','movie','verb_generation','tongue_movement']
+tasks = ['rest_surprise_images']
 
 num_runs = 1  # Number of imaging runs
 
@@ -15,7 +14,7 @@ for task in tasks:
     ut.dircheck(const.task_dir / task)
 
 # Generate run and task files
-for r in range(2, 3):
+for r in range(3, 4):
     tfiles = [f'{task}_{r:02d}.tsv' for task in tasks]
     T = tf.make_run_file(tasks, tfiles)
     T.to_csv(const.run_dir / f'run_{r:02d}.tsv', sep='\t', index=False)
