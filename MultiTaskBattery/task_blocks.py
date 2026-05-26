@@ -505,6 +505,7 @@ class RestSurpriseImages(Task):
     def run(self):
         for trial_events in self.trials:
             self.run_trial(trial_events)
+        self.trial_data = pd.DataFrame()
         return None, None
 
     def run_trial(self, trial_events):
@@ -660,8 +661,7 @@ class SpatialNavigation(Task):
 
     def init_task(self):
         self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
-        self.corr_key = [self.trial_info['key_false'].iloc[0],self.trial_info['key_true'].iloc[0]]
-
+        # self.corr_key = [self.trial_info['key_false'].iloc[0],self.trial_info['key_true'].iloc[0]]
 
     def display_instructions(self):
         start_location = self.trial_info.iloc[0]['location_1']

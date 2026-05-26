@@ -1,0 +1,5 @@
+run_num	trial_num	hand	trial_dur	iti_dur	display_trial_feedback	stim	start_time	end_time	real_start_time	start_ttl	start_ttl_time
+1	0		14	1	False	knotActionBrigand.mov	0	15	215.0002304166555	0	215.00023137498647
+1	1		14	1	False	knotControlBrigand.mov	15	30	230.00002783339005	0	230.0000352916541
+1	0		14	1	False	knotActionBrigand.mov	0	15	215.0002670417307	0	215.00026795826852
+1	1		14	1	False	knotControlBrigand.mov	15	30	230.00003199989442	0	230.0000333749922

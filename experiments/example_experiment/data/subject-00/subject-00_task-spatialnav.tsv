@@ -1,0 +1,3 @@
+run_num	trial_num	trial_dur	iti_dur	display_trial_feedback	start_time	end_time	location_1	location_2	real_start_time	start_ttl	start_ttl_time
+1	0	30	0	False	0	30	WASHROOM	LIVING-ROOM	75.00024804158602	0	75.00024900003336
+1	0	30	0	False	0	30	WASHROOM	LIVING-ROOM	75.00027287495323	0	75.00027383328415

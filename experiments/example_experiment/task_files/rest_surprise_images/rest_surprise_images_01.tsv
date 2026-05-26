@@ -1,8 +1,5 @@
 trial_num	event_num	surprise_onset	duration	surprise_end	stimulus_type	stim	category	start_time	end_time
-1	0	5.48	0.5	5.98	visual	pleasant9.jpg	pleasant	0	30
-1	1	8.73	0.5	9.23	visual	pleasant22.jpg	pleasant	0	30
-1	2	11.92	0.5	12.42	visual	pleasant1.jpg	pleasant	0	30
-1	3	15.88	0.5	16.38	visual	unpleasant21.jpg	unpleasant	0	30
-1	4	19.52	0.5	20.02	visual	pleasant20.jpg	pleasant	0	30
-1	5	24.68	0.5	25.18	visual	unpleasant42.jpg	unpleasant	0	30
-1	6	29.36	0.5	29.86	visual	unpleasant32.jpg	unpleasant	0	30
+1	0	7.61	0.5	8.11	visual	unpleasant4.jpg	unpleasant	0	30
+1	1	12.17	0.5	12.67	visual	unpleasant12.jpg	unpleasant	0	30
+1	2	19.4	0.5	19.9	visual	pleasant5.jpg	pleasant	0	30
+1	3	27.29	0.5	27.79	visual	pleasant12.jpg	pleasant	0	30
