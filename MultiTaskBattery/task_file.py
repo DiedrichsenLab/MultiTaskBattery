@@ -81,14 +81,16 @@ def make_run_file(task_list,
                   instruction_dur = 5,
                   task_dur = 30,
                   run_time = None,
-                  keep_in_middle=None):
+                  keep_in_middle=None,
+                  exp_dir=None):
     """
     Make a single run file
     """
+    task_table = ut.get_task_table(exp_dir)
     # Get rows of the task_table corresponding to the task_list
-    indx = [np.where(ut.task_table['name']==t)[0][0] for t in task_list]
+    indx = [np.where(task_table['name']==t)[0][0] for t in task_list]
     R = {'task_name':task_list,
-         'task_code':ut.task_table['code'].iloc[indx],
+         'task_code':task_table['code'].iloc[indx],
          'task_file':tfiles,
          'instruction_dur':[instruction_dur]*len(task_list)}
     R = pd.DataFrame(R)
@@ -96,15 +98,17 @@ def make_run_file(task_list,
     R = add_start_end_times(R, offset, task_dur+instruction_dur, run_time=run_time)
     return R
 
-def get_task_class(name):
+def get_task_class(name, exp_dir=None):
     """Creates an object of the task class based on the task name
     Args:
         name (str): name of the task
+        exp_dir (str, path, optional): path to the experiment directory
     Returns:
         class_name (str): class name for task
     """
-    index = np.where(ut.task_table['name']==name)[0][0]
-    class_name = ut.task_table.iloc[index]['task_class']
+    task_table = ut.get_task_table(exp_dir)
+    index = np.where(task_table['name']==name)[0][0]
+    class_name = task_table.iloc[index]['task_class']
     return class_name
 
 class TaskFile():
@@ -430,100 +434,6 @@ class TheoryOfMind(TaskFile):
             trial['story_dur'] = story_dur
             trial['question_dur'] = question_dur
             trial['text_height'] = text_height
-            trial['display_trial_feedback'] = True
-            trial['start_time'] = t
-            trial['end_time'] = t + trial_dur + iti_dur
-            trial_info.append(trial)
-
-            # Update for next trial:
-            t = trial['end_time']
-
-        trial_info = pd.DataFrame(trial_info)
-        if file_name is not None:
-            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
-        return trial_info
-    
-class TheoryOfMindDiffReward(TaskFile):
-    def __init__(self, const):
-        super().__init__(const)
-        self.name = 'theory_of_mind_diff_reward'
-        self.matching_stimuli = False # stimuli for active condition (belief) are different from stimuli for passive condition (photo)
-
-    def make_task_file(self, hand='right',
-                       responses = [1,2], # 1 = True, 2 = False
-                       run_number=None,
-                        task_dur=30,
-                        trial_dur=15,
-                        iti_dur=0,
-                        reward_cue_dur=1,
-                        story_dur=10,
-                        question_dur=4,
-                        text_height=1.25,
-                        file_name=None,
-                        stim_file=None,
-                        condition=None,
-                        stimulus_seed=None,
-                        exclude_stimuli=None,
-                        stim=None):
-        # Count number of trials based on timing; may be overridden below when an
-        # explicit stimulus list is provided (so distribution, not timing, sets
-        # the exact trial count).
-        n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
-        trial_info = []
-        t = 0
-
-        high_reward_trials = random.sample(
-            range(n_trials),
-            k=n_trials // 2)
-
-        if stim_file:
-            stim = pd.read_csv(stim_file)
-        else:
-            stim = pd.read_csv(self.stim_dir / 'theory_of_mind' / 'theory_of_mind.csv')
-
-        if condition:
-            stim = stim[stim['condition'] == condition]
-        else:
-            stim = stim.loc[
-                ~stim['condition'].str.contains('practice', na=False)
-                & (stim['condition'].astype(str).str.lower() != 'exclude')
-            ]
-
-        # Ignore stim_list and stimulus_seed: selection is driven entirely by
-        # the provided stim_file (if any) or by run_number-based slicing.
-        start_row = (run_number - 1) * n_trials
-        end_row = run_number * n_trials - 1
-        stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
-
-        n_actual = min(n_trials, len(stim))
-        for n in range(n_actual):
-            trial = {}
-            trial['key_true'] = responses[0]
-            trial['key_false'] = responses[1]
-            if str(stim['answer'][n]) == 'True':
-                trial['trial_type'] = 1
-            else:
-                trial['trial_type'] = 0
-            trial['trial_num'] = n
-            trial['hand'] = hand
-            trial['trial_dur'] = trial_dur
-            trial['iti_dur'] = iti_dur
-            trial['story'] = stim['story'][n]
-            trial['question'] = stim['question'][n]
-            trial['condition'] = stim['condition'][n]
-            trial['answer'] = stim['answer'][n]
-            trial['story_dur'] = story_dur
-            trial['question_dur'] = question_dur
-            trial['text_height'] = text_height
-
-            if n in high_reward_trials:
-                trial['reward_value'] = 3
-                trial['reward_cue'] = '+3'
-            else:
-                trial['reward_value'] = 1
-                trial['reward_cue'] = '+1'
-
-            trial['reward_cue_dur'] = reward_cue_dur    
             trial['display_trial_feedback'] = True
             trial['start_time'] = t
             trial['end_time'] = t + trial_dur + iti_dur
@@ -1354,100 +1264,6 @@ class FingerSequence(TaskFile):
             trial['display_trial_feedback'] = True
             # choose random sequence
             trial['stim'] = self.generate_sequence()
-            trial['start_time'] = t
-            trial['end_time'] = t + trial_dur + iti_dur
-            trial_info.append(trial)
-            t = trial['end_time']
-
-        trial_info = pd.DataFrame(trial_info)
-        if file_name is not None:
-            ut.dircheck(self.task_dir / self.name)
-            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
-
-        return trial_info
-    
-class FingerSequenceSurprise(TaskFile):
-    def __init__(self, const):
-        super().__init__(const)
-        self.name = 'finger_sequence_surprise'
-        self.matching_stimuli = False # sequence of numbers are different for easy and hard sequence condition
-
-    def generate_sequence(self):
-        sequence = [random.choice([1, 2, 3, 4])]
-        while len(sequence) < 6:
-            next_digit = random.choice([d for d in [1, 2, 3, 4] if d != sequence[-1]])
-            sequence.append(next_digit)
-        return sequence
-
-    def make_task_file(self,
-                        hand = 'unimanual',
-                        responses = [1,2,3,4], # 1 = Key_one, 2 = Key_two, 3 = Key_three, 4 = Key_four
-                        task_dur=30,
-                        trial_dur=3.25,
-                        iti_dur=0.5,
-                        file_name=None):
-        n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
-        trial_info = []
-
-        # randomly choose 50% of trials to contain changes
-        change_trials = random.sample(
-            range(n_trials),
-            k=n_trials // 2) 
-
-        t = 0
-
-        for n in range(n_trials):
-            trial = {}
-            trial['key_one'] = responses[0]
-            trial['key_two'] = responses[1]
-            trial['key_three'] = responses[2]
-            trial['key_four'] = responses[3]
-            trial['trial_num'] = n
-            trial['hand'] = hand
-            trial['trial_dur'] = trial_dur
-            trial['iti_dur'] = iti_dur
-            trial['display_trial_feedback'] = True
-            # choose random sequence
-            sequence = self.generate_sequence()
-            trial['change_type']="None"
-            trial['change_time']="None"
-            trial['position_change']="None"
-            trial['change_to']= "None"
-            trial['stim_original']=' '.join(map(str, sequence))
-
-            if n in change_trials:
-                shift = random.choice([1,2])
-                base_position = random.choice(range(0,6-shift))
-                change_position = base_position + shift
-                original_digit = sequence[change_position]
-                possible_digits = [1,2,3,4] 
-                possible_digits.remove(original_digit)  
-
-                if change_position > 0: 
-                    prev_digit = sequence[change_position - 1]  
-                    if prev_digit in possible_digits:
-                        possible_digits.remove(prev_digit)
-
-                if change_position < 5:
-                    next_digit = sequence[change_position + 1]  
-                    if next_digit in possible_digits:
-                        possible_digits.remove(next_digit)
-
-                new_digit = random.choice(possible_digits)  
-
-                sequence[change_position] = new_digit
-
-                digit_time = trial_dur / 6 
-
-                change_time = t+((base_position+1)*digit_time)  
-
-                trial['change_type']='first_horizon' if shift ==1 else "second_horizon"
-                trial['change_time'] = round(change_time, 2)
-                trial['position_change'] = change_position + 1 
-                trial['change_to'] = new_digit
-            
-            trial['stim_final'] = ' '.join(map(str, sequence))
-
             trial['start_time'] = t
             trial['end_time'] = t + trial_dur + iti_dur
             trial_info.append(trial)
@@ -2739,146 +2555,6 @@ class SemanticSwitching(TaskFile):
         trial_info = pd.DataFrame(trial_info)
         if file_name is not None:
             trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
-        return trial_info
-    
-class TempDeviant(TaskFile):
-
-    def __init__(self, const):
-        super().__init__(const)
-        self.name = 'temp_deviant'
-
-    def make_task_file(
-        self,
-        task_dur=30,
-        sequence_dur=13,
-        response_dur=2,
-        frequency=1,
-        deviant_shift=0.2,
-        display_trial_feedback=True,
-        file_name=None
-    ):
-        
-        trial_info = []
-
-        trial_total_dur = sequence_dur + response_dur
-
-        n_trials = int(np.floor(task_dur / trial_total_dur))
-
-        t = 0
-
-        # 50% no-deviant trials
-        n_deviant_trials = n_trials // 2
-
-        deviant_trials = random.sample(
-            range(n_trials),
-            k=n_deviant_trials
-        )
-
-        for n in range(n_trials):
-
-            trial = {}
-
-            isi = 1 / frequency
-
-            # expected flash times
-            flash_times = np.arange(
-                0,
-                sequence_dur,
-                isi
-            )
-
-            trial['trial_num'] = n
-            trial['frequency'] = frequency
-            trial['stim_interval'] = isi
-            trial['trial_duration'] = sequence_dur
-            trial['response_duration'] = response_dur
-            trial['display_trial_feedback'] = display_trial_feedback
-
-            trial['start_time'] = t
-            trial['end_time'] = t + trial_total_dur
-
-            trial['n_deviants'] = 0
-            trial['deviant_times'] = "None"
-            trial['deviant_type'] = "None"
-            trial["deviant_positions"] = "None"
-
-
-            modified_times = flash_times.copy()
-
-            if n in deviant_trials:
-
-                # choose 1,2, or 3 deviants equally
-                n_dev = random.choice([1, 2, 3])
-
-                trial['n_deviants'] = n_dev
-
-                # avoid first and last flashes
-                possible_positions = list(
-                    range(3, len(flash_times) - 1)
-                )
-
-                deviant_positions = sorted(
-                    random.sample(
-                        possible_positions,
-                        k=n_dev
-                    )
-                )
-                trial['deviant_positions'] = ';'.join(map(str, [p + 1 for p in deviant_positions]))
-
-                deviant_times = []
-                deviant_types = []
-
-                for pos in deviant_positions:
-
-                    shift_direction = random.choice(
-                        [-1, 1]
-                    )
-
-                    shift_label = (
-                        'early'
-                        if shift_direction < 0
-                        else 'late'
-                    )
-
-                    modified_times[pos] += (
-                        shift_direction * deviant_shift
-                    )
-
-                    deviant_times.append(
-                        round(
-                            t + modified_times[pos],
-                            2
-                        )
-                    )
-
-                    deviant_types.append(
-                        shift_label
-                    )
-
-                trial['deviant_times'] = (
-                    ';'.join(map(str, deviant_times))
-                )
-
-                trial['deviant_type'] = (
-                    ';'.join(deviant_types)
-                )
-
-            trial_info.append(trial)
-
-            t += trial_total_dur
-
-        trial_info = pd.DataFrame(trial_info)
-
-        if file_name is not None:
-
-            ut.dircheck(self.task_dir / self.name)
-
-            trial_info.to_csv(
-                self.task_dir / self.name / file_name,
-                sep='\t',
-                index=False
-            )
-
         return trial_info
 
 

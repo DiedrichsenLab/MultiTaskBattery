@@ -17,16 +17,17 @@ for task in tasks:
 # Generate run and task files
 for r in range(1, 2):
     tfiles = [f'{task}_{r:02d}.tsv' for task in tasks]
-    T = tf.make_run_file(tasks, tfiles, offset=3)
+    T = tf.make_run_file(tasks, tfiles, offset=3, exp_dir=const.exp_dir)
     T.loc[T.index[-1], 'end_time'] += 8
     T.to_csv(const.run_dir / f'run_{r:02d}.tsv', sep='\t', index=False)
 
     # Generate a target file for each run
     for task, tfile in zip(tasks, tfiles):
-        cl = tf.get_task_class(task)
-        myTask = getattr(tf, cl)(const)
-        if myTask is None: 
-            myTask = getattr(to, cl)(const)
+        cl = tf.get_task_class(task, exp_dir=const.exp_dir)
+        try:
+            myTask = getattr(tf, cl)(const)
+        except AttributeError:
+            myTask = getattr(to, cl + 'File')(const)
         # Add run number if necessary
         args = {}
         if myTask.name not in ut.tasks_without_run_number:

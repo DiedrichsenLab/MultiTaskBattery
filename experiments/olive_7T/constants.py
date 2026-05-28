@@ -6,7 +6,7 @@ import MultiTaskBattery as mtb
 import task_olive as to
 
 #Necessary definitions for the experiment:
-exp_name = 'example_experiment' # name of the experiment
+exp_name = 'olive_7T' # name of the experiment
 
 #UNCOMMENT THIS FOR SCANNING
 #response_keys    = ['y', 'g', 'r', 'm'] # scanner keys

@@ -31,22 +31,23 @@ def append_data_to_file(filename,data):
         data = pd.concat([old_data,data],axis = 0)
     data.to_csv(filename, sep = '\t', index = False)
 
-def get_task_table(exp_dir):
+def get_task_table(exp_dir=None):
     """ Reads the task_table.tsv file from the experimental directory
     and the package direction and concatenates them, avoiding duplicates
     Args:
-        exp_dir (str, path):
-            path to the experiment directory
+        exp_dir (str, path, optional):
+            path to the experiment directory. If None, returns only the general table.
     Returns:
         task_table (dataframe):
             dataframe containing the task table
     """
-    exp_task_table = os.path.join(exp_dir, 'task_table.tsv')
     gen_task_table = os.path.dirname(__file__) + '/task_table.tsv'  # where the experiment code is stored
     task_table = pd.read_csv(gen_task_table, sep = '\t')
-    if os.path.isfile(exp_task_table):
-        exp_task_table = pd.read_csv(exp_task_table, sep = '\t')
-        task_table = pd.concat([task_table, exp_task_table], axis = 0).drop_duplicates(subset='name').reset_index(drop=True)
+    if exp_dir is not None:
+        exp_task_table = os.path.join(exp_dir, 'task_table.tsv')
+        if os.path.isfile(exp_task_table):
+            exp_task_table = pd.read_csv(exp_task_table, sep = '\t')
+            task_table = pd.concat([task_table, exp_task_table], axis = 0).drop_duplicates(subset='name').reset_index(drop=True)
     return task_table
 
 def get_task_class(const, class_name):

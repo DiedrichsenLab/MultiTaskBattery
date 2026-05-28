@@ -108,7 +108,7 @@ class Experiment:
             task_info['descriptive_name'] = t.descriptive_name.iloc[0].capitalize()
             class_name = t.task_class.iloc[0]
             # Get the task class from the task modules
-            TaskClass = ut.get_task_class(self.const.task_modules,class_name)
+            TaskClass = ut.get_task_class(self.const,class_name)
             Task_obj  = TaskClass(task_info,
                                  screen = self.screen,
                                  ttl_clock = self.ttl_clock,
