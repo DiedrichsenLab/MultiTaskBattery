@@ -3,6 +3,7 @@
 from pathlib import Path
 import os
 import MultiTaskBattery as mtb
+import task_olive as to
 
 #Necessary definitions for the experiment:
 exp_name = 'example_experiment' # name of the experiment
@@ -17,10 +18,13 @@ response_keys    = ['a', 's', 'd', 'f']
 response_fingers = ['Pinky', 'Ring','Middle', 'Index']
 
 # Directory definitions for experiment
-exp_dir = Path(os.path.dirname(os.path.realpath(__file__)))   # where the experiment code is stored
+exp_dir = Path(os.path.dirname(os.path.realpath(__file__)))   # where the specific experiment code is stored
 task_dir = exp_dir / "task_files"  # contains target files for the task
 run_dir    = exp_dir / "run_files"     # contains run files for each session
 data_dir   = exp_dir / "data"          # This is where the result files are being saved
+
+# this is a list of imported task modules, which are used to search for the right task class 
+task_modules = [to]
 
 # Use {} so the GUI auto-fills the run number (e.g. run_01.tsv, run_02.tsv, ...)
 default_run_filename = 'run_{}.tsv'

@@ -1,9 +1,8 @@
 # Created 2023: Bassel Arafat, Jorn Diedrichsen, Ince Hussain
 import os
 import pandas as pd
+import MultiTaskBattery.task_blocks as tasks
 
-task_table_name = os.path.dirname(__file__) + '/task_table.tsv'  # where the experiment code is stored
-task_table = pd.read_csv(task_table_name, sep = '\t')
 tasks_without_run_number = ['n_back', 'verb_generation', 'rest', 'tongue_movement',
                             'oddball', 'demand_grid', 'demand_grid_easy_diff','finger_sequence', 'finger_sequence_surprise', 'flexion_extension',
                             'visual_search', 'serial_reaction_time', 'rest_surprise', 'rest_surprise_images', 'rest_surprise_sound_images','temp_deviant']
@@ -31,3 +30,42 @@ def append_data_to_file(filename,data):
         old_data = pd.read_csv(filename, sep = '\t')
         data = pd.concat([old_data,data],axis = 0)
     data.to_csv(filename, sep = '\t', index = False)
+
+def get_task_table(exp_dir):
+    """ Reads the task_table.tsv file from the experimental directory
+    and the package direction and concatenates them, avoiding duplicates
+    Args:
+        exp_dir (str, path):
+            path to the experiment directory
+    Returns:
+        task_table (dataframe):
+            dataframe containing the task table
+    """
+    exp_task_table = os.path.join(exp_dir, 'task_table.tsv')
+    gen_task_table = os.path.dirname(__file__) + '/task_table.tsv'  # where the experiment code is stored
+    task_table = pd.read_csv(gen_task_table, sep = '\t')
+    if os.path.isfile(exp_task_table):
+        exp_task_table = pd.read_csv(exp_task_table, sep = '\t')
+        task_table = pd.concat([task_table, exp_task_table], axis = 0).drop_duplicates(subset='name').reset_index(drop=True)
+    return task_table
+
+def get_task_class(const, class_name):
+    """ Searches for the task class in the list of task modules and returns it
+    Args:
+        const (constant object):
+            constant.py object containing the list of task modules to search for the task class
+        class_name (str):
+            name of the task class to be searched for   
+    Returns:        
+        TaskClass (class):
+            the task class that was searched for
+    """
+    # First tries to find the class in the custom list of task modules
+    if hasattr(const, 'task_modules'):
+        for module in const.task_modules:
+            if hasattr(module, class_name):
+                return getattr(module, class_name)
+    if hasattr(tasks, class_name):
+        return getattr(tasks, class_name)
+    else:
+        raise NameError(f"Task class {class_name} not found in any of the task modules, make sure to add the module to the list of task_modules in constants.py")

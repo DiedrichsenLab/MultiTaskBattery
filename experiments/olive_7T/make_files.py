@@ -1,4 +1,5 @@
 import MultiTaskBattery.task_file as tf
+import task_olive as to
 import MultiTaskBattery.utils as ut
 import constants as const
 
@@ -24,7 +25,8 @@ for r in range(1, 2):
     for task, tfile in zip(tasks, tfiles):
         cl = tf.get_task_class(task)
         myTask = getattr(tf, cl)(const)
-
+        if myTask is None: 
+            myTask = getattr(to, cl)(const)
         # Add run number if necessary
         args = {}
         if myTask.name not in ut.tasks_without_run_number:
