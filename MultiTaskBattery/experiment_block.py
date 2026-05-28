@@ -166,11 +166,13 @@ class Experiment:
             if getattr(self.const, 'record_run_end_timestamp', False) and t_num == len(self.task_obj_list) - 1:
                 run_end_timestamp = datetime.now().isoformat()
             run_data.append(r_data)
-            self.screen.fixation_cross()
+            #self.screen.fixation_cross()
 
             # If last task, wait until the endtime for the last task, which for imaging could be longer than the task duration
             # Note that endtime is not used for any task but the last one 
             if t_num == len(self.task_obj_list)-1:
+                self.ttl_clock.wait_until(self.ttl_clock.get_time() + 1.5)
+                self.screen.fixation_cross()
                 self.ttl_clock.wait_until(r_data.end_time)
 
         # Stop the eyetracker

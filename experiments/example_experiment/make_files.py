@@ -4,7 +4,7 @@ import constants as const
 
 #tasks = ['rest_surprise','finger_sequence_surprise','temp_deviant','theory_of_mind_diff_reward','demand_grid_easy_diff']
 
-tasks = ['theory_of_mind_diff_reward']
+tasks = ['theory_of_mind_diff_reward','finger_sequence_surprise','temp_deviant']
 
 num_runs = 1  # Number of imaging runs
 
@@ -16,7 +16,8 @@ for task in tasks:
 # Generate run and task files
 for r in range(3, 4):
     tfiles = [f'{task}_{r:02d}.tsv' for task in tasks]
-    T = tf.make_run_file(tasks, tfiles)
+    T = tf.make_run_file(tasks, tfiles, offset=3)
+    T.loc[T.index[-1], 'end_time'] += 8
     T.to_csv(const.run_dir / f'run_{r:02d}.tsv', sep='\t', index=False)
 
     # Generate a target file for each run
