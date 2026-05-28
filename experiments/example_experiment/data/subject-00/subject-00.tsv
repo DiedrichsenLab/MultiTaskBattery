@@ -107,7 +107,16 @@ run_num	task_name	task_code	task_file	instruction_dur	start_time	end_time	real_s
 1	finger_sequence_surprise	fingseqsurp	finger_sequence_surprise_03.tsv	5	38	73	38.00001183326822	0	38.00003104156349	0.8333333333333334	0.4533086503429028	72.51342666661367
 1	theory_of_mind_diff_reward	tom_diff_reward	theory_of_mind_diff_reward_03.tsv	5	73	116	73.00001179159153	0	73.00002987496555	1.0	2.3209974166820757	107.19672374997754
 1	demand_grid_easy_diff	dmgrid_easy_diff	demand_grid_easy_diff_01.tsv	5	3	38	3.0000106665538624	0	3.0000202916562557	0.75	1.349473281268729	35.83362129156012
-1	theory_of_mind_diff_reward	tom_diff_reward	theory_of_mind_diff_reward_01.tsv	5	38	73	38.000011208234355	0	38.00002891663462	1.0	2.4451481458963826	72.0501512499759
+1	theory_of_mind_diff_reward	tom_diff_reward	theory_of_mind_diff_reward_01.tsv	5	38	73	38.000011208234355	0	38.00002891663462	1.0	2.445148145896382	72.0501512499759
 1	temp_deviant	temp_deviant	temp_deviant_01.tsv	5	73	108	73.0000175832538	0	73.00002712500282	1.0		105.76685554161668
 1	rest_surprise_images	rest_surp_img	rest_surprise_images_01.tsv	5	108	143	108.00001587497536	0	108.00003366661258			143.01757612498477
 1	finger_sequence_surprise	fingseqsurp	finger_sequence_surprise_01.tsv	5	143	186	143.01784337498248	0	143.01784466661047	0.8333333333333334	0.3824859739518918	177.51669316657353
+1	rest_surprise_sound_images	rest_surp_snd_img	rest_surprise_sound_images_03.tsv	5	3	46	3.0000165833625942	0	3.0000182082876563			38.13003704173025
+1	rest_surprise_sound_images	rest_surp_snd_img	rest_surprise_sound_images_03.tsv	5	3	46	3.000016250065528	0	3.000027000089176			38.12990233337041
+1	rest_surprise_sound_images	rest_surp_snd_img	rest_surprise_sound_images_03.tsv	5	3	46	3.0000115000875667	0	3.000029166811146			38.10400620836299
+1	rest_surprise_sound_images	rest_surp_snd_img	rest_surprise_sound_images_03.tsv	5	3	46	3.0000197499757633	0	3.000020916806534			38.01705324999057
+1	rest_surprise_sound_images	rest_surp_snd_img	rest_surprise_sound_images_03.tsv	5	3	46	3.00001225003507	0	3.0000134999863803			38.00192062498536
+1	rest_surprise_sound_images	rest_surp_snd_img	rest_surprise_sound_images_03.tsv	5	3	46	3.0000040833838284	0	3.000021833460778			38.0017301668413
+1	rest_surprise_sound_images	rest_surp_snd_img	rest_surprise_sound_images_03.tsv	5	3	46	3.0000032082898542	0	3.0000292499316856			38.00154766661581
+1	rest_surprise_sound_images	rest_surp_snd_img	rest_surprise_sound_images_03.tsv	5	3	46	3.000015208381228	0	3.0000249999575317			38.00149091670755
+1	rest_surprise_sound_images	rest_surp_snd_img	rest_surprise_sound_images_03.tsv	5	3	46	3.000006499933079	0	3.000024541746825			38.001456666737795

@@ -26,7 +26,8 @@ from moviepy.audio.io.AudioFileClip import AudioFileClip
 import gc
 import math
 import json
-
+import soundfile as sf
+import sounddevice as sd
 
 
 class Task:
@@ -571,7 +572,9 @@ class RestSurpriseSoundImages(Task):
                     evt['_image'] = None
                 if stim_type in ['auditory', 'audiovisual'] and evt['sound_stim']:
                     snd_path = self.const.stim_dir / evt['sound_dir'] / evt['sound_stim']
-                    evt['_sound'] = sound.Sound(str(snd_path))
+                    data, sr = sf.read(str(snd_path))
+                    evt['_sound_data'] = data
+                    evt['_sound_sr'] = sr
                 else:
                     evt['_sound'] = None
             self.trials.append(trial_events)
@@ -596,7 +599,8 @@ class RestSurpriseSoundImages(Task):
         current_event_idx = 0
         active_image = None
         image_end_time = None
-        active_sound = None
+        active_sound = False
+        sound_end_time = None
 
         while self.ttl_clock.get_time() - trial_start < trial_duration:
             elapsed = self.ttl_clock.get_time() - trial_start
@@ -610,16 +614,19 @@ class RestSurpriseSoundImages(Task):
                     active_image = evt['_image']
                     image_end_time = elapsed + float(evt['duration'])
 
-                if stim_type in ['auditory', 'audiovisual'] and evt['_sound'] is not None:
-                    if active_sound is not None:
-                        active_sound.stop()
-                    active_sound = evt['_sound']
-                    active_sound.play()
-
+                if stim_type in ['auditory', 'audiovisual'] and evt.get('_sound_data') is not None:
+                    sd.stop()
+                    sd.play(evt['_sound_data'], evt['_sound_sr'])
+                    active_sound = True
+                    sound_end_time = elapsed + float(evt['duration'])
                 current_event_idx += 1
 
             if active_image is not None and elapsed >= image_end_time:
                 active_image = None
+
+            if active_sound and elapsed >= sound_end_time:
+                sd.stop()
+                active_sound = False
 
             if active_image is not None:
                 active_image.draw()
@@ -631,7 +638,7 @@ class RestSurpriseSoundImages(Task):
             self.screen_quit()
 
         if active_sound is not None:
-            active_sound.stop()
+            sd.stop()
 
         return trial_events
 
