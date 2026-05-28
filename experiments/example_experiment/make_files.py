@@ -4,7 +4,7 @@ import constants as const
 
 #tasks = ['rest_surprise','finger_sequence_surprise','temp_deviant','theory_of_mind_diff_reward','demand_grid_easy_diff']
 
-tasks = ['rest_surprise_sound_images']
+tasks = ['rest_surprise_sound_images','theory_of_mind_diff_reward','temp_deviant','finger_sequence_surprise','demand_grid_easy_diff']
 
 num_runs = 1  # Number of imaging runs
 
@@ -14,7 +14,7 @@ for task in tasks:
     ut.dircheck(const.task_dir / task)
 
 # Generate run and task files
-for r in range(3, 4):
+for r in range(1, 2):
     tfiles = [f'{task}_{r:02d}.tsv' for task in tasks]
     T = tf.make_run_file(tasks, tfiles, offset=3)
     T.loc[T.index[-1], 'end_time'] += 8

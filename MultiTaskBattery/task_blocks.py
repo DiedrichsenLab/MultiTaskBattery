@@ -557,27 +557,21 @@ class RestSurpriseSoundImages(Task):
         trial_info_file = self.const.task_dir / self.name / self.task_file
         self.trial_info = pd.read_csv(trial_info_file, sep='\t')
 
-        self.trials = []
-        grouped = self.trial_info.groupby('trial_num')
-
-        for trial_num, group in grouped:
-            group = group.sort_values('surprise_onset')
-            trial_events = group.to_dict('records')
-            for evt in trial_events:
-                stim_type = evt['stimulus_type']
-                if stim_type in ['visual', 'audiovisual'] and evt['stim']:
-                    img_path = self.const.stim_dir / 'affective' / evt['stim']
-                    evt['_image'] = visual.ImageStim(self.window, str(img_path))
-                else:
-                    evt['_image'] = None
-                if stim_type in ['auditory', 'audiovisual'] and evt['sound_stim']:
-                    snd_path = self.const.stim_dir / evt['sound_dir'] / evt['sound_stim']
-                    data, sr = sf.read(str(snd_path))
-                    evt['_sound_data'] = data
-                    evt['_sound_sr'] = sr
-                else:
-                    evt['_sound'] = None
-            self.trials.append(trial_events)
+        self.trial_events = self.trial_info.sort_values('surprise_onset').to_dict('records')
+        for evt in self.trial_events:
+            stim_type = evt['stimulus_type']
+            if stim_type in ['visual', 'audiovisual'] and evt['stim']:
+                img_path = self.const.stim_dir / 'affective' / evt['stim']
+                evt['_image'] = visual.ImageStim(self.window, str(img_path))
+            else:
+                evt['_image'] = None
+            if stim_type in ['auditory', 'audiovisual'] and evt['sound_stim']:
+                snd_path = self.const.stim_dir / evt['sound_dir'] / evt['sound_stim']
+                data, sr = sf.read(str(snd_path))
+                evt['_sound_data'] = data
+                evt['_sound_sr'] = sr
+            else:
+                evt['_sound_data'] = None
 
     def display_instructions(self):
         self.instruction_text = 'Rest: Fixate on the cross'
@@ -587,8 +581,7 @@ class RestSurpriseSoundImages(Task):
         self.window.flip()
 
     def run(self):
-        for trial_events in self.trials:
-            self.run_trial(trial_events)
+        self.run_trial(self.trial_events)
         self.trial_data = pd.DataFrame()
         return None, None
 
