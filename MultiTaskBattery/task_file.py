@@ -313,6 +313,66 @@ class RestSurpriseImages(TaskFile):
 
         return trial_info
 
+class RestSurpriseSoundImages(TaskFile):
+
+    def __init__(self, const):
+        super().__init__(const)
+        self.name = 'rest_surprise_sound_images'
+
+    def make_task_file(
+        self,
+        task_dur=30,
+        n_stimuli=4,
+        img_stim_dur=0.5,
+        sound_dir='degraded_passage',
+        file_name=None
+    ):
+        pleasant_imgs = [f'pleasant{i}.jpg' for i in range(1, 27)]
+        unpleasant_imgs = [f'unpleasant{i}.jpg' for i in range(1, 55)]
+        all_imgs = pleasant_imgs + unpleasant_imgs
+
+        sound_path = self.stim_dir / sound_dir
+        sound_files = [f.name for f in sound_path.glob('*.wav')] + [f.name for f in sound_path.glob('*.mp3')]
+
+        stim_types = ['visual', 'auditory', 'audiovisual']
+        onsets = sorted([random.uniform(0, task_dur - img_stim_dur) for _ in range(n_stimuli)])
+
+        trial_info = []
+        for event_num, t in enumerate(onsets):
+            stim_type = random.choice(stim_types)
+            trial = {}
+            trial['trial_num'] = 1
+            trial['event_num'] = event_num
+            trial['surprise_onset'] = round(t, 2)
+            trial['stimulus_type'] = stim_type
+            trial['duration'] = img_stim_dur
+            trial['start_time'] = 0
+            trial['end_time'] = task_dur
+
+            if stim_type in ['visual', 'audiovisual']:
+                img = random.choice(all_imgs)
+                trial['stim'] = img
+                trial['category'] = 'pleasant' if img.startswith('pleasant') else 'unpleasant'
+            else:
+                trial['stim'] = ''
+                trial['category'] = ''
+
+            if stim_type in ['auditory', 'audiovisual']:
+                trial['sound_stim'] = random.choice(sound_files)
+                trial['sound_dir'] = sound_dir
+            else:
+                trial['sound_stim'] = ''
+                trial['sound_dir'] = ''
+
+            trial_info.append(trial)
+
+        trial_info = pd.DataFrame(trial_info)
+        if file_name is not None:
+            ut.dircheck(self.task_dir / self.name)
+            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
+
+        return trial_info
+
 class VerbGeneration(TaskFile):
     def __init__(self, const):
         super().__init__(const)

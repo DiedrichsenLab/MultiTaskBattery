@@ -7,6 +7,7 @@ verb_generation	VerbGeneration	verb	vrbgn-wrdrd
 rest	Rest	rest	rest
 rest_surprise	RestSurprise	rest_surprise	rest_surprise
 rest_surprise_images	RestSurpriseImages	rest_surprise_images	rest_surp_img
+rest_surprise_sound_images	RestSurpriseSoundImages	rest_surprise_sound_images	rest_surp_snd_img
 tongue_movement	TongueMovement	tongue	tongue
 auditory_narrative	AuditoryNarrative	radio	audnarr
 spatial_navigation	SpatialNavigation	imagine	spatialnav

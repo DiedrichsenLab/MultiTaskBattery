@@ -7,6 +7,14 @@ from pathlib import Path
 import pandas as pd
 import numpy as np
 import random
+import importlib.metadata as _importlib_metadata
+_orig_entry_points = _importlib_metadata.entry_points
+def _patched_entry_points(group=None, **kwargs):
+    result = _orig_entry_points(**kwargs)
+    if group is not None:
+        return result.get(group, [])
+    return result
+_importlib_metadata.entry_points = _patched_entry_points
 from psychopy import prefs
 prefs.hardware['audioLib'] = ['sounddevice']
 from psychopy import visual, sound, core, event
@@ -536,6 +544,94 @@ class RestSurpriseImages(Task):
             self.window.flip()
             core.wait(0.001)
             self.screen_quit()
+
+        return trial_events
+
+class RestSurpriseSoundImages(Task):
+
+    def __init__(self, info, screen, ttl_clock, const, subj_id):
+        super().__init__(info, screen, ttl_clock, const, subj_id)
+        self.name = 'rest_surprise_sound_images'
+
+        trial_info_file = self.const.task_dir / self.name / self.task_file
+        self.trial_info = pd.read_csv(trial_info_file, sep='\t')
+
+        self.trials = []
+        grouped = self.trial_info.groupby('trial_num')
+
+        for trial_num, group in grouped:
+            group = group.sort_values('surprise_onset')
+            trial_events = group.to_dict('records')
+            for evt in trial_events:
+                stim_type = evt['stimulus_type']
+                if stim_type in ['visual', 'audiovisual'] and evt['stim']:
+                    img_path = self.const.stim_dir / 'affective' / evt['stim']
+                    evt['_image'] = visual.ImageStim(self.window, str(img_path))
+                else:
+                    evt['_image'] = None
+                if stim_type in ['auditory', 'audiovisual'] and evt['sound_stim']:
+                    snd_path = self.const.stim_dir / evt['sound_dir'] / evt['sound_stim']
+                    evt['_sound'] = sound.Sound(str(snd_path))
+                else:
+                    evt['_sound'] = None
+            self.trials.append(trial_events)
+
+    def display_instructions(self):
+        self.instruction_text = 'Rest: Fixate on the cross'
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text,
+                                       height=self.const.instruction_text_height, color=[-1, -1, -1])
+        instr_visual.draw()
+        self.window.flip()
+
+    def run(self):
+        for trial_events in self.trials:
+            self.run_trial(trial_events)
+        self.trial_data = pd.DataFrame()
+        return None, None
+
+    def run_trial(self, trial_events):
+        trial_start = self.ttl_clock.get_time()
+        trial_duration = max(float(evt['end_time']) for evt in trial_events)
+
+        current_event_idx = 0
+        active_image = None
+        image_end_time = None
+        active_sound = None
+
+        while self.ttl_clock.get_time() - trial_start < trial_duration:
+            elapsed = self.ttl_clock.get_time() - trial_start
+
+            while (current_event_idx < len(trial_events) and
+                   elapsed >= float(trial_events[current_event_idx]['surprise_onset'])):
+                evt = trial_events[current_event_idx]
+                stim_type = evt['stimulus_type']
+
+                if stim_type in ['visual', 'audiovisual'] and evt['_image'] is not None:
+                    active_image = evt['_image']
+                    image_end_time = elapsed + float(evt['duration'])
+
+                if stim_type in ['auditory', 'audiovisual'] and evt['_sound'] is not None:
+                    if active_sound is not None:
+                        active_sound.stop()
+                    active_sound = evt['_sound']
+                    active_sound.play()
+
+                current_event_idx += 1
+
+            if active_image is not None and elapsed >= image_end_time:
+                active_image = None
+
+            if active_image is not None:
+                active_image.draw()
+            else:
+                self.screen.fixation_cross(flip=False)
+
+            self.window.flip()
+            core.wait(0.001)
+            self.screen_quit()
+
+        if active_sound is not None:
+            active_sound.stop()
 
         return trial_events
 

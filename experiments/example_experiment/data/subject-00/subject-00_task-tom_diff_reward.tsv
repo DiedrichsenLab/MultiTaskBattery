@@ -156,3 +156,12 @@ True or False "	belief	True	10	4	1.25	1	1	1	True	0	15	78.00082583317999	0	78.000
 is long.
 
 True or False "	photo	True	10	4	1.25	3	3	1	True	15	30	93.00069629156496	0	93.0006974581629	1	3.1203605416230857	True	3
+1	1	2	0	0	right	15	0	Expecting the game to be postponed because of the rain, the Garcia family took the subway home. The score was tied, 3-3. During their commute the rain stopped and the game soon ended with a score of 5-3.	"The Garcia family arrives home 
+believing the score is 5-3.
+
+True or False"	belief	False	10	4	1.25	3	3	1	True	0	15	43.00073212501593	0	43.000733166583814	2	1.9262256667716429	True	3
+1	1	2	1	1	right	15	0	Accounts of the country's bustling economic  success were recorded in both fiction and non-fiction books from the early 1900s. Soon after, a horrible plague hit the country and  the country was sent into an economic depression.	"Early 1900s novels portray the
+country as experiencing economic 
+wealth.
+
+True or False"	photo	True	10	4	1.25	1	1	1	True	15	30	58.00063983327709	0	58.00064083316829	1	2.9640706250211224	True	1
