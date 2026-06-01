@@ -27,6 +27,465 @@ import math
 import json
 import soundfile as sf
 import sounddevice as sd
+import constants as const
+import itertools
+
+
+class DemandGridEasyDiff(Task):
+    def __init__(self, info, screen, ttl_clock, const, subj_id):
+        super().__init__(info, screen, ttl_clock, const, subj_id)
+        self.square_size = 1.5
+        self.feedback_type = 'acc+rt'
+
+    def init_task(self):
+        """
+        Initialize task - default is to read the target information into the trial_info dataframe
+        """
+        trial_info_file = self.const.task_dir / self.name / self.task_file
+        self.trial_info = pd.read_csv(trial_info_file, sep='\t')
+        self.corr_key = [self.trial_info['key_left'].iloc[0],self.trial_info['key_right'].iloc[0]]
+
+    def display_instructions(self):
+        """
+        displays the instruction for the task
+        """
+        str1 = f"You will watch the sequence of boxes that light up and then choose the correct pattern"
+        str2 = f"if left, press {self.corr_key[0]}"
+        str3 = f"if right, press {self.corr_key[1]}"
+        self.instruction_text = f"{self.descriptive_name} Task\n\n {str1} \n {str2} \n {str3}"
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1])
+        instr_visual.draw()
+        self.window.flip()
+
+    def create_grid(self, sequence=None, position='center',grid_size=(3,4)):
+        """Creates the grid of squares for the DemandGrid task, lighting up specific squares blue if a sequence is given,
+        and positions the grid left, right, or center."""
+        # Calculate offsets based on the desired position
+        if position == 'left':
+            offset_x = -5
+        elif position == 'right':
+            offset_x = 5
+        else:  # center
+            offset_x = 0
+
+        # Center the grid vertically
+        offset_y = 0
+
+        grid = []
+        # Create and draw the grid
+        for i in range(grid_size[0]):
+            row = []
+            for j in range(grid_size[1]):
+                # Calculate position with the offsets
+                square_x = (j - grid_size[0] / 2 + 0.5) * self.square_size + offset_x
+                square_y = (grid_size[1] / 2 - i - 0.5) * self.square_size + offset_y
+
+                # Determine the fill color based on the sequence
+                fill_color = 'blue' if sequence and (i, j) in sequence else 'white'
+
+                rect = visual.Rect(self.window, width=self.square_size, height=self.square_size,
+                                   pos=(square_x, square_y), lineWidth=3,
+                                   lineColor='black', fillColor=fill_color)
+                rect.draw()
+                row.append(rect)
+            grid.append(row)
+
+        return grid
+
+    def run_trial(self, trial):
+
+        event.clearEvents()
+
+        real_start_time, start_ttl, start_ttl_time = (
+        self.ttl_clock.wait_until(
+            trial['start_time']  ))
+        
+        grid_size = literal_eval(
+        trial['grid_size'])
+
+        num_steps = int(trial['num_steps'])
+        
+        sequence_dur = float(
+        trial['sequence_dur'])
+
+        step_dur = sequence_dur / num_steps
+
+        self.grid = self.create_grid(
+        grid_size=grid_size)
+
+        self.window.flip()
+
+        for step_idx in range(num_steps):
+            
+            step_name = (
+            f'original_step_{step_idx+1}')
+
+            step_sequence = literal_eval(
+            trial[step_name])
+
+        # Light up boxes
+            for x, y in step_sequence:
+                self.grid[x][y].fillColor = 'blue'
+
+            for row in self.grid:
+                for rect in row:
+                    rect.draw()
+
+            self.window.flip()
+
+        # Hold step
+            step_start = self.ttl_clock.get_time()
+
+            self.ttl_clock.wait_until(
+                step_start + step_dur)
+            
+            for x, y in step_sequence:
+
+                self.grid[x][y].fillColor = 'white'
+
+        # Draw cleared grid
+            for row in self.grid:
+                for rect in row:
+                    rect.draw()
+
+            self.window.flip()
+
+        event.clearEvents()
+
+        original_sequence = literal_eval(
+            trial['original_sequence']
+        )
+
+        modified_sequence = literal_eval(
+            trial['modified_sequence']
+        )
+
+        correct_side = trial['correct_side']
+
+        if correct_side == 'left':
+
+            left_sequence = original_sequence
+            right_sequence = modified_sequence
+
+        else:
+
+            left_sequence = modified_sequence
+            right_sequence = original_sequence
+
+        self.create_grid(
+            sequence=left_sequence,
+            position='left',
+            grid_size=grid_size
+        )
+
+        self.create_grid(
+            sequence=right_sequence,
+            position='right',
+            grid_size=grid_size
+        )
+
+        self.window.flip()
+
+        response_start = (
+            self.ttl_clock.get_time()
+        )
+
+        trial['response'], trial['rt'] = (
+            self.wait_response(
+                response_start,
+                trial['question_dur']
+            )
+        )
+
+        trial['correct'] = (
+            trial['response']
+            == self.corr_key[
+                trial['trial_type']
+            ]
+        )
+
+        self.display_trial_feedback(
+            trial['display_trial_feedback'],
+            trial['correct']
+        )
+
+        trial['real_start_time'] = (
+            real_start_time
+        )
+
+        trial['start_ttl'] = start_ttl
+
+        trial['start_ttl_time'] = (
+            start_ttl_time
+        )
+
+        return trial
+    
+class DemandGridEasyDiffFile(TaskFile):
+    def __init__(self, const):
+        super().__init__(const)
+        self.name = 'demand_grid_easy_diff'
+
+    def get_adjacent_positions(self,pos, grid_size):
+        """
+        Get all adjacent positions within the grid boundaries.
+
+        Args:
+            pos (tuple): Current position (x, y).
+            grid_size (tuple): Size of the grid (rows, cols).
+
+        Returns:
+            list: List of adjacent positions.
+        """
+        x, y = pos
+        adjacent = [
+            (x + dx, y + dy)
+            for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]
+            if 0 <= x + dx < grid_size[0] and 0 <= y + dy < grid_size[1]
+        ]
+        return adjacent
+
+    def generate_sequence(self, grid_size, num_steps, num_boxes_lit):
+        """
+        Generate the original sequence of lit-up boxes, ensuring adjacency between boxes
+        in each step and no reuse of positions across the entire sequence.
+
+        Args:
+            grid_size (tuple): Size of the grid (rows, cols).
+            num_steps (int): Number of steps in the sequence.
+            num_boxes_lit (int): Number of boxes lit up per step.
+
+        Returns:
+            list: Original sequence of steps, where each step is a list of positions.
+        """
+        sequence = []
+        used_positions = set()  # Tracks all positions that have been used
+
+        for _ in range(num_steps):
+            step = []
+            if not sequence:
+                # First step: Randomly choose starting positions
+                while len(step) < num_boxes_lit:
+                    pos = (
+                        random.randint(0, grid_size[0] - 1),
+                        random.randint(0, grid_size[1] - 1)
+                    )
+                    if pos not in used_positions:
+                        step.append(pos)
+                        used_positions.add(pos)
+            else:
+                # Subsequent steps: Ensure adjacency and uniqueness
+                available_positions = {
+                    adj
+                    for prev_step in sequence
+                    for pos in prev_step
+                    for adj in self.get_adjacent_positions(pos, grid_size)
+                }
+                available_positions -= used_positions  # Remove already-used positions
+
+                while len(step) < num_boxes_lit:
+                    if not available_positions:
+                        raise ValueError("not enough valid adjacent positions available")
+                    pos = random.choice(list(available_positions))
+                    step.append(pos)
+                    used_positions.add(pos)
+                    available_positions.remove(pos)  # Avoid duplicates in the current step
+
+            sequence.append(step)
+
+        return sequence
+
+    @staticmethod
+    def _count_connected_components(positions):
+        """Count connected components in a set of grid positions (4-directional)."""
+        from collections import deque
+        if not positions:
+            return 0
+        remaining = set(positions)
+        components = 0
+        while remaining:
+            components += 1
+            start = next(iter(remaining))
+            queue = deque([start])
+            remaining.remove(start)
+            while queue:
+                x, y = queue.popleft()
+                for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+                    neighbor = (x + dx, y + dy)
+                    if neighbor in remaining:
+                        remaining.remove(neighbor)
+                        queue.append(neighbor)
+        return components
+
+    def modify_sequence(self, sequence, grid_size):
+        """
+        Modify the original sequence to create a new sequence for comparison,
+        ensuring adjacency and uniqueness within the modified step. If a step
+        cannot be modified due to lack of valid adjacent positions, try another step.
+
+        The modified sequence is constrained to have the same number of connected
+        components as the original, so the distractor is not visually distinguishable
+        by spatial continuity alone.
+
+        Args:
+            sequence (list): Original sequence of steps.
+            grid_size (tuple): Size of the grid (rows, cols).
+
+        Returns:
+            list: Modified sequence of steps.
+        """
+        original_positions = [pos for step in sequence for pos in step]
+        original_cc = self._count_connected_components(original_positions)
+
+        modified_sequence = sequence[:]
+        available_step_indices = list(range(len(sequence)))  # List of all step indices to try
+
+        while available_step_indices:
+            random_step_index = random.choice(available_step_indices)  # Choose a random step
+            original_step = sequence[random_step_index]
+
+            # Gather all used positions from the entire sequence
+            used_positions = {t for step in sequence for t in step}
+
+            # Use all remaining steps (not the step being replaced) as the adjacency
+            # source, matching the rule used by generate_sequence().
+            remaining_steps = [s for i, s in enumerate(sequence) if i != random_step_index]
+
+            new_step = []
+            try:
+                while len(new_step) < len(original_step):
+                    available_positions = {
+                        adj
+                        for step in remaining_steps
+                        for pos in step
+                        for adj in self.get_adjacent_positions(pos, grid_size)
+                    }
+                    available_positions -= used_positions  # Exclude already-used positions
+                    available_positions -= set(new_step)  # Exclude positions already added to the new step
+
+                    if not available_positions:
+                        raise ValueError("Not enough valid adjacent positions available for modification.")
+
+                    # Choose a random position from the available ones
+                    new_pos = random.choice(list(available_positions))
+                    new_step.append(new_pos)
+                    used_positions.add(new_pos)  # Mark the position as used
+
+                # Check that the modified grid has the same connectivity as the original.
+                # Reject if the replacement creates extra disconnected components.
+                candidate = sequence[:]
+                candidate[random_step_index] = new_step
+                candidate_positions = [pos for step in candidate for pos in step]
+                candidate_cc = self._count_connected_components(candidate_positions)
+
+                if candidate_cc <= original_cc:
+                    modified_sequence[random_step_index] = new_step
+                    return modified_sequence
+                else:
+                    raise ValueError("Modified sequence has more connected components than original.")
+
+            except ValueError:
+                # Remove this step index from the list of available steps to try
+                available_step_indices.remove(random_step_index)
+                continue  # Try another step
+
+        # If all steps fail, raise an error
+        raise ValueError("No valid step could be modified with the given constraints.")
+
+    def make_task_file(self,
+                   hand=None,
+                   responses=None,  # right: [1,2] (a=left, s=right); left: [4,3] (f=left, d=right)
+                   grid_size=(3, 4),
+                   num_steps=3,
+                   num_boxes_lit=2,
+                   task_dur=30,
+                   trial_dur=7,
+                   question_dur=3,
+                   sequence_dur=4,
+                   iti_dur=0.5,
+                   file_name=None):
+        """
+        Create a task file with the specified parameters.
+
+        Args:
+            hand (str): Hand used for response ('right' or 'left').
+            responses (list): Response keys for left and right.
+            grid_size (tuple): Size of the grid (rows, cols).
+            num_steps (int): Number of steps in the sequence.
+            num_boxes_lit (int): Number of boxes lit up per step.
+            task_dur (float): Total task duration in seconds.
+            trial_dur (float): Duration of each trial.
+            question_dur (float): Duration of the question phase.
+            sequence_dur (float): Duration of the sequence presentation phase.
+            iti_dur (float): Inter-trial interval duration.
+            file_name (str): Name of the file to save the task data.
+
+        Returns:
+            pd.DataFrame: Task information as a DataFrame.
+        """
+        if hand is None:
+            hand = const.responding_hand
+        if responses is None:
+            responses = [1, 2] if hand == 'right' else [4, 3]
+
+        n_trials = int(task_dur / (trial_dur + iti_dur))
+        trial_info = []
+        current_time = 0
+
+        for n in range(n_trials):
+            if n < n_trials // 2:
+                condition = 'easy'
+                current_grid_size = (3, 4)
+                current_num_boxes_lit = 2
+            else:
+                condition = 'hard'
+                current_grid_size = (4, 4)
+                current_num_boxes_lit = 3
+
+            while True:  # Retry logic
+                try:
+                    # Generate the original sequence
+                    original_sequence = self.generate_sequence(current_grid_size, num_steps, current_num_boxes_lit)
+                    # Attempt to create a modified sequence
+                    modified_sequence = self.modify_sequence(original_sequence, grid_size=current_grid_size)
+                    break
+                except ValueError:
+                    continue
+
+            correct_side = random.choice(['left', 'right'])
+            trial_type = 0 if correct_side == 'left' else 1
+            trial = {
+                'key_left': responses[0],
+                'key_right': responses[1],
+                'correct_side': correct_side,
+                'trial_type': trial_type,
+                'trial_num': n,
+                'hand': hand,
+                'condition': condition,
+                'grid_size': current_grid_size,
+                'num_boxes_lit': current_num_boxes_lit,
+                'num_steps': num_steps,
+                'original_sequence': list(itertools.chain.from_iterable(original_sequence)),
+                'modified_sequence': list(itertools.chain.from_iterable(modified_sequence))  ,
+                **{f'original_step_{i+1}': step for i, step in enumerate(original_sequence)},  # Unpack original steps (each grid shown in the exp)
+                'display_trial_feedback': True,
+                'trial_dur': trial_dur,
+                'sequence_dur': sequence_dur,
+                'question_dur': question_dur,
+                'iti_dur': iti_dur,
+                'start_time': current_time,
+                'end_time': current_time + trial_dur + iti_dur
+            }
+            trial_info.append(trial)
+
+            # Update for the next trial:
+            current_time = trial['end_time']
+
+        trial_info = pd.DataFrame(trial_info)
+        if file_name is not None:
+            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
+
+        return trial_info
 
 class RestSurpriseSoundImages(Task):
 
@@ -553,8 +1012,8 @@ class TheoryOfMindDiffRewardFile(TaskFile):
         self.name = 'theory_of_mind_diff_reward'
         self.matching_stimuli = False # stimuli for active condition (belief) are different from stimuli for passive condition (photo)
 
-    def make_task_file(self, hand='right',
-                       responses = [1,2], # 1 = True, 2 = False
+    def make_task_file(self, hand=None,
+                       responses=None, # right: [1,2] (a=true, s=false); left: [4,3] (f=true, d=false)
                        run_number=None,
                         task_dur=30,
                         trial_dur=15,
@@ -569,6 +1028,11 @@ class TheoryOfMindDiffRewardFile(TaskFile):
                         stimulus_seed=None,
                         exclude_stimuli=None,
                         stim=None):
+        if hand is None:
+            hand = const.responding_hand
+        if responses is None:
+            responses = [1, 2] if hand == 'right' else [4, 3]
+
         # Count number of trials based on timing; may be overridden below when an
         # explicit stimulus list is provided (so distribution, not timing, sets
         # the exact trial count).
@@ -784,12 +1248,13 @@ class TempDeviant(Task):
 
             self.window.flip()
 
+        yes_key, no_key = (1, 2) if self.const.responding_hand == 'right' else (4, 3)
         response_text = visual.TextStim(
             self.window,
             text=(
-                "Were there any deviant stimuli?\n\n"
-                "Yes - press 1\n"
-                "No - press 2"
+                f"Were there any deviant stimuli?\n\n"
+                f"Yes - {yes_key}\n"
+                f"No - {no_key}"
             ),
             color='white',
             height=0.8
@@ -800,7 +1265,7 @@ class TempDeviant(Task):
         self.window.flip()
 
         trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), response_duration)
-        trial['correct'] = (trial['response'] == (1 if trial['n_deviants'] > 0 else 2))
+        trial['correct'] = (trial['response'] == (yes_key if trial['n_deviants'] > 0 else no_key))
         
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
         trial['real_start_time'] = real_start_time

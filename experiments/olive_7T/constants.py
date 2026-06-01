@@ -39,8 +39,11 @@ eye_tracker = False                                     # do you want to do  eye
 # Running in debug mode?
 debug = False                                           # set to True for debugging
 
+# Responding hand: 'right' uses 'a'=yes/'s'=no; 'left' uses 'f'=yes/'d'=no
+responding_hand = 'left'
+
 # Screen settings for subject display
 screen = {}
-screen['size'] = [1100, 800]        # screen resolution
-screen['fullscr'] = False           # full screen, if false it's in a separate window
-screen['number'] = 1                # 0 = main display, 1 = secondary display
+screen['size'] = [1024, 768]        # screen resolution
+screen['fullscr'] = True           # full screen, if false it's in a separate window
+screen['number'] = 1               # 0 = main display, 1 = secondary display
