@@ -180,3 +180,11 @@ run_num	task_name	task_code	task_file	instruction_dur	start_time	end_time	real_s
 1	rest_surprise_sound_images	rest_surp_snd_img	rest_surprise_sound_images_04.tsv	5	143	186	143.00001333327964	0	143.00001495832112			178.0054228749359
 1	temp_deviant	temp_deviant	temp_deviant_06.tsv	5	3	46	3.000008541624993	0	3.0000099167227745	1.0		35.75057162507437
 1	temp_deviant	temp_deviant	temp_deviant_05.tsv	5	3	46	3.0000181667273864	0	3.0000192916486412	0.0		36.52114112500567
+1	theory_of_mind_diff_reward	tom_diff_reward	theory_of_mind_diff_reward_03.tsv	5	3	38	3.000004208413884	0	3.0000054168049246	1.0	1.391631145728752	35.36542837508023
+1	rest_surprise_sound_images	rest_surp_snd_img	rest_surprise_sound_images_03.tsv	5	38	73	38.000012458418496	0	38.00003012502566			73.00385687500238
+1	temp_deviant	temp_deviant	temp_deviant_03.tsv	5	73	108	73.00413479178678	0	73.00413600006141	0.0		105.77691616676748
+1	demand_grid_easy_diff	dmgrid_easy_diff	demand_grid_easy_diff_03.tsv	5	108	143	108.00001358345617	0	108.00003120838664	0.25	1.0888659375777934	140.52328525006303
+1	finger_sequence_surprise	fingseqsurp	finger_sequence_surprise_03.tsv	5	143	186	143.000013208366	0	143.00003087508958	0.9791666666666669	0.3830086067755474	177.5096582084661
+1	demand_grid_easy_diff	dmgrid_easy_diff	demand_grid_easy_diff_08.tsv	5	3	46	3.000014958437532	0	3.000032750191167	0.5	1.2295480936882086	35.79997675004415
+1	rest_surprise_sound_images	rest_surp_snd_img	rest_surprise_sound_images_09.tsv	5	3	46	3.0000106249935925	0	3.0000126250088215			38.00642441678792
+1	rest_surprise_sound_images	rest_surp_snd_img	rest_surprise_sound_images_09.tsv	5	3	46	3.000018624821678	0	3.0000280416570604			38.006355833262205

@@ -3,11 +3,11 @@ import task_olive as to
 import MultiTaskBattery.utils as ut
 import constants as const
 
-#tasks = ['rest_surprise','finger_sequence_surprise','temp_deviant','theory_of_mind_diff_reward','demand_grid_easy_diff']
+#tasks = ['rest_surprise_sound_images','finger_sequence_surprise','temp_deviant','theory_of_mind_diff_reward','demand_grid_easy_diff']
 
-tasks = ['temp_deviant']
+tasks = ['theory_of_mind_diff_reward']
 
-num_runs = 5  # Number of imaging runs
+num_runs = 4  # Number of imaging runs
 
 # Ensure task and run directories exist
 ut.dircheck(const.run_dir)
@@ -15,7 +15,7 @@ for task in tasks:
     ut.dircheck(const.task_dir / task)
 
 # Generate run and task files
-for r in range(5,6):
+for r in range(4,5):
     tfiles = [f'{task}_{r:02d}.tsv' for task in tasks]
     T = tf.make_run_file(tasks, tfiles, offset=3, exp_dir=const.exp_dir)
     T.loc[T.index[-1], 'end_time'] += 8

@@ -566,6 +566,7 @@ class RestSurpriseSoundImages(Task):
                 self.screen.fixation_cross(flip=False)
 
             self.window.flip()
+            self.ttl_clock.update()
             core.wait(0.001)
             self.screen_quit()
 
@@ -1021,7 +1022,7 @@ class TheoryOfMindDiffRewardFile(TaskFile):
                         reward_cue_dur=1,
                         story_dur=10,
                         question_dur=4,
-                        text_height=1.25,
+                        text_height=0.9,
                         file_name=None,
                         stim_file=None,
                         condition=None,

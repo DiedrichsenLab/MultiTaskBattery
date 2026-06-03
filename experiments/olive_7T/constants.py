@@ -9,10 +9,10 @@ import task_olive as to
 exp_name = 'olive_7T' # name of the experiment
 
 #UNCOMMENT THIS FOR SCANNING
-#response_keys    = ['y', 'g', 'r', 'm'] # scanner keys
+response_keys    = ['y', 'g', 'r', 'm'] # scanner keys
 
 #COMMENT THIS FOR SCANNING
-response_keys    = ['a', 's', 'd', 'f']
+#response_keys    = ['a', 's', 'd', 'f']
 
 #not used
 response_fingers = ['Pinky', 'Ring','Middle', 'Index']
