@@ -1,0 +1,6 @@
+key_yes	key_no	trial_num	hand	trial_dur	iti_dur	story	question	options	trial_type	condition	story_dur	question_dur	text_height	display_trial_feedback	start_time	end_time
+1	2	0	right	14	1	Jean West, a manager, called a staff meeting. “John Morehouse, our accountant, is very sick with cancer,” she said. The room fell silent. Robert arrived late, making a joke about illness. Jean cut him off, saying, “Let’s start the meeting.”	Did anyone say something they shouldn't have said or something awkward?	Yes, No	1	social	10	4	1.25	True	0	15
+1	2	1	right	14	1	"Mike started at a new school. While in a bathroom stall he overheard Joe and Peter at the sinks.
+“Doesn’t the new guy, Mike, look weird? And he’s so short!” Joe said.
+Mike emerged.
+“Oh hi, Mike!” Peter said. “Are you going out to play?”"	Did anyone say something they shouldn't have said or something awkward?	Yes, No	1	social	10	4	1.25	True	15	30

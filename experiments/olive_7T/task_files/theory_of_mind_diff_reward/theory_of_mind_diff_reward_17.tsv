@@ -1,0 +1,8 @@
+key_true	key_false	trial_type	trial_num	hand	trial_dur	iti_dur	story	question	condition	answer	story_dur	question_dur	text_height	reward_value	reward_cue	reward_cue_dur	display_trial_feedback	start_time	end_time
+1	2	0	0	right	15	0	Michael told Andrew that he was going hiking for the day. An hour  into his walk, Michael hurts his leg and returns home	"Michael returns home that evening 
+after a long day of hiking
+
+True or False"	belief	False	10	4	0.9	1	+1	1	True	0	15
+1	2	1	1	right	15	0	Tom leaves the house without letting  the dog out. Tom's neighbour hears  the dog barking and lets her into  the backyard.  Later, Tom arrives home from work. 	"Tom finds the dog in the backyard
+
+True or False"	photo	True	10	4	0.9	3	+3	1	True	15	30

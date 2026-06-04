@@ -1,0 +1,3 @@
+trial_num	hand	trial_dur	iti_dur	display_trial_feedback	stim	start_time	end_time
+0		14	1	False	knotActionBrigand.mov	0	15
+1		14	1	False	knotControlBrigand.mov	15	30

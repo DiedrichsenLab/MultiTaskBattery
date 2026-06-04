@@ -1,6 +1,6 @@
 """ define the tasks unique to the Olive7T experiment"""
 
-from MultiTaskBattery.task_blocks import Task
+from MultiTaskBattery.task_blocks import Task, DemandGrid
 from MultiTaskBattery.task_file import TaskFile
 from pathlib import Path
 import pandas as pd
@@ -31,196 +31,106 @@ import constants as const
 import itertools
 
 
-class DemandGridEasyDiff(Task):
-    def __init__(self, info, screen, ttl_clock, const, subj_id):
-        super().__init__(info, screen, ttl_clock, const, subj_id)
-        self.square_size = 1.5
-        self.feedback_type = 'acc+rt'
+# Old DemandGridEasyDiff task runner (custom run_trial with TTL logging).
+# Commented out in favour of inheriting from DemandGrid (Option A).
+# Uncomment this block and remove the two lines below to revert.
+#
+# class DemandGridEasyDiff(Task):
+#     def __init__(self, info, screen, ttl_clock, const, subj_id):
+#         super().__init__(info, screen, ttl_clock, const, subj_id)
+#         self.square_size = 1.5
+#         self.feedback_type = 'acc+rt'
+#
+#     def init_task(self):
+#         trial_info_file = self.const.task_dir / self.name / self.task_file
+#         self.trial_info = pd.read_csv(trial_info_file, sep='\t')
+#         self.corr_key = [self.trial_info['key_left'].iloc[0],self.trial_info['key_right'].iloc[0]]
+#
+#     def display_instructions(self):
+#         str1 = f"You will watch the sequence of boxes that light up and then choose the correct pattern"
+#         str2 = f"if left, press {self.corr_key[0]}"
+#         str3 = f"if right, press {self.corr_key[1]}"
+#         self.instruction_text = f"{self.descriptive_name} Task\n\n {str1} \n {str2} \n {str3}"
+#         instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1])
+#         instr_visual.draw()
+#         self.window.flip()
+#
+#     def create_grid(self, sequence=None, position='center',grid_size=(3,4)):
+#         if position == 'left':
+#             offset_x = -5
+#         elif position == 'right':
+#             offset_x = 5
+#         else:
+#             offset_x = 0
+#         offset_y = 0
+#         grid = []
+#         for i in range(grid_size[0]):
+#             row = []
+#             for j in range(grid_size[1]):
+#                 square_x = (j - grid_size[0] / 2 + 0.5) * self.square_size + offset_x
+#                 square_y = (grid_size[1] / 2 - i - 0.5) * self.square_size + offset_y
+#                 fill_color = 'blue' if sequence and (i, j) in sequence else 'white'
+#                 rect = visual.Rect(self.window, width=self.square_size, height=self.square_size,
+#                                    pos=(square_x, square_y), lineWidth=3,
+#                                    lineColor='black', fillColor=fill_color)
+#                 rect.draw()
+#                 row.append(rect)
+#             grid.append(row)
+#         return grid
+#
+#     def run_trial(self, trial):
+#         event.clearEvents()
+#         real_start_time, start_ttl, start_ttl_time = (
+#             self.ttl_clock.wait_until(trial['start_time']))
+#         grid_size = literal_eval(trial['grid_size'])
+#         num_steps = int(trial['num_steps'])
+#         sequence_dur = float(trial['sequence_dur'])
+#         step_dur = sequence_dur / num_steps
+#         self.grid = self.create_grid(grid_size=grid_size)
+#         self.window.flip()
+#         for step_idx in range(num_steps):
+#             step_name = f'original_step_{step_idx+1}'
+#             step_sequence = literal_eval(trial[step_name])
+#             for x, y in step_sequence:
+#                 self.grid[x][y].fillColor = 'blue'
+#             for row in self.grid:
+#                 for rect in row:
+#                     rect.draw()
+#             self.window.flip()
+#             step_start = self.ttl_clock.get_time()
+#             self.ttl_clock.wait_until(step_start + step_dur)
+#             for x, y in step_sequence:
+#                 self.grid[x][y].fillColor = 'white'
+#             for row in self.grid:
+#                 for rect in row:
+#                     rect.draw()
+#             self.window.flip()
+#         event.clearEvents()
+#         original_sequence = literal_eval(trial['original_sequence'])
+#         modified_sequence = literal_eval(trial['modified_sequence'])
+#         correct_side = trial['correct_side']
+#         if correct_side == 'left':
+#             left_sequence = original_sequence
+#             right_sequence = modified_sequence
+#         else:
+#             left_sequence = modified_sequence
+#             right_sequence = original_sequence
+#         self.create_grid(sequence=left_sequence, position='left', grid_size=grid_size)
+#         self.create_grid(sequence=right_sequence, position='right', grid_size=grid_size)
+#         self.window.flip()
+#         response_start = self.ttl_clock.get_time()
+#         trial['response'], trial['rt'] = self.wait_response(response_start, trial['question_dur'])
+#         trial['correct'] = (trial['response'] == self.corr_key[trial['trial_type']])
+#         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
+#         trial['real_start_time'] = real_start_time
+#         trial['start_ttl'] = start_ttl
+#         trial['start_ttl_time'] = start_ttl_time
+#         return trial
 
-    def init_task(self):
-        """
-        Initialize task - default is to read the target information into the trial_info dataframe
-        """
-        trial_info_file = self.const.task_dir / self.name / self.task_file
-        self.trial_info = pd.read_csv(trial_info_file, sep='\t')
-        self.corr_key = [self.trial_info['key_left'].iloc[0],self.trial_info['key_right'].iloc[0]]
+class DemandGridEasyDiff(DemandGrid):
+    pass
 
-    def display_instructions(self):
-        """
-        displays the instruction for the task
-        """
-        str1 = f"You will watch the sequence of boxes that light up and then choose the correct pattern"
-        str2 = f"if left, press {self.corr_key[0]}"
-        str3 = f"if right, press {self.corr_key[1]}"
-        self.instruction_text = f"{self.descriptive_name} Task\n\n {str1} \n {str2} \n {str3}"
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1])
-        instr_visual.draw()
-        self.window.flip()
 
-    def create_grid(self, sequence=None, position='center',grid_size=(3,4)):
-        """Creates the grid of squares for the DemandGrid task, lighting up specific squares blue if a sequence is given,
-        and positions the grid left, right, or center."""
-        # Calculate offsets based on the desired position
-        if position == 'left':
-            offset_x = -5
-        elif position == 'right':
-            offset_x = 5
-        else:  # center
-            offset_x = 0
-
-        # Center the grid vertically
-        offset_y = 0
-
-        grid = []
-        # Create and draw the grid
-        for i in range(grid_size[0]):
-            row = []
-            for j in range(grid_size[1]):
-                # Calculate position with the offsets
-                square_x = (j - grid_size[0] / 2 + 0.5) * self.square_size + offset_x
-                square_y = (grid_size[1] / 2 - i - 0.5) * self.square_size + offset_y
-
-                # Determine the fill color based on the sequence
-                fill_color = 'blue' if sequence and (i, j) in sequence else 'white'
-
-                rect = visual.Rect(self.window, width=self.square_size, height=self.square_size,
-                                   pos=(square_x, square_y), lineWidth=3,
-                                   lineColor='black', fillColor=fill_color)
-                rect.draw()
-                row.append(rect)
-            grid.append(row)
-
-        return grid
-
-    def run_trial(self, trial):
-
-        event.clearEvents()
-
-        real_start_time, start_ttl, start_ttl_time = (
-        self.ttl_clock.wait_until(
-            trial['start_time']  ))
-        
-        grid_size = literal_eval(
-        trial['grid_size'])
-
-        num_steps = int(trial['num_steps'])
-        
-        sequence_dur = float(
-        trial['sequence_dur'])
-
-        step_dur = sequence_dur / num_steps
-
-        self.grid = self.create_grid(
-        grid_size=grid_size)
-
-        self.window.flip()
-
-        for step_idx in range(num_steps):
-            
-            step_name = (
-            f'original_step_{step_idx+1}')
-
-            step_sequence = literal_eval(
-            trial[step_name])
-
-        # Light up boxes
-            for x, y in step_sequence:
-                self.grid[x][y].fillColor = 'blue'
-
-            for row in self.grid:
-                for rect in row:
-                    rect.draw()
-
-            self.window.flip()
-
-        # Hold step
-            step_start = self.ttl_clock.get_time()
-
-            self.ttl_clock.wait_until(
-                step_start + step_dur)
-            
-            for x, y in step_sequence:
-
-                self.grid[x][y].fillColor = 'white'
-
-        # Draw cleared grid
-            for row in self.grid:
-                for rect in row:
-                    rect.draw()
-
-            self.window.flip()
-
-        event.clearEvents()
-
-        original_sequence = literal_eval(
-            trial['original_sequence']
-        )
-
-        modified_sequence = literal_eval(
-            trial['modified_sequence']
-        )
-
-        correct_side = trial['correct_side']
-
-        if correct_side == 'left':
-
-            left_sequence = original_sequence
-            right_sequence = modified_sequence
-
-        else:
-
-            left_sequence = modified_sequence
-            right_sequence = original_sequence
-
-        self.create_grid(
-            sequence=left_sequence,
-            position='left',
-            grid_size=grid_size
-        )
-
-        self.create_grid(
-            sequence=right_sequence,
-            position='right',
-            grid_size=grid_size
-        )
-
-        self.window.flip()
-
-        response_start = (
-            self.ttl_clock.get_time()
-        )
-
-        trial['response'], trial['rt'] = (
-            self.wait_response(
-                response_start,
-                trial['question_dur']
-            )
-        )
-
-        trial['correct'] = (
-            trial['response']
-            == self.corr_key[
-                trial['trial_type']
-            ]
-        )
-
-        self.display_trial_feedback(
-            trial['display_trial_feedback'],
-            trial['correct']
-        )
-
-        trial['real_start_time'] = (
-            real_start_time
-        )
-
-        trial['start_ttl'] = start_ttl
-
-        trial['start_ttl_time'] = (
-            start_ttl_time
-        )
-
-        return trial
-    
 class DemandGridEasyDiffFile(TaskFile):
     def __init__(self, const):
         super().__init__(const)

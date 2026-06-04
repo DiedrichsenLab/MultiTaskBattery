@@ -1,0 +1,8 @@
+key_true	key_false	trial_type	trial_num	hand	trial_dur	iti_dur	story	question	condition	answer	story_dur	question_dur	text_height	reward_value	reward_cue	reward_cue_dur	display_trial_feedback	start_time	end_time
+1	2	1	0	right	15	0	Jennifer went to the theme park when  it first opened and spent hours  on the rides. A year ago, unbeknownst to Jennifer, the park  closed due to lack of funding.	"Jennifer goes to the park to
+find that it has closed
+
+True or False"	belief	True	10	4	0.9	1	+1	1	True	0	15
+1	2	1	1	right	15	0	Alice arrives at the movie theater at 6PM for her date with Juan. There is no sign of him so she leaves after 30 minutes. Thinking that the movie starts at 7PM, Juan arrives with ten minutes to spare.	"Juan arrives and doesn't see Alice
+
+True or False"	photo	True	10	4	0.9	3	+3	1	True	15	30

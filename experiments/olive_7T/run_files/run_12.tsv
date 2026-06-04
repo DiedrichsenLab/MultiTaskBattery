@@ -1,0 +1,13 @@
+task_name	task_code	task_file	instruction_dur	start_time	end_time
+rest	rest	rest_12.tsv	5	3	38
+faux_pas	faux_pas	faux_pas_12.tsv	5	38	73
+spatial_navigation	spatialnav	spatial_navigation_12.tsv	5	73	108
+rest_surprise_sound_images	rest_surp_snd_img	rest_surprise_sound_images_12.tsv	5	108	143
+movie	mov	movie_12.tsv	5	143	178
+theory_of_mind_diff_reward	tom_diff_reward	theory_of_mind_diff_reward_12.tsv	5	178	213
+finger_sequence_surprise	fingseqsurp	finger_sequence_surprise_12.tsv	5	213	248
+tongue_movement	tongue	tongue_movement_12.tsv	5	248	283
+demand_grid_easy_diff	dmgrid_easy_diff	demand_grid_easy_diff_12.tsv	5	283	318
+temp_deviant	temp_deviant	temp_deviant_12.tsv	5	318	353
+action_observation	acva-acvk	action_observation_12.tsv	5	353	388
+verb_generation	vrbgn-wrdrd	verb_generation_12.tsv	5	388	431

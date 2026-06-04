@@ -349,7 +349,8 @@ class SpatialNavigation(TaskFile):
 
         for n in range(n_trials):
             trial = {}
-            loc1, loc2 = self.location_pairs[run_number - 1]
+            #loc1, loc2 = self.location_pairs[run_number - 1]
+            loc1, loc2 = self.location_pairs[(run_number - 1) % len(self.location_pairs)]
             trial['trial_num'] = n
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
@@ -564,7 +565,8 @@ class ActionObservation(TaskFile):
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
             trial['display_trial_feedback'] = False
-            knot_index = (run_number - 1)
+            #knot_index = (run_number - 1)
+            knot_index = (run_number - 1) % len(knot_names)
             if n == 0:
                 trial['stim'] = f'knotAction{knot_names[knot_index]}.mov'
             else:

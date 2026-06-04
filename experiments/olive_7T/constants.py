@@ -9,10 +9,10 @@ import task_olive as to
 exp_name = 'olive_7T' # name of the experiment
 
 #UNCOMMENT THIS FOR SCANNING
-response_keys    = ['y', 'g', 'r', 'm'] # scanner keys
+#response_keys    = ['y', 'g', 'r', 'm'] # scanner keys
 
 #COMMENT THIS FOR SCANNING
-#response_keys    = ['a', 's', 'd', 'f']
+response_keys    = ['a', 's', 'd', 'f']
 
 #not used
 response_fingers = ['Pinky', 'Ring','Middle', 'Index']
@@ -40,10 +40,10 @@ eye_tracker = False                                     # do you want to do  eye
 debug = False                                           # set to True for debugging
 
 # Responding hand: 'right' uses 'a'=yes/'s'=no; 'left' uses 'f'=yes/'d'=no
-responding_hand = 'left'
+responding_hand = 'right'
 
 # Screen settings for subject display
 screen = {}
 screen['size'] = [1024, 768]        # screen resolution
-screen['fullscr'] = True           # full screen, if false it's in a separate window
+screen['fullscr'] = False           # full screen, if false it's in a separate window
 screen['number'] = 1               # 0 = main display, 1 = secondary display

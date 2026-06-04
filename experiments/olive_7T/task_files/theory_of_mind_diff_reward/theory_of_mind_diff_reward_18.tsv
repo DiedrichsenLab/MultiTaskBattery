@@ -1,0 +1,9 @@
+key_true	key_false	trial_type	trial_num	hand	trial_dur	iti_dur	story	question	condition	answer	story_dur	question_dur	text_height	reward_value	reward_cue	reward_cue_dur	display_trial_feedback	start_time	end_time
+1	2	0	0	right	15	0	Amy leaves her sister in the library while she goes to class. Sometime thereafter, Amy's sister leaves the library to meet her friend on the other side of town. 	"Amy returns after class and 
+finds her sister in the library
+
+True or False"	belief	False	10	4	0.9	1	+1	1	True	0	15
+1	2	0	1	right	15	0	Paintings of the town in the early nineteenth century portray a bustling marketplace in the town square. In recent  years, the town square has been ruined by warfare. 	"Paintings of the town square depict 
+ruins obliterated by warfare
+
+True or False"	photo	False	10	4	0.9	3	+3	1	True	15	30

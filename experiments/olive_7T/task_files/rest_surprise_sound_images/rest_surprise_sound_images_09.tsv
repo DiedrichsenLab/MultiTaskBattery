@@ -1,5 +1,5 @@
 trial_num	event_num	surprise_onset	stimulus_type	duration	start_time	end_time	stim	category	sound_stim	sound_dir
-1	0	2.1	visual	0.5	0	30	pleasant7.jpg	pleasant		
-1	1	2.68	auditory	0.5	0	30			training_degraded_passage_16.wav	degraded_passage
-1	2	14.24	visual	0.5	0	30	unpleasant5.jpg	unpleasant		
-1	3	24.1	auditory	0.5	0	30			degraded_passage_14.wav	degraded_passage
+1	0	6.42	audiovisual	0.5	0	30	unpleasant5.jpg	unpleasant	training_degraded_passage_6.wav	degraded_passage
+1	1	17.73	audiovisual	0.5	0	30	unpleasant8.jpg	unpleasant	degraded_passage_10.wav	degraded_passage
+1	2	20.67	auditory	0.5	0	30			degraded_passage_6.wav	degraded_passage
+1	3	23.48	audiovisual	0.5	0	30	unpleasant6.jpg	unpleasant	degraded_passage_7.wav	degraded_passage
