@@ -1,9 +1,0 @@
-key_true	key_false	trial_type	trial_num	hand	trial_dur	iti_dur	story	question	condition	answer	story_dur	question_dur	display_trial_feedback	start_time	end_time
-1	2	1	0	right	14	1	Laura didn't have time to braid her  horse's mane before going to camp.  While she was at camp, William brushed  Laura's horse and braided the horse's  mane for her.	"Laura returns assuming that her 
-horse's hair isn't braided
-
-True or False"	belief	True	10	4	True	0	15
-1	2	0	1	right	14	1	A large oak tree stood in front of City  Hall from the time the building was built.   Last year the tree fell down and was replaced  by a stone fountain.	"An antique drawing of City Hall 
-shows a fountain in front.
-
-True or False "	photo	False	10	4	True	15	30

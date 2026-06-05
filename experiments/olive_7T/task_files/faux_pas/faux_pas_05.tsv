@@ -1,6 +1,0 @@
-key_yes	key_no	trial_num	hand	trial_dur	iti_dur	story	question	options	trial_type	condition	story_dur	question_dur	text_height	display_trial_feedback	start_time	end_time
-1	2	0	right	14	1	"Kim’s cousin Scott was coming to visit, and Kim made an apple pie for him. After dinner, she said, “I made a pie just for you.”
-“Mmmm,” Scott replied. “It smells great! I love pies—except for apple, of course.”"	Did anyone say something they shouldn't have said or something awkward?	Yes, No	1	social	10	4	1.25	True	0	15
-1	2	1	right	14	1	"Jeanette gave Anne a crystal bowl as a wedding gift. A year later, at Anne’s for dinner, Jeanette accidentally broke the bowl.
-“I’m sorry,” Jeanette said.
-“Don’t worry,” Anne replied. “I never liked it anyways. Someone gave it to me.”"	Did anyone say something they shouldn't have said or something awkward?	Yes, No	1	social	10	4	1.25	True	15	30

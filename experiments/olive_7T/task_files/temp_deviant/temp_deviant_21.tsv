@@ -1,3 +1,0 @@
-trial_num	frequency	stim_interval	trial_duration	response_duration	display_trial_feedback	start_time	end_time	n_deviants	deviant_times	deviant_type	deviant_positions
-0	1	1.0	13	2	True	0	15	2	6.8;8.8	early;early	8;10
-1	1	1.0	13	2	True	15	30	0	None	None	None

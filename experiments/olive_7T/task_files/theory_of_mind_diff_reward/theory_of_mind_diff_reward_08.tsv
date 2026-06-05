@@ -1,9 +1,0 @@
-key_true	key_false	trial_type	trial_num	hand	trial_dur	iti_dur	story	question	condition	answer	story_dur	question_dur	text_height	reward_value	reward_cue	reward_cue_dur	display_trial_feedback	start_time	end_time
-4	3	0	0	left	15	0	Larry chose a debated topic for his  class paper due on Friday. The news on Thursday indicated that the debate had been solved but Larry never read it.  	"When Larry writes his paper he thinks
-the debate has been solved.
-
-True or False "	belief	False	10	4	0.9	1	+1	1	True	0	15
-4	3	1	1	left	15	0	A volcano erupted on a Carribean island three months ago. Barren lava rock is all that remains today. Satellite photographs show the island as it was before the eruption. 	"Today, the island is covered in
-lava rock.
-
-True or False "	photo	True	10	4	0.9	3	+3	1	True	15	30

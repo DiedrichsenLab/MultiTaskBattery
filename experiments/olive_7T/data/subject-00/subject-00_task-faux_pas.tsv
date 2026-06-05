@@ -1,9 +1,0 @@
-run_num	key_yes	key_no	trial_num	hand	trial_dur	iti_dur	story	question	options	trial_type	condition	story_dur	question_dur	text_height	display_trial_feedback	start_time	end_time	real_start_time	start_ttl	start_ttl_time	response	rt	correct
-1	1	2	0	right	14	1	"Jim was shopping for a shirt to match his suit. He found the right color but it didn’t fit.
-“It’s too small,” he said.
-“Not to worry,” the salesman replied. “We’ll have larger sizes next week.”"	Did anyone say something they shouldn't have said or something awkward?	Yes, No	2	social	10	4	1.25	True	0	15	145.58308404160198	0	145.58308500004932	1	3.1751842082012445	False
-1	1	2	1	right	14	1	Bob went to the barber for a haircut. “Just take about an inch off,” Bob said. The barber cut the front uneven, so he had to go shorter. “It’s shorter than you wanted,” he said. “Oh well,” Bob replied, “it’ll grow out.”	Did anyone say something they shouldn't have said or something awkward?	Yes, No	2	social	10	4	1.25	True	15	30	160.58299845841248	0	160.5829994584201	2	1.5721601250115782	True
-1	1	2	0	right	14	1	"Jim was shopping for a shirt to match his suit. He found the right color but it didn’t fit.
-“It’s too small,” he said.
-“Not to worry,” the salesman replied. “We’ll have larger sizes next week.”"	Did anyone say something they shouldn't have said or something awkward?	Yes, No	2	social	10	4	1.25	True	0	15	145.00035195832606	0	145.000352916657	0		False
-1	1	2	1	right	14	1	Bob went to the barber for a haircut. “Just take about an inch off,” Bob said. The barber cut the front uneven, so he had to go shorter. “It’s shorter than you wanted,” he said. “Oh well,” Bob replied, “it’ll grow out.”	Did anyone say something they shouldn't have said or something awkward?	Yes, No	2	social	10	4	1.25	True	15	30	160.00003875000402	0	160.00003974989522	0		False

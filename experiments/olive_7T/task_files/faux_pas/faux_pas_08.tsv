@@ -1,6 +1,0 @@
-key_yes	key_no	trial_num	hand	trial_dur	iti_dur	story	question	options	trial_type	condition	story_dur	question_dur	text_height	display_trial_feedback	start_time	end_time
-1	2	0	right	14	1	"At Fernhaven Elementary, Christine entered a story competition but didn’t win. Her classmate Jake won first prize.
-Sitting with him the next day, Jake said, “The other stories were terrible.”
-Christine asked, “Where will you put your trophy?”"	Did anyone say something they shouldn't have said or something awkward?	Yes, No	1	social	10	4	1.25	True	0	15
-1	2	1	right	14	1	"Tim spilled coffee on the floor at a restaurant. The waiter said, “I’ll get you another cup,” and left.
-Tim approached Jack, a customer by the cashier, and asked, “I spilled coffee by my table. Can you mop it up?”"	Did anyone say something they shouldn't have said or something awkward?	Yes, No	1	social	10	4	1.25	True	15	30

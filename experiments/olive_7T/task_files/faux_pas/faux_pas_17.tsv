@@ -1,4 +1,0 @@
-key_yes	key_no	trial_num	hand	trial_dur	iti_dur	story	question	options	trial_type	condition	story_dur	question_dur	text_height	display_trial_feedback	start_time	end_time
-1	2	0	right	14	1	"John stopped at the petrol station to fill his car. When the cashier ran his card she said ""The machine won't accept it."" ""That's funny,"" John said. ""I'll pay in cash."" He gave her fifty and said, ""I filled up with unleaded."""	Did the machine accept John's card?	Yes, No	2	control	10	4	1.25	True	0	15
-1	2	1	right	14	1	"Jill had just moved into a new flat and bought curtains for her bedroom. After decorating, her best friend Lisa visited. Jill gave her a tour and asked, “How do you like my bedroom?”
-“Those curtains are horrible,” Lisa said."""	Did Jill just move into a new flat?	Yes, No	1	control	10	4	1.25	True	15	30
