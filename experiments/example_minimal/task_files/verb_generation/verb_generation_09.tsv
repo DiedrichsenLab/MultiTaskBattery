@@ -1,0 +1,13 @@
+trial_num	trial_type	trial_dur	iti_dur	start_time	end_time	stim	display_trial_feedback
+0	read	2	0.5	0.0	2.5	pliers      	False
+1	read	2	0.5	2.5	5.0	box         	False
+2	read	2	0.5	5.0	7.5	camel       	False
+3	read	2	0.5	7.5	10.0	toy         	False
+4	read	2	0.5	10.0	12.5	nurse       	False
+5	read	2	0.5	12.5	15.0	pig         	False
+6	generate	2	0.5	15.0	17.5	tablespoon  	False
+7	generate	2	0.5	17.5	20.0	violin      	False
+8	generate	2	0.5	20.0	22.5	theater     	False
+9	generate	2	0.5	22.5	25.0	chair       	False
+10	generate	2	0.5	25.0	27.5	chocolate   	False
+11	generate	2	0.5	27.5	30.0	pizza      	False
