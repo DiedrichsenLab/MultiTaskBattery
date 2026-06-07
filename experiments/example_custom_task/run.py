@@ -1,11 +1,12 @@
-# Main Script for a minimal example experiment
+# Main script for example_custom_task
 import MultiTaskBattery.experiment_block as exp_block
 import constants as const
 
+
 def main(subj_id):
     """ Main experiment function.
-    Ensure the constants.py file is updated before running the experiment
-    (e.g., experiment name, eye tracker, screen settings, etc.).
+    Ensure constants.py is configured before running (response keys,
+    screen settings, eye tracker, etc.).
 
     Args:
         subj_id (str): Subject ID
@@ -17,6 +18,7 @@ def main(subj_id):
         my_Exp.init_run()
         my_Exp.run()
     return
+
 
 if __name__ == "__main__":
     main('subject-00')

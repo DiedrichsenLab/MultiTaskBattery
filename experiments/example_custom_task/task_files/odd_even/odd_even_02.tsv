@@ -1,0 +1,9 @@
+trial_num	digit	correct_response	trial_dur	iti_dur	start_time	end_time	display_trial_feedback
+0	8	2	2.0	0.5	0.0	2.5	True
+1	4	2	2.0	0.5	2.5	5.0	True
+2	3	1	2.0	0.5	5.0	7.5	True
+3	2	2	2.0	0.5	7.5	10.0	True
+4	4	2	2.0	0.5	10.0	12.5	True
+5	2	2	2.0	0.5	12.5	15.0	True
+6	3	1	2.0	0.5	15.0	17.5	True
+7	6	2	2.0	0.5	17.5	20.0	True

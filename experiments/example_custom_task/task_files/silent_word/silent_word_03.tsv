@@ -1,0 +1,9 @@
+trial_num	word	trial_dur	start_time	end_time	display_trial_feedback
+0	river	2.5	0.0	2.5	False
+1	river	2.5	2.5	5.0	False
+2	apple	2.5	5.0	7.5	False
+3	shadow	2.5	7.5	10.0	False
+4	piano	2.5	10.0	12.5	False
+5	forest	2.5	12.5	15.0	False
+6	meadow	2.5	15.0	17.5	False
+7	thunder	2.5	17.5	20.0	False
