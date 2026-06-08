@@ -7,14 +7,6 @@ from pathlib import Path
 import pandas as pd
 import numpy as np
 import random
-import importlib.metadata as _importlib_metadata
-_orig_entry_points = _importlib_metadata.entry_points
-def _patched_entry_points(group=None, **kwargs):
-    result = _orig_entry_points(**kwargs)
-    if group is not None:
-        return result.get(group, [])
-    return result
-_importlib_metadata.entry_points = _patched_entry_points
 from psychopy import prefs
 prefs.hardware['audioLib'] = ['sounddevice']
 from psychopy import visual, sound, core, event
@@ -26,8 +18,6 @@ from moviepy.audio.io.AudioFileClip import AudioFileClip
 import gc
 import math
 import json
-import soundfile as sf
-import sounddevice as sd
 
 
 class Task:
