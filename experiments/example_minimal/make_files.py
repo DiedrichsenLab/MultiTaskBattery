@@ -1,3 +1,4 @@
+import inspect
 import MultiTaskBattery.task_file as tf
 import MultiTaskBattery.utils as ut
 import constants as const
@@ -24,10 +25,10 @@ for r in range(1, num_runs + 1):
         cl = tf.get_task_class(task)
         myTask = getattr(tf, cl)(const)
 
-        # Add run number if necessary
+        # Only pass run_number if make_task_file actually accepts it.
         args = {}
-        if myTask.name not in ut.tasks_without_run_number:
-            args.update({'run_number': r})
+        if 'run_number' in inspect.signature(myTask.make_task_file).parameters:
+            args['run_number'] = r
 
         # Make task file
         myTask.make_task_file(file_name=tfile, **args)

@@ -4,6 +4,10 @@ import pandas as pd
 import MultiTaskBattery.task_blocks as tasks
 import MultiTaskBattery.task_file as task_files
 
+# DEPRECATED: kept for backwards compatibility with external user scripts.
+# make_files.py no longer consults this list — instead it inspects each task's
+# make_task_file signature for a run_number parameter. To opt your task out of
+# receiving a run_number, simply omit it from the signature.
 tasks_without_run_number = ['n_back', 'verb_generation', 'rest', 'tongue_movement',
                             'oddball', 'demand_grid', 'demand_grid_easy_diff','finger_sequence', 'finger_sequence_surprise', 'flexion_extension',
                             'visual_search', 'serial_reaction_time', 'rest_surprise', 'rest_surprise_images', 'rest_surprise_sound_images','temp_deviant']

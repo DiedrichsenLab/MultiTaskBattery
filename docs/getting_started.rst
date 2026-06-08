@@ -7,21 +7,25 @@ The repository is organized into the following main folders:
 
 - **MultiTaskBattery**: Contains the core Python modules and classes needed to run tasks.
 - **stimuli**: Stores the stimuli used in experiments, organized into subfolders for each task (e.g., `n_back` for n-back tasks).
-- **experiments**: Stores experiment-specific folders, each containing the necessary configuration and scripts.
+- **experiments**: Stores experiment examples that you can use as a starting point. You can place your own experiment folder here too, but we recommend keeping it in a separate local folder on your machine instead.
 
 ::
 
 |-MultiTaskBattery: Main Python modules and classes
-|-Stimuli: Stimuli used in the experiment
+|-stimuli: Stimuli used in the experiments
 |  |-n_back: Stimuli for n_back tasks
 |     |- ...
-|-experiments: Folder for each experiment
-|  |- example_experiment: Specific Experiment (example)
-|     |-run.py: Your main Python program
-|     |-constants.py: Constants for the experiment setup / scanner
-|     |-run_files: Files specifying which tasks are done in which run (and which order)
-|     |-task_files: Files specifying which trials are done for each task block
-|     |-data: Data files for each subject
+|-experiments: Example experiments to use as a starting point
+|  |- example_minimal: Minimal experiment using only built-in tasks
+|  |   |-run.py: Main Python program
+|  |   |-constants.py: Experiment / scanner configuration
+|  |   |-run_files: Files specifying which tasks are done in which run (and which order)
+|  |   |-task_files: Files specifying which trials are done for each task block
+|  |   |-data: Data files for each subject
+|  |- example_custom_task: Same as example_minimal, plus locally defined custom tasks
+|      |-my_tasks.py: Custom Task and TaskFile classes for this experiment
+|      |-task_table.tsv: Local task table extending the framework's
+|      |- ... (same other files as example_minimal)
 
 Implemented tasks
 -----------------
@@ -39,7 +43,7 @@ The experiment operates on two levels of control: *run files* and *task files*.
 
 - **Task files (`task_xx.tsv`)**: These files define the precise trial sequence for each task, including the stimuli and any relevant parameters.
 
-Below are examples from the `experiments/example_experiment/run_files` and `experiments/example_experiment/task_files` folders illustrating the relationship between run and task files:
+Below are examples from the `experiments/example_minimal/run_files` and `experiments/example_minimal/task_files` folders illustrating the relationship between run and task files:
 
 .. image:: images/run_vs_task_file.png
    :width: 100%
@@ -47,7 +51,7 @@ Below are examples from the `experiments/example_experiment/run_files` and `expe
 constants.py
 ------------
 
-The `constants.py` file in the `experiments/example_experiment/` folder contains all the essential configurations required to set up and run the experiment. Below are the key components:
+The `constants.py` file in the `experiments/example_minimal/` folder contains all the essential configurations required to set up and run the experiment. Below are the key components:
 
 - **Experiment Name**: 
   The `exp_name` variable specifies the name of the experiment.
@@ -77,7 +81,7 @@ The `constants.py` file in the `experiments/example_experiment/` folder contains
 
 run.py
 ------
-The `run.py` script in the `example_experiment/` folder serves as the main program for running the experiment. It controls the entire process, from initialization to data saving. Below are its key components:
+The `run.py` script in the `example_minimal/` folder serves as the main program for running the experiment. It controls the entire process, from initialization to data saving. Below are its key components:
 
 - **Experiment Initialization**:  
   The `Experiment` object is created using configurations defined in `constants.py`.
@@ -98,32 +102,37 @@ The `run.py` script in the `example_experiment/` folder serves as the main progr
   Upon completion, the experimental data is saved in the `data` folder under a filename that includes the subject ID entered in the GUI.
 
 
-Running the Example Experiment
-------------------------------
+Running the Example Experiments
+-------------------------------
 
-The `example_experiment` includes the following tasks:
+The repository includes two example experiments:
 
-- Finger Sequence  
-- n-back  
-- Demand Grid  
-- Auditory Narrative  
-- Sentence Reading  
-- Verb Generation  
-- Action Observation  
-- Tongue Movement  
-- Theory of Mind  
-- Rest  
+- **example_minimal** — uses only built-in tasks from the shared MultiTaskBattery package. Start here.
+- **example_custom_task** — same structure as `example_minimal`, but also defines two local custom tasks (in ``my_tasks.py``) and registers them via ``task_modules`` in ``constants.py``. Use this as a reference when you want to add your own tasks without editing the shared package. See :doc:`creating_tasks` for the full pattern.
 
-To run the `example_experiment`, follow these steps:
+The `example_minimal` experiment includes the following tasks:
+
+- Finger Sequence
+- n-back
+- Demand Grid
+- Auditory Narrative
+- Sentence Reading
+- Verb Generation
+- Action Observation
+- Tongue Movement
+- Theory of Mind
+- Rest
+
+To run `example_minimal`, follow these steps:
 
 1. **Configure `constants.py`**:
-   Ensure the file `experiments/example_experiment/constants.py` is properly configured. Adjust settings such as screen resolution, response keys, and other parameters as needed to match your experiment's requirements.
+   Ensure the file `experiments/example_minimal/constants.py` is properly configured. Adjust settings such as screen resolution, response keys, and other parameters as needed to match your experiment's requirements.
 
 2. **Generate run and task files**:
-   Run `experiments/example_experiment/make_files.py` to generate the run and task files. This creates the `.tsv` files in `run_files/` and `task_files/` that define the task order and trial sequences. The example experiment comes with pre-generated files, but for a new experiment you must run this step first.
+   Run `experiments/example_minimal/make_files.py` to generate the run and task files. This creates the `.tsv` files in `run_files/` and `task_files/` that define the task order and trial sequences. The example experiment comes with pre-generated files, but for a new experiment you must run this step first.
 
 3. **Run the Experiment**:
-   Execute the `run.py` script located in `experiments/example_experiment/run.py`. The output files will be saved in the `data` folder, with filenames that include the subject ID provided during the experiment.
+   Execute the `run.py` script located in `experiments/example_minimal/run.py`. The output files will be saved in the `data` folder, with filenames that include the subject ID provided during the experiment.
 
 
 Feedback
