@@ -34,8 +34,8 @@ Create a file called ``constants.py`` in the project folder. This file contains 
     # Optional: list of local Python modules that hold custom Task / TaskFile
     # classes. Uncomment and import your module if you want to add custom
     # tasks without editing the shared MultiTaskBattery package. See
-    # creating_tasks for details and experiments/example_custom_task for a
-    # working example.
+    # the "Implementing new tasks" page for details and
+    # experiments/example_custom_task for a working example.
     # import my_tasks
     # task_modules = [my_tasks]
 
