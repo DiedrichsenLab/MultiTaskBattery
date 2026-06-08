@@ -3,11 +3,11 @@
 Mixes built-in MTB tasks (n_back, rest) with two custom tasks defined locally
 in my_tasks.py.
 
-For each task, the class name comes from task_table.tsv (e.g.
-'SilentWord'). The matching TaskFile class is found by first trying the
-local my_tasks module under the name '<class>File' (e.g. 'SilentWordFile');
-if not present, it falls back to the framework's task_file module under
-the bare class name.
+Class lookups go through ut.get_task_class (runtime) and
+ut.get_task_file_class (file generation). Both consult const.task_modules
+first, then fall back to the shared MultiTaskBattery package. The
+'<class>File' suffix convention for custom TaskFile classes is encapsulated
+inside ut.get_task_file_class — make_files.py doesn't need to know about it.
 
 Whether to pass run_number is decided by inspecting each task's
 make_task_file signature, so custom tasks don't need to be added to
@@ -18,7 +18,6 @@ import inspect
 import MultiTaskBattery.task_file as tf
 import MultiTaskBattery.utils as ut
 import constants as const
-import my_tasks as mt
 
 
 tasks = ['n_back', 'rest', 'silent_word', 'odd_even']
@@ -35,10 +34,8 @@ for r in range(1, num_runs + 1):
 
     for task, tfile in zip(tasks, tfiles):
         cl = tf.get_task_class(task, exp_dir=const.exp_dir)
-        try:
-            myTask = getattr(mt, cl + 'File')(const)
-        except AttributeError:
-            myTask = getattr(tf, cl)(const)
+        TaskFileCls = ut.get_task_file_class(const, cl)
+        myTask = TaskFileCls(const)
 
         args = {}
         if 'run_number' in inspect.signature(myTask.make_task_file).parameters:

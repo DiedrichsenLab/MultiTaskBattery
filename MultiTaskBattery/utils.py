@@ -2,6 +2,7 @@
 import os
 import pandas as pd
 import MultiTaskBattery.task_blocks as tasks
+import MultiTaskBattery.task_file as task_files
 
 tasks_without_run_number = ['n_back', 'verb_generation', 'rest', 'tongue_movement',
                             'oddball', 'demand_grid', 'demand_grid_easy_diff','finger_sequence', 'finger_sequence_surprise', 'flexion_extension',
@@ -70,3 +71,31 @@ def get_task_class(const, class_name):
         return getattr(tasks, class_name)
     else:
         raise NameError(f"Task class {class_name} not found in any of the task modules, make sure to add the module to the list of task_modules in constants.py")
+
+def get_task_file_class(const, class_name):
+    """ Searches for the TaskFile class in the list of task modules and returns it.
+    Mirrors get_task_class but for the file-generation side. Custom TaskFile
+    classes follow a '<class>File' naming convention so they can coexist with
+    their matching Task class in the same module (e.g. SilentWord and
+    SilentWordFile in my_tasks.py).
+
+    Args:
+        const (constant object):
+            constants.py object containing the task_modules list
+        class_name (str):
+            base class name from task_table.tsv (e.g. 'SilentWord')
+    Returns:
+        TaskFileClass (class):
+            the TaskFile class that was searched for
+    """
+    # First tries '<class>File' in the custom list of task modules
+    if hasattr(const, 'task_modules'):
+        suffixed = class_name + 'File'
+        for module in const.task_modules:
+            if hasattr(module, suffixed):
+                return getattr(module, suffixed)
+    # Otherwise fall back to the framework's task_file module (bare class name)
+    if hasattr(task_files, class_name):
+        return getattr(task_files, class_name)
+    else:
+        raise NameError(f"TaskFile class {class_name} (or {class_name}File) not found in any task module, make sure to add the module to task_modules in constants.py")
