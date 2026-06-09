@@ -1,6 +1,0 @@
-task_name	task_code	task_file	instruction_dur	start_time	end_time
-theory_of_mind_diff_reward	tom_diff_reward	theory_of_mind_diff_reward_17.tsv	5	3	38
-temp_deviant	temp_deviant	temp_deviant_17.tsv	5	38	73
-finger_sequence_surprise	fingseqsurp	finger_sequence_surprise_17.tsv	5	73	108
-faux_pas	faux_pas	faux_pas_17.tsv	5	108	143
-demand_grid_easy_diff	dmgrid_easy_diff	demand_grid_easy_diff_17.tsv	5	143	186

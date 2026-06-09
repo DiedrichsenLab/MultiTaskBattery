@@ -3,7 +3,7 @@ import task_olive as to
 import MultiTaskBattery.utils as ut
 import constants as const
 
-#tasks = ['rest_surprise_sound_images','finger_sequence_surprise','temp_deviant','theory_of_mind_diff_reward','demand_grid_easy_diff']
+#tasks = ['faux_pas','finger_sequence_surprise','temp_deviant','theory_of_mind_diff_reward','demand_grid_easy_diff','visual_search']
 
 tasks = ['rest_surprise_sound_images', 'finger_sequence_surprise','temp_deviant', 'theory_of_mind_diff_reward', 'demand_grid_easy_diff',
          'verb_generation','spatial_navigation','rest','movie','faux_pas','action_observation','tongue_movement','visual_search']
@@ -18,11 +18,11 @@ for task in tasks:
     ut.dircheck(const.task_dir / task)
 
 # Generate run and task files
-for r in range(17,18):
+for r in range(18,19):
     tfiles = [f'{task}_{r:02d}.tsv' for task in tasks]
     T = tf.make_run_file(tasks, tfiles, offset=3, exp_dir=const.exp_dir)
     T.loc[T.index[-1], 'end_time'] += 8
-    T.to_csv(const.run_dir / f'psub1_full_right_{r:02d}.tsv', sep='\t', index=False)
+    T.to_csv(const.run_dir / f'psub1_full_left_{r:02d}.tsv', sep='\t', index=False)
 
     # Generate a target file for each run
     for task, tfile in zip(tasks, tfiles):

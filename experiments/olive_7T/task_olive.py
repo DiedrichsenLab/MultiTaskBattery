@@ -970,8 +970,8 @@ class TheoryOfMindDiffRewardFile(TaskFile):
 
         # Ignore stim_list and stimulus_seed: selection is driven entirely by
         # the provided stim_file (if any) or by run_number-based slicing.
-        start_row = (run_number - 1) * n_trials
-        end_row = run_number * n_trials - 1
+        start_row = ((run_number - 1) * n_trials) % len(stim)
+        end_row = start_row + n_trials - 1
         stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
 
         n_actual = min(n_trials, len(stim))
@@ -1159,7 +1159,8 @@ class TempDeviant(Task):
 
             self.window.flip()
 
-        yes_key, no_key = (1, 2) if self.const.responding_hand == 'right' else (4, 3)
+        yes_key = trial['key_yes']
+        no_key = trial['key_no']
         response_text = visual.TextStim(
             self.window,
             text=(
@@ -1192,6 +1193,8 @@ class TempDeviantFile(TaskFile):
 
     def make_task_file(
         self,
+        hand=None,
+        responses=None,  # right: [1,2] (a=yes, s=no); left: [4,3] (f=yes, d=no)
         task_dur=30,
         sequence_dur=13,
         response_dur=2,
@@ -1200,7 +1203,11 @@ class TempDeviantFile(TaskFile):
         display_trial_feedback=True,
         file_name=None
     ):
-        
+        if hand is None:
+            hand = getattr(self.const, 'responding_hand', 'right')
+        if responses is None:
+            responses = [1, 2] if hand == 'right' else [4, 3]
+
         trial_info = []
 
         trial_total_dur = sequence_dur + response_dur
@@ -1231,6 +1238,9 @@ class TempDeviantFile(TaskFile):
             )
 
             trial['trial_num'] = n
+            trial['hand'] = hand
+            trial['key_yes'] = responses[0]
+            trial['key_no'] = responses[1]
             trial['frequency'] = frequency
             trial['stim_interval'] = isi
             trial['trial_duration'] = sequence_dur
