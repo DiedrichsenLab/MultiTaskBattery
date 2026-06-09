@@ -811,7 +811,7 @@ class TheoryOfMindDiffReward(Task):
                 text = f"+{reward_cue}"
                 color = 'green'
             else:
-                text = "-1"
+                text = "X"
                 color = 'red'
             feedback_stim = visual.TextStim(
                 self.window,
