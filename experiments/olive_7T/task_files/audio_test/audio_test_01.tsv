@@ -1,0 +1,2 @@
+trial_num	stim	stim_dir	trial_dur	iti_dur	display_trial_feedback	start_time	end_time
+0	degraded_passage_10.wav	degraded_passage	30	0	False	0	30

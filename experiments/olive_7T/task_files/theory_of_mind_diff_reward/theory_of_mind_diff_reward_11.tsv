@@ -2,8 +2,8 @@ key_true	key_false	trial_type	trial_num	hand	trial_dur	iti_dur	story	question	co
 4	3	1	0	left	15	0	When they were children, Paul and Tom  would swing on the trees in their garden.  By the time they were teenagers, all of the trees had been chopped down.	"Today, there are no more trees
 in the garden
 
-True or False"	belief	True	10	4	0.9	1	+1	1	True	0	15
+True or False"	belief	True	10	4	0.9	3	+3	1	True	0	15
 4	3	0	1	left	15	0	Jessie leaves her chemistry book at home. Her mother, knowing that she has a chemistry exam that afternoon, brings it to school and leaves it in Jessie's locker. 	"Jessie opens her schoolbag and takes
 out the chemistry book
 
-True or False"	photo	False	10	4	0.9	3	+3	1	True	15	30
+True or False"	photo	False	10	4	0.9	1	+1	1	True	15	30

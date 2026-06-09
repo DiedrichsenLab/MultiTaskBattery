@@ -7,3 +7,7 @@ run_num	key_yes	key_no	trial_num	hand	trial_dur	iti_dur	story	question	options	t
 “It’s too small,” he said.
 “Not to worry,” the salesman replied. “We’ll have larger sizes next week.”"	Did anyone say something they shouldn't have said or something awkward?	Yes, No	2	social	10	4	1.25	True	0	15	145.00035195832606	0	145.000352916657	0		False
 1	1	2	1	right	14	1	Bob went to the barber for a haircut. “Just take about an inch off,” Bob said. The barber cut the front uneven, so he had to go shorter. “It’s shorter than you wanted,” he said. “Oh well,” Bob replied, “it’ll grow out.”	Did anyone say something they shouldn't have said or something awkward?	Yes, No	2	social	10	4	1.25	True	15	30	160.00003875000402	0	160.00003974989522	0		False
+1	4	3	0	left	14	1	"Vicky was at Oliver’s party, talking to him when a neighbor approached. The woman said, “Hello. I’m Maria, what’s your name?”
+“I’m Vicky,” she replied.
+“Would anyone like a drink?” Oliver asked."	Did anyone say something they shouldn't have said or something awkward?	Yes, No	2	social	10	4	1.25	True	0	15	428.0002747082617	0	428.00027562491596	3	1.5061759583186358	True
+1	4	3	1	left	14	1	"Helen's husband planned a surprise birthday party. He warned Sarah, ""Don't tell Helen."" While with Helen, Sarah spilled coffee on her dress and said, ""Oh! I was wearing this to your party!"" ""What party?"" Said Helen."	Did anyone say something they shouldn't have said or something awkward?	Yes, No	1	social	10	4	1.25	True	15	30	443.00003474997357	0	443.00003587501124	4	1.9780956250615418	True

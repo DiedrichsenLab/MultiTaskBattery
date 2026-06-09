@@ -1367,3 +1367,53 @@ class MovieFile(TaskFile):
 
         return trial_info
 
+
+class AudioTest(Task):
+    """Plays a single audio file via sounddevice for pre-scan sound quality testing."""
+
+    def __init__(self, info, screen, ttl_clock, const, subj_id):
+        super().__init__(info, screen, ttl_clock, const, subj_id)
+
+    def display_instructions(self):
+        self.instruction_text = 'Audio Test\n\nListen to the audio.'
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text,
+                                       height=self.const.instruction_text_height, color=[-1, -1, -1])
+        instr_visual.draw()
+        self.window.flip()
+
+    def run_trial(self, trial):
+        self.screen.fixation_cross()
+        audio_path = self.const.stim_dir / trial['stim_dir'] / trial['stim']
+        data, sr = sf.read(str(audio_path))
+        sd.play(data, sr)
+        self.ttl_clock.wait_until(self.ttl_clock.get_time() + trial['trial_dur'])
+        sd.stop()
+        return trial
+
+
+class AudioTestFile(TaskFile):
+    def __init__(self, const):
+        super().__init__(const)
+        self.name = 'audio_test'
+
+    def make_task_file(self,
+                       stim='degraded_passage_10.wav',
+                       stim_dir='degraded_passage',
+                       task_dur=30,
+                       file_name=None):
+        trial = {
+            'trial_num': 0,
+            'stim': stim,
+            'stim_dir': stim_dir,
+            'trial_dur': task_dur,
+            'iti_dur': 0,
+            'display_trial_feedback': False,
+            'start_time': 0,
+            'end_time': task_dur,
+        }
+        trial_info = pd.DataFrame([trial])
+        if file_name is not None:
+            ut.dircheck(self.task_dir / self.name)
+            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
+        return trial_info
+

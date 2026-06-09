@@ -5,7 +5,7 @@ import MultiTaskBattery.task_blocks as tasks
 
 tasks_without_run_number = ['n_back', 'verb_generation', 'rest', 'tongue_movement',
                             'oddball', 'demand_grid', 'demand_grid_easy_diff','finger_sequence', 'finger_sequence_surprise', 'flexion_extension',
-                            'visual_search', 'serial_reaction_time', 'rest_surprise', 'rest_surprise_images', 'rest_surprise_sound_images','temp_deviant']
+                            'visual_search', 'serial_reaction_time', 'rest_surprise', 'rest_surprise_images', 'rest_surprise_sound_images','temp_deviant','audio_test']
 
 def dircheck(path2dir):
     """

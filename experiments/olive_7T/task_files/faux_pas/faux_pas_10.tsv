@@ -1,7 +1,7 @@
 key_yes	key_no	trial_num	hand	trial_dur	iti_dur	story	question	options	trial_type	condition	story_dur	question_dur	text_height	display_trial_feedback	start_time	end_time
-1	2	0	right	14	1	"Richard backed his new red Peugeot into his neighbor Ted’s old Volvo, leaving only a scratch above the wheel. He knocked on Ted’s door, saying, “I’m sorry about the scratch.”
+4	3	0	left	14	1	"Richard backed his new red Peugeot into his neighbor Ted’s old Volvo, leaving only a scratch above the wheel. He knocked on Ted’s door, saying, “I’m sorry about the scratch.”
 Ted looked and said, “Don’t worry. It was an accident.”"	Did anyone say something they shouldn't have said or something awkward?	Yes, No	2	social	10	4	1.25	True	0	15
-1	2	1	right	14	1	"Louise went to the butcher and asked, “Do you have any free-range chickens?”
+4	3	1	left	14	1	"Louise went to the butcher and asked, “Do you have any free-range chickens?”
 The butcher nodded and began wrapping a roasted chicken.
 “Excuse me,” Louise said, “I asked for free-range.”
 “Oh sorry,” the butcher replied, “we’re all out.”"	Did anyone say something they shouldn't have said or something awkward?	Yes, No	2	social	10	4	1.25	True	15	30

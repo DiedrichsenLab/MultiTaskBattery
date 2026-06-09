@@ -1,5 +1,5 @@
 key_yes	key_no	trial_num	hand	trial_dur	iti_dur	story	question	options	trial_type	condition	story_dur	question_dur	text_height	display_trial_feedback	start_time	end_time
-1	2	0	right	14	1	"Jim was shopping for a shirt to match his suit. He found the right color but it didn’t fit.
+4	3	0	left	14	1	"Jim was shopping for a shirt to match his suit. He found the right color but it didn’t fit.
 “It’s too small,” he said.
 “Not to worry,” the salesman replied. “We’ll have larger sizes next week.”"	Did anyone say something they shouldn't have said or something awkward?	Yes, No	2	social	10	4	1.25	True	0	15
-1	2	1	right	14	1	Bob went to the barber for a haircut. “Just take about an inch off,” Bob said. The barber cut the front uneven, so he had to go shorter. “It’s shorter than you wanted,” he said. “Oh well,” Bob replied, “it’ll grow out.”	Did anyone say something they shouldn't have said or something awkward?	Yes, No	2	social	10	4	1.25	True	15	30
+4	3	1	left	14	1	Bob went to the barber for a haircut. “Just take about an inch off,” Bob said. The barber cut the front uneven, so he had to go shorter. “It’s shorter than you wanted,” he said. “Oh well,” Bob replied, “it’ll grow out.”	Did anyone say something they shouldn't have said or something awkward?	Yes, No	2	social	10	4	1.25	True	15	30
