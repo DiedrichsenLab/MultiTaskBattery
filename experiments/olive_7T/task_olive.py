@@ -1343,8 +1343,8 @@ class MovieFile(TaskFile):
         stim = pd.read_csv(self.stim_dir / 'movie' / 'movie.csv')
         stim = stim[stim['condition'] == 'romance'].reset_index(drop=True)
 
-        start_row = (run_number - 1) * n_trials
-        end_row = run_number * n_trials - 1
+        start_row = ((run_number - 1) * n_trials) % len(stim)
+        end_row = start_row + n_trials - 1
         stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
 
         for n in range(n_trials):
