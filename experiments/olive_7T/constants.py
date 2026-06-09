@@ -40,7 +40,7 @@ eye_tracker = False                                     # do you want to do  eye
 debug = False                                           # set to True for debugging
 
 # Responding hand: 'right' uses 'a'=yes/'s'=no; 'left' uses 'f'=yes/'d'=no
-responding_hand = 'right'
+responding_hand = 'left'
 
 # Screen settings for subject display
 screen = {}

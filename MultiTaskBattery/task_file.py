@@ -117,6 +117,7 @@ class TaskFile():
         Args:
             const: module for constants
         """
+        self.const              = const
         self.exp_name           = const.exp_name
         self.task_dir           = const.task_dir
         self.stim_dir           = const.stim_dir
@@ -1119,13 +1120,17 @@ class VisualSearch(TaskFile):
         self.name = 'visual_search'
 
     def make_task_file(self,
-                        hand = 'right',  #to recode for alternating hands: put left here, and put 3,4 in responses
-                        responses = [1,2], # 1 = match, 2 = no match
+                        hand = None,
+                        responses = None, # right: [1,2] (a=present, s=absent); left: [4,3] (f=present, d=absent)
                         task_dur =  30,
                         trial_dur = 2,
                         iti_dur   = 0.5,
                         easy_prob=0.5,
                         file_name = None ):
+        if hand is None:
+            hand = getattr(self.const, 'responding_hand', 'right')
+        if responses is None:
+            responses = [1, 2] if hand == 'right' else [4, 3]
         n_trials = int(np.floor(task_dur / (trial_dur+iti_dur)))
         trial_info = []
         t = 0
@@ -1631,8 +1636,8 @@ class FauxPas(TaskFile):
         self.half_assigned = True
         self.repeat_stimuli_from_previous_runs = True
 
-    def make_task_file(self, hand='right',
-                    responses = [1,2], # 1 = True, 2 = False
+    def make_task_file(self, hand=None,
+                    responses = None, # right: [1,2] (a=yes, s=no); left: [4,3] (f=yes, d=no)
                     run_number=None,
                     task_dur=30,
                     trial_dur=14,
@@ -1647,6 +1652,10 @@ class FauxPas(TaskFile):
                     stimulus_seed=None,
                     exclude_stimuli=None):
 
+        if hand is None:
+            hand = getattr(self.const, 'responding_hand', 'right')
+        if responses is None:
+            responses = [1, 2] if hand == 'right' else [4, 3]
 
         # count number of trials
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))

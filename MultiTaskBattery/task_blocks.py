@@ -2055,7 +2055,8 @@ class FauxPas(Task):
                                                            trial['question_dur'],
                                                            show_last_seconds=3,
                                                            current_stimuli=question_stim)
-        trial['correct'] = (trial['response'] == trial['trial_type'])
+        # trial_type 1 = Yes (corr_key[0]), trial_type 2 = No (corr_key[1])
+        trial['correct'] = (trial['response'] == self.corr_key[trial['trial_type'] - 1])
 
 
         # display trial feedback
