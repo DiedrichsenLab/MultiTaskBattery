@@ -1,0 +1,2 @@
+run_num	trial_num	trial_dur	iti_dur	display_trial_feedback	stim	condition	start_time	end_time	real_start_time	start_ttl	start_ttl_time
+1	0	30	0	False	romance_01.mov	romance	0	30	8.00037920824252	0	8.00038016680628
