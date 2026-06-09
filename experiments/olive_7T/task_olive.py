@@ -1397,8 +1397,8 @@ class AudioTestFile(TaskFile):
         self.name = 'audio_test'
 
     def make_task_file(self,
-                       stim='degraded_passage_10.wav',
-                       stim_dir='degraded_passage',
+                       stim='narrative_08.wav',
+                       stim_dir='auditory_narrative',
                        task_dur=30,
                        file_name=None):
         trial = {
