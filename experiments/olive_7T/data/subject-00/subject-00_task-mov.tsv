@@ -19,3 +19,5 @@ run_num	trial_num	trial_dur	iti_dur	display_trial_feedback	stim	condition	start_
 3	0	30	0	False	romance_14.mov	romance	0	30	8.000237833242863	0	8.000238791806623
 4	0	30	0	False	romance_15.mov	romance	0	30	8.000206000171602	0	8.0002069582697
 5	0	30	0	False	romance_16.mov	romance	0	30	8.000463583506644	0	8.000464541604742
+13	0	30	0	False	romance_01.mov	romance	0	30	253.00025237514637	0	253.00025329180065
+14	0	30	0	False	romance_02.mov	romance	0	30	358.000210291706	0	358.00021125003695

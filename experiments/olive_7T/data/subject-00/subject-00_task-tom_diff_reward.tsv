@@ -285,4 +285,19 @@ True or False "	belief	True	10	4	0.9	3	3	1	True	0	15	8.000822666566819	0	8.00082
 1	4	3	1	1	left	15	0	At the time a portrait was drawn of a young man, he had short brown hair and no facial hair. Now the man's hair is long and gray and so is his beard.  	"Today the length of the man's hair
 is long.
 
-True or False "	photo	True	10	4	0.9	1	1	1	True	15	30	23.00065541663207	0	23.00065645831637	4	1.5956095831934363	True	1
+True or False "	photo	True	10	4	0.9	1	1	1	True	15	30	23.00065541663207	0	23.00065645831637	4	1.5956095831934365	True	1
+13	1	2	0	0	right	15	0	Michael told Andrew that he was going hiking for the day. An hour  into his walk, Michael hurts his leg and returns home	"Michael returns home that evening 
+after a long day of hiking
+
+True or False"	belief	False	10	4	0.9	1	1	1	True	0	15	148.00085233338177	0	148.00085337506607	2	3.1567321666516364	True	1
+13	1	2	1	1	right	15	0	Tom leaves the house without letting  the dog out. Tom's neighbour hears  the dog barking and lets her into  the backyard.  Later, Tom arrives home from work. 	"Tom finds the dog in the backyard
+
+True or False"	photo	True	10	4	0.9	3	3	1	True	15	30	163.000607291935	0	163.00060837506317	1	1.4221264999359846	True	3
+14	4	3	0	0	left	15	0	Amy leaves her sister in the library while she goes to class. Sometime thereafter, Amy's sister leaves the library to meet her friend on the other side of town. 	"Amy returns after class and 
+finds her sister in the library
+
+True or False"	belief	False	10	4	0.9	3	3	1	True	0	15	43.001094500068575	0	43.001095541752875	3	2.7351956251077354	True	3
+14	4	3	0	1	left	15	0	Paintings of the town in the early nineteenth century portray a bustling marketplace in the town square. In recent  years, the town square has been ruined by warfare. 	"Paintings of the town square depict 
+ruins obliterated by warfare
+
+True or False"	photo	False	10	4	0.9	1	1	1	True	15	30	58.000659625045955	0	58.000660750083625	3	1.795552708208561	True	1

@@ -1,0 +1,40 @@
+run_num	key_yes	key_no	trial_num	hand	trial_dur	iti_dur	story	question	options	trial_type	condition	story_dur	question_dur	text_height	display_trial_feedback	start_time	end_time	real_start_time	start_ttl	start_ttl_time	response	rt	correct
+1	4	3	0	left	14	1	Joanne, who had a big role in last year’s play, auditioned for the lead this spring. Checking the cast list, she saw she’d gotten a minor role. When she ran into her boyfriend he said “You must be disappointed.” Joan replied “Yes, I am”	Did Joanne get a minor role?	Yes, No	1	control	10	4	1.25	True	0	15	78.0002334585879	0	78.00023445859551	4	2.298546874895692	True
+1	4	3	1	left	14	1	Joe found a sailing book at the library. After checking his wallet he realized he’d left his library card at home. “I’m sorry,” he said to the librarian. She replied, “That’s OK. If you’re in the computer, you can check out with your driving license”	Did Joe check out the book?	Yes, No	1	control	10	4	1.25	True	15	30	93.00006333342752	0	93.00006537511943	4	2.4861169999931008	True
+2	4	3	0	left	14	1	"At Fernhaven Elementary, Christine entered a story competition but didn’t win. Her classmate Jake won first prize.
+Sitting with him the next day, Jake said, “The other stories were terrible.”
+Christine asked, “Where will you put your trophy?”"	Did Christine’s story win anything?	Yes, No	2	control	10	4	1.25	True	0	15	8.000291000120342	0	8.000292000127956	4	2.02607366675511	False
+2	4	3	1	left	14	1	"Tim spilled coffee on the floor at a restaurant. The waiter said, “I’ll get you another cup,” and left.
+Tim approached Jack, a customer by the cashier, and asked, “I spilled coffee by my table. Can you mop it up?”"	Did Jack spill the coffee?	Yes, No	2	control	10	4	1.25	True	15	30	23.000065250089392	0	23.00008233357221	3	1.3848230415023863	True
+3	4	3	0	left	14	1	"Richard backed his new red Peugeot into his neighbor Ted’s old Volvo, leaving only a scratch above the wheel. He knocked on Ted’s door, saying, “I’m sorry about the scratch.”
+Ted looked and said, “Don’t worry. It was an accident.”"	Did Ted buy a new car?	Yes, No	2	control	10	4	1.25	True	0	15	8.00023474986665	0	8.00023570843041	4	1.8996129999868572	False
+3	4	3	1	left	14	1	"Louise went to the butcher and asked, “Do you have any free-range chickens?”
+The butcher nodded and began wrapping a roasted chicken.
+“Excuse me,” Louise said, “I asked for free-range.”
+“Oh sorry,” the butcher replied, “we’re all out.”"	Was Louise at school?	Yes, No	2	control	10	4	1.25	True	15	30	23.000029791612175	0	23.00003841659054	3	2.3544509999919683	True
+4	4	3	0	left	14	1	Liam ordered a cappuccino at the café. When his drink arrived, he saw it was a latte. “Excuse me,” he said, “I ordered a cappuccino.” The barista apologized and quickly made the right drink.	Did Liam get the correct drink first?	Yes, No	2	control	10	4	1.25	True	0	15	78.00024637510069	0	78.0002473751083	3	2.3304634999949485	True
+4	4	3	1	left	14	1	At the office, Jake saw his coworker Lily with a big smile. “Congrats on your promotion!” he said. Lily’s face fell. “I didn’t get it,” she replied. “Oh,” Jake muttered, and walked away.	Did Lily get the promotion?	Yes, No	2	control	10	4	1.25	True	15	30	93.0000618332997	0	93.00006337510422	3	1.421922458568588	True
+5	4	3	0	left	14	1	Mia got home and reached into her bag, but her keys weren’t there. She checked again and sighed. “I must have left them at the café,” she thought. She called her friend, who found them on the table.	Did Mia find her keys at home?	Yes, No	2	control	10	4	1.25	True	0	15	8.000282791676	0	8.000283791450784	3	1.7190203331410885	True
+5	4	3	1	left	14	1	Laura gave her friend Nina a handmade scarf for her birthday. Nina unwrapped it and said, “Oh… this is nice. My grandma used to make scarves like these, but I never really wore them.” Laura forced a smile.	Did Nina like the gift?	Yes, No	2	control	10	4	1.25	True	15	30	23.000071083428335	0	23.000089708250016	3	1.279687125002965	True
+13	1	2	0	right	14	1	"Kim’s cousin Scott was coming to visit, and Kim made an apple pie for him. After dinner, she said, “I made a pie just for you.”
+“Mmmm,” Scott replied. “It smells great! I love pies—except for apple, of course.”"	Is Scott Kim's brother?	Yes, No	2	control	10	4	1.25	True	0	15	113.00020408327693	0	113.000205000164	2	2.073653666768223	True
+13	1	2	1	right	14	1	"Jeanette gave Anne a crystal bowl as a wedding gift. A year later, at Anne’s for dinner, Jeanette accidentally broke the bowl.
+“I’m sorry,” Jeanette said.
+“Don’t worry,” Anne replied. “I never liked it anyways. Someone gave it to me.”"	Did the bowl break?	Yes, No	1	control	10	4	1.25	True	15	30	128.00002716644667	0	128.0000335832592	1	1.305347458459437	True
+14	1	2	0	right	14	1	Jean West, a manager, called a staff meeting. “John Morehouse, our accountant, is very sick with cancer,” she said. The room fell silent. Robert arrived late, making a joke about illness. Jean cut him off, saying, “Let’s start the meeting.”	Was Robert late to the meeting?	Yes, No	1	control	10	4	1.25	True	0	15	113.00019737519324	0	113.00019829161464	1	1.4482243333477527	True
+14	1	2	1	right	14	1	"Mike started at a new school. While in a bathroom stall he overheard Joe and Peter at the sinks.
+“Doesn’t the new guy, Mike, look weird? And he’s so short!” Joe said.
+Mike emerged.
+“Oh hi, Mike!” Peter said. “Are you going out to play?”"	Is Mike new in the class?	Yes, No	1	control	10	4	1.25	True	15	30	128.0000263750553	0	128.00003562518395	1	1.0598802082240582	True
+15	1	2	0	right	14	1	"Eleanor, an older lady, tiredly stood waiting 20 minutes for a late bus. When it arrived there were no seats left.
+Eleanor greeted her neighbour Paul, speaking about the wait.
+A young man stood and said, “Ma’am, would you like my seat?”"	Did Eleanor get on the bus?	Yes, No	1	control	10	4	1.25	True	0	15	113.0002305416856	0	113.00023145833984	1	1.3787047083023936	True
+15	1	2	1	right	14	1	"Roger, new at the office, told Andrew, “My wife’s a lawyer.” Moments later, Claire walked into the coffee room, complaining, “Lawyers are so arrogant and greedy.”
+Andrew asked Claire to review reports.
+“Not now,” she said. “I need coffee.”"	Is Roger married?	Yes, No	1	control	10	4	1.25	True	15	30	128.00004337495193	0	128.00004433328286	1	1.0042271667625755	True
+18	1	2	0	right	14	1	"John stopped at the petrol station to fill his car. When the cashier ran his card she said ""The machine won't accept it."" ""That's funny,"" John said. ""I'll pay in cash."" He gave her fifty and said, ""I filled up with unleaded."""	Did the machine accept John's card?	Yes, No	2	control	10	4	1.25	True	0	15	288.0002237916924	0	288.0002247917	2	1.5542663333471864	True
+18	1	2	1	right	14	1	"Jill had just moved into a new flat and bought curtains for her bedroom. After decorating, her best friend Lisa visited. Jill gave her a tour and asked, “How do you like my bedroom?”
+“Those curtains are horrible,” Lisa said."""	Did Jill just move into a new flat?	Yes, No	1	control	10	4	1.25	True	15	30	303.00004329159856	0	303.0000444580801	1	1.379658833378926	True
+19	4	3	0	left	14	1	Sally, a three-year-old girl with short blonde hair was at her Aunt Carol's house. A neighbour, Mary, rang the doorbell and Carol answered. Mary looked at Sally and said, “Oh, I don’t think I’ve met this little boy. What’s your name?”	Did Sally ring the doorbell?	Yes, No	2	control	10	4	1.25	True	0	15	78.00025320821442	0	78.00025412486866	4	1.6894750418141484	False
+19	4	3	1	left	14	1	"Joan took her dog, Zack, to the park and threw a stick for him. Pam, a neighbor, passed by and asked, “Want to walk home together?”
+“Sure,” said Joan. She called Zack but he was busy chasing pigeons. “Nevermind, we’ll stay” Joan added."	Did Joan walk home with Pam?	Yes, No	2	control	10	4	1.25	True	15	30	93.00003733322956	0	93.0000382498838	4	2.085873374948278	False

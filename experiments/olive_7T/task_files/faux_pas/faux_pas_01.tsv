@@ -1,5 +1,7 @@
-key_yes	key_no	trial_num	hand	trial_dur	iti_dur	story	question	options	trial_type	condition	story_dur	question_dur	text_height	display_trial_feedback	start_time	end_time
-1	2	0	right	14	1	"Vicky was at Oliver’s party, talking to him when a neighbor approached. The woman said, “Hello. I’m Maria, what’s your name?”
+trial_num	hand	key_yes	key_no	trial_dur	iti_dur	story	question	options	trial_type	condition	story_dur	question_dur	text_height	display_trial_feedback	start_time	end_time
+0	right	1	2	14	1	"Vicky was at Oliver’s party, talking to him when a neighbor approached. The woman said, “Hello. I’m Maria, what’s your name?”
 “I’m Vicky,” she replied.
 “Would anyone like a drink?” Oliver asked."	Did anyone say something they shouldn't have said or something awkward?	Yes, No	2	social	10	4	1.25	True	0	15
-1	2	1	right	14	1	"Helen's husband planned a surprise birthday party. He warned Sarah, ""Don't tell Helen."" While with Helen, Sarah spilled coffee on her dress and said, ""Oh! I was wearing this to your party!"" ""What party?"" Said Helen."	Did anyone say something they shouldn't have said or something awkward?	Yes, No	1	social	10	4	1.25	True	15	30
+1	right	1	2	14	1	"At Fernhaven Elementary, Christine entered a story competition but didn’t win. Her classmate Jake won first prize.
+Sitting with him the next day, Jake said, “The other stories were terrible.”
+Christine asked, “Where will you put your trophy?”"	Did Christine’s story win anything?	Yes, No	2	control	10	4	1.25	True	15	30

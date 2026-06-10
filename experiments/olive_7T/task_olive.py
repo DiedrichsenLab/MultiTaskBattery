@@ -1427,3 +1427,64 @@ class AudioTestFile(TaskFile):
             trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
         return trial_info
 
+
+class FauxPasFile(TaskFile):
+    def __init__(self, const):
+        super().__init__(const)
+        self.name = 'faux_pas'
+
+    def make_task_file(self, hand=None, responses=None, run_number=None,
+                       task_dur=30, trial_dur=14, iti_dur=1, story_dur=10,
+                       question1_dur=4, text_height=1.25, file_name=None):
+        if hand is None:
+            hand = getattr(self.const, 'responding_hand', 'right')
+        if responses is None:
+            responses = [1, 2] if hand == 'right' else [4, 3]
+
+        stim_all = pd.read_csv(self.stim_dir / 'faux_pas' / 'faux_pas.csv')
+        stim_all = stim_all.loc[
+            ~stim_all['condition'].str.contains('practice', na=False)
+            & (stim_all['condition'].astype(str).str.lower() != 'exclude')
+        ]
+
+        social = stim_all[stim_all['condition'] == 'social'].reset_index(drop=True)
+        control = stim_all[stim_all['condition'] == 'control'].reset_index(drop=True)
+
+        # Offset control index by half the pool so the same story never appears
+        # twice in the same run (social story n vs control story n+14)
+        offset = len(control) // 2
+        social_idx = (run_number - 1) % len(social)
+        control_idx = (run_number - 1 + offset) % len(control)
+
+        selected = [social.iloc[social_idx], control.iloc[control_idx]]
+        random.shuffle(selected)  # randomise condition order within the run
+
+        trial_info = []
+        t = 0
+        for n, row in enumerate(selected):
+            trial = {}
+            trial['trial_num'] = n
+            trial['hand'] = hand
+            trial['key_yes'] = responses[0]
+            trial['key_no'] = responses[1]
+            trial['trial_dur'] = trial_dur
+            trial['iti_dur'] = iti_dur
+            trial['story'] = row['story']
+            trial['question'] = row['question1']
+            trial['options'] = row['options1']
+            trial['trial_type'] = 1 if str(row['answer1']) == 'Yes' else 2
+            trial['condition'] = row['condition']
+            trial['story_dur'] = story_dur
+            trial['question_dur'] = question1_dur
+            trial['text_height'] = text_height
+            trial['display_trial_feedback'] = True
+            trial['start_time'] = t
+            trial['end_time'] = t + trial_dur + iti_dur
+            trial_info.append(trial)
+            t = trial['end_time']
+
+        trial_info = pd.DataFrame(trial_info)
+        if file_name is not None:
+            ut.dircheck(self.task_dir / self.name)
+            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
+        return trial_info

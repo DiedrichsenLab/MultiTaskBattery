@@ -1,5 +1,4 @@
-key_yes	key_no	trial_num	hand	trial_dur	iti_dur	story	question	options	trial_type	condition	story_dur	question_dur	text_height	display_trial_feedback	start_time	end_time
-4	3	0	left	14	1	"Jim was shopping for a shirt to match his suit. He found the right color but it didn’t fit.
-“It’s too small,” he said.
-“Not to worry,” the salesman replied. “We’ll have larger sizes next week.”"	Did anyone say something they shouldn't have said or something awkward?	Yes, No	2	social	10	4	1.25	True	0	15
-4	3	1	left	14	1	Bob went to the barber for a haircut. “Just take about an inch off,” Bob said. The barber cut the front uneven, so he had to go shorter. “It’s shorter than you wanted,” he said. “Oh well,” Bob replied, “it’ll grow out.”	Did anyone say something they shouldn't have said or something awkward?	Yes, No	2	social	10	4	1.25	True	15	30
+trial_num	hand	key_yes	key_no	trial_dur	iti_dur	story	question	options	trial_type	condition	story_dur	question_dur	text_height	display_trial_feedback	start_time	end_time
+0	right	1	2	14	1	"Tim spilled coffee on the floor at a restaurant. The waiter said, “I’ll get you another cup,” and left.
+Tim approached Jack, a customer by the cashier, and asked, “I spilled coffee by my table. Can you mop it up?”"	Did Jack spill the coffee?	Yes, No	2	control	10	4	1.25	True	0	15
+1	right	1	2	14	1	"Helen's husband planned a surprise birthday party. He warned Sarah, ""Don't tell Helen."" While with Helen, Sarah spilled coffee on her dress and said, ""Oh! I was wearing this to your party!"" ""What party?"" Said Helen."	Did anyone say something they shouldn't have said or something awkward?	Yes, No	1	social	10	4	1.25	True	15	30

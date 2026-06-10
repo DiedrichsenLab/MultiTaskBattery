@@ -1,0 +1,77 @@
+run_num	key_true	key_false	trial_type	trial_num	hand	trial_dur	iti_dur	story	question	condition	answer	story_dur	question_dur	text_height	reward_value	reward_cue	reward_cue_dur	display_trial_feedback	start_time	end_time	real_start_time	start_ttl	start_ttl_time	response	rt	correct	points_earned
+1	4	3	1	0	left	15	0	Sophie tells her mother that her train  from Budapest is arriving at 8PM in  Vienna. Sophie confuses the platform numbers and boards the train  to Prague without realising her mistake.	"Sophie arrives at the station 
+in Prague does not see her mother
+
+True or False"	belief	True	10	4	0.9	3	3	1	True	0	15	183.0008122085128	0	183.00081333355047	4	3.9989452082663774	True	3
+1	4	3	1	1	left	15	0	An old photograph of the public library portrays a red-brick building with green ivy creeping up the side. Soon after the photograph was taken, the building was  demolished and the site was left derelict	"A photograph taken today shows
+an empty site
+
+True or False"	photo	True	10	4	0.9	1	1	1	True	15	30	198.06382562499493	0	198.0638267500326	4	2.9300919584929943	True	1
+2	4	3	0	0	left	15	0	Expecting the game to be postponed because of the rain, the Garcia family took the subway home. The score was tied, 3-3. During their commute the rain stopped and the game soon ended with a score of 5-3.	"The Garcia family arrives home 
+believing the score is 5-3.
+
+True or False"	belief	False	10	4	0.9	1	1	1	True	0	15	43.00111895846203	0	43.001120041823015	4	2.4213914168067276	False	0
+2	4	3	1	1	left	15	0	Accounts of the country's bustling economic  success were recorded in both fiction and non-fiction books from the early 1900s. Soon after, a horrible plague hit the country and  the country was sent into an economic depression.	"Early 1900s novels portray the
+country as experiencing economic 
+wealth.
+
+True or False"	photo	True	10	4	0.9	3	3	1	True	15	30	58.0006264585536	0	58.00062754191458	4	3.2532975000794977	True	3
+3	4	3	1	0	left	15	0	When Lisa left Jacob he was deep asleep on the beach. A few minutes later a wave woke him. Seeing Lisa was gone Jacob decided to go swimming.	"Lisa now believes that Jacob is sleeping.
+
+True or False "	belief	True	10	4	0.9	3	3	1	True	0	15	148.00078641669825	0	148.0007874998264	4	2.5265999999828637	True	3
+3	4	3	1	1	left	15	0	At the time a portrait was drawn of a young man, he had short brown hair and no facial hair. Now the man's hair is long and gray and so is his beard.  	"Today the length of the man's hair
+is long.
+
+True or False "	photo	True	10	4	0.9	1	1	1	True	15	30	163.00063162483275	0	163.00063270842656	4	2.2583382916636765	True	1
+4	4	3	1	0	left	15	0	Susie parked her sportscar in the driveway. In the middle of the night Nathan moved her car into the garage to make room for his minivan. Susie woke up early in the morning.	"Susie sees the minivan in
+the driveway.
+
+True or False "	belief	True	10	4	0.9	1	1	1	True	0	15	8.00086316652596	0	8.000864166533574	4	1.947942958213389	True	1
+4	4	3	0	1	left	15	0	The girl's middle school pictures showed her wearing a white blouse. Later, a red sock was accidentally washed with the blouse and the blouse turned pink.  	"Today the color of the blouse is white.
+
+True or False "	photo	False	10	4	0.9	3	3	1	True	15	30	23.000777583336458	0	23.000778625020757	3	1.5317922916729003	True	3
+5	4	3	0	0	left	15	0	Sally and Greg called ahead of time to make a reservation for the back-country cabin. The park ranger forgot to write down the reservation and two other hikers got to the cabin first.	"When the hikers arrive they see no
+one in their cabin.
+
+True or False "	belief	False	10	4	0.9	1	1	1	True	0	15	183.00079441652633	0	183.00079550012015	3	3.121316833421588	True	1
+5	4	3	0	1	left	15	0	When the picture was taken of the house, it was one story tall. Since then, the renovators added an additional story and a garage.	"The house is currently one story.
+
+True or False "	photo	False	10	4	0.9	3	3	1	True	15	30	198.0006377915852	0	198.00063891662285	3	1.9986772916745392	True	3
+13	1	2	0	0	right	15	0	Annie tells Carl that she has to work late.  Instead, Annie arrives home before Carl to  surprise him for his birthday. Carl goes  out with his friends straight after work, arriving home late. 	"Annie knows that Carl
+is out with his friends
+
+True or False"	belief	False	10	4	0.9	3	3	1	True	0	15	43.00082329148427	0	43.00082429149188	2	2.690069500124082	True	3
+13	1	2	1	1	right	15	0	The professor asked his graduate student to present her work at a conference.  The student is sick on the day of the conference and she asks a  colleague to present the work instead. 	"The professor's graduate student 
+does not give the presentation
+
+True or False"	photo	True	10	4	0.9	1	1	1	True	15	30	58.00108241662383	0	58.00108345830813	1	2.7576445832382888	True	1
+14	1	2	1	0	right	15	0	Josh tells Adam that he will meet  him at the game later that day.  At the last minute, Josh is called into work and forgets to tell Adam.	"Adam cannot find Josh in the stadium
+
+True or False "	belief	True	10	4	0.9	1	1	1	True	0	15	8.000971291679889	0	8.000972333364189	1	2.145061874995008	True	1
+14	1	2	0	1	right	15	0	Kate places her keys on the kitchen table  and goes to her bedroom to take a nap.  Her boyfriend sees Kate's keys and places them in her bag where she usually keeps them	"Kate wakes from her nap and 
+looks for her keys in her bag
+
+True or False"	photo	False	10	4	0.9	3	3	1	True	15	30	23.0006424584426	0	23.000643541570753	2	2.7926038750447333	True	3
+15	1	2	1	0	right	15	0	The morning of high school dance Sarah placed her high heel shoes under her dress and then went shopping. That afternoon, her sister borrowed the shoes and later put them under Sarah's bed.	"Sarah gets ready assuming her
+shoes are under the dress.
+
+True or False "	belief	True	10	4	0.9	3	3	1	True	0	15	43.00080987508409	0	43.00081124994904	1	2.1245577500667423	True	3
+15	1	2	1	1	right	15	0	Sargent famously painted the south bank of the river in 1885. In 1910 a huge dam was built, flooding out the whole river basin,  killing the old forests. Now the whole area is under water.	"In the painting the south bank of
+the river is wooded. 
+
+True or False "	photo	True	10	4	0.9	1	1	1	True	15	30	58.00066170818173	0	58.000662750098854	1	2.385055166902021	True	1
+18	1	2	0	0	right	15	0	Michael told Andrew that he was going hiking for the day. An hour  into his walk, Michael hurts his leg and returns home	"Michael returns home that evening 
+after a long day of hiking
+
+True or False"	belief	False	10	4	0.9	1	1	1	True	0	15	183.0007831666153	0	183.0007841666229	2	2.674315999960527	True	1
+18	1	2	1	1	right	15	0	Tom leaves the house without letting  the dog out. Tom's neighbour hears  the dog barking and lets her into  the backyard.  Later, Tom arrives home from work. 	"Tom finds the dog in the backyard
+
+True or False"	photo	True	10	4	0.9	3	3	1	True	15	30	198.00064683309756	0	198.0006478750147	1	1.6067243334837258	True	3
+19	4	3	0	0	left	15	0	Amy leaves her sister in the library while she goes to class. Sometime thereafter, Amy's sister leaves the library to meet her friend on the other side of town. 	"Amy returns after class and 
+finds her sister in the library
+
+True or False"	belief	False	10	4	0.9	3	3	1	True	0	15	43.000818541506305	0	43.00081954128109	3	2.5383299998939037	True	3
+19	4	3	0	1	left	15	0	Paintings of the town in the early nineteenth century portray a bustling marketplace in the town square. In recent  years, the town square has been ruined by warfare. 	"Paintings of the town square depict 
+ruins obliterated by warfare
+
+True or False"	photo	False	10	4	0.9	1	1	1	True	15	30	58.00065154139884	0	58.00065258308314	4	3.18314875010401	False	0

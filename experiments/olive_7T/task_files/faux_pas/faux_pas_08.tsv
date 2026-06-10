@@ -1,6 +1,4 @@
-key_yes	key_no	trial_num	hand	trial_dur	iti_dur	story	question	options	trial_type	condition	story_dur	question_dur	text_height	display_trial_feedback	start_time	end_time
-4	3	0	left	14	1	"At Fernhaven Elementary, Christine entered a story competition but didn’t win. Her classmate Jake won first prize.
-Sitting with him the next day, Jake said, “The other stories were terrible.”
-Christine asked, “Where will you put your trophy?”"	Did anyone say something they shouldn't have said or something awkward?	Yes, No	1	social	10	4	1.25	True	0	15
-4	3	1	left	14	1	"Tim spilled coffee on the floor at a restaurant. The waiter said, “I’ll get you another cup,” and left.
-Tim approached Jack, a customer by the cashier, and asked, “I spilled coffee by my table. Can you mop it up?”"	Did anyone say something they shouldn't have said or something awkward?	Yes, No	1	social	10	4	1.25	True	15	30
+trial_num	hand	key_yes	key_no	trial_dur	iti_dur	story	question	options	trial_type	condition	story_dur	question_dur	text_height	display_trial_feedback	start_time	end_time
+0	left	4	3	14	1	Sophia baked a chocolate cake for her grandmother’s birthday. When her cousin Alex saw the cake, he said, “Oh great, cake! I love all cake apart from chocolate cake.” Sophia frowned and said, “Oh, it’s grandma’s favorite.”	Was the cake for Sophia's grandma?	Yes, No	1	control	10	4	1.25	True	0	15
+1	left	4	3	14	1	"Joan took her dog, Zack, to the park and threw a stick for him. Pam, a neighbor, passed by and asked, “Want to walk home together?”
+“Sure,” said Joan. She called Zack but he was busy chasing pigeons. “Nevermind, we’ll stay” Joan added."	Did anyone say something they shouldn't have said or something awkward?	Yes, No	2	social	10	4	1.25	True	15	30

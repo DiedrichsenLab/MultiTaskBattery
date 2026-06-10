@@ -1,0 +1,3 @@
+key_yes	key_no	trial_num	hand	trial_dur	iti_dur	story	question	options	trial_type	condition	story_dur	question_dur	text_height	display_trial_feedback	start_time	end_time
+4	3	0	left	14	1	Liam ordered a cappuccino at the café. When his drink arrived, he saw it was a latte. “Excuse me,” he said, “I ordered a cappuccino.” The barista apologized and quickly made the right drink.	Did Liam get the correct drink first?	Yes, No	2	control	10	4	1.25	True	0	15
+4	3	1	left	14	1	At the office, Jake saw his coworker Lily with a big smile. “Congrats on your promotion!” he said. Lily’s face fell. “I didn’t get it,” she replied. “Oh,” Jake muttered, and walked away.	Did Lily get the promotion?	Yes, No	2	control	10	4	1.25	True	15	30

@@ -1,0 +1,30 @@
+run_num	key_yes	key_no	trial_num	hand	trial_dur	iti_dur	story	question	options	trial_type	condition	story_dur	question_dur	text_height	display_trial_feedback	start_time	end_time	real_start_time	start_ttl	start_ttl_time	response	rt	correct
+1	4	3	0	left	14	1	Joanne, who had a big role in last year’s play, auditioned for the lead this spring. Checking the cast list, she saw she’d gotten a minor role. When she ran into her boyfriend he said “You must be disappointed.” Joan replied “Yes, I am”	Did Joanne get a minor role?	Yes, No	1	control	10	4	1.25	True	0	15	43.00025791674853	0	43.00025891675614	3	1.9614235418848691	False
+1	4	3	1	left	14	1	Joe found a sailing book at the library. After checking his wallet he realized he’d left his library card at home. “I’m sorry,” he said to the librarian. She replied, “That’s OK. If you’re in the computer, you can check out with your driving license”	Did Joe check out the book?	Yes, No	1	control	10	4	1.25	True	15	30	58.0000595417805	0	58.00007670838386	3	2.8458303331863135	False
+2	4	3	0	left	14	1	"At Fernhaven Elementary, Christine entered a story competition but didn’t win. Her classmate Jake won first prize.
+Sitting with him the next day, Jake said, “The other stories were terrible.”
+Christine asked, “Where will you put your trophy?”"	Did Christine’s story win anything?	Yes, No	2	control	10	4	1.25	True	0	15	148.0002517499961	0	148.00025283312425	3	2.8726574582979083	True
+2	4	3	1	left	14	1	"Tim spilled coffee on the floor at a restaurant. The waiter said, “I’ll get you another cup,” and left.
+Tim approached Jack, a customer by the cashier, and asked, “I spilled coffee by my table. Can you mop it up?”"	Did Jack spill the coffee?	Yes, No	2	control	10	4	1.25	True	15	30	163.00005566654727	0	163.00007254141383	4	2.658304708544165	False
+3	4	3	0	left	14	1	"Richard backed his new red Peugeot into his neighbor Ted’s old Volvo, leaving only a scratch above the wheel. He knocked on Ted’s door, saying, “I’m sorry about the scratch.”
+Ted looked and said, “Don’t worry. It was an accident.”"	Did Ted buy a new car?	Yes, No	2	control	10	4	1.25	True	0	15	43.00023979181424	0	43.00024070823565	3	1.7904304165858775	True
+3	4	3	1	left	14	1	"Louise went to the butcher and asked, “Do you have any free-range chickens?”
+The butcher nodded and began wrapping a roasted chicken.
+“Excuse me,” Louise said, “I asked for free-range.”
+“Oh sorry,” the butcher replied, “we’re all out.”"	Was Louise at school?	Yes, No	2	control	10	4	1.25	True	15	30	58.000032583251595	0	58.00004195817746	3	2.1640672916546464	True
+9	1	2	0	right	14	1	"Kim’s cousin Scott was coming to visit, and Kim made an apple pie for him. After dinner, she said, “I made a pie just for you.”
+“Mmmm,” Scott replied. “It smells great! I love pies—except for apple, of course.”"	Is Scott Kim's brother?	Yes, No	2	control	10	4	1.25	True	0	15	183.00033391662873	0	183.00033483328295	2	2.48524820827879	True
+9	1	2	1	right	14	1	"Jeanette gave Anne a crystal bowl as a wedding gift. A year later, at Anne’s for dinner, Jeanette accidentally broke the bowl.
+“I’m sorry,” Jeanette said.
+“Don’t worry,” Anne replied. “I never liked it anyways. Someone gave it to me.”"	Did the bowl break?	Yes, No	1	control	10	4	1.25	True	15	30	198.0000603334047	0	198.0000618752092	1	1.270856416784227	True
+10	1	2	0	right	14	1	Jean West, a manager, called a staff meeting. “John Morehouse, our accountant, is very sick with cancer,” she said. The room fell silent. Robert arrived late, making a joke about illness. Jean cut him off, saying, “Let’s start the meeting.”	Was Robert late to the meeting?	Yes, No	1	control	10	4	1.25	True	0	15	8.000373541843146	0	8.00037454185076	1	1.2876500417478385	True
+10	1	2	1	right	14	1	"Mike started at a new school. While in a bathroom stall he overheard Joe and Peter at the sinks.
+“Doesn’t the new guy, Mike, look weird? And he’s so short!” Joe said.
+Mike emerged.
+“Oh hi, Mike!” Peter said. “Are you going out to play?”"	Is Mike new in the class?	Yes, No	1	control	10	4	1.25	True	15	30	23.000048249959946	0	23.00005791685544	1	1.299114083405584	True
+11	1	2	0	right	14	1	"Eleanor, an older lady, tiredly stood waiting 20 minutes for a late bus. When it arrived there were no seats left.
+Eleanor greeted her neighbour Paul, speaking about the wait.
+A young man stood and said, “Ma’am, would you like my seat?”"	Did Eleanor get on the bus?	Yes, No	1	control	10	4	1.25	True	0	15	78.00023966655135	0	78.00024062488228	1	1.3156162919476628	True
+11	1	2	1	right	14	1	"Roger, new at the office, told Andrew, “My wife’s a lawyer.” Moments later, Claire walked into the coffee room, complaining, “Lawyers are so arrogant and greedy.”
+Andrew asked Claire to review reports.
+“Not now,” she said. “I need coffee.”"	Is Roger married?	Yes, No	1	control	10	4	1.25	True	15	30	93.0000385416206	0	93.00004741665907	1	1.3066028750035912	True
