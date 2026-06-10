@@ -18,7 +18,7 @@ for task in tasks:
     ut.dircheck(const.task_dir / task)
 
 # Generate run and task files
-for r in range(5,9):
+for r in range(1,5):
     tfiles = [f'{task}_{r:02d}.tsv' for task in tasks]
     T = tf.make_run_file(tasks, tfiles, offset=3, exp_dir=const.exp_dir)
     T.loc[T.index[-1], 'end_time'] += 8

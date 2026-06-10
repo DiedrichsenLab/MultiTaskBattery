@@ -63,7 +63,13 @@ class TTLClock:
         """ updates the ttl count and time of the last ttl pulse
         """
         # get all the ttl pulses in the buffer
-        keys = event.getKeys([self.ttl_button], timeStamped=self.clock)
+        # AttributeError guard: pyglet's macOS Cocoa backend occasionally receives
+        # a system notification wrapped as an NSArray instead of an NSEvent, causing
+        # dispatch_events() to crash. Treat it as an empty key list.
+        try:
+            keys = event.getKeys([self.ttl_button], timeStamped=self.clock)
+        except AttributeError:
+            keys = []
 
         # checks if the pressed key is the key used as the ttl pulse
         for k in keys:

@@ -1,7 +1,7 @@
 trial_num	hand	key_yes	key_no	trial_dur	iti_dur	story	question	options	trial_type	condition	story_dur	question_dur	text_height	display_trial_feedback	start_time	end_time
-0	left	4	3	14	1	"Louise went to the butcher and asked, “Do you have any free-range chickens?”
+0	left	4	3	14	1	"Jill had just moved into a new flat and bought curtains for her bedroom. After decorating, her best friend Lisa visited. Jill gave her a tour and asked, “How do you like my bedroom?”
+“Those curtains are horrible,” Lisa said."	Did anyone say something they shouldn't have said or something awkward?	Yes, No	1	social	10	4	1.25	True	0	15
+1	left	4	3	14	1	"Louise went to the butcher and asked, “Do you have any free-range chickens?”
 The butcher nodded and began wrapping a roasted chicken.
 “Excuse me,” Louise said, “I asked for free-range.”
-“Oh sorry,” the butcher replied, “we’re all out.”"	Was Louise at school?	Yes, No	2	control	10	4	1.25	True	0	15
-1	left	4	3	14	1	"Jill had just moved into a new flat and bought curtains for her bedroom. After decorating, her best friend Lisa visited. Jill gave her a tour and asked, “How do you like my bedroom?”
-“Those curtains are horrible,” Lisa said."	Did anyone say something they shouldn't have said or something awkward?	Yes, No	1	social	10	4	1.25	True	15	30
+“Oh sorry,” the butcher replied, “we’re all out.”"	Was Louise at school?	Yes, No	2	control	10	4	1.25	True	15	30

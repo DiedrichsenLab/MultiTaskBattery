@@ -932,7 +932,7 @@ class TheoryOfMindDiffRewardFile(TaskFile):
                         reward_cue_dur=1,
                         story_dur=10,
                         question_dur=4,
-                        text_height=0.9,
+                        text_height=1.25,
                         file_name=None,
                         stim_file=None,
                         condition=None,

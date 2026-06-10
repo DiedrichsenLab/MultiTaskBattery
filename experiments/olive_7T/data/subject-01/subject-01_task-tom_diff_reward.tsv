@@ -1,0 +1,63 @@
+run_num	key_true	key_false	trial_type	trial_num	hand	trial_dur	iti_dur	story	question	condition	answer	story_dur	question_dur	text_height	reward_value	reward_cue	reward_cue_dur	display_trial_feedback	start_time	end_time	real_start_time	start_ttl	start_ttl_time	response	rt	correct	points_earned
+1	1	2	0	0	right	15	0	Expecting the game to be postponed because of the rain, the Garcia family took the subway home. The score was tied, 3-3. During their commute the rain stopped and the game soon ended with a score of 5-3.	"The Garcia family arrives home 
+believing the score is 5-3.
+
+True or False"	belief	False	10	4	1.25	1	1	1	True	0	15	253.00084575009532	231	0.0104697917122393	1	1.69368362496607	False	0
+1	1	2	1	1	right	15	0	Accounts of the country's bustling economic  success were recorded in both fiction and non-fiction books from the early 1900s. Soon after, a horrible plague hit the country and  the country was sent into an economic depression.	"Early 1900s novels portray the
+country as experiencing economic 
+wealth.
+
+True or False"	photo	True	10	4	1.25	3	3	1	True	15	30	268.00076491665095	244	0.7104297084733844	1	1.6275167500134555	True	3
+2	1	2	1	0	right	15	0	The morning of high school dance Sarah placed her high heel shoes under her dress and then went shopping. That afternoon, her sister borrowed the shoes and later put them under Sarah's bed.	"Sarah gets ready assuming her
+shoes are under the dress.
+
+True or False "	belief	True	10	4	1.25	3	3	1	True	0	15	358.000840916764	325	0.5105243748985231	1	2.1526268331799656	True	3
+2	1	2	1	1	right	15	0	Sargent famously painted the south bank of the river in 1885. In 1910 a huge dam was built, flooding out the whole river basin,  killing the old forests. Now the whole area is under water.	"In the painting the south bank of
+the river is wooded. 
+
+True or False "	photo	True	10	4	1.25	1	1	1	True	15	30	373.000774666667	339	0.1096035416703671	2	1.399671791587025	False	0
+3	1	2	1	0	right	15	0	When Lisa left Jacob he was deep asleep on the beach. A few minutes later a wave woke him. Seeing Lisa was gone Jacob decided to go swimming.	"Lisa now believes that Jacob is sleeping.
+
+True or False "	belief	True	10	4	1.25	3	3	1	True	0	15	358.00082337507047	326	0.5073621249757707	1	2.5695580416359007	True	3
+3	1	2	1	1	right	15	0	At the time a portrait was drawn of a young man, he had short brown hair and no facial hair. Now the man's hair is long and gray and so is his beard.  	"Today the length of the man's hair
+is long.
+
+True or False "	photo	True	10	4	1.25	1	1	1	True	15	30	373.0007026665844	340	0.1073503331281244	1	1.7877006251364946	True	1
+4	1	2	0	0	right	15	0	John told Mary that he had lost his keys. The two of them searched the house with no luck. Then Mary went outside to look in the car. Suddenly John noticed his keys behind the sofa.	"By the time Mary comes in, John
+doesn't know where his keys are.
+
+True or False "	belief	False	10	4	1.25	1	1	1	True	0	15	148.0008515000809	135	0.6038904169108719	1	1.904850958380848	False	0
+4	1	2	1	1	right	15	0	A biography describes the room as it was in 1965. Originally the walls were covered in dark wallpaper. By 1965 the paper had been stripped and replaced with cream paint.	"The biography says that the room
+was light.
+
+True or False"	photo	True	10	4	1.25	3	3	1	True	15	30	163.00078895827755	148	0.2037271249573677	1	0.624277958413586	True	3
+5	4	3	1	0	left	15	0	Susie parked her sportscar in the driveway. In the middle of the night Nathan moved her car into the garage to make room for his minivan. Susie woke up early in the morning.	"Susie sees the minivan in
+the driveway.
+
+True or False "	belief	True	10	4	1.25	3	3	1	True	0	15	183.00084037496708	167	0.4126544580794871	3	2.039037249982357	False	0
+5	4	3	0	1	left	15	0	The girl's middle school pictures showed her wearing a white blouse. Later, a red sock was accidentally washed with the blouse and the blouse turned pink.  	"Today the color of the blouse is white.
+
+True or False "	photo	False	10	4	1.25	1	1	1	True	15	30	198.0007662915159	181	0.0123401249293237	3	2.2421851251274347	True	1
+6	4	3	0	0	left	15	0	A window wiper was commissioned by a CEO to wipe an entire building. He finished the right side, but his platform broke before he could do the left side. The next morning the CEO arrived with foreign investors.	"The CEO comes to work and discovers
+that all of the walls are cleaned.
+
+True or False "	belief	False	10	4	1.25	1	1	1	True	0	15	8.000821291701868	8	0.3040396666619926	4	2.4582138750702143	False	0
+6	4	3	0	1	left	15	0	A long time ago, an explorer mapped a small island. Since then, the water levels rose and only a tiny part of the island is now left above water.	"On the explorer's maps, the island
+appears to be mostly submerged.
+
+True or False "	photo	False	10	4	1.25	3	3	1	True	15	30	23.00068224989809	21	1.0042209581006318	4	1.4811215416993946	False	0
+7	4	3	0	0	left	15	0	Sally and Greg called ahead of time to make a reservation for the back-country cabin. The park ranger forgot to write down the reservation and two other hikers got to the cabin first.	"When the hikers arrive they see no
+one in their cabin.
+
+True or False "	belief	False	10	4	1.25	1	1	1	True	0	15	288.00103554176167	262	0.9041883333120496	3	2.075761166401207	True	1
+7	4	3	0	1	left	15	0	When the picture was taken of the house, it was one story tall. Since then, the renovators added an additional story and a garage.	"The house is currently one story.
+
+True or False "	photo	False	10	4	1.25	3	3	1	True	15	30	303.0006988751702	276	0.5040112498681992	3	3.1417446250561625	True	3
+8	4	3	0	0	left	15	0	Larry chose a debated topic for his  class paper due on Friday. The news on Thursday indicated that the debate had been solved but Larry never read it.  	"When Larry writes his paper he thinks
+the debate has been solved.
+
+True or False "	belief	False	10	4	1.25	1	1	1	True	0	15	288.00083779147826	262	0.9055782498326153	3	2.6917157084681094	True	1
+8	4	3	1	1	left	15	0	A volcano erupted on a Carribean island three months ago. Barren lava rock is all that remains today. Satellite photographs show the island as it was before the eruption. 	"Today, the island is covered in
+lava rock.
+
+True or False "	photo	True	10	4	1.25	3	3	1	True	15	30	303.0006468750071	276	0.5057479166425765	4	1.4357501666527241	True	3
