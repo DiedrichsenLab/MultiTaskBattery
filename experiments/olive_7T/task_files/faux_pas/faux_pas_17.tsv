@@ -1,4 +1,7 @@
-key_yes	key_no	trial_num	hand	trial_dur	iti_dur	story	question	options	trial_type	condition	story_dur	question_dur	text_height	display_trial_feedback	start_time	end_time
-1	2	0	right	14	1	"John stopped at the petrol station to fill his car. When the cashier ran his card she said ""The machine won't accept it."" ""That's funny,"" John said. ""I'll pay in cash."" He gave her fifty and said, ""I filled up with unleaded."""	Did the machine accept John's card?	Yes, No	2	control	10	4	1.25	True	0	15
-1	2	1	right	14	1	"Jill had just moved into a new flat and bought curtains for her bedroom. After decorating, her best friend Lisa visited. Jill gave her a tour and asked, “How do you like my bedroom?”
-“Those curtains are horrible,” Lisa said."""	Did Jill just move into a new flat?	Yes, No	1	control	10	4	1.25	True	15	30
+trial_num	hand	key_yes	key_no	trial_dur	iti_dur	story	question	options	trial_type	condition	story_dur	question_dur	text_height	display_trial_feedback	start_time	end_time
+0	right	1	2	14	1	"Jim was shopping for a shirt to match his suit. He found the right color but it didn’t fit.
+“It’s too small,” he said.
+“Not to worry,” the salesman replied. “We’ll have larger sizes next week.”"	Did Jim try something on?	Yes, No	1	control	10	4	1.25	True	0	15
+1	right	1	2	14	1	"Eleanor, an older lady, tiredly stood waiting 20 minutes for a late bus. When it arrived there were no seats left.
+Eleanor greeted her neighbour Paul, speaking about the wait.
+A young man stood and said, “Ma’am, would you like my seat?”"	Did anyone say something they shouldn't have said or something awkward?	Yes, No	2	social	10	4	1.25	True	15	30

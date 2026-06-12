@@ -2,8 +2,8 @@ key_true	key_false	trial_type	trial_num	hand	trial_dur	iti_dur	story	question	co
 4	3	0	0	left	15	0	In 2000, when the schoolhouse opened, there were two classrooms and two teachers. Now, there are twenty teachers and ten classrooms to accommodate the influx of young families to the area.	"Today, there are only two classrooms
 in the schoolhouse
 
-True or False"	belief	False	10	4	0.9	1	+1	1	True	0	15
+True or False"	belief	False	10	4	1.25	1	+1	1	True	0	15
 4	3	0	1	left	15	0	In the photograph, the young girl has long blond hair that cascades down her back.  Today, she has black hair that falls at her shoulders. 	"Childhood pictures show the 
 girl with short black hair
 
-True or False"	photo	False	10	4	0.9	3	+3	1	True	15	30
+True or False"	photo	False	10	4	1.25	3	+3	1	True	15	30

@@ -2,8 +2,8 @@ key_true	key_false	trial_type	trial_num	hand	trial_dur	iti_dur	story	question	co
 1	2	0	0	right	15	0	Annie tells Carl that she has to work late.  Instead, Annie arrives home before Carl to  surprise him for his birthday. Carl goes  out with his friends straight after work, arriving home late. 	"Annie knows that Carl
 is out with his friends
 
-True or False"	belief	False	10	4	0.9	3	+3	1	True	0	15
+True or False"	belief	False	10	4	1.25	3	+3	1	True	0	15
 1	2	1	1	right	15	0	The professor asked his graduate student to present her work at a conference.  The student is sick on the day of the conference and she asks a  colleague to present the work instead. 	"The professor's graduate student 
 does not give the presentation
 
-True or False"	photo	True	10	4	0.9	1	+1	1	True	15	30
+True or False"	photo	True	10	4	1.25	1	+1	1	True	15	30

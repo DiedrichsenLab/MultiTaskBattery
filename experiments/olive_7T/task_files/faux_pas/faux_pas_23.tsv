@@ -1,7 +1,4 @@
-key_yes	key_no	trial_num	hand	trial_dur	iti_dur	story	question	options	trial_type	condition	story_dur	question_dur	text_height	display_trial_feedback	start_time	end_time
-1	2	0	right	14	1	"Eleanor, an older lady, tiredly stood waiting 20 minutes for a late bus. When it arrived there were no seats left.
-Eleanor greeted her neighbour Paul, speaking about the wait.
-A young man stood and said, “Ma’am, would you like my seat?”"	Did Eleanor get on the bus?	Yes, No	1	control	10	4	1.25	True	0	15
-1	2	1	right	14	1	"Roger, new at the office, told Andrew, “My wife’s a lawyer.” Moments later, Claire walked into the coffee room, complaining, “Lawyers are so arrogant and greedy.”
-Andrew asked Claire to review reports.
-“Not now,” she said. “I need coffee.”"	Is Roger married?	Yes, No	1	control	10	4	1.25	True	15	30
+trial_num	hand	key_yes	key_no	trial_dur	iti_dur	story	question	options	trial_type	condition	story_dur	question_dur	text_height	display_trial_feedback	start_time	end_time
+0	right	1	2	14	1	Liam ordered a cappuccino at the café. When his drink arrived, he saw it was a latte. “Excuse me,” he said, “I ordered a cappuccino.” The barista apologized and quickly made the right drink.	Did anyone say something they shouldn't have said or something awkward?	Yes, No	2	social	10	4	1.25	True	0	15
+1	right	1	2	14	1	"Kim’s cousin Scott was coming to visit, and Kim made an apple pie for him. After dinner, she said, “I made a pie just for you.”
+“Mmmm,” Scott replied. “It smells great! I love pies—except for apple, of course.”"	Is Scott Kim's brother?	Yes, No	2	control	10	4	1.25	True	15	30

@@ -1,8 +1,8 @@
 key_true	key_false	trial_type	trial_num	hand	trial_dur	iti_dur	story	question	condition	answer	story_dur	question_dur	text_height	reward_value	reward_cue	reward_cue_dur	display_trial_feedback	start_time	end_time
-4	3	1	0	left	15	0	Sarah texts Paul to let him know that she will miss dinner  because she is working late. Paul  has lost his phone and does not get her message. 	"Paul expects Sarah to be home for dinner
+1	2	1	0	right	15	0	Sarah texts Paul to let him know that she will miss dinner  because she is working late. Paul  has lost his phone and does not get her message. 	"Paul expects Sarah to be home for dinner
 
-True or False"	belief	True	10	4	0.9	1	+1	1	True	0	15
-4	3	1	1	left	15	0	In her prom picture, Laura has braces on her teeth and long  blond hair. Soon after the picture  was taken, Laura's braces were removed	"Today, Laura has straight teeth
+True or False"	belief	True	10	4	1.25	1	+1	1	True	0	15
+1	2	1	1	right	15	0	In her prom picture, Laura has braces on her teeth and long  blond hair. Soon after the picture  was taken, Laura's braces were removed	"Today, Laura has straight teeth
 and long blond hair
 
-True or False"	photo	True	10	4	0.9	3	+3	1	True	15	30
+True or False"	photo	True	10	4	1.25	3	+3	1	True	15	30

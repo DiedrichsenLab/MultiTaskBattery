@@ -56,8 +56,67 @@ True or False "	photo	False	10	4	1.25	3	3	1	True	15	30	303.0006988751702	276	0.5
 8	4	3	0	0	left	15	0	Larry chose a debated topic for his  class paper due on Friday. The news on Thursday indicated that the debate had been solved but Larry never read it.  	"When Larry writes his paper he thinks
 the debate has been solved.
 
-True or False "	belief	False	10	4	1.25	1	1	1	True	0	15	288.00083779147826	262	0.9055782498326153	3	2.6917157084681094	True	1
+True or False "	belief	False	10	4	1.25	1	1	1	True	0	15	288.00083779147826	262	0.9055782498326151	3	2.69171570846811	True	1
 8	4	3	1	1	left	15	0	A volcano erupted on a Carribean island three months ago. Barren lava rock is all that remains today. Satellite photographs show the island as it was before the eruption. 	"Today, the island is covered in
 lava rock.
 
-True or False "	photo	True	10	4	1.25	3	3	1	True	15	30	303.0006468750071	276	0.5057479166425765	4	1.4357501666527241	True	3
+True or False "	photo	True	10	4	1.25	3	3	1	True	15	30	303.0006468750071	276	0.5057479166425765	4	1.435750166652724	True	3
+9	4	3	1	0	left	15	0	Laura didn't have time to braid her horse's mane before going to camp. While she was at camp, William brushed Laura's horse and braided the horse's mane for her.	"Laura returns assuming that her
+horse's hair isn't braided
+
+True or False"	belief	True	10	4	1.25	3	3	1	True	0	15	8.000852375058457	8	0.3092675418592989	4	2.2518656249158084	True	3
+9	4	3	0	1	left	15	0	A large oak tree stood in front of City Hall from the time the building was built. Last year the tree fell down and was replaced by a stone fountain.	"An antique drawing of City Hall
+shows a fountain in front.
+
+True or False "	photo	False	10	4	1.25	1	1	1	True	15	30	23.000666666775945	21	1.0093147915322334	3	1.9926032500807196	True	1
+10	4	3	1	0	left	15	0	Amy walked to work today. When George woke up, he saw her car in the drive. Her room  was quiet and dark. George knows that when Amy is sick, she lies down in a dark room.	"In fact, Amy walked to work.
+
+True or False "	belief	True	10	4	1.25	3	3	1	True	0	15	323.000832375139	294	0.7034664168022573	4	3.2753773333970457	True	3
+10	4	3	0	1	left	15	0	Old maps of the islands near Titan are displayed in the Maritime museum.  Erosion has since taken its toll, leaving only the three largest islands. 	"Near Titan today there are many islands.
+
+True or False "	photo	False	10	4	1.25	1	1	1	True	15	30	338.00068908324465	308	0.3036869582720101	3	2.6815559167880565	True	1
+11	4	3	1	0	left	15	0	When they were children, Paul and Tom  would swing on the trees in their garden.  By the time they were teenagers, all of the trees had been chopped down.	"Today, there are no more trees
+in the garden
+
+True or False"	belief	True	10	4	1.25	3	3	1	True	0	15	323.0008358748164	294	0.7213582084514201	3	2.3344020415097475	False	0
+11	4	3	0	1	left	15	0	Jessie leaves her chemistry book at home. Her mother, knowing that she has a chemistry exam that afternoon, brings it to school and leaves it in Jessie's locker. 	"Jessie opens her schoolbag and takes
+out the chemistry book
+
+True or False"	photo	False	10	4	1.25	1	1	1	True	15	30	338.00074566644616	308	0.3213270418345928	4	2.286527166608721	False	0
+12	4	3	0	0	left	15	0	In 2000, when the schoolhouse opened, there were two classrooms and two teachers. Now, there are twenty teachers and ten classrooms to accommodate the influx of young families to the area.	"Today, there are only two classrooms
+in the schoolhouse
+
+True or False"	belief	False	10	4	1.25	1	1	1	True	0	15	183.00080562499352	167	0.4093372081406414	3	2.5797330832574517	True	1
+12	4	3	0	1	left	15	0	In the photograph, the young girl has long blond hair that cascades down her back.  Today, she has black hair that falls at her shoulders. 	"Childhood pictures show the 
+girl with short black hair
+
+True or False"	photo	False	10	4	1.25	3	3	1	True	15	30	198.00078150001357	181	0.0090291667729616	3	2.285637791734189	True	3
+13	1	2	1	0	right	15	0	Jennifer went to the theme park when  it first opened and spent hours  on the rides. A year ago, unbeknownst to Jennifer, the park  closed due to lack of funding.	"Jennifer goes to the park to
+find that it has closed
+
+True or False"	belief	True	10	4	1.25	3	3	1	True	0	15	358.0007894583978	326	0.5016091249417514	2	2.006693666568026	False	0
+13	1	2	1	1	right	15	0	Alice arrives at the movie theater at 6PM for her date with Juan. There is no sign of him so she leaves after 30 minutes. Thinking that the movie starts at 7PM, Juan arrives with ten minutes to spare.	"Juan arrives and doesn't see Alice
+
+True or False"	photo	True	10	4	1.25	1	1	1	True	15	30	373.00071941665374	340	0.1013195000123232	1	2.1243547918275	True	1
+14	1	2	0	0	right	15	0	After a morning of sunbathing, Leslie  leaves her book on the sunchair expecting to return after lunch. Her mother notices that rainclouds are gathering and brings  the book inside. 	"Leslie returns later and 
+finds the book soaking wet
+
+True or False"	belief	False	10	4	1.25	3	3	1	True	0	15	288.00082195852883	262	0.9036521250382066	2	2.5287472081836313	True	3
+14	1	2	0	1	right	15	0	The professor sends an email to the  class the night before to postpone the midterm exam. John does not receive the email. 	"John sits the exam the next day
+and gets a good grade
+
+True or False"	photo	False	10	4	1.25	1	1	1	True	15	30	303.00068475003354	276	0.5036859167739749	2	3.1888154167681932	True	1
+15	1	2	1	0	right	15	0	Maria wakes up early to study at the library. Her housemates notice that she is not at breakfast and presume that she is sleeping	"In fact, Maria is studying in the library
+
+True or False"	belief	True	10	4	1.25	3	3	1	True	0	15	43.0008168334607	40	0.1023250834550708	1	1.9300532499328256	True	3
+15	1	2	0	1	right	15	0	The autobiography of the actor depicts a prosperous and extravagant  lifestyle. Soon after the book is  written the actor loses his fortune. 	"In the autobiography, the actor is 
+depicted as destitute and broke
+
+True or False"	photo	False	10	4	1.25	1	1	1	True	15	30	58.000700125005096	53	0.8022651667706668	2	2.6298354582395405	True	1
+16	1	2	1	0	right	15	0	Sarah texts Paul to let him know that she will miss dinner  because she is working late. Paul  has lost his phone and does not get her message. 	"Paul expects Sarah to be home for dinner
+
+True or False"	belief	True	10	4	1.25	1	1	1	True	0	15	218.00079158344306	199	0.2024708748795092	1	1.6351902082096785	True	1
+16	1	2	1	1	right	15	0	In her prom picture, Laura has braces on her teeth and long  blond hair. Soon after the picture  was taken, Laura's braces were removed	"Today, Laura has straight teeth
+and long blond hair
+
+True or False"	photo	True	10	4	1.25	3	3	1	True	15	30	233.00069850008003	212	0.9021886249538511	1	2.9551367501262575	True	3

@@ -1,3 +1,3 @@
 trial_num	hand	key_yes	key_no	frequency	stim_interval	trial_duration	response_duration	display_trial_feedback	start_time	end_time	n_deviants	deviant_times	deviant_type	deviant_positions
-0	right	1	2	1	1.0	13	2	True	0	15	0	None	None	None
-1	right	1	2	1	1.0	13	2	True	15	30	2	23.8;26.2	early;late	10;12
+0	right	1	2	1	1.0	13	2	True	0	15	2	5.8;8.8	early;early	7;10
+1	right	1	2	1	1.0	13	2	True	15	30	0	None	None	None

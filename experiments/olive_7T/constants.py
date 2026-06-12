@@ -45,5 +45,5 @@ responding_hand = 'right'
 # Screen settings for subject display
 screen = {}
 screen['size'] = [1024, 768]        # screen resolution for scanner: 1024, 768. For testing: 1440, 900
-screen['fullscr'] = True           # full screen, if false it's in a separate window
+screen['fullscr'] = False           # full screen, if false it's in a separate window
 screen['number'] = 1               # 0 = main display, 1 = secondary display

@@ -301,3 +301,11 @@ True or False"	belief	False	10	4	0.9	3	3	1	True	0	15	43.001094500068575	0	43.001
 ruins obliterated by warfare
 
 True or False"	photo	False	10	4	0.9	1	1	1	True	15	30	58.000659625045955	0	58.000660750083625	3	1.795552708208561	True	1
+4	4	3	1	0	left	15	0	Sophie tells her mother that her train  from Budapest is arriving at 8PM in  Vienna. Sophie confuses the platform numbers and boards the train  to Prague without realising her mistake.	"Sophie arrives at the station 
+in Prague does not see her mother
+
+True or False"	belief	True	10	4	1.25	1	1	1	True	0	15	183.00090033351444	0	183.0009013749659	4	3.590707666706294	True	1
+4	4	3	1	1	left	15	0	An old photograph of the public library portrays a red-brick building with green ivy creeping up the side. Soon after the photograph was taken, the building was  demolished and the site was left derelict	"A photograph taken today shows
+an empty site
+
+True or False"	photo	True	10	4	1.25	3	3	1	True	15	30	198.00065287505277	0	198.00065391673706	4	2.6035700417123735	True	3

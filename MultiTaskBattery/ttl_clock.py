@@ -1,5 +1,23 @@
 # Created 2023: Bassel Arafat, Jorn Diedrichsen, Ince Husain
+import sys
 from psychopy import core, event
+
+# Patch pyglet's macOS Cocoa dispatch_events to handle unexpected NSArray objects
+# that occasionally appear in the event queue instead of NSEvent objects.
+# This covers all call sites (window.flip(), event.getKeys(), etc.) in one place.
+if sys.platform == 'darwin':
+    try:
+        from pyglet.window.cocoa import CocoaWindow
+        _original_dispatch_events = CocoaWindow.dispatch_events
+        def _safe_dispatch_events(self):
+            try:
+                _original_dispatch_events(self)
+            except AttributeError:
+                pass
+        CocoaWindow.dispatch_events = _safe_dispatch_events
+        print("pyglet CocoaWindow patch applied successfully")
+    except ImportError:
+        print("WARNING: pyglet CocoaWindow patch could not be applied (ImportError)")
 
 class TTLClock:
 
