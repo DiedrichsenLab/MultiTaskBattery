@@ -1,0 +1,14 @@
+task_name	task_code	task_file	instruction_dur	start_time	end_time
+demand_grid_easy_diff	dmgrid_easy_diff	demand_grid_easy_diff_23.tsv	5	3	38
+action_observation	acva-acvk	action_observation_23.tsv	5	38	73
+theory_of_mind_diff_reward	tom_diff_reward	theory_of_mind_diff_reward_23.tsv	5	73	108
+faux_pas	faux_pas	faux_pas_23.tsv	5	108	143
+rest_surprise_sound_images	rest_surp_snd_img	rest_surprise_sound_images_23.tsv	5	143	178
+tongue_movement	tongue	tongue_movement_23.tsv	5	178	213
+rest	rest	rest_23.tsv	5	213	248
+movie	mov	movie_23.tsv	5	248	283
+spatial_navigation	spatialnav	spatial_navigation_23.tsv	5	283	318
+finger_sequence_surprise	fingseqsurp	finger_sequence_surprise_23.tsv	5	318	353
+temp_deviant	temp_deviant	temp_deviant_23.tsv	5	353	388
+visual_search	visrchsml	visual_search_23.tsv	5	388	423
+verb_generation	vrbgn-wrdrd	verb_generation_23.tsv	5	423	466

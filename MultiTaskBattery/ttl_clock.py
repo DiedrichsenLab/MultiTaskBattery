@@ -13,9 +13,9 @@ if sys.platform == 'darwin':
             try:
                 _original_dispatch_events(self)
             except AttributeError:
-                pass
+                print("\n*** transient event caught and ignored in dispatch_events (window.flip() path) ***\n", flush=True)
         CocoaWindow.dispatch_events = _safe_dispatch_events
-        print("pyglet CocoaWindow patch applied successfully")
+        print("pyglet CocoaWindow patch applied successfully", flush=True)
     except ImportError:
         print("WARNING: pyglet CocoaWindow patch could not be applied (ImportError)")
 
@@ -84,9 +84,13 @@ class TTLClock:
         # AttributeError guard: pyglet's macOS Cocoa backend occasionally receives
         # a system notification wrapped as an NSArray instead of an NSEvent, causing
         # dispatch_events() to crash. Treat it as an empty key list.
+
+        #keys = event.getKeys([self.ttl_button], timeStamped=self.clock)
+
         try:
             keys = event.getKeys([self.ttl_button], timeStamped=self.clock)
         except AttributeError:
+            print("\n*** AttributeError caught in update() - unexpected object in event queue ***\n", flush=True)
             keys = []
 
         # checks if the pressed key is the key used as the ttl pulse

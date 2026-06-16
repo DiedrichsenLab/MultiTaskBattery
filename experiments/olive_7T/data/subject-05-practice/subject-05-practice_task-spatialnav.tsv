@@ -1,0 +1,3 @@
+run_num	trial_num	trial_dur	iti_dur	display_trial_feedback	start_time	end_time	location_1	location_2	real_start_time	start_ttl	start_ttl_time
+10	0	30	0	False	0	30	KITCHEN	FRONT-DOOR	393.0002324166635	0	393.00023341666383
+11	0	30	0	False	0	30	KITCHEN	BEDROOM	183.00018366666336	0	183.0001846666637

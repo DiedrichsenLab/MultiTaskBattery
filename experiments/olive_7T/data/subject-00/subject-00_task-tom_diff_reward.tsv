@@ -308,4 +308,259 @@ True or False"	belief	True	10	4	1.25	1	1	1	True	0	15	183.00090033351444	0	183.00
 4	4	3	1	1	left	15	0	An old photograph of the public library portrays a red-brick building with green ivy creeping up the side. Soon after the photograph was taken, the building was  demolished and the site was left derelict	"A photograph taken today shows
 an empty site
 
-True or False"	photo	True	10	4	1.25	3	3	1	True	15	30	198.00065287505277	0	198.00065391673706	4	2.6035700417123735	True	3
+True or False"	photo	True	10	4	1.25	3	3	1	True	15	30	198.00065287505277	0	198.00065391673704	4	2.6035700417123735	True	3
+1	4	3	0	0	left	15	0	Expecting the game to be postponed because of the rain, the Garcia family took the subway home. The score was tied, 3-3. During their commute the rain stopped and the game soon ended with a score of 5-3.	"The Garcia family arrives home 
+believing the score is 5-3.
+
+True or False"	belief	False	10	4	1.25	3	3	1	True	0	15	218.00104654166717	517	0.2116090833296766	3	3.8979081666693673	True	3
+1	4	3	1	1	left	15	0	Accounts of the country's bustling economic  success were recorded in both fiction and non-fiction books from the early 1900s. Soon after, a horrible plague hit the country and  the country was sent into an economic depression.	"Early 1900s novels portray the
+country as experiencing economic 
+wealth.
+
+True or False"	photo	True	10	4	1.25	1	1	1	True	15	30	233.00067774999843	561	0.0269169166640494	0		False	0
+1	4	3	0	0	left	15	0	Expecting the game to be postponed because of the rain, the Garcia family took the subway home. The score was tied, 3-3. During their commute the rain stopped and the game soon ended with a score of 5-3.	"The Garcia family arrives home 
+believing the score is 5-3.
+
+True or False"	belief	False	10	4	1.25	3	3	1	True	0	15	218.0008122083309	13	0.1467427500028861	4	0.1218107083404902	False	0
+1	4	3	1	1	left	15	0	Accounts of the country's bustling economic  success were recorded in both fiction and non-fiction books from the early 1900s. Soon after, a horrible plague hit the country and  the country was sent into an economic depression.	"Early 1900s novels portray the
+country as experiencing economic 
+wealth.
+
+True or False"	photo	True	10	4	1.25	1	1	1	True	15	30	233.00074408332875	15	3.467136166662385	0		False	0
+1	4	3	0	0	left	15	0	Expecting the game to be postponed because of the rain, the Garcia family took the subway home. The score was tied, 3-3. During their commute the rain stopped and the game soon ended with a score of 5-3.	"The Garcia family arrives home 
+believing the score is 5-3.
+
+True or False"	belief	False	10	4	1.25	3	3	1	True	0	15	218.000805833326	1	218.00080687500304	0		False	0
+1	4	3	1	1	left	15	0	Accounts of the country's bustling economic  success were recorded in both fiction and non-fiction books from the early 1900s. Soon after, a horrible plague hit the country and  the country was sent into an economic depression.	"Early 1900s novels portray the
+country as experiencing economic 
+wealth.
+
+True or False"	photo	True	10	4	1.25	1	1	1	True	15	30	234.06884625000384	1	234.06884729166632	0		False	0
+1	4	3	0	0	left	15	0	Expecting the game to be postponed because of the rain, the Garcia family took the subway home. The score was tied, 3-3. During their commute the rain stopped and the game soon ended with a score of 5-3.	"The Garcia family arrives home 
+believing the score is 5-3.
+
+True or False"	belief	False	10	4	1.25	3	3	1	True	0	15	218.0008970833369	301	0.392969250002352	0		False	0
+1	4	3	1	1	left	15	0	Accounts of the country's bustling economic  success were recorded in both fiction and non-fiction books from the early 1900s. Soon after, a horrible plague hit the country and  the country was sent into an economic depression.	"Early 1900s novels portray the
+country as experiencing economic 
+wealth.
+
+True or False"	photo	True	10	4	1.25	1	1	1	True	15	30	234.07119387499552	328	0.4343629166614846	0		False	0
+1	4	3	0	0	left	15	0	Expecting the game to be postponed because of the rain, the Garcia family took the subway home. The score was tied, 3-3. During their commute the rain stopped and the game soon ended with a score of 5-3.	"The Garcia family arrives home 
+believing the score is 5-3.
+
+True or False"	belief	False	10	4	1.25	3	3	1	True	0	15	218.00080125000383	220	0.2585066666651983	3	2.0830178750038613	True	3
+1	4	3	1	1	left	15	0	Accounts of the country's bustling economic  success were recorded in both fiction and non-fiction books from the early 1900s. Soon after, a horrible plague hit the country and  the country was sent into an economic depression.	"Early 1900s novels portray the
+country as experiencing economic 
+wealth.
+
+True or False"	photo	True	10	4	1.25	1	1	1	True	15	30	233.00065158333015	235	0.8018408749994705	4	2.26149541666382	True	1
+2	4	3	0	0	left	15	0	Expecting the game to be postponed because of the rain, the Garcia family took the subway home. The score was tied, 3-3. During their commute the rain stopped and the game soon ended with a score of 5-3.	"The Garcia family arrives home 
+believing the score is 5-3.
+
+True or False"	belief	False	10	4	1.25	3	3	1	True	0	15	253.00078166666208	268	0.6577938749978784	0		False	0
+2	4	3	1	1	left	15	0	Accounts of the country's bustling economic  success were recorded in both fiction and non-fiction books from the early 1900s. Soon after, a horrible plague hit the country and  the country was sent into an economic depression.	"Early 1900s novels portray the
+country as experiencing economic 
+wealth.
+
+True or False"	photo	True	10	4	1.25	1	1	1	True	15	30	269.0716976249969	274	5.4007411249986035	0		False	0
+1	1	2	0	0	right	15	0	Expecting the game to be postponed because of the rain, the Garcia family took the subway home. The score was tied, 3-3. During their commute the rain stopped and the game soon ended with a score of 5-3.	"The Garcia family arrives home 
+believing the score is 5-3.
+
+True or False"	belief	False	10	4	1.25	3	3	1	True	0	15	288.000794458334	332	0.5959388749979553	2	1.8574995416711315	True	3
+1	1	2	1	1	right	15	0	Accounts of the country's bustling economic  success were recorded in both fiction and non-fiction books from the early 1900s. Soon after, a horrible plague hit the country and  the country was sent into an economic depression.	"Early 1900s novels portray the
+country as experiencing economic 
+wealth.
+
+True or False"	photo	True	10	4	1.25	1	1	1	True	15	30	303.0007229999974	350	0.1074042499967617	1	3.0919850833306555	True	1
+1	1	2	0	0	right	15	0	John told Mary that he had lost his keys. The two of them searched the house with no luck. Then Mary went outside to look in the car. Suddenly John noticed his keys behind the sofa.	"By the time Mary comes in, John
+doesn't know where his keys are.
+
+True or False "	belief	False	10	4	1.25	1	1	1	True	0	15	8.000802083326562	0	8.000803374998213	2	1.503396291664103	True	1
+1	1	2	1	1	right	15	0	A biography describes the room as it was in 1965. Originally the walls were covered in dark wallpaper. By 1965 the paper had been stripped and replaced with cream paint.	"The biography says that the room
+was light.
+
+True or False"	photo	True	10	4	1.25	3	3	1	True	15	30	23.00055087500368	0	23.000551958328288	1	0.9044457083291492	True	3
+1	1	2	0	0	right	15	0	Expecting the game to be postponed because of the rain, the Garcia family took the subway home. The score was tied, 3-3. During their commute the rain stopped and the game soon ended with a score of 5-3.	"The Garcia family arrives home 
+believing the score is 5-3.
+
+True or False"	belief	False	10	4	1.25	3	3	1	True	0	15	218.00083008332876	250	0.8917168333355221	2	1.6727771250007208	True	3
+1	1	2	1	1	right	15	0	Accounts of the country's bustling economic  success were recorded in both fiction and non-fiction books from the early 1900s. Soon after, a horrible plague hit the country and  the country was sent into an economic depression.	"Early 1900s novels portray the
+country as experiencing economic 
+wealth.
+
+True or False"	photo	True	10	4	1.25	1	1	1	True	15	30	233.00073591666296	262	0.3556799166617566	1	1.88338379166089	True	1
+1	1	2	1	0	right	15	0	When Lisa left Jacob he was deep asleep on the beach. A few minutes later a wave woke him. Seeing Lisa was gone Jacob decided to go swimming.	"Lisa now believes that Jacob is sleeping.
+
+True or False "	belief	True	10	4	1.25	3	3	1	True	0	15	148.00081762500486	192	0.4182157083268976	1	1.5071402083340215	True	3
+1	1	2	1	1	right	15	0	At the time a portrait was drawn of a young man, he had short brown hair and no facial hair. Now the man's hair is long and gray and so is his beard.  	"Today the length of the man's hair
+is long.
+
+True or False "	photo	True	10	4	1.25	1	1	1	True	15	30	163.0008190833396	208	0.1382155833271099	2	2.0159684583341004	False	0
+1	4	3	1	0	left	15	0	Sophie tells her mother that her train  from Budapest is arriving at 8PM in  Vienna. Sophie confuses the platform numbers and boards the train  to Prague without realising her mistake.	"Sophie arrives at the station 
+in Prague does not see her mother
+
+True or False"	belief	True	10	4	1.25	3	3	1	True	0	15	148.00079841666593	173	0.540395541669568	4	2.7316028749992256	True	3
+1	4	3	1	1	left	15	0	An old photograph of the public library portrays a red-brick building with green ivy creeping up the side. Soon after the photograph was taken, the building was  demolished and the site was left derelict	"A photograph taken today shows
+an empty site
+
+True or False"	photo	True	10	4	1.25	1	1	1	True	15	30	163.0007698749978	192	0.3977266666624928	4	3.794509416664369	True	1
+1	4	3	0	0	left	15	0	Expecting the game to be postponed because of the rain, the Garcia family took the subway home. The score was tied, 3-3. During their commute the rain stopped and the game soon ended with a score of 5-3.	"The Garcia family arrives home 
+believing the score is 5-3.
+
+True or False"	belief	False	10	4	1.25	3	3	1	True	0	15	8.000808708326076	19	0.0224666666617849	3	3.06711075000203	True	3
+1	4	3	1	1	left	15	0	Accounts of the country's bustling economic  success were recorded in both fiction and non-fiction books from the early 1900s. Soon after, a horrible plague hit the country and  the country was sent into an economic depression.	"Early 1900s novels portray the
+country as experiencing economic 
+wealth.
+
+True or False"	photo	True	10	4	1.25	1	1	1	True	15	30	23.0006980416656	50	0.3974986249959329	4	2.0367857916644425	True	1
+2	4	3	1	0	left	15	0	Sophie tells her mother that her train  from Budapest is arriving at 8PM in  Vienna. Sophie confuses the platform numbers and boards the train  to Prague without realising her mistake.	"Sophie arrives at the station 
+in Prague does not see her mother
+
+True or False"	belief	True	10	4	1.25	3	3	1	True	0	15	113.00077366667392	188	0.0364773333276389	4	1.7568966249964433	True	3
+2	4	3	1	1	left	15	0	An old photograph of the public library portrays a red-brick building with green ivy creeping up the side. Soon after the photograph was taken, the building was  demolished and the site was left derelict	"A photograph taken today shows
+an empty site
+
+True or False"	photo	True	10	4	1.25	1	1	1	True	15	30	128.0006964583372	212	0.555571458338818	4	2.14501449999807	True	1
+1	4	3	0	0	left	15	0	Expecting the game to be postponed because of the rain, the Garcia family took the subway home. The score was tied, 3-3. During their commute the rain stopped and the game soon ended with a score of 5-3.	"The Garcia family arrives home 
+believing the score is 5-3.
+
+True or False"	belief	False	10	4	1.25	3	3	1	True	0	15	183.00080808333587	353	0.005673999999999	3	2.8404653333345777	True	3
+1	4	3	1	1	left	15	0	Accounts of the country's bustling economic  success were recorded in both fiction and non-fiction books from the early 1900s. Soon after, a horrible plague hit the country and  the country was sent into an economic depression.	"Early 1900s novels portray the
+country as experiencing economic 
+wealth.
+
+True or False"	photo	True	10	4	1.25	1	1	1	True	15	30	198.0007035416711	389	0.3370649583230261	4	0.939184833332547	True	1
+1	1	2	1	0	right	15	0	Sophie tells her mother that her train  from Budapest is arriving at 8PM in  Vienna. Sophie confuses the platform numbers and boards the train  to Prague without realising her mistake.	"Sophie arrives at the station 
+in Prague does not see her mother
+
+True or False"	belief	True	10	4	1.25	1	1	1	True	0	15	428.0008058749954	1014	0.1964670000015758	1	1.955776374998095	True	1
+1	1	2	1	1	right	15	0	An old photograph of the public library portrays a red-brick building with green ivy creeping up the side. Soon after the photograph was taken, the building was  demolished and the site was left derelict	"A photograph taken today shows
+an empty site
+
+True or False"	photo	True	10	4	1.25	3	3	1	True	15	30	443.00071995833423	1046	0.2510742499944172	1	1.6153216666643857	True	3
+2	1	2	1	0	right	15	0	Josh tells Adam that he will meet  him at the game later that day.  At the last minute, Josh is called into work and forgets to tell Adam.	"Adam cannot find Josh in the stadium
+
+True or False "	belief	True	10	4	1.25	1	1	1	True	0	15	323.00076116666605	607	0.1992190000019036	4	2.901798999999301	False	0
+2	1	2	0	1	right	15	0	Kate places her keys on the kitchen table  and goes to her bedroom to take a nap.  Her boyfriend sees Kate's keys and places them in her bag where she usually keeps them	"Kate wakes from her nap and 
+looks for her keys in her bag
+
+True or False"	photo	False	10	4	1.25	3	3	1	True	15	30	338.00065291666397	630	0.2912771666742628	2	2.7737107916691457	True	3
+3	1	2	0	0	right	15	0	Expecting the game to be postponed because of the rain, the Garcia family took the subway home. The score was tied, 3-3. During their commute the rain stopped and the game soon ended with a score of 5-3.	"The Garcia family arrives home 
+believing the score is 5-3.
+
+True or False"	belief	False	10	4	1.25	3	3	1	True	0	15	8.000801208327175	14	0.3310469999996712	2	2.2430946250024135	True	3
+3	1	2	1	1	right	15	0	Accounts of the country's bustling economic  success were recorded in both fiction and non-fiction books from the early 1900s. Soon after, a horrible plague hit the country and  the country was sent into an economic depression.	"Early 1900s novels portray the
+country as experiencing economic 
+wealth.
+
+True or False"	photo	True	10	4	1.25	1	1	1	True	15	30	23.00079854165961	40	0.2599691666691797	0		False	0
+4	1	2	1	0	right	15	0	Sophie tells her mother that her train  from Budapest is arriving at 8PM in  Vienna. Sophie confuses the platform numbers and boards the train  to Prague without realising her mistake.	"Sophie arrives at the station 
+in Prague does not see her mother
+
+True or False"	belief	True	10	4	1.25	1	1	1	True	0	15	393.00076029166667	897	0.6442718750040513	1	2.388797125000565	True	1
+4	1	2	1	1	right	15	0	An old photograph of the public library portrays a red-brick building with green ivy creeping up the side. Soon after the photograph was taken, the building was  demolished and the site was left derelict	"A photograph taken today shows
+an empty site
+
+True or False"	photo	True	10	4	1.25	3	3	1	True	15	30	408.0007182499976	929	0.0878706666699145	1	1.4404396666723187	True	3
+1	1	2	1	0	right	15	0	Josh tells Adam that he will meet  him at the game later that day.  At the last minute, Josh is called into work and forgets to tell Adam.	"Adam cannot find Josh in the stadium
+
+True or False "	belief	True	10	4	1.25	1	1	1	True	0	15	218.00082895832747	414	2.758067958326137	1	2.463874749999377	True	1
+1	1	2	0	1	right	15	0	Kate places her keys on the kitchen table  and goes to her bedroom to take a nap.  Her boyfriend sees Kate's keys and places them in her bag where she usually keeps them	"Kate wakes from her nap and 
+looks for her keys in her bag
+
+True or False"	photo	False	10	4	1.25	3	3	1	True	15	30	233.00073387500015	443	0.1182123750040773	2	1.385196499999438	True	3
+2	1	2	0	0	right	15	0	Expecting the game to be postponed because of the rain, the Garcia family took the subway home. The score was tied, 3-3. During their commute the rain stopped and the game soon ended with a score of 5-3.	"The Garcia family arrives home 
+believing the score is 5-3.
+
+True or False"	belief	False	10	4	1.25	3	3	1	True	0	15	428.0008113333388	821	1.3070675833296264	2	2.8167466666709515	True	3
+2	1	2	1	1	right	15	0	Accounts of the country's bustling economic  success were recorded in both fiction and non-fiction books from the early 1900s. Soon after, a horrible plague hit the country and  the country was sent into an economic depression.	"Early 1900s novels portray the
+country as experiencing economic 
+wealth.
+
+True or False"	photo	True	10	4	1.25	1	1	1	True	15	30	443.0007107916754	852	0.1397261666643316	1	2.5484904583354364	True	1
+1	4	3	1	0	left	15	0	Sophie tells her mother that her train  from Budapest is arriving at 8PM in  Vienna. Sophie confuses the platform numbers and boards the train  to Prague without realising her mistake.	"Sophie arrives at the station 
+in Prague does not see her mother
+
+True or False"	belief	True	10	4	1.25	3	3	1	True	0	15	393.0008047500014	996	0.3100497499981429	4	1.9903707499906889	True	3
+1	4	3	1	1	left	15	0	An old photograph of the public library portrays a red-brick building with green ivy creeping up the side. Soon after the photograph was taken, the building was  demolished and the site was left derelict	"A photograph taken today shows
+an empty site
+
+True or False"	photo	True	10	4	1.25	1	1	1	True	15	30	408.00070775000495	1034	0.1980423749919282	4	2.0678877500031376	True	1
+1	4	3	1	0	left	15	0	Josh tells Adam that he will meet  him at the game later that day.  At the last minute, Josh is called into work and forgets to tell Adam.	"Adam cannot find Josh in the stadium
+
+True or False "	belief	True	10	4	1.25	3	3	1	True	0	15	8.000899083330296	18	0.138199708337197	4	1.836180250000325	True	3
+1	4	3	0	1	left	15	0	Kate places her keys on the kitchen table  and goes to her bedroom to take a nap.  Her boyfriend sees Kate's keys and places them in her bag where she usually keeps them	"Kate wakes from her nap and 
+looks for her keys in her bag
+
+True or False"	photo	False	10	4	1.25	1	1	1	True	15	30	23.000745291661588	57	0.1754639166756533	3	1.8039845416642493	True	1
+2	4	3	0	0	left	15	0	Expecting the game to be postponed because of the rain, the Garcia family took the subway home. The score was tied, 3-3. During their commute the rain stopped and the game soon ended with a score of 5-3.	"The Garcia family arrives home 
+believing the score is 5-3.
+
+True or False"	belief	False	10	4	1.25	1	1	1	True	0	15	428.00080804167374	846	0.2232945416471921	3	1.390462083320017	True	1
+2	4	3	1	1	left	15	0	Accounts of the country's bustling economic  success were recorded in both fiction and non-fiction books from the early 1900s. Soon after, a horrible plague hit the country and  the country was sent into an economic depression.	"Early 1900s novels portray the
+country as experiencing economic 
+wealth.
+
+True or False"	photo	True	10	4	1.25	3	3	1	True	15	30	443.0007320000004	888	0.0338479166675824	4	1.071421749991714	True	3
+1	4	3	1	0	left	15	0	The morning of high school dance Sarah placed her high heel shoes under her dress and then went shopping. That afternoon, her sister borrowed the shoes and later put them under Sarah's bed.	"Sarah gets ready assuming her
+shoes are under the dress.
+
+True or False "	belief	True	10	4	1.25	3	3	1	True	0	15	253.00080012500985	673	0.1249114583333721	4	2.222432499998831	True	3
+1	4	3	1	1	left	15	0	Sargent famously painted the south bank of the river in 1885. In 1910 a huge dam was built, flooding out the whole river basin,  killing the old forests. Now the whole area is under water.	"In the painting the south bank of
+the river is wooded. 
+
+True or False "	photo	True	10	4	1.25	1	1	1	True	15	30	268.0007345000049	708	0.3909284999972442	3	2.3998149999970337	False	0
+2	4	3	1	0	left	15	0	When Lisa left Jacob he was deep asleep on the beach. A few minutes later a wave woke him. Seeing Lisa was gone Jacob decided to go swimming.	"Lisa now believes that Jacob is sleeping.
+
+True or False "	belief	True	10	4	1.25	3	3	1	True	0	15	218.0008019166562	523	0.19816058332799	3	1.8632301250036107	False	0
+2	4	3	1	1	left	15	0	At the time a portrait was drawn of a young man, he had short brown hair and no facial hair. Now the man's hair is long and gray and so is his beard.  	"Today the length of the man's hair
+is long.
+
+True or False "	photo	True	10	4	1.25	1	1	1	True	15	30	233.0007372083346	557	0.5667017916566692	4	1.5317596249951748	True	1
+1	4	3	1	0	left	15	0	Sophie tells her mother that her train  from Budapest is arriving at 8PM in  Vienna. Sophie confuses the platform numbers and boards the train  to Prague without realising her mistake.	"Sophie arrives at the station 
+in Prague does not see her mother
+
+True or False"	belief	True	10	4	1.25	3	3	1	True	0	15	113.00083299999824	283	0.2396395000105258	4	1.6296091666736174	True	3
+1	4	3	1	1	left	15	0	An old photograph of the public library portrays a red-brick building with green ivy creeping up the side. Soon after the photograph was taken, the building was  demolished and the site was left derelict	"A photograph taken today shows
+an empty site
+
+True or False"	photo	True	10	4	1.25	1	1	1	True	15	30	128.00074554164894	322	0.040853958329535	4	1.3097446666797623	True	1
+2	4	3	1	0	left	15	0	Josh tells Adam that he will meet  him at the game later that day.  At the last minute, Josh is called into work and forgets to tell Adam.	"Adam cannot find Josh in the stadium
+
+True or False "	belief	True	10	4	1.25	1	1	1	True	0	15	8.00081804166257	19	0.1031321250047767	4	1.310859958321089	True	1
+2	4	3	0	1	left	15	0	Kate places her keys on the kitchen table  and goes to her bedroom to take a nap.  Her boyfriend sees Kate's keys and places them in her bag where she usually keeps them	"Kate wakes from her nap and 
+looks for her keys in her bag
+
+True or False"	photo	False	10	4	1.25	3	3	1	True	15	30	23.00074916666199	52	0.3823720416694414	3	1.729578083337401	True	3
+3	4	3	0	0	left	15	0	Expecting the game to be postponed because of the rain, the Garcia family took the subway home. The score was tied, 3-3. During their commute the rain stopped and the game soon ended with a score of 5-3.	"The Garcia family arrives home 
+believing the score is 5-3.
+
+True or False"	belief	False	10	4	1.25	3	3	1	True	0	15	393.0008243750053	900	0.193737208348466	3	2.309951666655252	True	3
+3	4	3	1	1	left	15	0	Accounts of the country's bustling economic  success were recorded in both fiction and non-fiction books from the early 1900s. Soon after, a horrible plague hit the country and  the country was sent into an economic depression.	"Early 1900s novels portray the
+country as experiencing economic 
+wealth.
+
+True or False"	photo	True	10	4	1.25	1	1	1	True	15	30	408.00072937500954	933	0.0965414166712435	4	1.4501542916696053	True	1
+4	4	3	1	0	left	15	0	The morning of high school dance Sarah placed her high heel shoes under her dress and then went shopping. That afternoon, her sister borrowed the shoes and later put them under Sarah's bed.	"Sarah gets ready assuming her
+shoes are under the dress.
+
+True or False "	belief	True	10	4	1.25	3	3	1	True	0	15	78.00081483332906	166	0.1818502916721627	4	2.3395516666641925	True	3
+4	4	3	1	1	left	15	0	Sargent famously painted the south bank of the river in 1885. In 1910 a huge dam was built, flooding out the whole river basin,  killing the old forests. Now the whole area is under water.	"In the painting the south bank of
+the river is wooded. 
+
+True or False "	photo	True	10	4	1.25	1	1	1	True	15	30	93.000756416659	195	0.2638988333201268	4	1.9700063333293656	True	1
+5	4	3	1	0	left	15	0	When Lisa left Jacob he was deep asleep on the beach. A few minutes later a wave woke him. Seeing Lisa was gone Jacob decided to go swimming.	"Lisa now believes that Jacob is sleeping.
+
+True or False "	belief	True	10	4	1.25	3	3	1	True	0	15	43.00083045833162	107	0.103953249999904	4	2.3500322083273204	True	3
+5	4	3	1	1	left	15	0	At the time a portrait was drawn of a young man, he had short brown hair and no facial hair. Now the man's hair is long and gray and so is his beard.  	"Today the length of the man's hair
+is long.
+
+True or False "	photo	True	10	4	1.25	1	1	1	True	15	30	58.00069579166302	136	0.531018875000882	4	1.3247679583291756	True	1
+6	4	3	0	0	left	15	0	John told Mary that he had lost his keys. The two of them searched the house with no luck. Then Mary went outside to look in the car. Suddenly John noticed his keys behind the sofa.	"By the time Mary comes in, John
+doesn't know where his keys are.
+
+True or False "	belief	False	10	4	1.25	1	1	1	True	0	15	43.00082008332538	76	0.34072862500033807	3	2.000555708349566	True	1
+6	4	3	1	1	left	15	0	A biography describes the room as it was in 1965. Originally the walls were covered in dark wallpaper. By 1965 the paper had been stripped and replaced with cream paint.	"The biography says that the room
+was light.
+
+True or False"	photo	True	10	4	1.25	3	3	1	True	15	30	58.00077174999751	106	0.37835762499889825	4	0.9552772916649701	True	3

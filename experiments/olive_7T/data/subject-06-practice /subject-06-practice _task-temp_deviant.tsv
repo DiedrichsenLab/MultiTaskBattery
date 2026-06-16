@@ -1,0 +1,7 @@
+run_num	trial_num	hand	key_yes	key_no	frequency	stim_interval	trial_duration	response_duration	display_trial_feedback	start_time	end_time	n_deviants	deviant_times	deviant_type	deviant_positions	real_start_time	start_ttl	start_ttl_time	response	rt	correct
+1	0	left	4	3	1	1.0	13	2	True	0	15	0				148.00099279166898	0	148.00033324999094	3	1.8275932916731108	True
+1	1	left	4	3	1	1.0	13	2	True	15	30	1	18.2	late	4.0	163.0005467916635	0	163.0000143333309	3	1.806037666683551	False
+2	0	left	4	3	1	1.0	13	2	True	0	15	0				148.00068666665177	0	148.0001684583258	3	1.411921083330526	True
+2	1	left	4	3	1	1.0	13	2	True	15	30	3	17.8;24.2;25.8	early;late;early	4;10;12	163.00055474998953	0	163.00003304165148	4	0.5526305416715331	True
+3	0	left	4	3	1	1.0	13	2	True	0	15	0				148.00078658333223	0	148.00023187500483	3	1.497361625006306	True
+3	1	left	4	3	1	1.0	13	2	True	15	30	2	19.8;26.2	early;late	6;12	163.00058666666155	0	163.00005441666872	4	1.3982379166554892	True

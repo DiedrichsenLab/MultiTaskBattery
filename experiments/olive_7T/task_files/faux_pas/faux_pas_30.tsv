@@ -1,0 +1,4 @@
+trial_num	hand	key_yes	key_no	trial_dur	iti_dur	story	question	options	trial_type	condition	story_dur	question_dur	text_height	display_trial_feedback	start_time	end_time
+0	left	4	3	14	1	"Helen's husband planned a surprise birthday party. He warned Sarah, ""Don't tell Helen."" While with Helen, Sarah spilled coffee on her dress and said, ""Oh! I was wearing this to your party!"" ""What party?"" Said Helen."	Did anyone say something they shouldn't have said or something awkward?	Yes, No	1	social	10	4	1.25	True	0	15
+1	left	4	3	14	1	"Tim spilled coffee on the floor at a restaurant. The waiter said, “I’ll get you another cup,” and left.
+Tim approached Jack, a customer by the cashier, and asked, “I spilled coffee by my table. Can you mop it up?”"	Did Jack spill the coffee?	Yes, No	2	control	10	4	1.25	True	15	30

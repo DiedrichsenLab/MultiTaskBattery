@@ -1,3 +1,6 @@
-key_yes	key_no	trial_num	hand	trial_dur	iti_dur	story	question	options	trial_type	condition	story_dur	question_dur	text_height	display_trial_feedback	start_time	end_time
-4	3	0	left	14	1	Mia got home and reached into her bag, but her keys weren’t there. She checked again and sighed. “I must have left them at the café,” she thought. She called her friend, who found them on the table.	Did Mia find her keys at home?	Yes, No	2	control	10	4	1.25	True	0	15
-4	3	1	left	14	1	Laura gave her friend Nina a handmade scarf for her birthday. Nina unwrapped it and said, “Oh… this is nice. My grandma used to make scarves like these, but I never really wore them.” Laura forced a smile.	Did Nina like the gift?	Yes, No	2	control	10	4	1.25	True	15	30
+trial_num	hand	key_yes	key_no	trial_dur	iti_dur	story	question	options	trial_type	condition	story_dur	question_dur	text_height	display_trial_feedback	start_time	end_time
+0	left	4	3	14	1	"Mike started at a new school. While in a bathroom stall he overheard Joe and Peter at the sinks.
+“Doesn’t the new guy, Mike, look weird? And he’s so short!” Joe said.
+Mike emerged.
+“Oh hi, Mike!” Peter said. “Are you going out to play?”"	Is Mike new in the class?	Yes, No	1	control	10	4	1.25	True	0	15
+1	left	4	3	14	1	Laura gave her friend Nina a handmade scarf for her birthday. Nina unwrapped it and said, “Oh… this is nice. My grandma used to make scarves like these, but I never really wore them.” Laura forced a smile.	Did anyone say something they shouldn't have said or something awkward?	Yes, No	1	social	10	4	1.25	True	15	30

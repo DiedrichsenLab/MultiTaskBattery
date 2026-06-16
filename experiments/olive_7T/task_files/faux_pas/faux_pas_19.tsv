@@ -1,4 +1,4 @@
 trial_num	hand	key_yes	key_no	trial_dur	iti_dur	story	question	options	trial_type	condition	story_dur	question_dur	text_height	display_trial_feedback	start_time	end_time
-0	right	1	2	14	1	"Richard backed his new red Peugeot into his neighbor Ted’s old Volvo, leaving only a scratch above the wheel. He knocked on Ted’s door, saying, “I’m sorry about the scratch.”
-Ted looked and said, “Don’t worry. It was an accident.”"	Did anyone say something they shouldn't have said or something awkward?	Yes, No	2	social	10	4	1.25	True	0	15
-1	right	1	2	14	1	"John stopped at the petrol station to fill his car. When the cashier ran his card she said ""The machine won't accept it."" ""That's funny,"" John said. ""I'll pay in cash."" He gave her fifty and said, ""I filled up with unleaded."""	Did the machine accept John's card?	Yes, No	2	control	10	4	1.25	True	15	30
+0	right	1	2	14	1	"John stopped at the petrol station to fill his car. When the cashier ran his card she said ""The machine won't accept it."" ""That's funny,"" John said. ""I'll pay in cash."" He gave her fifty and said, ""I filled up with unleaded."""	Did the machine accept John's card?	Yes, No	2	control	10	4	1.25	True	0	15
+1	right	1	2	14	1	"Richard backed his new red Peugeot into his neighbor Ted’s old Volvo, leaving only a scratch above the wheel. He knocked on Ted’s door, saying, “I’m sorry about the scratch.”
+Ted looked and said, “Don’t worry. It was an accident.”"	Did anyone say something they shouldn't have said or something awkward?	Yes, No	2	social	10	4	1.25	True	15	30

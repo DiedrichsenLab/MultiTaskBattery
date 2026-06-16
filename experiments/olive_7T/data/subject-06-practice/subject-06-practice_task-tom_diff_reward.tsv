@@ -1,0 +1,39 @@
+run_num	key_true	key_false	trial_type	trial_num	hand	trial_dur	iti_dur	story	question	condition	answer	story_dur	question_dur	text_height	reward_value	reward_cue	reward_cue_dur	display_trial_feedback	start_time	end_time	real_start_time	start_ttl	start_ttl_time	response	rt	correct	points_earned
+6	1	2	0	0	right	15	0	Annie tells Carl that she has to work late.  Instead, Annie arrives home before Carl to  surprise him for his birthday. Carl goes  out with his friends straight after work, arriving home late. 	"Annie knows that Carl
+is out with his friends
+
+True or False"	belief	False	10	4	1.25	3	3	1	True	0	15	78.00081741667236	0	78.00081845834211	2	2.55055695833289	True	3
+6	1	2	1	1	right	15	0	The professor asked his graduate student to present her work at a conference.  The student is sick on the day of the conference and she asks a  colleague to present the work instead. 	"The professor's graduate student 
+does not give the presentation
+
+True or False"	photo	True	10	4	1.25	1	1	1	True	15	30	93.00059733333184	0	93.00059833333944	1	2.410014583336306	True	1
+7	1	2	1	0	right	15	0	Josh tells Adam that he will meet  him at the game later that day.  At the last minute, Josh is called into work and forgets to tell Adam.	"Adam cannot find Josh in the stadium
+
+True or False "	belief	True	10	4	1.25	1	1	1	True	0	15	148.00065699999686	0	148.00065808332874	1	2.2358078750112327	True	1
+7	1	2	0	1	right	15	0	Kate places her keys on the kitchen table  and goes to her bedroom to take a nap.  Her boyfriend sees Kate's keys and places them in her bag where she usually keeps them	"Kate wakes from her nap and 
+looks for her keys in her bag
+
+True or False"	photo	False	10	4	1.25	3	3	1	True	15	30	163.00053166666476	0	163.0005327083345	2	2.5019355833355803	True	3
+8	1	2	1	0	right	15	0	The morning of high school dance Sarah placed her high heel shoes under her dress and then went shopping. That afternoon, her sister borrowed the shoes and later put them under Sarah's bed.	"Sarah gets ready assuming her
+shoes are under the dress.
+
+True or False "	belief	True	10	4	1.25	3	3	1	True	0	15	113.0007190000033	0	113.00071999999636	1	2.267307375004748	True	3
+8	1	2	1	1	right	15	0	Sargent famously painted the south bank of the river in 1885. In 1910 a huge dam was built, flooding out the whole river basin,  killing the old forests. Now the whole area is under water.	"In the painting the south bank of
+the river is wooded. 
+
+True or False "	photo	True	10	4	1.25	1	1	1	True	15	30	128.00060545833549	0	128.00060654166737	1	3.5421382916683797	True	1
+9	1	2	0	0	right	15	0	Amy leaves her sister in the library while she goes to class. Sometime thereafter, Amy's sister leaves the library to meet her friend on the other side of town. 	"Amy returns after class and 
+finds her sister in the library
+
+True or False"	belief	False	10	4	1.25	3	3	1	True	0	15	428.00065220832766	0	428.00065316667315	2	2.314207291667117	True	3
+9	1	2	0	1	right	15	0	Paintings of the town in the early nineteenth century portray a bustling marketplace in the town square. In recent  years, the town square has been ruined by warfare. 	"Paintings of the town square depict 
+ruins obliterated by warfare
+
+True or False"	photo	False	10	4	1.25	1	1	1	True	15	30	443.0005549166672	0	443.00055591666023	2	2.0709210416680435	True	1
+10	4	3	0	0	left	15	0	Michael told Andrew that he was going hiking for the day. An hour  into his walk, Michael hurts his leg and returns home	"Michael returns home that evening 
+after a long day of hiking
+
+True or False"	belief	False	10	4	1.25	3	3	1	True	0	15	288.00080462500046	0	288.00080570833234	3	3.092953208324616	True	3
+10	4	3	1	1	left	15	0	Tom leaves the house without letting  the dog out. Tom's neighbour hears  the dog barking and lets her into  the backyard.  Later, Tom arrives home from work. 	"Tom finds the dog in the backyard
+
+True or False"	photo	True	10	4	1.25	1	1	1	True	15	30	303.0005752500001	0	303.00057629166986	4	1.7778484166628914	True	1

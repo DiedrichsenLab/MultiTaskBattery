@@ -1,0 +1,5 @@
+run_num	trial_num	hand	trial_dur	iti_dur	display_trial_feedback	stim	start_time	end_time	real_start_time	start_ttl	start_ttl_time
+9	0		14	1	False	knotActionFlora.mov	0	15	8.00024699998903	0	8.000247916672379
+9	1		14	1	False	knotControlFlora.mov	15	30	23.00003624999954	0	23.00004587500007
+10	0		14	1	False	knotActionCornice.mov	0	15	183.00016475000302	0	183.00016570833395
+10	1		14	1	False	knotControlCornice.mov	15	30	198.00003041667514	0	198.000047958325

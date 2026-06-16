@@ -26,6 +26,136 @@ The butcher nodded and began wrapping a roasted chicken.
 4	4	3	0	left	14	1	"Louise went to the butcher and asked, “Do you have any free-range chickens?”
 The butcher nodded and began wrapping a roasted chicken.
 “Excuse me,” Louise said, “I asked for free-range.”
-“Oh sorry,” the butcher replied, “we’re all out.”"	Did anyone say something they shouldn't have said or something awkward?	Yes, No	2	social	10	4	1.25	True	0	15	113.00023195846006	0	113.00023291679099	3	3.793855083407834	True
+“Oh sorry,” the butcher replied, “we’re all out.”"	Did anyone say something they shouldn't have said or something awkward?	Yes, No	2	social	10	4	1.25	True	0	15	113.00023195846006	0	113.000232916791	3	3.793855083407834	True
 4	4	3	1	left	14	1	"Jill had just moved into a new flat and bought curtains for her bedroom. After decorating, her best friend Lisa visited. Jill gave her a tour and asked, “How do you like my bedroom?”
 “Those curtains are horrible,” Lisa said."""	Did Jill just move into a new flat?	Yes, No	1	control	10	4	1.25	True	15	30	128.00004704180174	0	128.00004804180935	4	2.2196889163460582	True
+1	4	3	0	left	14	1	"Vicky was at Oliver’s party, talking to him when a neighbor approached. The woman said, “Hello. I’m Maria, what’s your name?”
+“I’m Vicky,” she replied.
+“Would anyone like a drink?” Oliver asked."	Did anyone say something they shouldn't have said or something awkward?	Yes, No	2	social	10	4	1.25	True	0	15	78.00021237499823	158	0.1181631250001373	3	1.9270780833394383	True
+1	4	3	1	left	14	1	"At Fernhaven Elementary, Christine entered a story competition but didn’t win. Her classmate Jake won first prize.
+Sitting with him the next day, Jake said, “The other stories were terrible.”
+Christine asked, “Where will you put your trophy?”"	Did Christine’s story win anything?	Yes, No	2	control	10	4	1.25	True	15	30	93.00002541666254	194	0.0058415833336766	3	1.6945242500005406	True
+1	4	3	0	left	14	1	"Vicky was at Oliver’s party, talking to him when a neighbor approached. The woman said, “Hello. I’m Maria, what’s your name?”
+“I’m Vicky,” she replied.
+“Would anyone like a drink?” Oliver asked."	Did anyone say something they shouldn't have said or something awkward?	Yes, No	2	social	10	4	1.25	True	0	15	78.00024566666252	1	78.00024658333132	0		False
+1	4	3	1	left	14	1	"At Fernhaven Elementary, Christine entered a story competition but didn’t win. Her classmate Jake won first prize.
+Sitting with him the next day, Jake said, “The other stories were terrible.”
+Christine asked, “Where will you put your trophy?”"	Did Christine’s story win anything?	Yes, No	2	control	10	4	1.25	True	15	30	93.00007462499345	1	93.00007558333164	0		False
+1	4	3	0	left	14	1	"Vicky was at Oliver’s party, talking to him when a neighbor approached. The woman said, “Hello. I’m Maria, what’s your name?”
+“I’m Vicky,” she replied.
+“Would anyone like a drink?” Oliver asked."	Did anyone say something they shouldn't have said or something awkward?	Yes, No	2	social	10	4	1.25	True	0	15	78.00020345833036	1	78.00020441666857	0		False
+1	4	3	1	left	14	1	"At Fernhaven Elementary, Christine entered a story competition but didn’t win. Her classmate Jake won first prize.
+Sitting with him the next day, Jake said, “The other stories were terrible.”
+Christine asked, “Where will you put your trophy?”"	Did Christine’s story win anything?	Yes, No	2	control	10	4	1.25	True	15	30	93.00002458332892	1	93.00002549999772	0		False
+1	4	3	0	left	14	1	"Vicky was at Oliver’s party, talking to him when a neighbor approached. The woman said, “Hello. I’m Maria, what’s your name?”
+“I’m Vicky,” she replied.
+“Would anyone like a drink?” Oliver asked."	Did anyone say something they shouldn't have said or something awkward?	Yes, No	2	social	10	4	1.25	True	0	15	78.00019954166055	105	0.407277124999382	0		False
+1	4	3	1	left	14	1	"At Fernhaven Elementary, Christine entered a story competition but didn’t win. Her classmate Jake won first prize.
+Sitting with him the next day, Jake said, “The other stories were terrible.”
+Christine asked, “Where will you put your trophy?”"	Did Christine’s story win anything?	Yes, No	2	control	10	4	1.25	True	15	30	93.0000222916642	120	0.7385776250011986	0		False
+1	4	3	0	left	14	1	"Vicky was at Oliver’s party, talking to him when a neighbor approached. The woman said, “Hello. I’m Maria, what’s your name?”
+“I’m Vicky,” she replied.
+“Would anyone like a drink?” Oliver asked."	Did anyone say something they shouldn't have said or something awkward?	Yes, No	2	social	10	4	1.25	True	0	15	78.00020412500453	49	1.4417829166704903	3	1.6980752916715574	True
+1	4	3	1	left	14	1	"At Fernhaven Elementary, Christine entered a story competition but didn’t win. Her classmate Jake won first prize.
+Sitting with him the next day, Jake said, “The other stories were terrible.”
+Christine asked, “Where will you put your trophy?”"	Did Christine’s story win anything?	Yes, No	2	control	10	4	1.25	True	15	30	93.00000987500243	61	0.8259624999991502	3	1.6885652500059225	True
+2	4	3	0	left	14	1	"Vicky was at Oliver’s party, talking to him when a neighbor approached. The woman said, “Hello. I’m Maria, what’s your name?”
+“I’m Vicky,” she replied.
+“Would anyone like a drink?” Oliver asked."	Did anyone say something they shouldn't have said or something awkward?	Yes, No	2	social	10	4	1.25	True	0	15	8.000198458328668	8	0.4251667083372012	3	3.2536897083264193	True
+2	4	3	1	left	14	1	"At Fernhaven Elementary, Christine entered a story competition but didn’t win. Her classmate Jake won first prize.
+Sitting with him the next day, Jake said, “The other stories were terrible.”
+Christine asked, “Where will you put your trophy?”"	Did Christine’s story win anything?	Yes, No	2	control	10	4	1.25	True	15	30	23.000024791661417	22	0.7130594166592346	3	3.3440747916756663	True
+1	1	2	0	right	14	1	"At Fernhaven Elementary, Christine entered a story competition but didn’t win. Her classmate Jake won first prize.
+Sitting with him the next day, Jake said, “The other stories were terrible.”
+Christine asked, “Where will you put your trophy?”"	Did Christine’s story win anything?	Yes, No	2	control	10	4	1.25	True	0	15	253.00020412499725	298	0.7793938750037341	2	1.585082749996218	True
+1	1	2	1	right	14	1	"Vicky was at Oliver’s party, talking to him when a neighbor approached. The woman said, “Hello. I’m Maria, what’s your name?”
+“I’m Vicky,” she replied.
+“Would anyone like a drink?” Oliver asked."	Did anyone say something they shouldn't have said or something awkward?	Yes, No	2	social	10	4	1.25	True	15	30	268.00003695833584	311	0.4109716666716849	2	1.6585191666672472	True
+1	1	2	0	right	14	1	"At Fernhaven Elementary, Christine entered a story competition but didn’t win. Her classmate Jake won first prize.
+Sitting with him the next day, Jake said, “The other stories were terrible.”
+Christine asked, “Where will you put your trophy?”"	Did Christine’s story win anything?	Yes, No	2	control	10	4	1.25	True	0	15	78.00020724999922	114	0.035165583329217	2	1.1634742500027642	True
+1	1	2	1	right	14	1	"Vicky was at Oliver’s party, talking to him when a neighbor approached. The woman said, “Hello. I’m Maria, what’s your name?”
+“I’m Vicky,” she replied.
+“Would anyone like a drink?” Oliver asked."	Did anyone say something they shouldn't have said or something awkward?	Yes, No	2	social	10	4	1.25	True	15	30	93.00002695832518	132	0.3870403750042896	2	1.09601866666344	True
+1	1	2	0	right	14	1	"Jeanette gave Anne a crystal bowl as a wedding gift. A year later, at Anne’s for dinner, Jeanette accidentally broke the bowl.
+“I’m sorry,” Jeanette said.
+“Don’t worry,” Anne replied. “I never liked it anyways. Someone gave it to me.”"	Did the bowl break?	Yes, No	1	control	10	4	1.25	True	0	15	218.00021983333863	262	0.7616905833347118	1	1.2104145833363873	True
+1	1	2	1	right	14	1	At the office, Jake saw his coworker Lily with a big smile. “Congrats on your promotion!” he said. Lily’s face fell. “I didn’t get it,” she replied. “Oh,” Jake muttered, and walked away.	Did anyone say something they shouldn't have said or something awkward?	Yes, No	1	social	10	4	1.25	True	15	30	233.0000237083368	280	0.0817437916703056	1	1.260743083337729	True
+1	4	3	0	left	14	1	"Jill had just moved into a new flat and bought curtains for her bedroom. After decorating, her best friend Lisa visited. Jill gave her a tour and asked, “How do you like my bedroom?”
+“Those curtains are horrible,” Lisa said."""	Did Jill just move into a new flat?	Yes, No	1	control	10	4	1.25	True	0	15	8.000231333338888	7	0.8995823750010459	4	2.771679083329218	True
+1	4	3	1	left	14	1	"Louise went to the butcher and asked, “Do you have any free-range chickens?”
+The butcher nodded and began wrapping a roasted chicken.
+“Excuse me,” Louise said, “I asked for free-range.”
+“Oh sorry,” the butcher replied, “we’re all out.”"	Did anyone say something they shouldn't have said or something awkward?	Yes, No	2	social	10	4	1.25	True	15	30	23.000061166661908	24	0.1088042083356413	4	3.053945666659274	False
+1	4	3	0	left	14	1	"Joan took her dog, Zack, to the park and threw a stick for him. Pam, a neighbor, passed by and asked, “Want to walk home together?”
+“Sure,” said Joan. She called Zack but he was busy chasing pigeons. “Nevermind, we’ll stay” Joan added."	Did Joan walk home with Pam?	Yes, No	2	control	10	4	1.25	True	0	15	43.00020733333076	90	0.1903645833372138	3	2.5277765416758484	True
+1	4	3	1	left	14	1	Sophia baked a chocolate cake for her grandmother’s birthday. When her cousin Alex saw the cake, he said, “Oh great, cake! I love all cake apart from chocolate cake.” Sophia frowned and said, “Oh, it’s grandma’s favorite.”	Did anyone say something they shouldn't have said or something awkward?	Yes, No	1	social	10	4	1.25	True	15	30	58.000053124997066	118	0.4477006249944679	4	2.558518333338725	True
+2	4	3	0	left	14	1	"Jill had just moved into a new flat and bought curtains for her bedroom. After decorating, her best friend Lisa visited. Jill gave her a tour and asked, “How do you like my bedroom?”
+“Those curtains are horrible,” Lisa said."""	Did Jill just move into a new flat?	Yes, No	1	control	10	4	1.25	True	0	15	148.0002123750019	246	0.2028659166680881	4	2.077984000003198	True
+2	4	3	1	left	14	1	"Louise went to the butcher and asked, “Do you have any free-range chickens?”
+The butcher nodded and began wrapping a roasted chicken.
+“Excuse me,” Louise said, “I asked for free-range.”
+“Oh sorry,” the butcher replied, “we’re all out.”"	Did anyone say something they shouldn't have said or something awkward?	Yes, No	2	social	10	4	1.25	True	15	30	163.00003750000178	273	0.1589684999999008	3	1.4773551666658022	True
+1	4	3	0	left	14	1	"Joan took her dog, Zack, to the park and threw a stick for him. Pam, a neighbor, passed by and asked, “Want to walk home together?”
+“Sure,” said Joan. She called Zack but he was busy chasing pigeons. “Nevermind, we’ll stay” Joan added."	Did Joan walk home with Pam?	Yes, No	2	control	10	4	1.25	True	0	15	428.00020862499514	924	0.4413032916709198	3	1.4521882499975618	True
+1	4	3	1	left	14	1	Sophia baked a chocolate cake for her grandmother’s birthday. When her cousin Alex saw the cake, he said, “Oh great, cake! I love all cake apart from chocolate cake.” Sophia frowned and said, “Oh, it’s grandma’s favorite.”	Did anyone say something they shouldn't have said or something awkward?	Yes, No	1	social	10	4	1.25	True	15	30	443.00003920833115	952	0.2694642083370127	4	0.9866922500004875	True
+1	1	2	0	right	14	1	"Jill had just moved into a new flat and bought curtains for her bedroom. After decorating, her best friend Lisa visited. Jill gave her a tour and asked, “How do you like my bedroom?”
+“Those curtains are horrible,” Lisa said."""	Did Jill just move into a new flat?	Yes, No	1	control	10	4	1.25	True	0	15	393.0002365416658	938	0.0041862916696118	1	1.7406114583354793	True
+1	1	2	1	right	14	1	"Louise went to the butcher and asked, “Do you have any free-range chickens?”
+The butcher nodded and began wrapping a roasted chicken.
+“Excuse me,” Louise said, “I asked for free-range.”
+“Oh sorry,” the butcher replied, “we’re all out.”"	Did anyone say something they shouldn't have said or something awkward?	Yes, No	2	social	10	4	1.25	True	15	30	408.0000445416663	968	0.0625079999954323	2	0.8050397083352436	True
+2	1	2	0	right	14	1	Sally, a three-year-old girl with short blonde hair was at her Aunt Carol's house. A neighbour, Mary, rang the doorbell and Carol answered. Mary looked at Sally and said, “Oh, I don’t think I’ve met this little boy. What’s your name?”	Did Sally ring the doorbell?	Yes, No	2	control	10	4	1.25	True	0	15	148.00020533333736	246	0.6561299583263462	1	2.018876583329984	False
+2	1	2	1	right	14	1	Emma was leaving the office when she noticed it was raining. She reached for her umbrella but realized she had left it at home. “I’ll just run,” she thought, and hurried to the bus stop.	Did anyone say something they shouldn't have said or something awkward?	Yes, No	2	social	10	4	1.25	True	15	30	163.0000257083375	268	0.0172412499960046	2	2.9116479583317414	True
+3	1	2	0	right	14	1	"Joan took her dog, Zack, to the park and threw a stick for him. Pam, a neighbor, passed by and asked, “Want to walk home together?”
+“Sure,” said Joan. She called Zack but he was busy chasing pigeons. “Nevermind, we’ll stay” Joan added."	Did Joan walk home with Pam?	Yes, No	2	control	10	4	1.25	True	0	15	183.0002017083243	306	0.1111962083377875	2	2.2365683749958407	True
+3	1	2	1	right	14	1	Sophia baked a chocolate cake for her grandmother’s birthday. When her cousin Alex saw the cake, he said, “Oh great, cake! I love all cake apart from chocolate cake.” Sophia frowned and said, “Oh, it’s grandma’s favorite.”	Did anyone say something they shouldn't have said or something awkward?	Yes, No	1	social	10	4	1.25	True	15	30	198.0000267916621	328	0.3465165833258652	1	1.9129890833282843	True
+4	1	2	0	right	14	1	"Jill had just moved into a new flat and bought curtains for her bedroom. After decorating, her best friend Lisa visited. Jill gave her a tour and asked, “How do you like my bedroom?”
+“Those curtains are horrible,” Lisa said."""	Did Jill just move into a new flat?	Yes, No	1	control	10	4	1.25	True	0	15	218.00020254166884	471	0.0973551666684215	1	1.725156333326595	True
+4	1	2	1	right	14	1	"Louise went to the butcher and asked, “Do you have any free-range chickens?”
+The butcher nodded and began wrapping a roasted chicken.
+“Excuse me,” Louise said, “I asked for free-range.”
+“Oh sorry,” the butcher replied, “we’re all out.”"	Did anyone say something they shouldn't have said or something awkward?	Yes, No	2	social	10	4	1.25	True	15	30	233.00003758333332	510	0.1356739999973797	2	1.0628050416780752	True
+1	1	2	0	right	14	1	Sally, a three-year-old girl with short blonde hair was at her Aunt Carol's house. A neighbour, Mary, rang the doorbell and Carol answered. Mary looked at Sally and said, “Oh, I don’t think I’ve met this little boy. What’s your name?”	Did Sally ring the doorbell?	Yes, No	2	control	10	4	1.25	True	0	15	43.00021470832871	57	0.3014789166772971	2	2.0597672083385987	True
+1	1	2	1	right	14	1	Emma was leaving the office when she noticed it was raining. She reached for her umbrella but realized she had left it at home. “I’ll just run,” she thought, and hurried to the bus stop.	Did anyone say something they shouldn't have said or something awkward?	Yes, No	2	social	10	4	1.25	True	15	30	58.000037750003685	74	0.5244552916628891	2	1.9985770833372951	True
+2	1	2	0	right	14	1	"Joan took her dog, Zack, to the park and threw a stick for him. Pam, a neighbor, passed by and asked, “Want to walk home together?”
+“Sure,” said Joan. She called Zack but he was busy chasing pigeons. “Nevermind, we’ll stay” Joan added."	Did Joan walk home with Pam?	Yes, No	2	control	10	4	1.25	True	0	15	218.0002067916721	377	0.0373412083354196	2	1.931475291676179	True
+2	1	2	1	right	14	1	Sophia baked a chocolate cake for her grandmother’s birthday. When her cousin Alex saw the cake, he said, “Oh great, cake! I love all cake apart from chocolate cake.” Sophia frowned and said, “Oh, it’s grandma’s favorite.”	Did anyone say something they shouldn't have said or something awkward?	Yes, No	1	social	10	4	1.25	True	15	30	233.00002074999793	410	0.2934304999944288	1	1.06984245833155	True
+1	4	3	0	left	14	1	"Jill had just moved into a new flat and bought curtains for her bedroom. After decorating, her best friend Lisa visited. Jill gave her a tour and asked, “How do you like my bedroom?”
+“Those curtains are horrible,” Lisa said."""	Did Jill just move into a new flat?	Yes, No	1	control	10	4	1.25	True	0	15	218.00022762500157	517	0.2741470416804077	4	2.34806433331687	True
+1	4	3	1	left	14	1	"Louise went to the butcher and asked, “Do you have any free-range chickens?”
+The butcher nodded and began wrapping a roasted chicken.
+“Excuse me,” Louise said, “I asked for free-range.”
+“Oh sorry,” the butcher replied, “we’re all out.”"	Did anyone say something they shouldn't have said or something awkward?	Yes, No	2	social	10	4	1.25	True	15	30	233.00003216667392	557	0.2840562916680937	3	0.8605030416656518	True
+1	4	3	0	left	14	1	Emma was leaving the office when she noticed it was raining. She reached for her umbrella but realized she had left it at home. “I’ll just run,” she thought, and hurried to the bus stop.	Did anyone say something they shouldn't have said or something awkward?	Yes, No	2	social	10	4	1.25	True	0	15	78.00023895833874	184	0.0624449583410751	3	2.108482625000761	True
+1	4	3	1	left	14	1	Sally, a three-year-old girl with short blonde hair was at her Aunt Carol's house. A neighbour, Mary, rang the doorbell and Carol answered. Mary looked at Sally and said, “Oh, I don’t think I’ve met this little boy. What’s your name?”	Did Sally ring the doorbell?	Yes, No	2	control	10	4	1.25	True	15	30	93.00001895833702	216	0.1473954583343584	3	2.3954109583282843	True
+2	4	3	0	left	14	1	Sophia baked a chocolate cake for her grandmother’s birthday. When her cousin Alex saw the cake, he said, “Oh great, cake! I love all cake apart from chocolate cake.” Sophia frowned and said, “Oh, it’s grandma’s favorite.”	Did anyone say something they shouldn't have said or something awkward?	Yes, No	1	social	10	4	1.25	True	0	15	358.0002427083382	701	0.8850095416564727	2	3.036455791676417	False
+2	4	3	1	left	14	1	"Joan took her dog, Zack, to the park and threw a stick for him. Pam, a neighbor, passed by and asked, “Want to walk home together?”
+“Sure,” said Joan. She called Zack but he was busy chasing pigeons. “Nevermind, we’ll stay” Joan added."	Did Joan walk home with Pam?	Yes, No	2	control	10	4	1.25	True	15	30	373.00005062500713	732	0.0582174583250889	1	1.2631871250050608	False
+1	4	3	0	left	14	1	Liam ordered a cappuccino at the café. When his drink arrived, he saw it was a latte. “Excuse me,” he said, “I ordered a cappuccino.” The barista apologized and quickly made the right drink.	Did anyone say something they shouldn't have said or something awkward?	Yes, No	2	social	10	4	1.25	True	0	15	148.0002077500103	401	0.1925260416755918	3	1.6154152499948395	True
+1	4	3	1	left	14	1	"Kim’s cousin Scott was coming to visit, and Kim made an apple pie for him. After dinner, she said, “I made a pie just for you.”
+“Mmmm,” Scott replied. “It smells great! I love pies—except for apple, of course.”"	Is Scott Kim's brother?	Yes, No	2	control	10	4	1.25	True	15	30	163.00002875000064	439	0.0169089999981224	3	2.160411416669376	True
+2	4	3	0	left	14	1	At the office, Jake saw his coworker Lily with a big smile. “Congrats on your promotion!” he said. Lily’s face fell. “I didn’t get it,” she replied. “Oh,” Jake muttered, and walked away.	Did anyone say something they shouldn't have said or something awkward?	Yes, No	1	social	10	4	1.25	True	0	15	323.0002089166519	740	0.4073945416603237	3	1.4202265416824955	False
+2	4	3	1	left	14	1	"Jeanette gave Anne a crystal bowl as a wedding gift. A year later, at Anne’s for dinner, Jeanette accidentally broke the bowl.
+“I’m sorry,” Jeanette said.
+“Don’t worry,” Anne replied. “I never liked it anyways. Someone gave it to me.”"	Did the bowl break?	Yes, No	1	control	10	4	1.25	True	15	30	338.00002829165896	770	0.1724741666548652	4	0.8369742083305027	True
+1	4	3	0	left	14	1	"Jill had just moved into a new flat and bought curtains for her bedroom. After decorating, her best friend Lisa visited. Jill gave her a tour and asked, “How do you like my bedroom?”
+“Those curtains are horrible,” Lisa said."""	Did Jill just move into a new flat?	Yes, No	1	control	10	4	1.25	True	0	15	148.00019304164744	372	0.0739240833208896	4	1.7481795833446083	True
+1	4	3	1	left	14	1	"Louise went to the butcher and asked, “Do you have any free-range chickens?”
+The butcher nodded and began wrapping a roasted chicken.
+“Excuse me,” Louise said, “I asked for free-range.”
+“Oh sorry,” the butcher replied, “we’re all out.”"	Did anyone say something they shouldn't have said or something awkward?	Yes, No	2	social	10	4	1.25	True	15	30	163.00002220831811	404	0.5000069166708272	3	1.1787511666771024	True
+2	4	3	0	left	14	1	Sally, a three-year-old girl with short blonde hair was at her Aunt Carol's house. A neighbour, Mary, rang the doorbell and Carol answered. Mary looked at Sally and said, “Oh, I don’t think I’ve met this little boy. What’s your name?”	Did Sally ring the doorbell?	Yes, No	2	control	10	4	1.25	True	0	15	358.0002419999946	851	0.0962390000058803	3	1.3260064166825032	True
+2	4	3	1	left	14	1	Emma was leaving the office when she noticed it was raining. She reached for her umbrella but realized she had left it at home. “I’ll just run,” she thought, and hurried to the bus stop.	Did anyone say something they shouldn't have said or something awkward?	Yes, No	2	social	10	4	1.25	True	15	30	373.00005175000115	880	0.1493661249987781	3	0.611710666664294	True
+3	4	3	0	left	14	1	"Joan took her dog, Zack, to the park and threw a stick for him. Pam, a neighbor, passed by and asked, “Want to walk home together?”
+“Sure,” said Joan. She called Zack but he was busy chasing pigeons. “Nevermind, we’ll stay” Joan added."	Did Joan walk home with Pam?	Yes, No	2	control	10	4	1.25	True	0	15	358.00023216666887	821	0.2441562083258759	3	1.488523541673203	True
+3	4	3	1	left	14	1	Sophia baked a chocolate cake for her grandmother’s birthday. When her cousin Alex saw the cake, he said, “Oh great, cake! I love all cake apart from chocolate cake.” Sophia frowned and said, “Oh, it’s grandma’s favorite.”	Did anyone say something they shouldn't have said or something awkward?	Yes, No	1	social	10	4	1.25	True	15	30	373.0000396250107	857	0.0194902083458146	4	0.7360351666720817	True
+4	4	3	0	left	14	1	Liam ordered a cappuccino at the café. When his drink arrived, he saw it was a latte. “Excuse me,” he said, “I ordered a cappuccino.” The barista apologized and quickly made the right drink.	Did anyone say something they shouldn't have said or something awkward?	Yes, No	2	social	10	4	1.25	True	0	15	113.0002469583269	233	0.0830438749981112	3	1.687418000001344	True
+4	4	3	1	left	14	1	"Kim’s cousin Scott was coming to visit, and Kim made an apple pie for him. After dinner, she said, “I made a pie just for you.”
+“Mmmm,” Scott replied. “It smells great! I love pies—except for apple, of course.”"	Is Scott Kim's brother?	Yes, No	2	control	10	4	1.25	True	15	30	128.00002674999996	261	0.1900562083319528	4	0.7468302083289018	False
+5	4	3	0	left	14	1	At the office, Jake saw his coworker Lily with a big smile. “Congrats on your promotion!” he said. Lily’s face fell. “I didn’t get it,” she replied. “Oh,” Jake muttered, and walked away.	Did anyone say something they shouldn't have said or something awkward?	Yes, No	1	social	10	4	1.25	True	0	15	183.0002125000028	356	0.5388278750033351	4	1.661525541669107	True
+5	4	3	1	left	14	1	"Jeanette gave Anne a crystal bowl as a wedding gift. A year later, at Anne’s for dinner, Jeanette accidentally broke the bowl.
+“I’m sorry,” Jeanette said.
+“Don’t worry,” Anne replied. “I never liked it anyways. Someone gave it to me.”"	Did the bowl break?	Yes, No	1	control	10	4	1.25	True	15	30	198.00002520834096	382	0.3848789999901782	4	0.619156375003513	True
+6	4	3	0	left	14	1	Joanne, who had a big role in last year’s play, auditioned for the lead this spring. Checking the cast list, she saw she’d gotten a minor role. When she ran into her boyfriend he said “You must be disappointed.” Joan replied “Yes, I am”	Did Joanne get a minor role?	Yes, No	1	control	10	4	1.25	True	0	15	253.00026191664801	429	0.6125622499966994	4	0.8783763749961508	True
+6	4	3	1	left	14	1	Oliver was boarding a bus when the driver said, “Your ticket isn’t valid.” Oliver checked and realized he had used an old ticket by mistake. “Oops, my bad,” he said, handing over the correct one.	Did anyone say something they shouldn't have said or something awkward?	Yes, No	2	social	10	4	1.25	True	15	30	268.0000726666476	452	0.09773304167902097	3	2.0701353333279258	True

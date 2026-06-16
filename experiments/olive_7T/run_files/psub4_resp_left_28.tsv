@@ -1,0 +1,7 @@
+task_name	task_code	task_file	instruction_dur	start_time	end_time
+demand_grid_easy_diff	dmgrid_easy_diff	demand_grid_easy_diff_28.tsv	5	3	38
+finger_sequence_surprise	fingseqsurp	finger_sequence_surprise_28.tsv	5	38	73
+theory_of_mind_diff_reward	tom_diff_reward	theory_of_mind_diff_reward_28.tsv	5	73	108
+visual_search	visrchsml	visual_search_28.tsv	5	108	143
+faux_pas	faux_pas	faux_pas_28.tsv	5	143	178
+temp_deviant	temp_deviant	temp_deviant_28.tsv	5	178	221

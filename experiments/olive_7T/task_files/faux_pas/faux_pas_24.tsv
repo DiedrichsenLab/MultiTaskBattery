@@ -1,5 +1,5 @@
 trial_num	hand	key_yes	key_no	trial_dur	iti_dur	story	question	options	trial_type	condition	story_dur	question_dur	text_height	display_trial_feedback	start_time	end_time
-0	left	4	3	14	1	"Jeanette gave Anne a crystal bowl as a wedding gift. A year later, at Anne’s for dinner, Jeanette accidentally broke the bowl.
+0	left	4	3	14	1	At the office, Jake saw his coworker Lily with a big smile. “Congrats on your promotion!” he said. Lily’s face fell. “I didn’t get it,” she replied. “Oh,” Jake muttered, and walked away.	Did anyone say something they shouldn't have said or something awkward?	Yes, No	1	social	10	4	1.25	True	0	15
+1	left	4	3	14	1	"Jeanette gave Anne a crystal bowl as a wedding gift. A year later, at Anne’s for dinner, Jeanette accidentally broke the bowl.
 “I’m sorry,” Jeanette said.
-“Don’t worry,” Anne replied. “I never liked it anyways. Someone gave it to me.”"	Did the bowl break?	Yes, No	1	control	10	4	1.25	True	0	15
-1	left	4	3	14	1	At the office, Jake saw his coworker Lily with a big smile. “Congrats on your promotion!” he said. Lily’s face fell. “I didn’t get it,” she replied. “Oh,” Jake muttered, and walked away.	Did anyone say something they shouldn't have said or something awkward?	Yes, No	1	social	10	4	1.25	True	15	30
+“Don’t worry,” Anne replied. “I never liked it anyways. Someone gave it to me.”"	Did the bowl break?	Yes, No	1	control	10	4	1.25	True	15	30

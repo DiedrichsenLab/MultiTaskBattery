@@ -1,5 +1,5 @@
 trial_num	hand	key_yes	key_no	trial_dur	iti_dur	story	question	options	trial_type	condition	story_dur	question_dur	text_height	display_trial_feedback	start_time	end_time
-0	left	4	3	14	1	Bob went to the barber for a haircut. “Just take about an inch off,” Bob said. The barber cut the front uneven, so he had to go shorter. “It’s shorter than you wanted,” he said. “Oh well,” Bob replied, “it’ll grow out.”	Did Bob want to keep the same hairstyle?	Yes, No	1	control	10	4	1.25	True	0	15
-1	left	4	3	14	1	"Roger, new at the office, told Andrew, “My wife’s a lawyer.” Moments later, Claire walked into the coffee room, complaining, “Lawyers are so arrogant and greedy.”
+0	right	1	2	14	1	Bob went to the barber for a haircut. “Just take about an inch off,” Bob said. The barber cut the front uneven, so he had to go shorter. “It’s shorter than you wanted,” he said. “Oh well,” Bob replied, “it’ll grow out.”	Did Bob want to keep the same hairstyle?	Yes, No	1	control	10	4	1.25	True	0	15
+1	right	1	2	14	1	"Roger, new at the office, told Andrew, “My wife’s a lawyer.” Moments later, Claire walked into the coffee room, complaining, “Lawyers are so arrogant and greedy.”
 Andrew asked Claire to review reports.
 “Not now,” she said. “I need coffee.”"	Did anyone say something they shouldn't have said or something awkward?	Yes, No	1	social	10	4	1.25	True	15	30
