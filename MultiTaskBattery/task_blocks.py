@@ -56,9 +56,9 @@ class Task:
 
     def display_instructions(self):
         """
-        displays the instruction for the task
-        Most tasks have the same instructions. (Tasks that have True/False responses)
-        Those tasks that have different instructions will have their own routine
+        Displays the descriptive name of the task. 
+        then instruction to press response key 1 for true and response key 2 for false. 
+        Tasks with different instructions implement a new version to overwrite this default version
         """
         true_str = f"if True press {self.const.response_keys[1]}"
         false_str = f"if False press {self.const.response_keys[2]}"
@@ -72,11 +72,12 @@ class Task:
         self.window.flip()
     
     def run(self):
-        """Loop over trials and collects data
+        """Loop over trials in the task object and collects data
         Data will be stored in self.trial_data
 
         Returns:
-            info (pd.DataFrame): _description_
+            acc (float): Mean accuracy in proportion correct 
+            rt (float): Mean reaction time in s
         """
         self.trial_data = [] # an empty list which will be appended with the responses from each trial
 
@@ -101,28 +102,29 @@ class Task:
 
     def show_progress(self, seconds_left, show_last_seconds=5, height=1, width=10, x_pos=-5, y_pos=8):
         """ Displays a progress bar for the Picture Sequence task
-   Args:
-        seconds_left (float): 
-            The number of seconds remaining in the current trial. 
-            If this value is greater than `show_last_seconds`, the progress bar is not shown.
+        
+        Args:
+            seconds_left (float): 
+                The number of seconds remaining in the current trial. 
+                If this value is greater than `show_last_seconds`, the progress bar is not shown.
 
-        show_last_seconds (float, optional): 
-            The duration (in seconds) over which to display the progress bar at the end of a trial. 
-            Default is 5 seconds. When `seconds_left` is less than this value, the progress bar appears.
+            show_last_seconds (float, optional): 
+                The duration (in seconds) over which to display the progress bar at the end of a trial. 
+                Default is 5 seconds. When `seconds_left` is less than this value, the progress bar appears.
 
-        height (float, optional): 
-            The vertical size of the progress bar in PsychoPy window units. Default is 1.
+            height (float, optional): 
+                The vertical size of the progress bar in PsychoPy window units. Default is 1.
 
-        width (float, optional): 
-            The horizontal size of the progress bar in PsychoPy window units. Default is 10.
+            width (float, optional): 
+                The horizontal size of the progress bar in PsychoPy window units. Default is 10.
 
-        x_pos (float, optional): 
-            The horizontal position of the center of the progress bar in window coordinates. 
-            Negative values move it leftward. Default is -5.
+            x_pos (float, optional): 
+                The horizontal position of the center of the progress bar in window coordinates. 
+                Negative values move it leftward. Default is -5.
 
-        y_pos (float, optional): 
-            The vertical position of the center of the progress bar in window coordinates. 
-            Positive values move it upward. Default is 8.
+            y_pos (float, optional): 
+                The vertical position of the center of the progress bar in window coordinates. 
+                Positive values move it upward. Default is 8.
         """
         # If we are in the last five seconds of the trial, display the remaining time
         if seconds_left < show_last_seconds:
@@ -141,6 +143,7 @@ class Task:
     def wait_response(self, start_time, max_wait_time, show_last_seconds=None, current_stimuli=None):
         """
         waits for a response to be made and then returns the response
+
         Args:
             start_time (float): the time the RT-period started
             max_wait_time (float): How long to wait maximally
@@ -148,7 +151,7 @@ class Task:
                 during the final *show_last_seconds* of the response window.
                 Requires *current_stimuli* to be set so the display can be
                 redrawn each frame.
-            current_stimuli: A single PsychoPy stimulus or a list of stimuli
+            current_stimuli (optional): A single PsychoPy stimulus or a list of stimuli
                 to redraw each frame when the progress bar is active.
         Returns:
             key (str): the key that was pressed (1-4) (0 if no key was pressed)
@@ -181,7 +184,7 @@ class Task:
 
     def display_trial_feedback(self, give_feedback,correct_response):
         """
-        display the feedback for the current trial using the color of the fixation cross
+        display the feedback for the current trial at the position of  fixation cross. Correct is a green check mark, incorrect a red cross. 
 
         Args:
             give_feedback (bool):
@@ -217,7 +220,14 @@ class Task:
                 core.quit()
 
     def get_audio_from_movie(self, movie_path, sample_rate=48000):
-        """Seperates the audio from the movie file and returns the audio object (for better memory handling when playing movies with sound)"""
+        """Seperates the audio from the movie file and returns the audio object (for better memory handling when playing movies with sound)
+        
+        Args:
+            movie_path (str): Path and filename of the Movie file
+            sample_rate (int): Sampling rate of movie file, defaults to 48000.
+        Returns: 
+            audio (sound.sound): Sound object 
+        """
 
         # Gets the movie audio
         audio_clip = AudioFileClip(movie_path)

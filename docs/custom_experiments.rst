@@ -100,7 +100,7 @@ defaults are used.
 Generating run and task files
 -----------------------------
 Task and run files are tab-delimited text files (``.tsv``) that specify the order of task in each run, and the order of trials within each task.
-Create and run a small Python script to generate your run and task files. Basic examples are included in ``example_minimal/make_files.py`` and ``example_custom_task/make_files.py``. Depending on your experiment, you may want to add more information. Of course you can produce these files by hand, but we prefer to write a function in ``task_files.py`` that does the randomization for us.
+Create and run a small Python script to generate your run and task files. Basic examples are included in ``example_minimal/make_files.py`` and ``example_custom_task/make_files.py``. Depending on your experiment, you may want to add more information. Of course you can produce these files by hand, but we prefer to write a function that does the randomization for us.
 
 **Run Files**
 Run files that specify the structure of the runs, including the order of the tasks for the run, which task file contains the stimuli for this run.
@@ -201,7 +201,7 @@ Check the :ref:`task descriptions <task_descriptions>` page to see which tasks h
 Adding custom tasks to your experiment
 --------------------------------------
 
-You can add tasks that only exist for your experiment without modifying the shared ``MultiTaskBattery`` package. The pattern is:
+You can add tasks that only exist for your experiment without modifying the shared ``MultiTaskBattery`` package.
 
 1. Create a local module (e.g. ``my_tasks.py``) in your experiment folder that defines both a runtime ``Task`` subclass (e.g. ``MyTask``) and a matching ``TaskFile`` subclass with the ``File`` suffix (e.g. ``MyTaskFile``).
 2. Add a row for the task to a local ``task_table.tsv`` in the same folder (same columns as the framework's table: ``name``, ``task_class``, ``descriptive_name``, ``code``).
@@ -212,7 +212,9 @@ You can add tasks that only exist for your experiment without modifying the shar
     import my_tasks
     task_modules = [my_tasks]
 
-At runtime, ``ut.get_task_class`` will find ``MyTask`` in your local module before checking the framework. At file-generation time, ``ut.get_task_file_class`` does the same and applies the ``File`` suffix automatically, so ``make_files.py`` does not need to change. See ``experiments/example_custom_task`` for a complete working example, and :doc:`creating_tasks` for the full structure of a task class.
+At runtime, ``ut.get_task_class`` will find ``MyTask`` in your local module before checking the framework. At file-generation time, ``ut.get_task_file_class`` does the same and applies the ``File`` suffix automatically, so ``make_files.py`` does not need to change. 
+
+See ``experiments/example_custom_task`` for a complete working example, and :doc:`creating_tasks` for the full structure of a task class.
 
 Writing your experiment function
 --------------------------------
@@ -227,7 +229,7 @@ After generating the tasks and run files, you can write your own main script `ru
 
     def main(subj_id):
         """_summary_
-        make sure you to adjust constanst.py file before running the experiment
+        make sure you to adjust constants.py file before running the experiment
         (e.g., experiment_name, eye_tracker, screen, etc.)
 
         Args:
