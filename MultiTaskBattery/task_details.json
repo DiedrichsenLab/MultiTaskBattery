@@ -121,12 +121,12 @@
             }
         },
         "short_description": "2AFC, a set of grids is shown one by one on the screen with certain boxes colored blue. After the sequnece, two options are given for the combination of blue boxes across shown grids",
-        "reference": "Fedorenko, E., Duncan, J., & Kanwisher, N. (2013). Broad domain generality in focal regions of frontal and parietal cortex. Proceedings of the National Academy of Sciences of the United States of America, 110(41), 16616�16621.",
+        "reference": "Fedorenko, E., Duncan, J., & Kanwisher, N. (2013). Broad domain generality in focal regions of frontal and parietal cortex. Proceedings of the National Academy of Sciences of the United States of America, 110(41), 16616-16621.",
         "recorded_metrics": "Accuracy + RT"
     },
     "action_observation": {
         "detailed_description": "Participants watch videos of knots being tied (action condition) and 360-degree views of completed knots (knot condition). The first trial in a block shows the knot-tying action, and subsequent trials show the static knot view. No motor response is required. The task is designed to engage action observation.",
-        "reference": "Cross, E. S., Cohen, N. R., Hamilton, A. F. de C., Ramsey, R., Wolford, G., & Grafton, S. T. (2012). Physical experience leads to enhanced object perception in parietal cortex: Insights from knot tying. Neuropsychologia, 50(14), 3207–3217.",
+        "reference": "Cross, E. S., Cohen, N. R., Hamilton, A. F. de C., Ramsey, R., Wolford, G., & Grafton, S. T. (2012). Physical experience leads to enhanced object perception in parietal cortex: Insights from knot tying. Neuropsychologia, 50(14), 3207-3217.",
         "task_file_parameters": {
             "run_number": {
                 "type": "int",
@@ -264,7 +264,7 @@
     },
     "theory_of_mind": {
         "short_description": "Short story presented with a question at the end, participants must answer the question.",
-        "reference": "Saxe, R. and Kanwisher, N. (2003) ‘People thinking about thinking people: The role of the temporo-parietal junction in “theory of mind”’, NeuroImage, 19(4), pp. 1835–1842. Available at: https://doi.org/10.1016/S1053-8119(03)00230-1.",
+        "reference": "Saxe, R. and Kanwisher, N. (2003) People thinking about thinking people: The role of the temporo-parietal junction in “theory of mind”, NeuroImage, 19(4), pp. 1835-1842. Available at: https://doi.org/10.1016/S1053-8119(03)00230-1.",
         "conditions": "belief,photo",
         "recorded_metrics": "Accuracy + RT",
         "detailed_description": "Participants read a short story followed by a true/false question. In the belief condition, stories involve understanding another person's mental state (false beliefs, intentions). In the photo condition, stories involve factual reasoning about outdated photographs. The task is designed to engage mentalizing processes and social cognition.",
@@ -465,7 +465,7 @@
     },
     "intact_passage": {
         "short_description": "Listen to normal sentences.",
-        "reference": "Scott, T. L., Gallee, J., & Fedorenko, E. (2017). A new fun and robust version of an fMRI localizer for the frontotemporal language system. Cognitive Neuroscience, 8(3), 167�176.",
+        "reference": "Scott, T. L., Gallee, J., & Fedorenko, E. (2017). A new fun and robust version of an fMRI localizer for the frontotemporal language system. Cognitive Neuroscience, 8(3), 167-176.",
         "recorded_metrics": "None",
         "detailed_description": "Participants listen to normal, intelligible speech passages. Paired with the degraded passage condition, this allows isolation of higher-level language comprehension from basic auditory processing.",
         "task_file_parameters": {
@@ -521,7 +521,7 @@
     },
     "nonword_reading": {
         "short_description": "Read nonwords, nonwords presented sequentially one at a time. Press a button at the end of each list of nonwords.",
-        "reference": "Fedorenko, E., Hsieh, P.-J., Nieto-Castanon, A., Whitfield-Gabrieli, S., & Kanwisher, N. (2010). New method for fMRI investigations of language: defining ROIs functionally in individual subjects. Journal of Neurophysiology, 104(2), 1177�1194.",
+        "reference": "Fedorenko, E., Hsieh, P.-J., Nieto-Castanon, A., Whitfield-Gabrieli, S., & Kanwisher, N. (2010). New method for fMRI investigations of language: defining ROIs functionally in individual subjects. Journal of Neurophysiology, 104(2), 1177-1194.",
         "recorded_metrics": "RT",
         "detailed_description": "Pronounceable nonwords are presented one at a time. Participants read each nonword silently and press a button when a hand-press image appears at the end of the list. Serves as a control for sentence reading, isolating low-level visual and phonological processing from sentence-level comprehension.",
         "task_file_parameters": {
@@ -645,7 +645,7 @@
     },
     "rmet": {
         "short_description": "Pictures of faces with different emotions presented (eyes only) along with four attribute words, participants must identify which attribute describes person best.",
-        "reference": "Kim, H.A. et al. (2024) ‘Multiracial Reading the Mind in the Eyes Test (MRMET): An inclusive version of an influential measure’, Behavior Research Methods. Revised from Baron-Cohen, Wheelwright, Hill, Raste, & Plumb, 2001",
+        "reference": "Kim, H.A. et al. (2024) 'Multiracial Reading the Mind in the Eyes Test (MRMET): An inclusive version of an influential measure', Behavior Research Methods. Revised from Baron-Cohen, Wheelwright, Hill, Raste, & Plumb, 2001",
         "conditions": "age, emotion",
         "recorded_metrics": "Accuracy + RT",
         "detailed_description": "The Reading the Mind in the Eyes Test. On each trial a photograph of a person's eye region is shown together with four response options. Participants select which word best describes the mental state shown.",
@@ -760,7 +760,7 @@
     },
     "strange_stories": {
         "short_description": "Clips of relationship stories, participants are asked to answer questions about the interaction.",
-        "reference": "Murray, K. et al. (2017) ‘A new test of advanced theory of mind: The “Strange Stories Film Task” captures social processing differences in adults with autism spectrum disorders’, Autism Research, 10(6), pp. 1120–1132. Available at: https://doi.org/10.1002/aur.1744.",
+        "reference": "Murray, K. et al. (2017). A new test of advanced theory of mind: The “Strange Stories Film Task” captures social processing differences in adults with autism spectrum disorders, Autism Research, 10(6), pp. 1120-1132. Available at: https://doi.org/10.1002/aur.1744.",
         "conditions": "social,control",
         "recorded_metrics": "Accuracy + RT"
     },
@@ -825,13 +825,13 @@
     },
     "frith_happe": {
         "short_description": "Video clips of triangle animations, participants must determine whether interaction was random, goal-directed or a mentalizing interaction.",
-        "reference": "Livingston, L.A. et al. (2021) ‘Further developing the Frith–Happé animations: A quicker, more objective, and web-based test of theory of mind for autistic and neurotypical adults’, Autism Research, 14(9), pp. 1905–1912. Available at: https://doi.org/10.1002/aur.2575..",
+        "reference": "Livingston, L.A. et al. (2021). Further developing the Frith-Happé animations: A quicker, more objective, and web-based test of theory of mind for autistic and neurotypical adults. Autism Research, 14(9), pp. 1905-1912. Available at: https://doi.org/10.1002/aur.2575.",
         "conditions": "random,gd,tom",
         "recorded_metrics": "Accuracy + RT"
     },
     "liking": {
         "short_description": "Video clips of people interacting, participants must determine if the interaction was positive or negative.",
-        "reference": "Heerey, E.A. and Gilder, T.S.E. (2019) ‘The subjective value of a smile alters social behaviour’, PLoS ONE, 14(12), pp. 1–19. Available at: https://doi.org/10.1371/journal.pone.0225284.",
+        "reference": "Heerey, E.A. and Gilder, T.S.E. (2019). The subjective value of a smile alters social behaviour, PLoS ONE, 14(12), pp. 1-19. Available at: https://doi.org/10.1371/journal.pone.0225284.",
         "conditions": "like,dislike",
         "recorded_metrics": "Accuracy + RT"
     },
@@ -844,10 +844,10 @@
         "recorded_metrics": "Accuracy + RT"
     },
     "finger_rhythmic": {
-        "short_description": "Assess the precision of internal timing mechanisms through a rhythmic tapping production task. Participants are instructed to produce a regular series of taps at a prescribed target interval.",
+        "short_description": "Rhythmic tapping production task. Participants are instructed to produce a regular series of taps at a prescribed target interval.",
         "reference": "Ivry, R. B., & Keele, S. W. (1989). Timing Functions of the Cerebellum. Journal of Cognitive Neuroscience, 1(2), 136-152.",
         "conditions": "self-paced tapping",
-        "detailed_description": "A timing production task in which participants listen to a train of auditory tones and tap along at the same pace. The task engages motor timing and cerebellar regions.",
+        "detailed_description": "A timing production task in which participants listen to a train of auditory tones and tap along at the same pace. The task engages motor timing.",
         "task_file_parameters": {
             "hand": {
                 "type": "str",
@@ -882,8 +882,8 @@
         }
     },
     "time_perception": {
-        "short_description": "Assess the precision of internal timing mechanisms by measuring participants’ perceptual acuity in discriminating short auditory intervals. Participants are presented with sequences of tones and must decide whether a comparison interval is longer or shorter than a standard reference interval.",
-        "reference": "Ivry, R. B., & Keele, S. W. (1989). Timing Functions of the Cerebellum. Journal of Cognitive Neuroscience, 1(2), 136–152.",
+        "short_description": "Assess the precision of internal timing mechanisms by measuring participants' perceptual acuity in discriminating short auditory intervals. Participants are presented with sequences of tones and must decide whether a comparison interval is longer or shorter than a standard reference interval.",
+        "reference": "Ivry, R. B., & Keele, S. W. (1989). Timing Functions of the Cerebellum. Journal of Cognitive Neuroscience, 1(2), 136-152.",
         "conditions": "time interval",
         "recorded_metrics": "Accuracy + RT"
     },
