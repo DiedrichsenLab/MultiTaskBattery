@@ -455,25 +455,39 @@ class PassageListening(TaskFile):
         self.name = 'passage_listening'
 
     def make_task_file(self,
-                       condition = 'intact',
-                        task_dur=30,
-                        trial_dur=14.5,
-                        iti_dur=0.5,
-                        file_name=None):
+                       run_number,
+                       condition='intact',
+                       task_dur=30,
+                       trial_dur=14.5,
+                       iti_dur=0.5,
+                       file_name=None,
+                       stim_file=None,
+                       stimulus_seed=0):
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
+
+        # Load the audio/condition table and keep only the requested condition
+        stim = pd.read_csv(self.stim_dir / self.name / (stim_file or f'{self.name}.csv'))
+        stim = stim[stim['condition'] == condition].reset_index(drop=True)
+
+        # Shuffle the whole condition pool with a fixed seed, then take this run's
+        # disjoint slice. The seed is constant across runs, so every run rebuilds the
+        # same shuffled order and the per-run windows never overlap -> random order,
+        # no repeats, no state shared between runs. (Vary stimulus_seed per subject to
+        # counterbalance across subjects.)
+        stim = stim.sample(frac=1, random_state=stimulus_seed).reset_index(drop=True)
+        start = (run_number - 1) * n_trials
+        stim = stim.iloc[start:start + n_trials].reset_index(drop=True)
+
         trial_info = []
-
         t = 0
-
-        for n in range(n_trials):
+        for n in range(len(stim)):
             trial = {}
             trial['trial_num'] = n
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
+            trial['condition'] = stim['condition'][n]
             trial['display_trial_feedback'] = False
-            # Select the appropriate audio file
-            audio_file_num = (run_number - 1) * n_trials + n + 1
-            trial['stim'] = f'degraded_passage_{audio_file_num}.wav'
+            trial['stim'] = stim['audio'][n]
             trial['start_time'] = t
             trial['end_time'] = t + trial_dur + iti_dur
             trial_info.append(trial)

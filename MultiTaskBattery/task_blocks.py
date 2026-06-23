@@ -527,35 +527,7 @@ class TheoryOfMind(Task):
 
         return trial
 
-class DegradedPassage(Task):
-    def __init__(self, info, screen, ttl_clock, const, subj_id):
-        super().__init__(info, screen, ttl_clock, const, subj_id)
-
-    def display_instructions(self):
-        self.instruction_text = f'{self.descriptive_name} Task \n\nListen to the audio attentively.'
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1])
-        instr_visual.draw()
-        self.window.flip()
-
-    def run_trial(self, trial):
-        """ Run a single trial of the task. """
-
-        self.screen.fixation_cross()
-
-        # Load and play audio stimulus for the current trial
-        audio_path = self.const.stim_dir / self.name / trial['stim']
-        audio_stim = sound.Sound(str(audio_path))
-        audio_stim.play()
-
-        # wait for trial duration
-        self.ttl_clock.wait_until(self.ttl_clock.get_time() + trial['trial_dur'])
-
-        # display trial feedback
-        self.display_trial_feedback(give_feedback= trial['display_trial_feedback'], correct_response = None)
-
-        return trial
-
-class IntactPassage(Task):
+class PassageListening(Task):
     def __init__(self, info, screen, ttl_clock, const, subj_id):
         super().__init__(info, screen, ttl_clock, const, subj_id)
 
