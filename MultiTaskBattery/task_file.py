@@ -92,7 +92,8 @@ def make_run_file(task_list,
     R = {'task_name':task_list,
          'task_code':task_table['code'].iloc[indx],
          'task_file':tfiles,
-         'instruction_dur':[instruction_dur]*len(task_list)}
+         'instruction_dur':[instruction_dur]*len(task_list),
+         'task_dur':[task_dur]*len(task_list)}
     R = pd.DataFrame(R)
     R = shuffle_rows(R, keep_in_middle=keep_in_middle)
     R = add_start_end_times(R, offset, task_dur+instruction_dur, run_time=run_time)
