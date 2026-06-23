@@ -136,7 +136,6 @@
     "visual_search": {
         "short_description": "A set of letter Ls with different orientations are presented each trial, participants must identify if 'L' is present or not.",
         "detailed_description": "Participants view a display of geometric shapes at different rotations (90, 180, 270, 360 degrees) and must determine whether a L is present in the canonical orientation. The number of shapes is flexible, on easy trials 4 shapes are shown, on hard trials 8 shapes are shown. Participants press one button if the target is present and another if it is absent. The task requires a serial search of the display as indicated by RTs increasing linearly in the array size. The task requires shifts of visual attention and elicits eye-movement related activity.",
-        ""
         "task_file_parameters": {
             "hand": {
                 "type": "str",
@@ -319,6 +318,7 @@
         "reference": "A Third Somatomotor Representation in the Human Cerebellum (Bucknet et al., 2022)",
         "recorded_metrics": "None",
         "detailed_description": "Participants move their tongue from right to left, touching their upper premolar teeth on each side. A flashing black circle around a fixation crosshair guides the rhythm (1-second periods). The task is designed to activate somatomotor tongue representations.",
+        "task_file_parameters": {
             "trial_dur": {
                 "type": "float",
                 "default": "1",
