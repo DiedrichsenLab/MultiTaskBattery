@@ -745,12 +745,12 @@ class DemandGrid(Task):
 
         return trial
 
-class SentenceReading(Task):
+class Reading(Task):
     def __init__(self, info, screen, ttl_clock, const, subj_id):
         super().__init__(info, screen, ttl_clock, const, subj_id)
 
     def display_instructions(self):
-        self.instruction_text = f'{self.descriptive_name} Task \n\n Read each English word and press a button when the image of a hand pressing a button is displayed'
+        self.instruction_text = f'{self.descriptive_name} Task \n\n Read the shown text and press a button when the image of a hand pressing a button is displayed'
         instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1])
         instr_visual.draw()
         self.window.flip()
@@ -783,50 +783,6 @@ class SentenceReading(Task):
         self.window.flip()
 
         # flush any keys in buffer
-        event.clearEvents()
-
-        # not displaying crosshair to replicate the localizer
-
-        return trial
-
-class NonwordReading(Task):
-    def __init__(self, info, screen, ttl_clock, const, subj_id):
-        super().__init__(info, screen, ttl_clock, const, subj_id)
-
-    def display_instructions(self):
-        self.instruction_text = f'{self.descriptive_name} Task \n\n Read each nonword word and press a button when the image of a hand pressing a button is displayed'
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1])
-        instr_visual.draw()
-        self.window.flip()
-
-    def run_trial(self, trial):
-        """ Run a single trial of the nonword reading task. """
-
-        # get sentence and split into words by space
-        sentence = trial['stim']
-        words = sentence.split()
-
-        #show words seqeuntially each for 450ms
-        for word in words:
-            word_stim = visual.TextStim(self.window, text=word, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height=2)
-            word_stim.draw()
-            self.window.flip()
-            self.ttl_clock.wait_until(self.ttl_clock.get_time() + 0.45)
-
-        event.clearEvents()
-
-        # show press button image
-        button_stim = visual.ImageStim(self.window, image=str(self.const.stim_dir / self.name / 'hand_press_transparent.png'))
-        button_stim.draw()
-        self.window.flip()
-        trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), 0.4)
-
-        # show blank_transparent image
-        blank_stim = visual.ImageStim(self.window, image=str(self.const.stim_dir / self.name / 'blank_transparent.png'))
-        blank_stim.draw()
-        self.window.flip()
-
-        # clear any keys in buffer
         event.clearEvents()
 
         # not displaying crosshair to replicate the localizer

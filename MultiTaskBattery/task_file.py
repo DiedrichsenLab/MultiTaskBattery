@@ -810,13 +810,14 @@ class DemandGrid(TaskFile):
 
         return trial_info
 
-class SentenceReading(TaskFile):
+class Reading(TaskFile):
     def __init__(self, const):
         super().__init__(const)
-        self.name = 'sentence_reading'
+        self.name = 'reading'
 
     def make_task_file(self,
                         run_number = None,
+                        condition = 'sentence',   # 'sentence' or 'nonword'
                         task_dur=30,
                         trial_dur=5.8,
                         iti_dur=0.2,
@@ -825,10 +826,14 @@ class SentenceReading(TaskFile):
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
 
+        # Select the stimulus list for the requested condition (sentences vs nonwords).
+        # Words are presented in a fixed order, sliced by run_number (no randomisation,
+        # matching the original localiser).
         if stim_file:
             stim = pd.read_csv(stim_file)
         else:
-            stim = pd.read_csv(self.stim_dir / 'sentence_reading' / 'sentences_shuffled.csv')
+            csv = 'sentences_shuffled.csv' if condition == 'sentence' else 'nonwords_shuffled.csv'
+            stim = pd.read_csv(self.stim_dir / self.name / csv)
 
         t = 0
 
@@ -837,50 +842,7 @@ class SentenceReading(TaskFile):
             trial['trial_num'] = n
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
-            trial['display_trial_feedback'] = False
-            sentence_index = (run_number - 1) * n_trials + n
-            trial['stim'] = stim['sentence'][sentence_index]
-            trial['start_time'] = t
-            trial['end_time'] = t + trial_dur + iti_dur
-            trial_info.append(trial)
-
-            # Update for next trial:
-            t = trial['end_time']
-
-        trial_info = pd.DataFrame(trial_info)
-        if file_name is not None:
-            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
-
-        return trial_info
-
-class NonwordReading(TaskFile):
-    def __init__(self, const):
-        super().__init__(const)
-        self.name = 'nonword_reading'
-
-    def make_task_file(self,
-                        run_number = None,
-                        task_dur=30,
-                        trial_dur=5.8,
-                        iti_dur=0.2,
-                        file_name=None,
-                        stim_file=None):
-
-        n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
-        trial_info = []
-
-        if stim_file:
-            stim = pd.read_csv(stim_file)
-        else:
-            stim = pd.read_csv(self.stim_dir / 'nonword_reading' / 'nonwords_shuffled.csv')
-
-        t = 0
-
-        for n in range(n_trials):
-            trial = {}
-            trial['trial_num'] = n
-            trial['trial_dur'] = trial_dur
-            trial['iti_dur'] = iti_dur
+            trial['condition'] = condition
             trial['display_trial_feedback'] = False
             sentence_index = (run_number - 1) * n_trials + n
             trial['stim'] = stim['sentence'][sentence_index]
