@@ -7,11 +7,6 @@
                 "default": "None",
                 "description": "Run number, used to select which clip to show from the stimulus list."
             },
-            "task_dur": {
-                "type": "float",
-                "default": "30",
-                "description": "Total task duration in seconds."
-            },
             "trial_dur": {
                 "type": "float",
                 "default": "30",
@@ -45,11 +40,6 @@
                 "type": "list",
                 "default": "[1, 2]",
                 "description": "Response keys."
-            },
-            "task_dur": {
-                "type": "float",
-                "default": "30",
-                "description": "Total task duration in seconds."
             },
             "trial_dur": {
                 "type": "float",
@@ -94,11 +84,6 @@
                 "default": "2",
                 "description": "Number of boxes lit up per step."
             },
-            "task_dur": {
-                "type": "float",
-                "default": "30",
-                "description": "Total task duration in seconds."
-            },
             "trial_dur": {
                 "type": "float",
                 "default": "7",
@@ -134,11 +119,6 @@
                 "default": "None",
                 "description": "Run number, used to select which knot stimulus to show."
             },
-            "task_dur": {
-                "type": "float",
-                "default": "30",
-                "description": "Total task duration in seconds."
-            },
             "trial_dur": {
                 "type": "float",
                 "default": "14",
@@ -167,11 +147,6 @@
                 "type": "list",
                 "default": "[1, 2]",
                 "description": "Response keys for target present and absent."
-            },
-            "task_dur": {
-                "type": "float",
-                "default": "30",
-                "description": "Total task duration in seconds."
             },
             "trial_dur": {
                 "type": "float",
@@ -204,11 +179,6 @@
                 "default": "[1, 2, 3, 4]",
                 "description": "Response keys mapped to each box position."
             },
-            "task_dur": {
-                "type": "float",
-                "default": "30",
-                "description": "Total task duration in seconds."
-            },
             "initial_wait": {
                 "type": "float",
                 "default": "1.0",
@@ -231,11 +201,6 @@
     "verb_generation": {
         "detailed_description": "Words are presented one at a time. In the first half of trials (read condition), participants silently read each word. In the second half (generate condition), a 'GENERATE' cue appears and participants covertly generate a verb associated with each presented word. The task is designed to engage the language prcoessing.",
         "task_file_parameters": {
-            "task_dur": {
-                "type": "float",
-                "default": "30",
-                "description": "Total task duration in seconds."
-            },
             "trial_dur": {
                 "type": "float",
                 "default": "2",
@@ -254,11 +219,6 @@
     "rest": {
         "detailed_description": "Participants lie still and fixate on a central crosshair. No stimuli are presented and no response is required. For most fMRI experiments, rest is used as the baseline condition, and it is recommended to include it into every task battery to allow for alignment with other datasets.",
         "task_file_parameters": {
-            "task_dur": {
-                "type": "float",
-                "default": "30",
-                "description": "Total rest duration in seconds."
-            }
         },
         "short_description": "Lie in scanner with a fixation cross.",
         "recorded_metrics": "None"
@@ -284,11 +244,6 @@
                 "type": "int",
                 "default": "None",
                 "description": "Run number, used to select stimuli."
-            },
-            "task_dur": {
-                "type": "float",
-                "default": "30",
-                "description": "Total task duration in seconds."
             },
             "trial_dur": {
                 "type": "float",
@@ -337,11 +292,6 @@
                 "default": "[1, 2]",
                 "description": "Response keys for match and no-match."
             },
-            "task_dur": {
-                "type": "float",
-                "default": "30",
-                "description": "Total task duration in seconds."
-            },
             "trial_dur": {
                 "type": "float",
                 "default": "2",
@@ -369,12 +319,6 @@
         "reference": "A Third Somatomotor Representation in the Human Cerebellum (Bucknet et al., 2022)",
         "recorded_metrics": "None",
         "detailed_description": "Participants move their tongue from right to left, touching their upper premolar teeth on each side. A flashing black circle around a fixation crosshair guides the rhythm (1-second periods). The task is designed to activate somatomotor tongue representations.",
-        "task_file_parameters": {
-            "task_dur": {
-                "type": "float",
-                "default": "30",
-                "description": "Total task duration in seconds."
-            },
             "trial_dur": {
                 "type": "float",
                 "default": "1",
@@ -397,11 +341,6 @@
                 "default": "None",
                 "description": "Run number, used to select which audio clip to play."
             },
-            "task_dur": {
-                "type": "float",
-                "default": "30",
-                "description": "Total task duration in seconds."
-            },
             "trial_dur": {
                 "type": "float",
                 "default": "30",
@@ -419,11 +358,6 @@
         "recorded_metrics": "None",
         "detailed_description": "Participants imagine walking from room to room in their childhood home. No visual stimuli are presented beyond the instruction. The task is designed to engage spatial memory and mental navigation.",
         "task_file_parameters": {
-            "task_dur": {
-                "type": "float",
-                "default": "30",
-                "description": "Total task duration in seconds."
-            },
             "trial_dur": {
                 "type": "float",
                 "default": "30",
@@ -446,11 +380,6 @@
                 "type": "int",
                 "default": "None",
                 "description": "Run number, used to select which passage to play."
-            },
-            "task_dur": {
-                "type": "float",
-                "default": "30",
-                "description": "Total task duration in seconds."
             },
             "trial_dur": {
                 "type": "float",
@@ -475,11 +404,6 @@
                 "default": "None",
                 "description": "Run number, used to select which passage to play."
             },
-            "task_dur": {
-                "type": "float",
-                "default": "30",
-                "description": "Total task duration in seconds."
-            },
             "trial_dur": {
                 "type": "float",
                 "default": "14.5",
@@ -503,11 +427,6 @@
                 "default": "None",
                 "description": "Run number, used to select which sentences to show."
             },
-            "task_dur": {
-                "type": "float",
-                "default": "30",
-                "description": "Total task duration in seconds."
-            },
             "trial_dur": {
                 "type": "float",
                 "default": "5.8",
@@ -530,11 +449,6 @@
                 "type": "int",
                 "default": "None",
                 "description": "Run number, used to select which nonwords to show."
-            },
-            "task_dur": {
-                "type": "float",
-                "default": "30",
-                "description": "Total task duration in seconds."
             },
             "trial_dur": {
                 "type": "float",
@@ -563,11 +477,6 @@
                 "default": "[1, 2, 3, 4]",
                 "description": "Response keys mapped to each finger."
             },
-            "task_dur": {
-                "type": "float",
-                "default": "30",
-                "description": "Total task duration in seconds."
-            },
             "trial_dur": {
                 "type": "float",
                 "default": "3.25",
@@ -585,11 +494,6 @@
         "recorded_metrics": "None",
         "detailed_description": "Participants alternate between flexing and extending their toes, guided by visual cues.",
         "task_file_parameters": {
-            "task_dur": {
-                "type": "float",
-                "default": "30",
-                "description": "Total task duration in seconds."
-            },
             "trial_dur": {
                 "type": "float",
                 "default": "30",
@@ -627,11 +531,6 @@
                 "default": "None",
                 "description": "Run number, used to select which sentences to present."
             },
-            "task_dur": {
-                "type": "float",
-                "default": "30",
-                "description": "Total task duration in seconds."
-            },
             "trial_dur": {
                 "type": "float",
                 "default": "15",
@@ -665,11 +564,6 @@
                 "type": "int",
                 "default": "None",
                 "description": "Run number, used to select which stimuli to present."
-            },
-            "task_dur": {
-                "type": "float",
-                "default": "30",
-                "description": "Total task duration in seconds."
             },
             "trial_dur": {
                 "type": "float",
@@ -732,11 +626,6 @@
                 "default": "None",
                 "description": "Run number, used to select which stimuli to present."
             },
-            "task_dur": {
-                "type": "float",
-                "default": "30",
-                "description": "Total task duration in seconds."
-            },
             "trial_dur": {
                 "type": "float",
                 "default": "5",
@@ -786,11 +675,6 @@
                 "type": "int",
                 "default": "None",
                 "description": "Run number, used to select which stories to present."
-            },
-            "task_dur": {
-                "type": "float",
-                "default": "30",
-                "description": "Total task duration in seconds."
             },
             "trial_dur": {
                 "type": "float",
@@ -859,11 +743,6 @@
                 "type": "list",
                 "default": "[1]",
                 "description": "Response key for tapping."
-            },
-            "task_dur": {
-                "type": "float",
-                "default": "70",
-                "description": "Total task duration in seconds."
             },
             "trial_dur": {
                 "type": "float",

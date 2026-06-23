@@ -10,8 +10,7 @@ first, then fall back to the shared MultiTaskBattery package. The
 inside ut.get_task_file_class — make_files.py doesn't need to know about it.
 
 Whether to pass run_number is decided by inspecting each task's
-make_task_file signature, so custom tasks don't need to be added to
-ut.tasks_without_run_number.
+make_task_file signature.
 """
 
 import inspect
@@ -23,21 +22,26 @@ import constants as const
 tasks = ['n_back', 'rest', 'silent_word', 'odd_even']
 num_runs = 3
 
+# Ensure task and run directories exist
 ut.dircheck(const.run_dir)
 for task in tasks:
     ut.dircheck(const.task_dir / task)
 
+# Generate run files that specify the order and duration of task blocks
 for r in range(1, num_runs + 1):
     tfiles = [f'{task}_{r:02d}.tsv' for task in tasks]
     T = tf.make_run_file(tasks, tfiles, exp_dir=const.exp_dir)
     T.to_csv(const.run_dir / f'run_{r:02d}.tsv', sep='\t', index=False)
 
+    # Generate a task_file for each task in each run that specifies the trial information
     for task, tfile in zip(tasks, tfiles):
+        row = T.loc[T['task_file']==tfile].iloc[0]
         cl = tf.get_task_class(task, exp_dir=const.exp_dir)
         TaskFileCls = ut.get_task_file_class(const, cl)
         myTask = TaskFileCls(const)
 
-        args = {}
+        # Only pass run_number if make_task_file actually accepts it., pass in task duration as a default
+        args = {'task_dur':row['task_dur']}
         if 'run_number' in inspect.signature(myTask.make_task_file).parameters:
             args['run_number'] = r
 
