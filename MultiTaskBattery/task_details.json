@@ -125,7 +125,8 @@
         "recorded_metrics": "Accuracy + RT"
     },
     "action_observation": {
-        "detailed_description": "Participants watch videos of knots being tied (action condition) and 360-degree views of completed knots (knot condition). The first trial in a block shows the knot-tying action, and subsequent trials show the static knot view. No motor response is required. The task is designed to engage action observation.",
+        "short_description": "Participants watch a video of a  knot being tied, followed by a rotating 360 view of the knot. A made-up name of the knot is displayed.",
+        "detailed_description": "Participants watch videos of knots being tied (action condition) and 360-degree views of completed knots (knot condition). Each video is 15s long. The first trial in a block shows the knot-tying action, and subsequent trials show the static knot view. No motor response during scanning is required, but participants are instructed to learn the knot so they could reproduce it after the scan. The task is designed to engage action observation.",
         "reference": "Cross, E. S., Cohen, N. R., Hamilton, A. F. de C., Ramsey, R., Wolford, G., & Grafton, S. T. (2012). Physical experience leads to enhanced object perception in parietal cortex: Insights from knot tying. Neuropsychologia, 50(14), 3207-3217.",
         "task_file_parameters": {
             "run_number": {
@@ -149,12 +150,13 @@
                 "description": "Inter-trial interval duration in seconds."
             }
         },
-        "short_description": "Watch a video where the first half a knot is tied, second half a 360 view of the knot is shown.",
         "conditions": "action, knot",
         "recorded_metrics": "None"
     },
     "visual_search": {
-        "detailed_description": "Participants view a display of geometric shapes at different rotations (90, 180, 270, 360 degrees) and must determine whether the target shape (at 90 degrees) is present. On easy trials 4 shapes are shown, on hard trials 8 shapes are shown. Participants press one button if the target is present and another if it is absent. The task is designed to engage selective visual attention and eye-movement control.",
+        "short_description": "A set of letter Ls with different orientations are presented each trial, participants must identify if 'L' is present or not.",
+        "detailed_description": "Participants view a display of geometric shapes at different rotations (90, 180, 270, 360 degrees) and must determine whether a L is present in the canonical orientation. The number of shapes is flexible, on easy trials 4 shapes are shown, on hard trials 8 shapes are shown. Participants press one button if the target is present and another if it is absent. The task requires a serial search of the display as indicated by RTs increasing linearly in the array size. The task requires shifts of visual attention and elicits eye-movement related activity.",
+        ""
         "task_file_parameters": {
             "hand": {
                 "type": "str",
@@ -187,7 +189,6 @@
                 "description": "Probability of an easy trial (4 stimuli vs. 8)."
             }
         },
-        "short_description": "Geometric shapes presented on screen, participants must identify if 'L' is present.",
         "recorded_metrics": "Accuracy + RT"
     },
     "serial_reaction_time": {
@@ -710,11 +711,11 @@
         "recorded_metrics": "Accuracy + RT"
     },
     "action_prediction": {
-        "short_description": "An action video is shown where an actor is either taking a penalty shot or greeting a person, participants must predict if the ball lands left or right or if the person greets with a handshake or hug.",
+        "short_description": "An action video is shown of an actor is either taking a penalty shot or greeting a person. The video stops right before a contact with the ball or with the other person occurs.  Participants must predict if the ball lands left or right or if the person greets with a handshake or hug.",
+        "detailed_description": "The stopping of the video requires participants to interpret relatively subtle signs that reveal the intention of the actor. The soccer condition is designed to engage general action prediction, whereas the greeting condition is designed to engage prediction in a social context.",
         "reference": "King, M. (2022). Investigating cortico-cerebellar contributions to cognition. UC Berkeley. ProQuest ID: King_berkeley_0028E_21350. Merritt ID: ark:/13030/m5wb6kvd. Retrieved from https://escholarship.org/uc/item/61w6t6sk",
         "conditions": "soccer,greeting",
         "recorded_metrics": "Accuracy + RT",
-        "detailed_description": "Participants watch short video clips of either soccer kicks or greeting interactions that are occluded partway through. They must predict the outcome. The task engages action-prediction and social-perception regions.",
         "task_file_parameters": {
             "hand": {
                 "type": "str",
