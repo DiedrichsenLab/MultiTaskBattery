@@ -75,7 +75,6 @@ class TaskDescriptionsDirective(SphinxDirective):
         self.env.note_dependency(str(json_path))
 
         tasks = _read_task_table(tsv_path)
-        tasks.sort(key=lambda t: t["name"])
         details = _read_task_details(json_path)
 
         result_nodes = []
