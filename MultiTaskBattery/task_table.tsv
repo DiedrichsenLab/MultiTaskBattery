@@ -16,7 +16,6 @@ flexion_extension	FlexionExtension	toe	flexexten
 semantic_prediction	SemanticPrediction	complete	sempred
 visual_search	VisualSearch	search	visrchsml
 movie	Movie	movie	mov
-pong	Pong	pong	pong
 affective	Affective	affective	affect
 serial_reaction_time	SerialReactionTime	serial_reaction_time	srt
 semantic_switching	SemanticSwitching	complete	semswit

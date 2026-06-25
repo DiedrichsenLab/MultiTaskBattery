@@ -57,7 +57,10 @@
         "recorded_metrics": "Accuracy + RT"
     },
     "demand_grid": {
-        "detailed_description": "On each trial, a sequence of steps is shown, where each step lights up a set of boxes in a grid. participants need to mentally add these steps together to build up a representation of the final pattern. After the sequence, two grids are displayed side by side: one showing the integrated pattern and one with a modified step. The participant presses left or right to indicate which grid matches the original sequence. The task is designed to tap spatial working memory and engage domain-general processing. The size of the grid, the number of steps and the number of boxes per step can be manipulated to adjust task difficulty and working memory load.",
+        "short_description": "Participants see a sequence of steps that each light up boxes in a grid, mentally combine them into a single pattern, then choose which of two grids matches the full sequence.",
+        "detailed_description": "Paritipants see a sequence of steps, where each step lights up a set of boxes in a grid,and add each step to a running representation of the overall pattern. After the sequence two grids appear side by side, one showing the correct pattern and the other with one of the steps modified. Participants need to make a button press to choose the correct options. Grid size, number of steps, and boxes lit per step are adjustable to vary working memory load. Contrasting harder against easier trials localizes the domain-general Multiple Demand (MD) network in frontal and parietal cortex. The easier>harder or easier>fixation contrasts can be used to localize the Default Mode Network (DMN).",
+        "reference": "Fedorenko, E., Duncan, J., & Kanwisher, N. (2013). Broad domain generality in focal regions of frontal and parietal cortex. Proceedings of the National Academy of Sciences of the United States of America, 110(41), 16616-16621.",
+        "recorded_metrics": "Accuracy + RT",
         "task_file_parameters": {
             "hand": {
                 "type": "str",
@@ -104,10 +107,7 @@
                 "default": "0.5",
                 "description": "Inter-trial interval duration in seconds."
             }
-        },
-        "short_description": "2AFC, a set of grids is shown one by one on the screen with certain boxes colored blue. After the sequnece, two options are given for the combination of blue boxes across shown grids",
-        "reference": "Fedorenko, E., Duncan, J., & Kanwisher, N. (2013). Broad domain generality in focal regions of frontal and parietal cortex. Proceedings of the National Academy of Sciences of the United States of America, 110(41), 16616-16621.",
-        "recorded_metrics": "Accuracy + RT"
+        }
     },
     "action_observation": {
         "short_description": "Participants watch a video of a  knot being tied, followed by a rotating 360 view of the knot. A made-up name of the knot is displayed.",
@@ -225,11 +225,11 @@
         "recorded_metrics": "None"
     },
     "theory_of_mind": {
-        "short_description": "Short story presented with a question at the end, participants must answer the question.",
+        "short_description": "Participants read a short story, followed by a statement they must judge as true or false.",
         "reference": "Saxe, R. and Kanwisher, N. (2003) People thinking about thinking people: The role of the temporo-parietal junction in “theory of mind”, NeuroImage, 19(4), pp. 1835-1842. Available at: https://doi.org/10.1016/S1053-8119(03)00230-1.",
         "conditions": "belief,photo",
         "recorded_metrics": "Accuracy + RT",
-        "detailed_description": "Participants read a short story followed by a true/false question. In the belief condition, stories involve understanding another person's mental state (false beliefs, intentions). In the photo condition, stories involve factual reasoning about outdated photographs. The task is designed to engage mentalizing processes and social cognition.",
+        "detailed_description": "Participants read short stories. Each story is followed by a statement and a true/false judgment. In the belief condition, stories require inferring another person's mental state (false belief); in the photo condition, stories require reasoning about outdated conent of a physical or external representation such as a photograph, a map or a book, whose information no longer matches the current state of the world. Both conditions are matched in structure (each involves holding a mental represntation that conflicts with the current reality. Only the belief condition involves another person's mind. Participants press a button to indicate whether the statement about the story is true or false. Task is designed to engage mentalizing (theory of mind): reasoning about other people's mental states. ",
         "task_file_parameters": {
             "hand": {
                 "type": "str",
@@ -334,9 +334,10 @@
         }
     },
     "auditory_narrative": {
-        "short_description": "30 second snippets of a moth radiohour story (wheretheressmoke)",
+        "short_description": "30 second snippets of a moth radiohour story (where there's smoke)",
+        "detailed_description": "Participants listen to 30-second audio snippets from The Moth Radio Hour story 'Where There's Smoke'. The clips are presented sequentially across runs so the participant follows the narrative. The task is designed to engage auditory cortex and the language network and higher-level narrative comprehension.",
+        "reference": "Tang, J., LeBel, A., Jain, S., & Huth, A. G. (2023). Semantic reconstruction of continuous language from non-invasive brain recordings. Nature Neuroscience, 26(5), 858-866.",
         "recorded_metrics": "None",
-        "detailed_description": "Participants listen to 30-second audio snippets from The Moth Radio Hour story 'Where There's Smoke'. The clips are presented sequentially across runs so the participant follows the narrative. The task is designed to engage auditory cortex and the language network.",
         "task_file_parameters": {
             "run_number": {
                 "type": "int",
@@ -373,34 +374,11 @@
             }
         }
     },
-    "degraded_passage": {
-        "short_description": "Listen to muffled passages.",
-        "reference": "Scott, T. L., Gallee, J., & Fedorenko, E. (2017). A new fun and robust version of an fMRI localizer for the frontotemporal language system. Cognitive Neuroscience, 8(3), 167�176.",
-        "recorded_metrics": "None",
-        "detailed_description": "Participants listen to acoustically degraded (muffled) speech passages. The degradation makes the passages unintelligible, serving as a control for the intact passage condition. The task is designed to engage auditory processing regions without engaging higher-level language comprehension.",
-        "task_file_parameters": {
-            "run_number": {
-                "type": "int",
-                "default": "None",
-                "description": "Run number, used to select which passage to play."
-            },
-            "trial_dur": {
-                "type": "float",
-                "default": "14.5",
-                "description": "Duration of each passage in seconds."
-            },
-            "iti_dur": {
-                "type": "float",
-                "default": "0.5",
-                "description": "Inter-trial interval duration in seconds."
-            }
-        }
-    },
-    "intact_passage": {
-        "short_description": "Listen to normal sentences.",
+    "passage_listening": {
+        "short_description": "Participants listen to intact or accoustically degraded (mufffled) speech passages",
+        "detailed_description": "Participants listen to excerpts from speeches and talks from several sources (e.g., The moth podcast, Ted talks, celebrity interviews. In the intact codition the audio is intelligible. In the degraded condition the same type of audio is acoustically degraded so it is matched in lower level acoustic properties but the content can no longer be understood. Participants are instructed to only listen attentively; no response is required. The intact>degraded contrast localizes high-level language processing brain regions. ",
         "reference": "Scott, T. L., Gallee, J., & Fedorenko, E. (2017). A new fun and robust version of an fMRI localizer for the frontotemporal language system. Cognitive Neuroscience, 8(3), 167-176.",
         "recorded_metrics": "None",
-        "detailed_description": "Participants listen to normal, intelligible speech passages. Paired with the degraded passage condition, this allows isolation of higher-level language comprehension from basic auditory processing.",
         "task_file_parameters": {
             "run_number": {
                 "type": "int",
@@ -419,11 +397,11 @@
             }
         }
     },
-    "sentence_reading": {
-        "short_description": "Read sentences, words presented sequentially one at a time. Press a button at the end of each sentence.",
+    "reading": {
+        "short_description": "Participants read sentences or nonword sequences.",
         "reference": "Fedorenko, E., Hsieh, P.-J., Nieto-Castanon, A., Whitfield-Gabrieli, S., & Kanwisher, N. (2010). New method for fMRI investigations of language: defining ROIs functionally in individual subjects. Journal of Neurophysiology, 104(2), 1177-1194.",
         "recorded_metrics": "RT",
-        "detailed_description": "Words from English sentences are presented one at a time. Participants read each word silently and press a button when a hand-press image appears at the end of the sentence. Paired with nonword reading, this isolates sentence-level language processing.",
+        "detailed_description": "Participants read sentences or nonword sequences, where words/nonwords are shown one at a time. Participants are instructed to read silently as they would when reading a book. At the end of each sentence/nonword sequence, participants see a picture of a finger pressing a button; whenever they see that picture they need to make a button press (to help them stay aler during throughout the task.he sentences>nonwords contrast can be used to localize high-level language processing brain regions,  i.e., regions that support lexico-semantic and combinatorial (syntactic and semantic) processes",
         "task_file_parameters": {
             "run_number": {
                 "type": "int",
@@ -434,29 +412,6 @@
                 "type": "float",
                 "default": "5.8",
                 "description": "Duration of each sentence presentation in seconds."
-            },
-            "iti_dur": {
-                "type": "float",
-                "default": "0.2",
-                "description": "Inter-trial interval duration in seconds."
-            }
-        }
-    },
-    "nonword_reading": {
-        "short_description": "Read nonwords, nonwords presented sequentially one at a time. Press a button at the end of each list of nonwords.",
-        "reference": "Fedorenko, E., Hsieh, P.-J., Nieto-Castanon, A., Whitfield-Gabrieli, S., & Kanwisher, N. (2010). New method for fMRI investigations of language: defining ROIs functionally in individual subjects. Journal of Neurophysiology, 104(2), 1177-1194.",
-        "recorded_metrics": "RT",
-        "detailed_description": "Pronounceable nonwords are presented one at a time. Participants read each nonword silently and press a button when a hand-press image appears at the end of the list. Serves as a control for sentence reading, isolating low-level visual and phonological processing from sentence-level comprehension.",
-        "task_file_parameters": {
-            "run_number": {
-                "type": "int",
-                "default": "None",
-                "description": "Run number, used to select which nonwords to show."
-            },
-            "trial_dur": {
-                "type": "float",
-                "default": "5.8",
-                "description": "Duration of each nonword list presentation in seconds."
             },
             "iti_dur": {
                 "type": "float",
@@ -722,10 +677,6 @@
         "reference": "Heerey, E.A. and Gilder, T.S.E. (2019). The subjective value of a smile alters social behaviour, PLoS ONE, 14(12), pp. 1-19. Available at: https://doi.org/10.1371/journal.pone.0225284.",
         "conditions": "like,dislike",
         "recorded_metrics": "Accuracy + RT"
-    },
-    "pong": {
-        "short_description": "Classic pong game. A ball moves across the screen downwards and the participant uses buttons to move a paddle left or right to catch it.",
-        "recorded_metrics": "Accuracy"
     },
     "affective": {
         "short_description": "2 choice is the image pleasant or unpleasant",
