@@ -135,6 +135,7 @@
     },
     "visual_search": {
         "short_description": "A set of letter Ls with different orientations are presented each trial, participants must identify if 'L' is present or not.",
+        "reference": "Duncan, J., & Humphreys, G. W. (1989). Visual search and stimulus similarity. Psychological review, 96(3), 433.",
         "detailed_description": "Participants view a display of geometric shapes at different rotations (90, 180, 270, 360 degrees) and must determine whether a L is present in the canonical orientation. The number of shapes is flexible, on easy trials 4 shapes are shown, on hard trials 8 shapes are shown. Participants press one button if the target is present and another if it is absent. The task requires a serial search of the display as indicated by RTs increasing linearly in the array size. The task requires shifts of visual attention and elicits eye-movement related activity.",
         "task_file_parameters": {
             "hand": {
@@ -355,6 +356,7 @@
     },
     "spatial_navigation": {
         "short_description": "Imagining walking room to room in childhood home.",
+        "reference": "Boly, M., Coleman, M. R., Davis, M. H., Hampshire, A., Bor, D., Moonen, G., ... & Owen, A. M. (2007). When thoughts become action: an fMRI paradigm to study volitional brain activity in non-communicative brain injured patients. Neuroimage, 36(3), 979-992.",
         "recorded_metrics": "None",
         "detailed_description": "Participants imagine walking from room to room in their childhood home. No visual stimuli are presented beyond the instruction. The task is designed to engage spatial memory and mental navigation.",
         "task_file_parameters": {
@@ -769,7 +771,7 @@
     },
     "sensmot_control": {
         "short_description": "Assess basic sensorimotor control. Measure reaction time and response accuracy to evaluate low-level perceptual and motor processing. Part 1 is a Go/No-Go. Part 2 is a 2AFC",
-        "reference": ": Koechlin, E., & Summerfield, C. (2007). An information theoretical approach to prefrontal executive function. Trends in cognitive sciences, 11(6), 229-235.Koechlin 2007",
+        "reference": "Koechlin, E., & Summerfield, C. (2007). An information theoretical approach to prefrontal executive function. Trends in cognitive sciences, 11(6), 229-235.Koechlin 2007",
         "conditions": "Go/No-Go 2AFC.",
         "recorded_metrics": "Accuracy + RT"
     },
