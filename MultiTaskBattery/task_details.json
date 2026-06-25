@@ -168,6 +168,7 @@
     },
     "serial_reaction_time": {
         "detailed_description": "Four boxes are displayed in a row. On each trial one box lights up green and the participant presses the corresponding button as fast as possible. Stimuli are randomized with the constraint that the same box never lights up on consecutive trials. The task measures basic visuomotor response speed.",
+        "reference": "Nissen, M. J., & Bullemer, P. (1987). Attentional requirements of learning: Evidence from performance measures. Cognitive psychology, 19(1), 1-32.",
         "task_file_parameters": {
             "hand": {
                 "type": "str",
