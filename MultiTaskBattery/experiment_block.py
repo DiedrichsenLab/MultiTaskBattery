@@ -154,10 +154,11 @@ class Experiment:
                 pl.sendMessageToFile(f"task_name: {task.name} start_track: {pl.currentUsec()} real start time {r_data.real_start_time} TR count {self.ttl_clock.ttl_count}")
 
             # display the instruction text for the task. (instructions are task specific)
-            task.display_instructions()
-
-            # wait for a time period equal to instruction duration
-            self.ttl_clock.wait_until(r_data.start_time + r_data.instruction_dur)
+            if r_data.instruction_dur > 0:
+                task.display_instructions()
+                
+                # wait for a time period equal to instruction duration
+                self.ttl_clock.wait_until(r_data.start_time + r_data.instruction_dur)
 
             # Run the task (which saves its data to the target)
             task.start_time = self.ttl_clock.get_time()
