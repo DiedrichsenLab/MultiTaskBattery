@@ -229,7 +229,7 @@
         "reference": "Saxe, R. and Kanwisher, N. (2003) People thinking about thinking people: The role of the temporo-parietal junction in “theory of mind”, NeuroImage, 19(4), pp. 1835-1842. Available at: https://doi.org/10.1016/S1053-8119(03)00230-1.",
         "conditions": "belief,photo",
         "recorded_metrics": "Accuracy + RT",
-        "detailed_description": "Participants read short stories. Each story is followed by a statement and a true/false judgment. In the belief condition, stories require inferring another person's mental state (false belief); in the photo condition, stories require reasoning about outdated conent of a physical or external representation such as a photograph, a map or a book, whose information no longer matches the current state of the world. Both conditions are matched in structure (each involves holding a mental represntation that conflicts with the current reality. Only the belief condition involves another person's mind. Participants press a button to indicate whether the statement about the story is true or false. Task is designed to engage mentalizing (theory of mind): reasoning about other people's mental states. ",
+        "detailed_description": "Participants read short stories. Each story is followed by a statement and a true/false judgment. In the belief condition, stories require inferring another person's mental state (false belief); in the photo condition, stories require reasoning about outdated conent of a physical or external representation such as a photograph, a map or a book, whose information no longer matches the current state of the world. Both conditions are matched in structure (each involves holding a mental represntation that conflicts with the current reality). Only the belief condition involves another person's mind. Participants press a button to indicate whether the statement about the story is true or false. Task is designed to engage mentalizing (theory of mind): reasoning about other people's mental states. ",
         "task_file_parameters": {
             "hand": {
                 "type": "str",
@@ -244,12 +244,12 @@
             "run_number": {
                 "type": "int",
                 "default": "None",
-                "description": "Run number, used to select stimuli."
+                "description": "Run number, used to select stimuli for that run."
             },
             "trial_dur": {
                 "type": "float",
                 "default": "14",
-                "description": "Duration of each trial in seconds."
+                "description": "Total duration of each trial in seconds."
             },
             "story_dur": {
                 "type": "float",
@@ -376,10 +376,15 @@
     },
     "passage_listening": {
         "short_description": "Participants listen to intact or accoustically degraded (mufffled) speech passages",
-        "detailed_description": "Participants listen to excerpts from speeches and talks from several sources (e.g., The moth podcast, Ted talks, celebrity interviews. In the intact codition the audio is intelligible. In the degraded condition the same type of audio is acoustically degraded so it is matched in lower level acoustic properties but the content can no longer be understood. Participants are instructed to only listen attentively; no response is required. The intact>degraded contrast localizes high-level language processing brain regions. ",
+        "detailed_description": "Participants listen to excerpts from speeches and talks from several sources (e.g., The moth podcast, Ted talks, celebrity interviews). In the intact codition the audio is intelligible. In the degraded condition the same type of audio is acoustically degraded so it is matched in lower level acoustic properties but the content can no longer be understood. Participants are instructed to only listen attentively; no response is required. The intact>degraded contrast localizes high-level language processing brain regions. ",
         "reference": "Scott, T. L., Gallee, J., & Fedorenko, E. (2017). A new fun and robust version of an fMRI localizer for the frontotemporal language system. Cognitive Neuroscience, 8(3), 167-176.",
         "recorded_metrics": "None",
         "task_file_parameters": {
+            "condition": {
+                "type": "str",
+                "default": "None",
+                "description": "If set, only trials of this condition are included ('intact' or 'degraded')."
+            },
             "run_number": {
                 "type": "int",
                 "default": "None",
@@ -401,8 +406,13 @@
         "short_description": "Participants read sentences or nonword sequences.",
         "reference": "Fedorenko, E., Hsieh, P.-J., Nieto-Castanon, A., Whitfield-Gabrieli, S., & Kanwisher, N. (2010). New method for fMRI investigations of language: defining ROIs functionally in individual subjects. Journal of Neurophysiology, 104(2), 1177-1194.",
         "recorded_metrics": "RT",
-        "detailed_description": "Participants read sentences or nonword sequences, where words/nonwords are shown one at a time. Participants are instructed to read silently as they would when reading a book. At the end of each sentence/nonword sequence, participants see a picture of a finger pressing a button; whenever they see that picture they need to make a button press (to help them stay aler during throughout the task.he sentences>nonwords contrast can be used to localize high-level language processing brain regions,  i.e., regions that support lexico-semantic and combinatorial (syntactic and semantic) processes",
+        "detailed_description": "Participants read sentences or nonword sequences, where words/nonwords are shown one at a time. Participants are instructed to read silently as they would when reading a book. At the end of each sentence/nonword sequence, participants see a picture of a finger pressing a button; whenever they see that picture they need to make a button press (to help them stay alert during throughout the task. The sentences>nonwords contrast can be used to localize high-level language processing brain regions,  i.e., regions that support lexico-semantic and combinatorial (syntactic and semantic) processes",
         "task_file_parameters": {
+            "condition": {
+            "type": "str",
+            "default": "None",
+            "description": "If set, only trials of this condition are included ('sentences' or 'nonwords')."
+            },
             "run_number": {
                 "type": "int",
                 "default": "None",

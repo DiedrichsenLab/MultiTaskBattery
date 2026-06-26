@@ -1,0 +1,5 @@
+run_num	trial_num	trial_dur	iti_dur	condition	display_trial_feedback	stim	start_time	end_time	real_start_time	start_ttl	start_ttl_time
+1	0	14.5	0.5	intact	False	intact_passage_1.wav	0.0	15.0	5.000349499983713	1	5.000351399998181
+1	1	14.5	0.5	intact	False	intact_passage_2.wav	15.0	30.0	20.00002979999408	1	20.00003180000931
+1	0	14.5	0.5	degraded	False	degraded_passage_1.wav	0.0	15.0	110.00035529996967	1	110.00035699998261
+1	1	14.5	0.5	degraded	False	degraded_passage_2.wav	15.0	30.0	125.00002340000356	1	125.0000251000165

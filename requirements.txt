@@ -12,3 +12,4 @@ questplus
 pooch
 numba
 nibabel
+psychopy-sounddevice

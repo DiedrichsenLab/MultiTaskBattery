@@ -1,0 +1,5 @@
+task_name	task_code	task_file	instruction_dur	task_dur	start_time	end_time
+passage_listening	pssglisten	passage_listening_degraded_02.tsv	5	30	0	35
+passage_listening	pssglisten	passage_listening_intact_02.tsv	5	30	35	70
+reading	read	reading_nonwords_02.tsv	5	30	70	105
+reading	read	reading_sentence_02.tsv	5	30	105	140

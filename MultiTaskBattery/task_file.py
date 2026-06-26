@@ -386,10 +386,7 @@ class TheoryOfMind(TaskFile):
                         text_height=1.25,
                         file_name=None,
                         stim_file=None,
-                        condition=None,
-                        stimulus_seed=None,
-                        exclude_stimuli=None,
-                        stim=None):
+                        condition=None):
         # Count number of trials based on timing; may be overridden below when an
         # explicit stimulus list is provided (so distribution, not timing, sets
         # the exact trial count).
@@ -461,20 +458,15 @@ class PassageListening(TaskFile):
                        trial_dur=14.5,
                        iti_dur=0.5,
                        file_name=None,
-                       stim_file=None,
-                       stimulus_seed=0):
+                       stim_file=None,):
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
 
         # Load the audio/condition table and keep only the requested condition
         stim = pd.read_csv(self.stim_dir / self.name / (stim_file or f'{self.name}.csv'))
+        valid = sorted (stim['condition'].unique()) # check if the condition is there
+        if condition not in valid:
+            raise ValueError(f"PassageListening: unknown condition {condition!r} (expected one of {valid})")
         stim = stim[stim['condition'] == condition].reset_index(drop=True)
-
-        # Shuffle the whole condition pool with a fixed seed, then take this run's
-        # disjoint slice. The seed is constant across runs, so every run rebuilds the
-        # same shuffled order and the per-run windows never overlap -> random order,
-        # no repeats, no state shared between runs. (Vary stimulus_seed per subject to
-        # counterbalance across subjects.)
-        stim = stim.sample(frac=1, random_state=stimulus_seed).reset_index(drop=True)
         start = (run_number - 1) * n_trials
         stim = stim.iloc[start:start + n_trials].reset_index(drop=True)
 
@@ -817,7 +809,7 @@ class Reading(TaskFile):
 
     def make_task_file(self,
                         run_number = None,
-                        condition = 'sentence',   # 'sentence' or 'nonword'
+                        condition = 'sentences',   # 'sentence' or 'nonwords'
                         task_dur=30,
                         trial_dur=5.8,
                         iti_dur=0.2,
@@ -827,12 +819,16 @@ class Reading(TaskFile):
         trial_info = []
 
         # Select the stimulus list for the requested condition (sentences vs nonwords).
-        # Words are presented in a fixed order, sliced by run_number (no randomisation,
-        # matching the original localiser).
         if stim_file:
             stim = pd.read_csv(stim_file)
         else:
-            csv = 'sentences_shuffled.csv' if condition == 'sentence' else 'nonwords_shuffled.csv'
+            if condition == 'sentences':
+                csv = 'sentences_shuffled.csv'
+
+            elif condition == 'nonwords':
+                csv = 'nonwords_shuffled.csv'
+            else:
+                raise ValueError( F" task Reading: unknown condition {condition!r} (expected 'sentences' or 'nonwords')")
             stim = pd.read_csv(self.stim_dir / self.name / csv)
 
         t = 0
