@@ -1,3 +1,0 @@
-trial_num	trial_dur	iti_dur	condition	display_trial_feedback	stim	start_time	end_time
-0	14.5	0.5	degraded	False	degraded_passage_3.wav	0.0	15.0
-1	14.5	0.5	degraded	False	degraded_passage_4.wav	15.0	30.0

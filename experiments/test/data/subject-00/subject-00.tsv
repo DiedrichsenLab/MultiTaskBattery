@@ -1,5 +1,0 @@
-run_num	task_name	task_code	task_file	instruction_dur	task_dur	start_time	end_time	real_start_time	start_ttl	start_ttl_time	acc	rt	real_end_time
-1	passage_listening	pssglisten	passage_listening_intact_01.tsv	5	30	0	35	0.0006678999634459615	1	0.0006722999969497323			34.54646689997753
-1	reading	read	reading_nonwords_01.tsv	5	30	35	70	35.0000180999632	1	35.00002029997995			70.20370850001927
-1	reading	read	reading_sentence_01.tsv	5	30	70	105	70.20506489998661	1	70.20507149997866			105.17204249999486
-1	passage_listening	pssglisten	passage_listening_degraded_01.tsv	5	30	105	140	105.17332950001583	1	105.17333620000863			139.55764040001668

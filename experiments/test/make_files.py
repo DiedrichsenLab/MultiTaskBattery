@@ -3,10 +3,8 @@ import MultiTaskBattery.task_file as tf
 import MultiTaskBattery.utils as ut
 import constants as const
 
-blocks = [('passage_listening','degraded'),
-          ('reading','nonwords'),
-          ('passage_listening', 'intact'),
-          ('reading','sentence')]
+blocks = [('action_observation','action'),
+          ('action_observation','knot')]
 
 
 num_runs = 3 # Number of imaging runs
