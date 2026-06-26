@@ -3,9 +3,8 @@ import MultiTaskBattery.task_file as tf
 import MultiTaskBattery.utils as ut
 import constants as const
 
-blocks = [('movie','romance'),
-           ('movie','nature'),
-           ('movie','landscape')]
+blocks = [('rmet','emotion'),
+           ('rmet','age')]
 
 
 num_runs = 3 # Number of imaging runs

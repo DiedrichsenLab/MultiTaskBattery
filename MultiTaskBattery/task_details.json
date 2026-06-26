@@ -511,11 +511,11 @@
         }
     },
     "rmet": {
-        "short_description": "Pictures of faces with different emotions presented (eyes only) along with four attribute words, participants must identify which attribute describes person best.",
+        "short_description": "Participants see pictures of faces with different emotions presented (eyes only) along with four options (for either emotion or age), participants must identify which option describes person best.",
+        "detailed_description": "Participants see a photograph of a person's eye region (just the eyes) together with four descriptive words, and press a button to choose the option that best fits the person. In the emotion condition the options are mental-state words and participants infer what the person is thinking or feeling, which engages mentalizing (theory of mind) and social cognition. In the age condition the same eye images are shown but the options are age ranges and participants judge the person's age instead; this is matched in low-level visual demands and face processing but does not require inferring a mental state, so it serves as a control. The emotion>age contrast isolates mental-state inference from basic face perception.",
         "reference": "Kim, H.A. et al. (2024) 'Multiracial Reading the Mind in the Eyes Test (MRMET): An inclusive version of an influential measure', Behavior Research Methods. Revised from Baron-Cohen, Wheelwright, Hill, Raste, & Plumb, 2001",
         "conditions": "age, emotion",
         "recorded_metrics": "Accuracy + RT",
-        "detailed_description": "Participants see a photograph of a person's eye region (just the eyes) together with four descriptive words, and press a button to choose the option that best fits the person. In the emotion condition the options are mental-state words and participants infer what the person is thinking or feeling, which engages mentalizing (theory of mind) and social cognition. In the age condition the same eye images are shown but the options are age ranges and participants judge the person's age instead; this is matched in low-level visual demands and face processing but does not require inferring a mental state, so it serves as a control. The emotion>age contrast isolates mental-state inference from basic face perception.",
         "task_file_parameters": {
             "hand": {
                 "type": "str",
