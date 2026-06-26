@@ -334,8 +334,8 @@
         }
     },
     "auditory_narrative": {
-        "short_description": "30 second snippets of a moth radiohour story (where there's smoke)",
-        "detailed_description": "Participants listen to 30-second audio snippets from The Moth Radio Hour story 'Where There's Smoke'. The clips are presented sequentially across runs so the participant follows the narrative. The task is designed to engage auditory cortex and the language network and higher-level narrative comprehension.",
+        "short_description": "Participants listen to 30 second snippets of a moth radiohour story (where there's smoke)",
+        "detailed_description": "Participants listen to 30-second audio snippets from The Moth Radio Hour story 'Where There's Smoke'. The clips are presented sequentially across runs so the participant follows the narrative. The task is designed to engage auditory cortex, the language network and higher-level narrative comprehension.",
         "reference": "Tang, J., LeBel, A., Jain, S., & Huth, A. G. (2023). Semantic reconstruction of continuous language from non-invasive brain recordings. Nature Neuroscience, 26(5), 858-866.",
         "recorded_metrics": "None",
         "task_file_parameters": {
