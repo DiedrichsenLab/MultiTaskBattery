@@ -1841,7 +1841,7 @@ class Affective(TaskFile):
                        trial_dur=1.6,
                        iti_dur=0.4,
                        file_name=None,
-                       hand='left',
+                       hand='right',
                        responses=[1,2]):
 
         # check how many trials to include
