@@ -3,7 +3,7 @@ import MultiTaskBattery.task_file as tf
 import MultiTaskBattery.utils as ut
 import constants as const
 
-blocks = [('tongue_movement',None)]
+blocks = [('oddball',None)]
 
 
 num_runs = 3 # Number of imaging runs

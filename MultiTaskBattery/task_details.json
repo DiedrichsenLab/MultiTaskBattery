@@ -29,7 +29,9 @@
         "recorded_metrics": "None"
     },
     "oddball": {
-        "detailed_description": "A rapid visual oddball detection task. On each trial a letter ('K' or 'O') is briefly shown in either black or red. Participants must press a button when they see a red 'K' (the target) and withhold responses to all other stimuli. The task is designed to engage attention and executive control .",
+        "short_description": "Participants see a black or red 'K' or 'O' on screen and press a button only when a red 'K' appears.",
+        "recorded_metrics": "Accuracy + RT",
+        "detailed_description": "Participants see a single letter ('K' or 'O') briefly shown in either black or red on each trial. They press a button when they see a red 'K' (the infrequent target) and withhold responses to all other stimuli. The red 'K' appears on 10% of the trials, with the remaining trials split between black 'K' (40%), black 'O' (40%), and red 'O' (10%) non-targets. This task explores detection of transient responses to salient, visual oddball targets that are uncommon relative to irrelevant nontargets and distracting nontargets. The goal of the task is to activate the SAL/PMN and CG-OP networks.",
         "task_file_parameters": {
             "hand": {
                 "type": "str",
@@ -52,9 +54,7 @@
                 "description": "Inter-trial interval duration in seconds."
             }
         },
-        "short_description": "Black or red \"K\" or \"O\" is shown on the screen. Press a button when red \"K\" is shown",
-        "reference": "Du, J., DiNicola, L. M., Angeli, P. A., Saadon-Grosman, N., Sun, W., Kaiser, S., ... & Buckner, R. L. (2024). Organization of the human cerebral cortex estimated within individuals: networks, global topography, and function. Journal of neurophysiology, 131(6), 1014-1082.",
-        "recorded_metrics": "Accuracy + RT"
+        "reference": "Du, J., DiNicola, L. M., Angeli, P. A., Saadon-Grosman, N., Sun, W., Kaiser, S., ... & Buckner, R. L. (2024). Organization of the human cerebral cortex estimated within individuals: networks, global topography, and function. Journal of neurophysiology, 131(6), 1014-1082."
     },
     "demand_grid": {
         "short_description": "Participants see a sequence of steps that each light up boxes in a grid, mentally combine them into a single pattern, then choose which of two grids matches the full sequence.",

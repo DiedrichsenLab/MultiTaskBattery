@@ -440,7 +440,6 @@ class SpatialNavigation(Task):
 
     def init_task(self):
         self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
-        # self.corr_key = [self.trial_info['key_false'].iloc[0],self.trial_info['key_true'].iloc[0]]
 
     def display_instructions(self):
         start_location = self.trial_info.iloc[0]['location_1']
