@@ -150,13 +150,17 @@ class TaskDescriptionsDirective(SphinxDirective):
             field += field_body
             field_list += field
 
-        # 5. Reference
-        ref_text = task_detail.get("reference", "") if task_detail else ""
-        if ref_text:
+        # 5. Reference(s). Accept either a single string or a list of strings;
+        # each citation is rendered as its own paragraph.
+        ref_value = task_detail.get("reference", "") if task_detail else ""
+        refs = ref_value if isinstance(ref_value, list) else ([ref_value] if ref_value else [])
+        refs = [r for r in refs if r]
+        if refs:
             field = nodes.field()
-            field += nodes.field_name(text="Reference")
+            field += nodes.field_name(text="References" if len(refs) > 1 else "Reference")
             field_body = nodes.field_body()
-            field_body += nodes.paragraph(text=ref_text)
+            for r in refs:
+                field_body += nodes.paragraph(text=r)
             field += field_body
             field_list += field
 
