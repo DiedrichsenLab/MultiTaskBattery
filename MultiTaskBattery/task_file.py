@@ -1841,9 +1841,8 @@ class Affective(TaskFile):
                        trial_dur=1.6,
                        iti_dur=0.4,
                        file_name=None,
-                       run_number=None,
                        hand='left',
-                       responses=[3, 4]):
+                       responses=[1,2]):
 
         # check how many trials to include
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))

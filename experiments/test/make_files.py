@@ -3,8 +3,7 @@ import MultiTaskBattery.task_file as tf
 import MultiTaskBattery.utils as ut
 import constants as const
 
-blocks = [('action_observation','action'),
-          ('action_observation','knot')]
+blocks = [('affective',None)]
 
 
 num_runs = 3 # Number of imaging runs

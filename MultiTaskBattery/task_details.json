@@ -58,7 +58,7 @@
     },
     "demand_grid": {
         "short_description": "Participants see a sequence of steps that each light up boxes in a grid, mentally combine them into a single pattern, then choose which of two grids matches the full sequence.",
-        "detailed_description": "Paritipants see a sequence of steps, where each step lights up a set of boxes in a grid,and add each step to a running representation of the overall pattern. After the sequence two grids appear side by side, one showing the correct pattern and the other with one of the steps modified. Participants need to make a button press to choose the correct options. Grid size, number of steps, and boxes lit per step are adjustable to vary working memory load. Contrasting harder against easier trials localizes the domain-general Multiple Demand (MD) network in frontal and parietal cortex. The easier>harder or easier>fixation contrasts can be used to localize the Default Mode Network (DMN).",
+        "detailed_description": "Paritipants see a sequence of steps, where each step lights up a set of boxes in a grid, and add each step to a running representation of the overall pattern. After the sequence, two grids appear side by side, one showing the correct pattern and the other with one of the steps modified. Participants need to make a button press to choose the correct options. Grid size, number of steps, and boxes lit per step are adjustable to vary working memory load. Contrasting harder against easier trials localizes the domain-general Multiple Demand (MD) network in frontal and parietal cortex. The easier>harder or easier>fixation contrasts can be used to localize the Default Mode Network (DMN).",
         "reference": "Fedorenko, E., Duncan, J., & Kanwisher, N. (2013). Broad domain generality in focal regions of frontal and parietal cortex. Proceedings of the National Academy of Sciences of the United States of America, 110(41), 16616-16621.",
         "recorded_metrics": "Accuracy + RT",
         "task_file_parameters": {
@@ -688,8 +688,32 @@
         "recorded_metrics": "Accuracy + RT"
     },
     "affective": {
-        "short_description": "2 choice is the image pleasant or unpleasant",
-        "recorded_metrics": "Accuracy + RT"
+        "short_description": "Participants view a picture (scenes, animals, or foods) and choose whether it is pleasant or unpleasant.",
+        "detailed_description": "Participants view pictures drawn from the International Affective Picture System (IAPS) — depicting scenes, animals, and foods — and indicate via a button press whether each image is pleasant or unpleasant. The task is designed to engage affective/emotional valence processing.",
+        "recorded_metrics": "Accuracy + RT",
+        "reference": ["Lang, P. J., Bradley, M. M., & Cuthbert, B. N. (1997). International affective picture system (IAPS): Technical manual and affective ratings. NIMH Center for the Study of Emotion and Attention, 1(39-58), 3.","Moulton, E. A., Elman, I., Pendse, G., Schmahmann, J., Becerra, L., & Borsook, D. (2011). Aversion-related circuitry in the cerebellum: responses to noxious heat and unpleasant images. Journal of neuroscience, 31(10), 3795-3804."],
+        "task_file_parameters": {
+            "hand": {
+                "type": "str",
+                "default": "right",
+                "description": "Hand used for response ('left' or 'right')."
+            },
+            "responses": {
+                "type": "list",
+                "default": "[1, 2]",
+                "description": "Response keys for [unpleasant, pleasant]."
+            },
+            "trial_dur": {
+                "type": "float",
+                "default": "1.6",
+                "description": "Duration each image is displayed in seconds."
+            },
+            "iti_dur": {
+                "type": "float",
+                "default": "0.4",
+                "description": "Inter-trial interval duration in seconds."
+            }
+        }
     },
     "finger_rhythmic": {
         "short_description": "Rhythmic tapping production task. Participants are instructed to produce a regular series of taps at a prescribed target interval.",
