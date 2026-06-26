@@ -3,7 +3,9 @@ import MultiTaskBattery.task_file as tf
 import MultiTaskBattery.utils as ut
 import constants as const
 
-blocks = [('oddball',None)]
+blocks = [('movie','romance'),
+           ('movie','nature'),
+           ('movie','landscape')]
 
 
 num_runs = 3 # Number of imaging runs
