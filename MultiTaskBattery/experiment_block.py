@@ -289,11 +289,10 @@ class Experiment:
 
     def stop_eyetracker(self):
         """
-        stop recording
-        close edf file
-        receive edf file?
-            - receiving the edf file takes time and might be problematic during scanning
-            maybe it would be better to take the edf files from eyelink host computer afterwards
+        Stop recording and close the EDF file.
+
+        - Receiving the EDF file takes time and might be problematic during scanning.
+        - It may be better to copy the EDF files from the EyeLink host computer afterwards.
         """
         self.tk.stopRecording()
         self.tk.closeDataFile()

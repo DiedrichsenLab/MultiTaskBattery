@@ -78,12 +78,17 @@ class TaskDescriptionsDirective(SphinxDirective):
         details = _read_task_details(json_path)
 
         result_nodes = []
-        for task in tasks:
-            result_nodes.extend(self._build_task_section(task, images_dir, details))
+        for i, task in enumerate(tasks):
+            # Divider between tasks, but not after the last one — a document/section
+            # may not end with a transition.
+            add_divider = i < len(tasks) - 1
+            result_nodes.extend(
+                self._build_task_section(task, images_dir, details, add_divider=add_divider)
+            )
 
         return result_nodes
 
-    def _build_task_section(self, task, images_dir, details):
+    def _build_task_section(self, task, images_dir, details, add_divider=True):
         """Build docutils nodes for a single task entry."""
         section_nodes = []
 
@@ -198,8 +203,10 @@ class TaskDescriptionsDirective(SphinxDirective):
                 self.state.nested_parse(string_list, 0, wrapper)
                 section += wrapper
 
-        # Horizontal divider between tasks
-        section += nodes.transition()
+        # Horizontal divider between tasks (omitted after the last task, since a
+        # section/document may not end with a transition).
+        if add_divider:
+            section += nodes.transition()
 
         return section_nodes
 
