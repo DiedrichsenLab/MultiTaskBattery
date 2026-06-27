@@ -159,20 +159,33 @@ Check the :ref:`task descriptions <task_descriptions>` page to see which tasks h
     import MultiTaskBattery.utils as ut
     import constants as const
 
-    tasks = ['finger_sequence', 'n_back', 'demand_grid', 'auditory_narrative',
-             'sentence_reading', 'verb_generation', 'action_observation',
-             'tongue_movement', 'theory_of_mind', 'rest']
+    # (task, condition) pairs. Use None for single-condition tasks; pass an
+    # explicit condition for tasks that have several (e.g. verb_generation,
+    # reading) - each condition is generated as its own block.
+    blocks = [('finger_sequence', None),
+              ('n_back', None),
+              ('demand_grid', None),
+              ('auditory_narrative', None),
+              ('reading', 'sentences'),
+              ('verb_generation', 'read'),
+              ('verb_generation', 'generate'),
+              ('action_observation', None),
+              ('tongue_movement', None),
+              ('theory_of_mind', None),
+              ('rest', None)]
 
     num_runs = 8  # Number of imaging runs
 
     # Ensure task and run directories exist
     ut.dircheck(const.run_dir)
-    for task in tasks:
+    for task, cond in blocks:
         ut.dircheck(const.task_dir / task)
 
     # Generate run and task files
     for r in range(1, num_runs + 1):
-        tfiles = [f'{task}_{r:02d}.tsv' for task in tasks]
+        tasks = [task for task, cond in blocks]
+        tfiles = [f'{task}_{cond}_{r:02d}.tsv' if cond else f'{task}_{r:02d}.tsv'
+                  for task, cond in blocks]
 
         # Pass exp_dir so any local task_table.tsv (for custom tasks) is merged
         # with the framework's table.
@@ -180,7 +193,7 @@ Check the :ref:`task descriptions <task_descriptions>` page to see which tasks h
         T.to_csv(const.run_dir / f'run_{r:02d}.tsv', sep='\t', index=False)
 
         # Generate task files for each run
-        for task, tfile in zip(tasks, tfiles):
+        for (task, cond), tfile in zip(blocks, tfiles):
             cl = tf.get_task_class(task, exp_dir=const.exp_dir)
 
             # Looks up the TaskFile class: checks const.task_modules first
@@ -188,8 +201,11 @@ Check the :ref:`task descriptions <task_descriptions>` page to see which tasks h
             TaskFileCls = ut.get_task_file_class(const, cl)
             myTask = TaskFileCls(const)
 
-            # Only pass run_number if make_task_file actually accepts it.
+            # Pass condition only when the block has one, and run_number only if
+            # the task's make_task_file accepts it.
             args = {}
+            if cond is not None:
+                args['condition'] = cond
             if 'run_number' in inspect.signature(myTask.make_task_file).parameters:
                 args['run_number'] = r
 

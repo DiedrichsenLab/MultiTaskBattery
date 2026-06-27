@@ -117,8 +117,9 @@ stimuli procedurally, skip this step.
 
 5. Test
 ^^^^^^^
-Add your task name to the ``tasks`` list in your experiment's
-``make_files.py``, generate the run and task files, and run ``run.py``.
+Add your task to the ``blocks`` list in your experiment's
+``make_files.py`` (as ``('my_task', None)``, or with a condition),
+generate the run and task files, and run ``run.py``.
 ``experiments/example_custom_task`` is the reference for a working
 custom-task setup.
 
@@ -188,7 +189,9 @@ page, with the parameters shown in a collapsible table.
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Drop a screenshot of your task as ``docs/images/<task_name>.png``. It
 will automatically appear on the task descriptions page. For multiple
-images use ``<task_name>_2.png``, ``<task_name>_3.png``, etc.
+images use ``<task_name>_2.png``, ``<task_name>_3.png``, etc. You can
+also add a short demo video as ``docs/images/<task_name>.mp4`` (and
+``<task_name>_2.mp4``, ...) to render an inline video player.
 
 4. Open a pull request
 ^^^^^^^^^^^^^^^^^^^^^^
