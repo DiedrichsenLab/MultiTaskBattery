@@ -19,22 +19,23 @@ import MultiTaskBattery.utils as ut
 import constants as const
 
 
-tasks = ['n_back', 'rest', 'silent_word', 'odd_even']
+blocks = [('n_back', None), ('rest', None), ('silent_word', None), ('odd_even', None)]
 num_runs = 3
 
 # Ensure task and run directories exist
 ut.dircheck(const.run_dir)
-for task in tasks:
+for task, cond in blocks:
     ut.dircheck(const.task_dir / task)
 
 # Generate run files that specify the order and duration of task blocks
 for r in range(1, num_runs + 1):
-    tfiles = [f'{task}_{r:02d}.tsv' for task in tasks]
+    tasks = [task for task, cond in blocks]
+    tfiles = [f'{task}_{cond}_{r:02d}.tsv' if cond else f'{task}_{r:02d}.tsv' for task, cond in blocks]
     T = tf.make_run_file(tasks, tfiles, exp_dir=const.exp_dir)
     T.to_csv(const.run_dir / f'run_{r:02d}.tsv', sep='\t', index=False)
 
     # Generate a task_file for each task in each run that specifies the trial information
-    for task, tfile in zip(tasks, tfiles):
+    for (task, cond), tfile in zip(blocks, tfiles):
         row = T.loc[T['task_file']==tfile].iloc[0]
         cl = tf.get_task_class(task, exp_dir=const.exp_dir)
         TaskFileCls = ut.get_task_file_class(const, cl)
@@ -42,6 +43,8 @@ for r in range(1, num_runs + 1):
 
         # Only pass run_number if make_task_file actually accepts it., pass in task duration as a default
         args = {'task_dur':row['task_dur']}
+        if cond is not None:
+            args['condition']=cond
         if 'run_number' in inspect.signature(myTask.make_task_file).parameters:
             args['run_number'] = r
 

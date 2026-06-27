@@ -1,0 +1,13 @@
+trial_num	condition	trial_dur	iti_dur	start_time	end_time	stim	display_trial_feedback
+0	generate	2	0.5	0.0	2.5	flute       	False
+1	generate	2	0.5	2.5	5.0	bottle      	False
+2	generate	2	0.5	5.0	7.5	table       	False
+3	generate	2	0.5	7.5	10.0	zipper      	False
+4	generate	2	0.5	10.0	12.5	exam        	False
+5	generate	2	0.5	12.5	15.0	cake        	False
+6	generate	2	0.5	15.0	17.5	candle      	False
+7	generate	2	0.5	17.5	20.0	rhinoceros  	False
+8	generate	2	0.5	20.0	22.5	light       	False
+9	generate	2	0.5	22.5	25.0	owl         	False
+10	generate	2	0.5	25.0	27.5	arm         	False
+11	generate	2	0.5	27.5	30.0	velvet     	False
