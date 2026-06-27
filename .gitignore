@@ -3,6 +3,7 @@
 docs/build/*
 venv
 env/
+mtb-env310/
 .vscode
 stimuli/.DS_Store
 
