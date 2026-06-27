@@ -125,7 +125,7 @@ class TaskFile():
         self.half_assigned      = False # whether the stimuli have assigne halves or not (for assigning different stimuli to different participants)
 
 
-class NBack(TaskFile):
+class NBack(TaskFile): # with the 5 stimuli used here only 1-back/2-back/3-back is safe and tested
     def __init__(self, const):
         super().__init__(const)
         self.name = 'n_back'
@@ -137,12 +137,13 @@ class NBack(TaskFile):
                         trial_dur = 2,
                         iti_dur   = 0.5,
                         picture_scale = 1.0,
+                        n_back = 2, # number of items back a match refers to (2 = classic 2-back)
                         stim = ['9.jpg','11.jpg','18.jpg','28.jpg'],
                         file_name = None ):
         n_trials = int(np.floor(task_dur / (trial_dur+iti_dur)))
         trial_info = []
 
-        prev_stim = ['x','x']
+        prev_stim = ['x'] * n_back  # sliding window of the last n_back stimuli (index n_back-1 = the n-back item)
         t = 0
         for n in range(n_trials):
             trial = {}
@@ -151,22 +152,22 @@ class NBack(TaskFile):
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
             trial['picture_scale'] = picture_scale
+            trial['n_back'] = n_back
             trial['display_trial_feedback'] = True
             trial['key_match'] = responses[0]
             trial['key_nomatch'] = responses[1]
-            # Determine if this should be N-2 repetition trial
-
-            if n<2:
+            # Determine if this should be an n-back repetition trial
+            if n < n_back:
                 trial['trial_type'] = 0
             else:
                 trial['trial_type'] = np.random.randint(0,2)
-            # Now choose the stimulus accordingly: avoid any reps
+            # Now choose the stimulus accordingly: avoid any reps within the window
             if trial['trial_type']==0:
-                trial['stim'] = prev_stim[1]
-                while (trial['stim'] == prev_stim[0]) | (trial['stim'] == prev_stim[1]):
+                trial['stim'] = prev_stim[n_back-1]
+                while trial['stim'] in prev_stim:
                     trial['stim'] = stim[np.random.randint(0,len(stim))]
             else:
-                trial['stim'] = prev_stim[1]
+                trial['stim'] = prev_stim[n_back-1]
 
             trial['display_trial_feedback'] = True
             trial['feedback_type'] = 'acc'
@@ -174,10 +175,9 @@ class NBack(TaskFile):
             trial['end_time'] = t + trial_dur + iti_dur
             trial_info.append(trial)
 
-            # Update for next trial:
+            # Update for next trial: slide the window, newest stimulus first
             t= trial['end_time']
-            prev_stim[1] = prev_stim[0]
-            prev_stim[0] = trial['stim']
+            prev_stim = [trial['stim']] + prev_stim[:-1]
 
         trial_info = pd.DataFrame(trial_info)
         if file_name is not None:

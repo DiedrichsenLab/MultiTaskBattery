@@ -3,8 +3,7 @@ import MultiTaskBattery.task_file as tf
 import MultiTaskBattery.utils as ut
 import constants as const
 
-blocks = [('verb_generation','read'),
-           ('verb_generation','generate')]
+blocks = [('n_back',None)]
 
 
 num_runs = 3 # Number of imaging runs
