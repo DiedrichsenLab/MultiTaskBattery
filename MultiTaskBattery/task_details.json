@@ -199,8 +199,14 @@
         "recorded_metrics": "RT"
     },
     "verb_generation": {
-        "detailed_description": "Words are presented one at a time. In the first half of trials (read condition), participants silently read each word. In the second half (generate condition), a 'GENERATE' cue appears and participants covertly generate a verb associated with each presented word. The task is designed to engage the language prcoessing.",
+        "short_description": "Participants see words one at a time and, either silently read each word (read condition) or covertly generate a verb associated with it (generate condition).",
+        "detailed_description": "Participants see words presented one at a time. In the 'read' condition they silently read each word as it appears. In the 'generate' condition they covertly think of a verb associated with each word. No button response is required. The generate>read contrast is designed to engage language and semantic-retrieval processing.",
         "task_file_parameters": {
+            "condition": {
+                "type": "str",
+                "default": "(required)",
+                "description": "Which condition the block runs: 'read' (silently read each word) or 'generate' (covertly generate an associated verb)."
+            },
             "trial_dur": {
                 "type": "float",
                 "default": "2",
@@ -212,8 +218,8 @@
                 "description": "Inter-trial interval duration in seconds."
             }
         },
-        "short_description": "Words presented, participants read the words. At halfpoint, \"GENERATE\" is shown, participants need to covertly generate verbs associated with words",
-        "conditions": "generate, read",
+        "conditions": "read, generate",
+        "reference":"Adapted by changing into covert rather than overt reading/generation from Raichle, M. E., Fiez, J. A., Videen, T. O., MacLeod, A. M. K., Pardo, J. V., Fox, P. T., & Petersen, S. E. (1994). Practice-related changes in human brain functional anatomy during nonmotor learning. Cerebral cortex, 4(1), 8-26.",
         "recorded_metrics": "None"
     },
     "rest": {

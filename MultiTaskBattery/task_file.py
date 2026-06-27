@@ -210,11 +210,15 @@ class VerbGeneration(TaskFile):
 
 
     def make_task_file(self,
+                        condition,             # 'read' or 'generate
                         task_dur =  30,
                         trial_dur = 2,
                         iti_dur   = 0.5,
                         file_name = None,
                         stim_file = None):
+        if condition not in ('read', 'generate'):
+            raise ValueError(f"VerbGeneration: condition must be 'read' or 'generate', got {condition!r}")
+
         n_trials = int(np.floor(task_dur / (trial_dur+iti_dur)))
         trial_info = []
 
@@ -231,12 +235,7 @@ class VerbGeneration(TaskFile):
             selected_stim = stim.iloc[n]['word']
             trial = {}
             trial['trial_num'] = n
-
-            # Determine if this is a read or generate trial
-            if n < n_trials/2:
-                trial['trial_type'] = 'read'
-            else:
-                trial['trial_type'] = 'generate'
+            trial['condition'] = condition
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
             trial['start_time'] = t

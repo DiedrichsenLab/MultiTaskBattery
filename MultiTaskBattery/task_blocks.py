@@ -329,11 +329,15 @@ class VerbGeneration(Task):
         trial_info_file = self.const.task_dir / self.name / self.task_file
         self.trial_info = pd.read_csv(trial_info_file, sep='\t')
         self.trial_info['noun'] = self.trial_info['stim'].str.strip()
-        self.trial_counter = 0
 
     def display_instructions(self): # overriding the display instruction from the parent class
-
-        self.instruction_text = f"{self.descriptive_name} Task \n\n Silently read the words presented.  \n\n When GENERATE is shown, silently think of verbs that go with the words."
+        # Each block is a single condition ('read' or 'generate').
+        condition = self.trial_info['condition'].iloc[0]
+        if condition == 'read':
+            body = "Silently read each word as it appears."
+        else:  # generate
+            body = "For each word, silently think of a verb that goes with it."
+        self.instruction_text = f"{self.descriptive_name} Task \n\n {body}"
         instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1])
         instr_visual.draw()
         self.window.flip()
@@ -344,23 +348,12 @@ class VerbGeneration(Task):
         stim.draw()
         self.window.flip()
 
-    def display_generate_instruction(self):
-        """ Display the 'GENERATE' instruction. """
-        generate_instr = visual.TextStim(self.window, text='GENERATE', pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height=2)
-        generate_instr.draw()
-        self.window.flip()
-
     def run_trial(self, trial):
         """ Run a single trial of the VerbGeneration task. """
 
-        # Display word
+        # Display the word; the block instruction tells the participant whether to
+        # silently read it or silently generate an associated verb.
         self.show_stim(trial['noun'])
-
-        # display GENERATE instruction at the halfway point
-        if self.trial_counter == len(self.trial_info) // 2:
-            self.display_generate_instruction()
-
-        self.trial_counter += 1
 
         # wait for trial duration
         self.ttl_clock.wait_until(self.ttl_clock.get_time() + trial['trial_dur'])
