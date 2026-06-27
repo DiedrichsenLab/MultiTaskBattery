@@ -303,6 +303,14 @@ class AuditoryNarrative(TaskFile):
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
 
+        # Each run uses a distinct narrative (narrative_NN.wav) - novelty matters error if no enough files
+        available = sorted((self.stim_dir / self.name).glob('narrative_[0-9][0-9].wav'))
+        if run_number is None or run_number > len(available):
+            raise ValueError(
+                f"AuditoryNarrative: only {len(available)} narratives available; "
+                f"cannot generate run {run_number}. Add more narrative_NN.wav files "
+                f"or reduce the number of runs.")
+
         t = 0
 
         for n in range(n_trials):
@@ -466,8 +474,13 @@ class PassageListening(TaskFile):
         if condition not in valid:
             raise ValueError(f"PassageListening: unknown condition {condition!r} (expected one of {valid})")
         stim = stim[stim['condition'] == condition].reset_index(drop=True)
-        start = (run_number - 1) * n_trials
-        stim = stim.iloc[start:start + n_trials].reset_index(drop=True)
+        # Wrap around the available passages if more runs are requested than there are.
+        total = len(stim)
+        if (run_number - 1) * n_trials >= total:
+            print(f"Warning: PassageListening only has {total} '{condition}' passages; "
+                  f"run {run_number} wraps around and repeats stimuli.")
+        idx = [((run_number - 1) * n_trials + k) % total for k in range(n_trials)]
+        stim = stim.iloc[idx].reset_index(drop=True)
 
         trial_info = []
         t = 0
@@ -1454,13 +1467,15 @@ class Movie(TaskFile):
                 & (stim['condition'].astype(str).str.lower() != 'exclude')
             ]
 
-        start_row = (run_number - 1) * n_trials
-        end_row = run_number * n_trials - 1
-        stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
-
-        # Display a warning for romance clip 09 and up: The clips are repeated clips 1-8
-        if run_number >= 9:
-            Warning('Romance condition clips 9-10 are duplicates. They are the same as clips 1-8')
+        # Wrap around the available clips if more runs are requested than there are
+        # stimuli (e.g. landscape has only 10 clips).
+        total = len(stim)
+        if (run_number - 1) * n_trials >= total:
+            cond_label = condition if condition else 'selected'
+            print(f"Warning: Movie only has {total} '{cond_label}' clips; "
+                  f"run {run_number} wraps around and repeats clips.")
+        idx = [((run_number - 1) * n_trials + k) % total for k in range(n_trials)]
+        stim = stim.iloc[idx].reset_index(drop=True)
 
         for n in range(n_trials):
             trial = {}
