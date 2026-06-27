@@ -1001,8 +1001,6 @@ class SemanticPrediction(TaskFile):
                         sentence_dur=2,
                         file_name=None,
                         stim_file=None,
-                        stimulus_seed=None,
-                        exclude_stimuli=None,
                         stim=None):
         # count number of trials
         n_trials = int(np.floor(task_dur / (trial_dur)))

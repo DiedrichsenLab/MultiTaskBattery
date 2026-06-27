@@ -1,6 +1,8 @@
 """
 Sphinx extension to auto-generate task descriptions from task_table.tsv. This way we dont have to manually add tasks.
-The only thing that can be added manually (optional) is images for each task. If yest just go to images/ and add {task_name}.png, {task_name}_2.png, etc.
+The only thing that can be added manually (optional) is media for each task. Just go to images/ and add
+{task_name}.png, {task_name}_2.png, ... for screenshots, and/or {task_name}.mp4, {task_name}_2.mp4, ... for short
+demo videos. PNGs render as images; MP4s render as an inline HTML5 video player.
 
 Usage in an .rst file:
 
@@ -12,6 +14,7 @@ Usage in an .rst file:
 import csv
 import json
 import os
+import shutil
 from pathlib import Path
 from docutils import nodes
 from docutils.statemachine import StringList
@@ -39,23 +42,33 @@ def _read_task_details(json_path):
         return json.load(f)
 
 
-def _find_task_images(task_name, images_dir):
-    """Find images for a task: {name}.png, {name}_2.png, {name}_3.png, ..."""
-    images = []
-    primary = images_dir / f"{task_name}.png"
+def _find_task_media(task_name, media_dir, ext):
+    """Find media for a task with the given extension: {name}{ext}, {name}_2{ext}, ..."""
+    found = []
+    primary = media_dir / f"{task_name}{ext}"
     if primary.exists():
-        images.append(primary)
+        found.append(primary)
 
     n = 2
     while True:
-        variant = images_dir / f"{task_name}_{n}.png"
+        variant = media_dir / f"{task_name}_{n}{ext}"
         if variant.exists():
-            images.append(variant)
+            found.append(variant)
             n += 1
         else:
             break
 
-    return images
+    return found
+
+
+def _find_task_images(task_name, images_dir):
+    """Find images for a task: {name}.png, {name}_2.png, {name}_3.png, ..."""
+    return _find_task_media(task_name, images_dir, ".png")
+
+
+def _find_task_videos(task_name, images_dir):
+    """Find demo videos for a task: {name}.mp4, {name}_2.mp4, {name}_3.mp4, ..."""
+    return _find_task_media(task_name, images_dir, ".mp4")
 
 
 class TaskDescriptionsDirective(SphinxDirective):
@@ -100,13 +113,29 @@ class TaskDescriptionsDirective(SphinxDirective):
         section += nodes.title(text=display_name)
         section_nodes.append(section)
 
-        # Images
+        # Images (PNG) — Sphinx copies these to _images/ automatically.
         image_paths = _find_task_images(task["name"], images_dir)
         for img_path in image_paths:
             rel_path = os.path.relpath(img_path, self.env.srcdir)
             rel_path = rel_path.replace("\\", "/")
             img_node = nodes.image(uri=rel_path, width="600px")
             section += img_node
+
+        # Videos (MP4) — rendered as an inline HTML5 <video> player. The files are
+        # copied into the HTML build's _images/ directory by the build-finished
+        # handler (_copy_task_videos) registered in setup().
+        video_paths = _find_task_videos(task["name"], images_dir)
+        for vid_path in video_paths:
+            self.env.note_dependency(str(vid_path))
+            fname = os.path.basename(vid_path)
+            html = (
+                '<video controls preload="metadata" width="600" '
+                'style="max-width:100%; height:auto;">'
+                f'<source src="_images/{fname}" type="video/mp4">'
+                'Your browser does not support the video tag.'
+                '</video>'
+            )
+            section += nodes.raw("", html, format="html")
 
         # Field list for task info
         field_list = nodes.field_list()
@@ -260,10 +289,37 @@ class TaskSummaryTableDirective(SphinxDirective):
         return [table]
 
 
+def _copy_task_videos(app, exception):
+    """Copy task demo MP4s from images/ into the HTML build's _images/ directory.
+
+    Sphinx auto-copies files referenced by image nodes, but our videos are emitted
+    as raw HTML (<video src="_images/...">), so we copy them here. Only runs for the
+    HTML builder; other builders (e.g. latexpdf) ignore the raw-html video nodes.
+    """
+    if exception is not None:
+        return
+    builder = getattr(app, "builder", None)
+    if builder is None or getattr(builder, "format", None) != "html":
+        return
+
+    images_dir = Path(app.srcdir) / "images"
+    if not images_dir.is_dir():
+        return
+
+    out_images = Path(app.outdir) / "_images"
+    out_images.mkdir(parents=True, exist_ok=True)
+    for mp4 in images_dir.glob("*.mp4"):
+        try:
+            shutil.copy2(str(mp4), str(out_images / mp4.name))
+        except OSError:
+            pass
+
+
 def setup(app):
     """Register the extension with Sphinx."""
     app.add_directive("task-descriptions", TaskDescriptionsDirective)
     app.add_directive("task-summary-table", TaskSummaryTableDirective)
+    app.connect("build-finished", _copy_task_videos)
 
     return {
         "version": "1.0",

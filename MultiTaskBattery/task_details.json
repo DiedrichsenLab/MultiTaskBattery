@@ -491,9 +491,10 @@
         }
     },
     "semantic_prediction": {
-        "short_description": "Sentence presented, participants decide if last word makes sense.",
+        "short_description": "Participants read a sentence presented one word at a time, then decide whether the final word makes the sentence meaningful or meaningless.",
+        "detailed_description": "Participants read a sentence presented one word at a time. Each word is presented for 0.8 seconds. After the sentence, a brief fixation cross is shown and then the final, critical word appears; participants make a two-alternative button press to indicate whether that word makes the sentence meaningful (a sensible completion) or meaningless. About half of the trials end with the sentence's plausible word and half with an implausible word, so participants must use the accumulating sentence context to predict and evaluate the ending. The task engages language comprehension and semantic processing.",
         "recorded_metrics": "Accuracy + RT",
-        "detailed_description": "On each trial a sentence stem is displayed and participants must decide whether the final word makes the sentence meaningful or meaningless. The task engages language comprehension and semantic processing regions.",
+        "reference": "Moberget, T., Gullesen, E. H., Andersson, S., Ivry, R. B., & Endestad, T. (2014). Generalized role for the cerebellum in encoding internal models: Evidence from semantic processing. The Journal of Neuroscience, 34(8), 2871-2878.",
         "task_file_parameters": {
             "hand": {
                 "type": "str",
@@ -513,12 +514,12 @@
             "trial_dur": {
                 "type": "float",
                 "default": "15",
-                "description": "Duration of each trial in seconds."
+                "description": "Total duration budgeted for each trial in seconds (covers the word-by-word sentence, fixation, and response window)."
             },
             "sentence_dur": {
                 "type": "float",
                 "default": "2",
-                "description": "Duration the sentence stem is displayed before the final word appears, in seconds."
+                "description": "Response window for the final word, in seconds (how long participants have to respond once the critical word appears)."
             }
         }
     },

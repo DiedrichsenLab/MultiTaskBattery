@@ -3,7 +3,7 @@ import MultiTaskBattery.task_file as tf
 import MultiTaskBattery.utils as ut
 import constants as const
 
-blocks = [('n_back',None)]
+blocks = [('semantic_prediction',None)]
 
 
 num_runs = 3 # Number of imaging runs
