@@ -11,10 +11,10 @@ Using Git::
 
 Or use `GitHub Desktop <https://desktop.github.com/>`_.
 
-Step 2: Install Python (≥ 3.9)
-------------------------------
+Step 2: Install Python (3.10)
+-----------------------------
 
-This project requires **Python 3.9 or later**.
+This project uses **Python 3.10**.
 
 Option A: Using pyenv (Recommended on macOS/Linux)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -31,13 +31,13 @@ Configure your shell::
 
 Install Python::
 
-    pyenv install 3.9.0
-    pyenv global 3.9.0
+    pyenv install 3.10
+    pyenv global 3.10
 
 Option B: Using system Python
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Ensure `python --version` reports 3.9 or higher.
+Ensure `python --version` reports 3.10.
 
 Step 3: Create a Virtual Environment
 ------------------------------------
