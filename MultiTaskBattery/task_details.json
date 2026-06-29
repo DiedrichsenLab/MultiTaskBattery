@@ -288,7 +288,7 @@
     "n_back": {
         "short_description": "Participants see a stream of images one at a time and press a button on each to indicate whether it matches the image shown n items earlier.",
         "recorded_metrics": "Accuracy + RT",
-        "reference": "to add",
+        "reference": "Ragland, J. D., Turetsky, B. I., Gur, R. C., Gunning-Dixon, F., Turner, T., Schroeder, L., ... & Gur, R. E. (2002). Working memory for complex figures: an fMRI comparison of letter and fractal n-back tasks. Neuropsychology, 16(3), 370.",
         "detailed_description": "Participants see a continuous stream of images presented one at a time, drawn from a small set of pictures. On every image they make a two-alternative button press indicating whether the current image is the same as the one shown n items earlier or not. The sequence is generated so that about half of the trials are n-back matches. Non-match trials never repeat any of the just presented images, so a match always requires holding the n-back item in mind rather than just detecting a repeat. The memory load is configurable through the n_back parameter (default 2), so the same task can run as a 1-back, 2-back, 3-back, and so on. This continuous n-back paradigm engages working memory and the domain-general multiple-demand / frontoparietal control network. After each response, the participant receives trial-specific feedback: a green check mark for a correct answer and a red cross for an incorrect one.",
         "task_file_parameters": {
             "hand": {
