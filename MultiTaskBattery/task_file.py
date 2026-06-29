@@ -140,6 +140,23 @@ class NBack(TaskFile): # with the 5 stimuli used here only 1-back/2-back/3-back 
                         n_back = 2, # number of items back a match refers to (2 = classic 2-back)
                         stim = ['9.jpg','11.jpg','18.jpg','28.jpg'],
                         file_name = None ):
+        """
+        Create an n-back working-memory task file.
+
+        Args:
+            hand (str): Hand used for response ('right' or 'left').
+            responses (list): Response keys for [match, no-match].
+            task_dur (float): Total task duration in seconds.
+            trial_dur (float): Duration each stimulus is displayed in seconds.
+            iti_dur (float): Inter-trial interval duration in seconds.
+            picture_scale (float): Scaling factor for stimulus images (>1 enlarges).
+            n_back (int): How many items back a match refers to (2 = classic 2-back).
+            stim (list): List of stimulus image filenames to draw from.
+            file_name (str): Name of the file to save the task data.
+
+        Returns:
+            pd.DataFrame: Task information as a DataFrame.
+        """
         n_trials = int(np.floor(task_dur / (trial_dur+iti_dur)))
         trial_info = []
 
@@ -192,6 +209,16 @@ class Rest(TaskFile):
     def make_task_file(self,
                         task_dur =  30,
                         file_name = None):
+        """
+        Create a rest task file (single fixation block, no stimuli or response).
+
+        Args:
+            task_dur (float): Total duration of the rest block in seconds.
+            file_name (str): Name of the file to save the task data.
+
+        Returns:
+            pd.DataFrame: Task information as a DataFrame.
+        """
         trial = {}
         trial['trial_num'] = [1]
         trial['trial_dur'] = [task_dur]
@@ -216,6 +243,22 @@ class VerbGeneration(TaskFile):
                         iti_dur   = 0.5,
                         file_name = None,
                         stim_file = None):
+        """
+        Create a verb-generation task file.
+
+        Args:
+            condition (str): 'read' (silently read each word) or 'generate'
+                (covertly generate an associated verb). Required.
+            task_dur (float): Total task duration in seconds.
+            trial_dur (float): Duration each word is displayed in seconds.
+            iti_dur (float): Inter-trial interval duration in seconds.
+            file_name (str): Name of the file to save the task data.
+            stim_file (str): Optional path to a custom word-list CSV. Defaults to
+                the packaged verb_generation.csv.
+
+        Returns:
+            pd.DataFrame: Task information as a DataFrame.
+        """
         if condition not in ('read', 'generate'):
             raise ValueError(f"VerbGeneration: condition must be 'read' or 'generate', got {condition!r}")
 
@@ -264,6 +307,18 @@ class TongueMovement(TaskFile):
                         trial_dur = 1,
                         iti_dur   = 0,
                         file_name = None):
+        """
+        Create a tongue-movement task file.
+
+        Args:
+            task_dur (float): Total task duration in seconds.
+            trial_dur (float): Duration of each tongue-movement cycle in seconds.
+            iti_dur (float): Inter-trial interval duration in seconds.
+            file_name (str): Name of the file to save the task data.
+
+        Returns:
+            pd.DataFrame: Task information as a DataFrame.
+        """
         n_trials = int(np.floor(task_dur / (trial_dur+iti_dur)))
         trial_info = []
 
@@ -300,6 +355,24 @@ class AuditoryNarrative(TaskFile):
                        iti_dur=0,
                        file_name=None,
                        run_number=None):
+        """
+        Create an auditory-narrative task file. Each run plays a distinct
+        narrative clip (narrative_NN.wav) selected by run_number.
+
+        Args:
+            task_dur (float): Total task duration in seconds.
+            trial_dur (float): Duration of each audio clip in seconds.
+            iti_dur (float): Inter-trial interval duration in seconds.
+            file_name (str): Name of the file to save the task data.
+            run_number (int): Run number, used to select which audio clip to play.
+
+        Returns:
+            pd.DataFrame: Task information as a DataFrame.
+
+        Raises:
+            ValueError: If run_number is None or exceeds the number of available
+                narrative clips.
+        """
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
 
@@ -349,7 +422,20 @@ class SpatialNavigation(TaskFile):
                        iti_dur=0,
                        file_name=None,
                        run_number=None):
+        """
+        Create a spatial-navigation task file (imagined navigation between two
+        remembered locations).
 
+        Args:
+            task_dur (float): Total task duration in seconds.
+            trial_dur (float): Duration of the imagination period in seconds.
+            iti_dur (float): Inter-trial interval duration in seconds.
+            file_name (str): Name of the file to save the task data.
+            run_number (int): Run number, used to select which location pair to use.
+
+        Returns:
+            pd.DataFrame: Task information as a DataFrame.
+        """
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
 
@@ -394,6 +480,27 @@ class TheoryOfMind(TaskFile):
                         file_name=None,
                         stim_file=None,
                         condition=None):
+        """
+        Create a theory-of-mind task file (story followed by a true/false statement).
+
+        Args:
+            hand (str): Hand used for response ('right' or 'left').
+            responses (list): Response keys for [True, False].
+            run_number (int): Run number, used to select stimuli for that run.
+            task_dur (float): Total task duration in seconds.
+            trial_dur (float): Total duration of each trial in seconds.
+            iti_dur (float): Inter-trial interval duration in seconds.
+            story_dur (float): Duration the story is displayed in seconds.
+            question_dur (float): Duration the question is displayed in seconds.
+            text_height (float): Height of the story/question text in degrees of visual angle.
+            file_name (str): Name of the file to save the task data.
+            stim_file (str): Optional path to a custom stimulus CSV.
+            condition (str): If set, only trials of this condition are included
+                ('belief' or 'photo').
+
+        Returns:
+            pd.DataFrame: Task information as a DataFrame.
+        """
         # Count number of trials based on timing; may be overridden below when an
         # explicit stimulus list is provided (so distribution, not timing, sets
         # the exact trial count).
@@ -466,6 +573,21 @@ class PassageListening(TaskFile):
                        iti_dur=0.5,
                        file_name=None,
                        stim_file=None,):
+        """
+        Create a passage-listening task file (intact vs degraded speech).
+
+        Args:
+            run_number (int): Run number, used to select which passages to play.
+            condition (str): Which condition to include ('intact' or 'degraded').
+            task_dur (float): Total task duration in seconds.
+            trial_dur (float): Duration of each passage in seconds.
+            iti_dur (float): Inter-trial interval duration in seconds.
+            file_name (str): Name of the file to save the task data.
+            stim_file (str): Optional path to a custom stimulus CSV.
+
+        Returns:
+            pd.DataFrame: Task information as a DataFrame.
+        """
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
 
         # Load the audio/condition table and keep only the requested condition
@@ -519,21 +641,30 @@ class ActionObservation(TaskFile):
         #             ]
 
         # good knot vids
-        # self.knot_names = ['Adage',
-        #                 'Brigand', 'Brocade', 'Casement',  'Cornice',\
-        #                 'Flora', 'Frontage', 'Gadfly', 'Garret', \
-        #                 'Mutton','Placard', 'Purser']
+        self.knot_names = ['Adage',
+                        'Brigand', 'Brocade', 'Casement',  'Cornice',\
+                        'Flora', 'Frontage', 'Gadfly', 'Garret', \
+                        'Mutton','Placard', 'Purser']
 
     def make_task_file(self,
                         run_number = None,
                         task_dur=30,
                         trial_dur=14,
                         iti_dur=1,
-                        file_name=None,
-                        knot_names = ['Adage',
-                        'Brigand', 'Brocade', 'Casement',  'Cornice',\
-                        'Flora', 'Frontage', 'Gadfly', 'Garret', \
-                        'Mutton','Placard', 'Purser']):
+                        file_name=None):
+        """
+        Create an action-observation task file (knot-tying videos).
+
+        Args:
+            run_number (int): Run number, used to select which knot stimulus to show.
+            task_dur (float): Total task duration in seconds.
+            trial_dur (float): Duration of each video trial in seconds.
+            iti_dur (float): Inter-trial interval duration in seconds.
+            file_name (str): Name of the file to save the task data.
+
+        Returns:
+            pd.DataFrame: Task information as a DataFrame.
+        """
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
 
@@ -547,11 +678,11 @@ class ActionObservation(TaskFile):
             trial['iti_dur'] = iti_dur
             trial['display_trial_feedback'] = False
             #knot_index = (run_number - 1)
-            knot_index = (run_number - 1) % len(knot_names)
+            knot_index = (run_number - 1) % len(self.knot_names)
             if n == 0:
-                trial['stim'] = f'knotAction{knot_names[knot_index]}.mov'
+                trial['stim'] = f'knotAction{self.knot_names[knot_index]}.mov'
             else:
-                trial['stim'] = f'knotControl{knot_names[knot_index]}.mov'
+                trial['stim'] = f'knotControl{self.knot_names[knot_index]}.mov'
             trial['start_time'] = t
             trial['end_time'] = t + trial_dur + iti_dur
             trial_info.append(trial)
@@ -827,6 +958,21 @@ class Reading(TaskFile):
                         iti_dur=0.2,
                         file_name=None,
                         stim_file=None):
+        """
+        Create a reading task file (sentences or nonwords, shown word by word).
+
+        Args:
+            run_number (int): Run number, used to select which sentences to show.
+            condition (str): 'sentences' or 'nonwords'.
+            task_dur (float): Total task duration in seconds.
+            trial_dur (float): Duration of each sentence presentation in seconds.
+            iti_dur (float): Inter-trial interval duration in seconds.
+            file_name (str): Name of the file to save the task data.
+            stim_file (str): Optional path to a custom stimulus CSV.
+
+        Returns:
+            pd.DataFrame: Task information as a DataFrame.
+        """
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
 
@@ -880,6 +1026,20 @@ class OddBall(TaskFile):
                     trial_dur=0.15,
                     iti_dur=0.85,
                     file_name=None):
+        """
+        Create an oddball-detection task file (respond only to a red 'K').
+
+        Args:
+            hand (str): Hand used for response ('right' or 'left').
+            responses (list): Response keys.
+            task_dur (float): Total task duration in seconds.
+            trial_dur (float): Duration the stimulus is displayed in seconds.
+            iti_dur (float): Inter-trial interval duration in seconds.
+            file_name (str): Name of the file to save the task data.
+
+        Returns:
+            pd.DataFrame: Task information as a DataFrame.
+        """
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
 
@@ -934,6 +1094,20 @@ class FingerSequence(TaskFile):
                         trial_dur=3.25,
                         iti_dur=0.5,
                         file_name=None):
+        """
+        Create a finger-sequence task file (press a 6-digit sequence in order).
+
+        Args:
+            hand (str): Hand(s) used for response ('bimanual', 'right', or 'left').
+            responses (list): Response keys mapped to each finger.
+            task_dur (float): Total task duration in seconds.
+            trial_dur (float): Duration of each trial in seconds.
+            iti_dur (float): Inter-trial interval duration in seconds.
+            file_name (str): Name of the file to save the task data.
+
+        Returns:
+            pd.DataFrame: Task information as a DataFrame.
+        """
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
 
@@ -975,6 +1149,20 @@ class FlexionExtension(TaskFile):
                         iti_dur   = 0,
                         stim_dur = 2,
                         file_name = None):
+        """
+        Create a flexion-extension (foot/toe movement) task file. Participants
+        alternate flexing and extending, paced by visual cues.
+
+        Args:
+            task_dur (float): Total task duration in seconds.
+            trial_dur (float): Duration of the flexion/extension period in seconds.
+            iti_dur (float): Inter-trial interval duration in seconds.
+            stim_dur (float): Duration of each flex/extend cue in seconds.
+            file_name (str): Name of the file to save the task data.
+
+        Returns:
+            pd.DataFrame: Task information as a DataFrame.
+        """
         n_trials = int(np.floor(task_dur / (trial_dur+iti_dur)))
         trial_info = []
 
@@ -1015,6 +1203,24 @@ class SemanticPrediction(TaskFile):
                         file_name=None,
                         stim_file=None,
                         stim=None):
+        """
+        Create a semantic-prediction task file (judge whether the final word
+        makes the sentence meaningful).
+
+        Args:
+            hand (str): Hand used for response ('right' or 'left').
+            responses (list): Response keys for [meaningful, meaningless].
+            run_number (int): Run number, used to select which sentences to present.
+            task_dur (float): Total task duration in seconds.
+            trial_dur (float): Total duration budgeted for each trial in seconds.
+            sentence_dur (float): Response window for the final word, in seconds.
+            file_name (str): Name of the file to save the task data.
+            stim_file (str): Optional path to a custom stimulus CSV.
+            stim (pd.DataFrame): Optional pre-loaded stimulus table.
+
+        Returns:
+            pd.DataFrame: Task information as a DataFrame.
+        """
         # count number of trials
         n_trials = int(np.floor(task_dur / (trial_dur)))
         trial_info = []
@@ -1071,6 +1277,21 @@ class VisualSearch(TaskFile):
                         iti_dur   = 0.5,
                         easy_prob=0.5,
                         file_name = None ):
+        """
+        Create a visual-search task file (find a canonically-oriented 'L').
+
+        Args:
+            hand (str): Hand used for response ('right' or 'left').
+            responses (list): Response keys for [target present, target absent].
+            task_dur (float): Total task duration in seconds.
+            trial_dur (float): Duration of each trial in seconds.
+            iti_dur (float): Inter-trial interval duration in seconds.
+            easy_prob (float): Probability of an easy trial (4 stimuli vs. 8).
+            file_name (str): Name of the file to save the task data.
+
+        Returns:
+            pd.DataFrame: Task information as a DataFrame.
+        """
         n_trials = int(np.floor(task_dur / (trial_dur+iti_dur)))
         trial_info = []
         t = 0
@@ -1126,9 +1347,30 @@ class RMET(TaskFile):
                         stim_file = None,
                         condition=None,
                         half=None,
-                        stimulus_seed=None,
-                        exclude_stimuli=None,
                         stim=None):
+        """
+        Create an RMET task file (Reading the Mind in the Eyes; emotion or age).
+
+        Args:
+            hand (str): Hand used for response ('right' or 'left').
+            responses (list): Response keys mapped to the four options.
+            run_number (int): Run number, used to select which stimuli to present.
+            task_dur (float): Total task duration in seconds.
+            trial_dur (float): Duration each stimulus is displayed in seconds.
+            iti_dur (float): Inter-trial interval duration in seconds.
+            option_text_height (float): Height of the answer-option text in degrees of visual angle.
+            option_position_scale (float): Spatial scaling for option positions (<1 brings them closer).
+            show_last_seconds (float): If >0, show options only for the final N seconds of the trial.
+            file_name (str): Name of the file to save the task data.
+            stim_file (str): Optional path to a custom stimulus CSV.
+            condition (str): If set, only trials of this condition are included
+                ('emotion' or 'age').
+            half (str): Optional split of the stimulus set into halves.
+            stim (pd.DataFrame): Optional pre-loaded stimulus table.
+
+        Returns:
+            pd.DataFrame: Task information as a DataFrame.
+        """
         # count number of trials
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
@@ -1448,7 +1690,22 @@ class Movie(TaskFile):
                        file_name=None,
                        stim_file=None,
                        condition=None):
+        """
+        Create a movie-watching task file (passive viewing of a 30s clip).
 
+        Args:
+            run_number (int): Run number, used to select which clip to show.
+            task_dur (float): Total task duration in seconds.
+            trial_dur (float): Duration of each clip in seconds.
+            iti_dur (float): Inter-trial interval duration in seconds.
+            file_name (str): Name of the file to save the task data.
+            stim_file (str): Optional path to a custom stimulus CSV.
+            condition (str): Which clips to use ('romance', 'nature', or
+                'landscape'). If None, all non-practice clips are used.
+
+        Returns:
+            pd.DataFrame: Task information as a DataFrame.
+        """
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
 
@@ -1855,7 +2112,20 @@ class Affective(TaskFile):
                        file_name=None,
                        hand='right',
                        responses=[1,2]):
+        """
+        Create an affective-picture task file (judge pleasant vs unpleasant).
 
+        Args:
+            task_dur (float): Total task duration in seconds.
+            trial_dur (float): Duration each image is displayed in seconds.
+            iti_dur (float): Inter-trial interval duration in seconds.
+            file_name (str): Name of the file to save the task data.
+            hand (str): Hand used for response ('right' or 'left').
+            responses (list): Response keys for [unpleasant, pleasant].
+
+        Returns:
+            pd.DataFrame: Task information as a DataFrame.
+        """
         # check how many trials to include
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         n_pleasant = n_trials // 2
