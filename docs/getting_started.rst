@@ -11,21 +11,21 @@ The repository is organized into the following main folders:
 
 ::
 
-|-MultiTaskBattery: Main Python modules and classes
-|-stimuli: Stimuli used in the experiments
-|  |-n_back: Stimuli for n_back tasks
-|     |- ...
-|-experiments: Example experiments to use as a starting point
-|  |- example_minimal: Minimal experiment using only built-in tasks
-|  |   |-run.py: Main Python program
-|  |   |-constants.py: Experiment / scanner configuration
-|  |   |-run_files: Files specifying which tasks are done in which run (and which order)
-|  |   |-task_files: Files specifying which trials are done for each task block
-|  |   |-data: Data files for each subject
-|  |- example_custom_task: Same as example_minimal, plus locally defined custom tasks
-|      |-my_tasks.py: Custom Task and TaskFile classes for this experiment
-|      |-task_table.tsv: Local task table extending the framework's
-|      |- ... (same other files as example_minimal)
+    |-MultiTaskBattery: Main Python modules and classes
+    |-stimuli: Stimuli used in the experiments
+    |  |-n_back: Stimuli for n_back tasks
+    |     |- ...
+    |-experiments: Example experiments to use as a starting point
+    |  |- example_minimal: Minimal experiment using only built-in tasks
+    |  |   |-run.py: Main Python program
+    |  |   |-constants.py: Experiment / scanner configuration
+    |  |   |-run_files: Files specifying which tasks are done in which run (and which order)
+    |  |   |-task_files: Files specifying which trials are done for each task block
+    |  |   |-data: Data files for each subject
+    |  |- example_custom_task: Same as example_minimal, plus locally defined custom tasks
+    |      |-my_tasks.py: Custom Task and TaskFile classes for this experiment
+    |      |-task_table.tsv: Local task table extending the framework's
+    |      |- ... (same other files as example_minimal)
 
 Implemented tasks
 -----------------
@@ -53,10 +53,10 @@ constants.py
 
 The `constants.py` file in the `experiments/example_minimal/` folder contains all the essential configurations required to set up and run the experiment. Below are the key components:
 
-- **Experiment Name**: 
+- **Experiment Name**:
   The `exp_name` variable specifies the name of the experiment.
 
-- **Response Keys**: 
+- **Response Keys**:
   The `response_keys` variable defines the keys used for responses. Different configurations are provided for scanner-based and local(behavioral) setups.
 
 - **Directory Paths**:
@@ -83,22 +83,22 @@ run.py
 ------
 The `run.py` script in the `example_minimal/` folder serves as the main program for running the experiment. It controls the entire process, from initialization to data saving. Below are its key components:
 
-- **Experiment Initialization**:  
+- **Experiment Initialization**:
   The `Experiment` object is created using configurations defined in `constants.py`.
 
-- **Run Confirmation**:  
+- **Run Confirmation**:
   A GUI prompts the user to confirm the run details. The GUI looks like this:
 
 .. image:: images/Run_GUI.png
     :width: 600
 
-- **Run Initialization**:  
+- **Run Initialization**:
   The run file (`run_xx.tsv`) is loaded, and task objects are initialized based on the specified tasks and their sequence using the task files (`task_xx.tsv`).
 
-- **Run Execution**:  
+- **Run Execution**:
   Tasks are executed in the specified order and with the defined timing, as per the run file and using trial information from the task files.
 
-- **Data Saving**:  
+- **Data Saving**:
   Upon completion, the experimental data is saved in the `data` folder under a filename that includes the subject ID entered in the GUI.
 
 
