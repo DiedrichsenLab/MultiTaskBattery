@@ -12,7 +12,7 @@ reading	Reading	read	read
 oddball	OddBall	oddball	odbal
 demand_grid	DemandGrid	grid	dmgrd
 finger_sequence	FingerSequence	finger_sequence	fingseq
-flexion_extension	FlexionExtension	toe	flexexten
+toe_movement	FlexionExtension	toe	flexexten
 semantic_prediction	SemanticPrediction	complete	sempred
 visual_search	VisualSearch	search	visrchsml
 movie	Movie	movie	mov
