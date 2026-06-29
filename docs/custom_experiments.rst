@@ -1,11 +1,11 @@
 Custom Experiments
 ========================
 
-To build a new experiment, create a new folder anywhere on your computer. The stimuli directory is resolved automatically from the package location, so your experiment will find the stimuli regardless of where it lives. Use ``experiments/example_minimal`` as a reference when you only need built-in tasks, and ``experiments/example_custom_task`` when you also want to define your own tasks locally.
+To build a new experiment, create a new folder for it **outside** the repository (not inside ``experiments/``), so that updates to MultiTaskBattery never interfere with your work. The stimuli directory is resolved automatically from the package location, so your experiment will find the stimuli regardless of where it lives. Use ``experiments/example_minimal`` as a reference when you only need built-in tasks, and ``experiments/example_custom_task`` when you also want to define your own tasks locally.
 
 Constants file
 --------------
-Create a file called ``constants.py`` in the project folder. This file contains information pertaining to the scanner, screen, response device, and pointers to the local directories. If you run the experiment in multiple setups, it is useful to create a differnt versions of this file, for example `constants_fmri.py` and a `constants_behavioral.py`.
+Create a file called ``constants.py`` in the project folder. This file contains information pertaining to the scanner, screen, response device, and pointers to the local directories. If you run the experiment in multiple setups, it is useful to create different versions of this file, for example ``constants_fmri.py`` and ``constants_behavioral.py``.
 
 .. code-block:: python
 
@@ -87,14 +87,19 @@ defaults are used.
        classes for this experiment. ``ut.get_task_class`` and
        ``ut.get_task_file_class`` search these modules first, then fall back
        to the shared ``MultiTaskBattery`` package. See :doc:`creating_tasks`.
+   * - ``instruction_text_height``
+     - ``1``
+     - Height (in degrees of visual angle) of the instruction-screen text
+       shown before each task.  Reduce for smaller screens.
 
 .. note::
 
-   Task-specific display parameters (text height, picture scale, option
-   layout, etc.) are **not** set in ``constants.py``.  They are written
-   into the task TSV files via ``make_task_file()`` parameters.  See the
-   :ref:`task descriptions <task_descriptions>` page for available
-   parameters and their defaults.
+   Display parameters are **per-task** and written into the task TSV files via
+   ``make_task_file()`` parameters — including the on-screen size of video and
+   image stimuli (``media_scale`` for video tasks, ``picture_scale`` for image
+   tasks).  See the :ref:`task descriptions <task_descriptions>` page.  The only
+   **experiment-wide** display settings that live in ``constants.py`` are
+   ``instruction_text_height`` and ``scoreboard_text_height``.
 
 
 Generating run and task files
@@ -102,41 +107,16 @@ Generating run and task files
 Task and run files are tab-delimited text files (``.tsv``) that specify the order of task in each run, and the order of trials within each task.
 Create and run a small Python script to generate your run and task files. Basic examples are included in ``example_minimal/make_files.py`` and ``example_custom_task/make_files.py``. Depending on your experiment, you may want to add more information. Of course you can produce these files by hand, but we prefer to write a function that does the randomization for us.
 
-**Run Files**
-Run files that specify the structure of the runs, including the order of the tasks for the run, which task file contains the stimuli for this run.
-
-Each run file should contain the following columns:
-
-- task_name: Name of the task
-- task_code: short name of the task. task codes are listed in the `task_table.tsv` file
-- task_file: Name of the task file for this run
-- instruction_dur: Duration of the instruction screen before the task starts (in seconds)
-- start_time: Start time of the task (in seconds from the start of the run)
-- end_time: End time of the task (in seconds)
-
-**Task Files**
-Task files that specify the structure of the tasks within each run (e.g. the stimuli, the correct response, whether to display feedback, etc.).
-
-The task file can look very different form tasks to task, but typically contains some of the following columns:
-
-- trial_num: Trial number
-- hand: Hand used for the task (left or right)
-- trial_dur: Duration of the trial (in seconds)
-- iti_dur: Inter-trial interval duration (in seconds)
-- stim: Stimulus presented
-- display_trial_feedback: Whether to display feedback after each trial
-- start_time: Start time of the trial (in seconds)
-- end_time: End time of the trial (in seconds)
-- Key columns, for example in the case of four response keys (e.g. in the RMET task or Finger Sequence task):
-
-  - key_one: Key for the first option
-  - key_two: Key for the second option
-  - key_three: Key for the third option
-  - key_four: Key for the fourth option
+For the columns that run files and task files contain, see the
+:ref:`Run file columns <run file columns>` and
+:ref:`Task file columns <task file columns>` references on the Getting
+Started page. The general (shared) columns are described there; columns
+specific to a single task are listed per task on the
+:ref:`task descriptions <task_descriptions>` page.
 
 Some tasks require a ``run_number`` because the stimuli depend on the run (e.g., movie clips have a specific order for each run). Tasks that generate random stimuli each run do not need a run number. The framework detects which case applies by inspecting the signature of each task's ``make_task_file`` — if it declares a ``run_number`` parameter, one is passed; otherwise it is not. To opt out, simply omit ``run_number`` from your task's ``make_task_file`` signature.
 
-Each task's ``make_task_file`` accepts parameters that control the trial structure (e.g., grid size, trial duration, number of steps). See the :ref:`task descriptions <task_descriptions>` page for available parameters and their defaults. You can pass any of these as keyword arguments:
+Each task's ``make_task_file`` accepts parameters that control the trial structure (e.g., grid size, trial duration, number of steps). See the :doc:`Task_file module reference <reference_task_file>` for each task's parameters and their defaults (the resulting task-file columns are documented on the :ref:`task descriptions <task_descriptions>` page). You can pass any of these as keyword arguments:
 
 .. code-block:: python
 

@@ -1320,7 +1320,7 @@ class RMET(Task):
         # options (placed symmetrically above and below) straddle the image.
         picture = visual.ImageStim(self.window, str(picture_path_str), pos=(0, 0))
         # Make the picture smaller
-        picture_scale = getattr(self.const, 'rmet_picture_scale', None) or 0.7
+        picture_scale = trial['picture_scale'] if 'picture_scale' in trial else 0.7
         picture.size = picture.size * picture_scale
 
 
@@ -1695,7 +1695,7 @@ class ActionPrediction(Task):
         event.clearEvents()
 
         window_width, _ = self.window.size
-        movie_scale = getattr(self.const, 'action_prediction_scale', None) or 0.4
+        movie_scale = trial['media_scale'] if 'media_scale' in trial else 0.4
         stim_width = int(window_width * movie_scale) # Make the video fraction of the window width
         stim_height = int(stim_width  * 476 / 846)  # Original size of the video is 640x360
 
@@ -1754,7 +1754,7 @@ class Movie(Task):
 
     def run_trial(self, trial):
         window_width, _ = self.window.size
-        movie_scale = getattr(self.const, 'movie_scale', None) or 0.4
+        movie_scale = trial['media_scale'] if 'media_scale' in trial else 0.4
         stim_width = int(window_width * movie_scale) # Make the video fraction of the window width
         stim_height = int(stim_width  * 360 / 640)  # Original size of the video is 640x360
 
@@ -1814,7 +1814,7 @@ class StrangeStories(Task):
 
     def run_trial(self, trial):
         window_width, _ = self.window.size
-        strange_stories_scale = getattr(self.const, 'strange_stories_scale', None) or 0.6
+        strange_stories_scale = trial['media_scale'] if 'media_scale' in trial else 0.6
         stim_width = int(window_width * strange_stories_scale) # Make the video 40% of the window width
         stim_height = int(stim_width  * 921 / 1638)  # 1280x720 is the original size of the video given in width x height
         wrapWidth = 25
@@ -2015,7 +2015,7 @@ class FrithHappe(Task):
         event.clearEvents()
 
         window_width, _ = self.window.size
-        frith_happe_scale = getattr(self.const, 'frith_happe_scale', None) or 0.4
+        frith_happe_scale = trial['media_scale'] if 'media_scale' in trial else 0.4
         stim_width = int(window_width * frith_happe_scale)
         stim_height = int(stim_width  * 1074 / 1433)
         wrapWidth = 25
@@ -2130,7 +2130,7 @@ class Liking(Task):
 
     def run_trial(self, trial):
         window_width, _ = self.window.size
-        liking_scale = getattr(self.const, 'liking_scale', None) or 0.5
+        liking_scale = trial['media_scale'] if 'media_scale' in trial else 0.5
         stim_width = int(window_width * liking_scale)
         stim_height = int(stim_width  * 486 / 720)
         wrapWidth = 20

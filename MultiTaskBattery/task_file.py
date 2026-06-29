@@ -1342,6 +1342,7 @@ class RMET(TaskFile):
                         iti_dur=1.5,
                         option_text_height=1.2,
                         option_position_scale=1.0,
+                        picture_scale=0.7,
                         show_last_seconds=0,
                         file_name=None,
                         stim_file = None,
@@ -1360,6 +1361,7 @@ class RMET(TaskFile):
             iti_dur (float): Inter-trial interval duration in seconds.
             option_text_height (float): Height of the answer-option text in degrees of visual angle.
             option_position_scale (float): Spatial scaling for option positions (<1 brings them closer).
+            picture_scale (float): Scaling of the eye-region image (>1 enlarges).
             show_last_seconds (float): If >0, show options only for the final N seconds of the trial.
             file_name (str): Name of the file to save the task data.
             stim_file (str): Optional path to a custom stimulus CSV.
@@ -1423,6 +1425,7 @@ class RMET(TaskFile):
             trial['iti_dur'] = iti_dur
             trial['option_text_height'] = option_text_height
             trial['option_position_scale'] = option_position_scale
+            trial['picture_scale'] = picture_scale
             trial['stim'] = stim['picture'][n]
             trial['options'] = stim['options'][n]
             trial['condition'] = stim['condition'][n]
@@ -1602,7 +1605,8 @@ class ActionPrediction(TaskFile):
                         condition=None,
                         stimulus_seed=None,
                         exclude_stimuli=None,
-                        stim=None):
+                        stim=None,
+                        media_scale=0.4):
         """
         stim (list or None): If provided, use only these video names (in order) instead of
             stimulus_seed or run_number sampling. Overrides seeding and row slicing.
@@ -1662,6 +1666,7 @@ class ActionPrediction(TaskFile):
             trial['answer'] = stim['answer'][n]
             trial['condition'] = stim['condition'][n]
             trial['question_dur'] = question_dur
+            trial['media_scale'] = media_scale
             trial['display_trial_feedback'] = True
             trial['start_time'] = t
             trial['end_time'] = t + trial_dur + iti_dur
@@ -1689,7 +1694,8 @@ class Movie(TaskFile):
                        iti_dur=0,
                        file_name=None,
                        stim_file=None,
-                       condition=None):
+                       condition=None,
+                       media_scale=0.4):
         """
         Create a movie-watching task file (passive viewing of a 30s clip).
 
@@ -1702,6 +1708,7 @@ class Movie(TaskFile):
             stim_file (str): Optional path to a custom stimulus CSV.
             condition (str): Which clips to use ('romance', 'nature', or
                 'landscape'). If None, all non-practice clips are used.
+            media_scale (float): Clip width as a fraction of the window width.
 
         Returns:
             pd.DataFrame: Task information as a DataFrame.
@@ -1742,6 +1749,7 @@ class Movie(TaskFile):
             trial['display_trial_feedback'] = False
             trial['stim'] = stim['video'][n]
             trial['condition'] = stim['condition'][n]
+            trial['media_scale'] = media_scale
             trial['start_time'] = t
             trial['end_time'] = t + trial_dur + iti_dur
             trial_info.append(trial)
@@ -1772,7 +1780,8 @@ class StrangeStories(TaskFile):
                        file_name=None,
                        stim_file=None,
                        condition=None,
-                       half=None):
+                       half=None,
+                       media_scale=0.6):
 
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
@@ -1815,6 +1824,7 @@ class StrangeStories(TaskFile):
             trial['question'] = stim['question'][n]
             trial['options'] = stim['options'][n]
             trial['condition'] = stim['condition'][n]
+            trial['media_scale'] = media_scale
             trial['start_time'] = t
             trial['end_time'] = t + trial_dur + iti_dur
             trial_info.append(trial)
@@ -1948,7 +1958,8 @@ class FrithHappe(TaskFile):
                        question_dur=6,
                        file_name=None,
                        stim_file=None,
-                       condition=None):
+                       condition=None,
+                       media_scale=0.4):
 
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
@@ -1992,6 +2003,7 @@ class FrithHappe(TaskFile):
             trial['video_dur'] = stim['duration'][n]
             trial['question_dur'] = question_dur
             trial['condition'] = stim['condition'][n]
+            trial['media_scale'] = media_scale
             trial['start_time'] = t
             trial['end_time'] = t + trial_dur + iti_dur
             trial_info.append(trial)
@@ -2047,7 +2059,8 @@ class Liking(TaskFile):
                        question_dur=3,
                        file_name=None,
                        stim_file=None,
-                       condition=None):
+                       condition=None,
+                       media_scale=0.5):
 
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
@@ -2088,6 +2101,7 @@ class Liking(TaskFile):
             trial['video_dur'] = stim['duration'][n]
             trial['question_dur'] = question_dur
             trial['condition'] = stim['condition'][n]
+            trial['media_scale'] = media_scale
             trial['start_time'] = t
             trial['end_time'] = t + trial_dur + iti_dur
             trial_info.append(trial)

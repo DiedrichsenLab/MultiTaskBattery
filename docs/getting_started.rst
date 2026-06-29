@@ -7,7 +7,7 @@ The repository is organized into the following main folders:
 
 - **MultiTaskBattery**: Contains the core Python modules and classes needed to run tasks.
 - **stimuli**: Stores the stimuli used in experiments, organized into subfolders for each task (e.g., `n_back` for n-back tasks).
-- **experiments**: Stores experiment examples that you can use as a starting point. You can place your own experiment folder here too, but we recommend keeping it in a separate local folder on your machine instead.
+- **experiments**: Stores example experiments that you can use as a starting point. Your own experiment should live in its own folder **outside** the repository (not inside ``experiments/``), so that updates to MultiTaskBattery never interfere with your work.
 
 ::
 
@@ -48,6 +48,62 @@ Below are examples from the `experiments/example_minimal/run_files` and `experim
 .. image:: images/run_vs_task_file.png
    :width: 100%
 
+Run file columns
+^^^^^^^^^^^^^^^^
+
+Each run file (``run_xx.tsv``) has one row per task block, with these columns:
+
+- ``task_name``: Name of the task (matches the ``name`` column in ``task_table.tsv``).
+- ``task_code``: Short code for the task (from ``task_table.tsv``).
+- ``task_file``: Name of the task file holding the trials for this block.
+- ``instruction_dur``: Duration of the instruction screen before the block (in seconds).
+- ``start_time`` / ``end_time``: When the block starts and ends, relative to the start of the run (in seconds).
+
+Task file columns
+^^^^^^^^^^^^^^^^^
+
+Task files (``task_xx.tsv``) have one row per trial. The exact set of columns varies from task to task. This section explains what the **shared** columns mean; for the complete, authoritative list of columns for any given task, see that task's entry on the :ref:`task descriptions <task_descriptions>` page.
+
+*Always present (every task):*
+
+- ``trial_num``: Trial number.
+- ``trial_dur``: Duration of the trial (in seconds).
+- ``start_time`` / ``end_time``: When the trial starts and ends, relative to the start of the block (in seconds).
+
+*Present for most tasks:*
+
+- ``iti_dur``: Inter-trial interval duration (in seconds). Absent for tasks with no gap between trials (e.g. ``rest``).
+- ``display_trial_feedback``: Whether to show feedback (a green/red fixation cross) after the trial.
+- ``stim``: The stimulus presented — e.g. an image filename, a word, or an audio file. Present whenever the task shows a named stimulus.
+- ``hand``: Which hand responds (``left``, ``right``, or ``bimanual``). Present whenever the task collects a manual response.
+
+*Response-key columns:*
+Tasks that collect a button press include one column per response option, named after what the option means. The exact names depend on the task's answer space — for example ``key_one`` … ``key_four`` (a generic four-choice task such as RMET or Finger Sequence), ``key_true`` / ``key_false`` (Theory of Mind), ``key_match`` / ``key_nomatch`` (n-back), or ``key_pleasant`` / ``key_unpleasant`` (Affective).
+
+*Condition / trial-type columns:*
+A task may also record a ``condition`` and/or a ``trial_type`` column. These two are easy to confuse, so they are explained in their own section just below.
+
+Each task also has its own task-specific columns. To know exactly which columns a given task's file needs — the shared ones above plus any task-specific ones — consult the **Task file columns** table in that task's entry on the :ref:`task descriptions <task_descriptions>` page, which lists every column for that task.
+
+Tasks, conditions, and trial types
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Three related terms describe a battery's structure, from coarsest to finest. Keeping them straight makes the task files much easier to read:
+
+- **Task** — the activity itself (e.g. ``n_back``, ``movie``, ``reading``). Each task is one row in ``task_table.tsv`` and one block in a run.
+- **Condition** — a *block-level* variant of a task, chosen when you generate the files via the ``condition=`` argument. The whole block runs in a single condition, recorded in the ``condition`` column. Example: ``movie`` → ``romance`` / ``nature`` / ``landscape``; ``reading`` → ``sentences`` / ``nonwords``.
+- **Trial type** — a *within-block, per-trial* distinction, recorded in the ``trial_type`` column. Trials of different types are interleaved inside one block. Example: ``n_back`` → match / no-match; ``affective`` → pleasant / unpleasant; ``oddball`` → target / non-target.
+
+In short: you pick the **task** and (if it has one) its **condition** when generating the files; the **trial type** then varies trial-by-trial within the generated block.
+
+A few caveats:
+
+- Not every task has conditions or trial types — many (e.g. ``rest``, ``finger_sequence``) have neither.
+- Some tasks have **both** a ``condition`` and a ``trial_type`` column (e.g. ``theory_of_mind``).
+- ``trial_type`` is sometimes just a housekeeping flag (e.g. which side is the correct answer) rather than a meaningful experimental condition.
+
+The **Task file columns** table in each task's entry on the :ref:`task descriptions <task_descriptions>` page shows which (if any) of these columns a task uses, and what its values mean.
+
 constants.py
 ------------
 
@@ -67,7 +123,7 @@ The `constants.py` file in the `experiments/example_minimal/` folder contains al
   - `stim_dir`: Directory storing stimuli for tasks.
 
 - **Default Run File**:
-  The `default_run_filename` specifies the default run file (`run_01.tsv`) used in the experiment.
+  The `default_run_filename` is the run-file name template (`run_{}.tsv`); the `{}` is auto-filled with the run number in the GUI (e.g. `run_01.tsv`, `run_02.tsv`, ...).
 
 - **Eye-Tracking**:
   The `eye_tracker` flag enables or disables eye tracking integration.

@@ -201,29 +201,33 @@ class TaskDescriptionsDirective(SphinxDirective):
         if len(field_list) > 0:
             section += field_list
 
-        # 6. Task file parameters dropdown (from JSON)
+        # 6. Task file columns dropdown (from JSON). Documents the task-specific
+        # columns of the generated task TSV. The general/shared columns (trial_num,
+        # trial_dur, stim, hand, condition, etc.) are documented once on the Getting
+        # Started page, so they are not repeated per task here.
+        #
+        # Prefer the newer "task_file_columns" key (Column / Type / Description). If a
+        # task has not been converted yet, fall back to the older "task_file_parameters"
+        # key (which documented the make_task_file() arguments — now in the API docs).
         if task_detail:
-            params = task_detail.get("task_file_parameters", {})
-            if params:
+            columns = task_detail.get("task_file_columns", {})
+            if columns:
                 rst_lines = [
-                    ".. dropdown:: Task file parameters",
+                    ".. dropdown:: Task file columns",
                     "",
                     "   .. list-table::",
                     "      :header-rows: 1",
-                    "      :widths: 15 10 10 65",
+                    "      :widths: 20 12 68",
                     "",
-                    "      * - Parameter",
+                    "      * - Column",
                     "        - Type",
-                    "        - Default",
                     "        - Description",
                 ]
-                for param_name, param_info in params.items():
-                    ptype = param_info.get("type", "")
-                    default = param_info.get("default", "")
-                    desc = param_info.get("description", "")
-                    rst_lines.append(f"      * - ``{param_name}``")
-                    rst_lines.append(f"        - {ptype}")
-                    rst_lines.append(f"        - {default}")
+                for col_name, col_info in columns.items():
+                    ctype = col_info.get("type", "")
+                    desc = col_info.get("description", "")
+                    rst_lines.append(f"      * - ``{col_name}``")
+                    rst_lines.append(f"        - {ctype}")
                     rst_lines.append(f"        - {desc}")
 
                 rst_lines.append("")
@@ -231,6 +235,35 @@ class TaskDescriptionsDirective(SphinxDirective):
                 wrapper = nodes.container()
                 self.state.nested_parse(string_list, 0, wrapper)
                 section += wrapper
+            else:
+                params = task_detail.get("task_file_parameters", {})
+                if params:
+                    rst_lines = [
+                        ".. dropdown:: Task file parameters",
+                        "",
+                        "   .. list-table::",
+                        "      :header-rows: 1",
+                        "      :widths: 15 10 10 65",
+                        "",
+                        "      * - Parameter",
+                        "        - Type",
+                        "        - Default",
+                        "        - Description",
+                    ]
+                    for param_name, param_info in params.items():
+                        ptype = param_info.get("type", "")
+                        default = param_info.get("default", "")
+                        desc = param_info.get("description", "")
+                        rst_lines.append(f"      * - ``{param_name}``")
+                        rst_lines.append(f"        - {ptype}")
+                        rst_lines.append(f"        - {default}")
+                        rst_lines.append(f"        - {desc}")
+
+                    rst_lines.append("")
+                    string_list = StringList(rst_lines)
+                    wrapper = nodes.container()
+                    self.state.nested_parse(string_list, 0, wrapper)
+                    section += wrapper
 
         # Horizontal divider between tasks (omitted after the last task, since a
         # section/document may not end with a transition).

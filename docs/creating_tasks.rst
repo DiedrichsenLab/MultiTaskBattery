@@ -152,7 +152,11 @@ entry should include:
 - ``recorded_metrics``: ``Accuracy + RT``, ``Accuracy``, ``RT``, or ``None``.
 - ``conditions``: comma-separated list of conditions (omit if none).
 - ``reference``: academic citation (omit if none).
-- ``task_file_parameters``: documents the parameters of ``make_task_file``.
+- ``task_file_columns``: documents the columns of the generated task file —
+  each with a ``type`` and a ``description``. List **every** column the file
+  contains: the shared ones (``trial_num``, ``trial_dur``, ``stim``, etc.) and
+  any task-specific ones. For ``condition`` and ``trial_type`` columns, spell
+  out what the values mean (e.g. ``0 = left, 1 = right``).
 
 Tips for the detailed description:
 
@@ -172,18 +176,29 @@ For example, the ``demand_grid`` entry:
             "detailed_description": "Participants see a sequence of boxes lighting up on a grid...",
             "recorded_metrics": "Accuracy + RT",
             "reference": "Fedorenko et al. (2013)...",
-            "task_file_parameters": {
+            "task_file_columns": {
+                "trial_type": {
+                    "type": "int",
+                    "description": "Numeric code for the correct side (0 = left, 1 = right)."
+                },
                 "grid_size": {
                     "type": "tuple",
-                    "default": "(3, 4)",
-                    "description": "Size of the grid (rows, cols)."
+                    "description": "Grid dimensions as (rows, cols)."
                 }
             }
         }
     }
 
 All fields appear on the :ref:`task descriptions <task_descriptions>`
-page, with the parameters shown in a collapsible table.
+page, with the columns shown in a collapsible **Task file columns** table.
+
+Document the ``make_task_file`` **parameters** separately, by writing a
+Google-style docstring (with ``Args:`` and ``Returns:`` sections) on the
+method. Those render on the :doc:`Task_file module reference
+<reference_task_file>` page. In other words: ``make_task_file`` *parameters*
+are documented in the API reference (via the docstring), while the *columns*
+they produce in the task file are documented in ``task_details.json`` (via
+``task_file_columns``).
 
 3. Add a documentation image
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
