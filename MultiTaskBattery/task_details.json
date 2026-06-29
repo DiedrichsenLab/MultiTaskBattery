@@ -1,6 +1,6 @@
 {
     "movie": {
-        "short_description": "Participants passively watch a 30-second movie clip (nature, animated romance, or landscape scenery) with no audio and no subtitles.",
+        "short_description": "Participants passively watch a 30-second movie clip (nature, animated romance, or landscape scenery) without audio or subtitles.",
         "detailed_description": "Participants passively watch a single 30-second video clip per block, presented without audio or subtitles, and are instructed to keep their head still and attend to the screen; no response is required. Three clip conditions are available: 'nature' — a nature documentary clip (kickboxing kangaroos, from 'Planet Earth II: Islands'); 'romance' — an emotional love story between two characters from the Pixar movie 'Up'; and 'landscape' — an aesthetically-pleasing clip depicting diverse scenery (sourced from Vimeo). The clips of a given condition are presented in order across runs so they unfold as a continuous sequence over the session. Movie watching is a naturalistic-viewing task that engages visual and dynamic-scene processing, with the romance condition additionally recruiting social and emotional processing.",
         "reference":["Nguyen, V. T., Sonkusare, S., Stadler, J., Hu, X., Breakspear, M., & Guo, C. C. (2017). Distinct cerebellar contributions to cognitive-perceptual dynamics during natural viewing. Cerebral Cortex, 27(12), 5652-5662.","King, M., Hernandez-Castillo, C. R., Poldrack, R. A., Ivry, R. B., & Diedrichsen, J. (2019). Functional boundaries in the human cerebellum revealed by a multi-domain task battery. Nature neuroscience, 22(8), 1371-1378."],
         "task_file_parameters": {
@@ -58,7 +58,7 @@
     },
     "demand_grid": {
         "short_description": "Participants see a sequence of steps that each light up boxes in a grid, mentally combine them into a single pattern, then choose which of two grids matches the full sequence.",
-        "detailed_description": "Paritipants see a sequence of steps, where each step lights up a set of boxes in a grid, and add each step to a running representation of the overall pattern. After the sequence, two grids appear side by side, one showing the correct pattern and the other with one of the steps modified. Participants need to make a button press to choose the correct options. Grid size, number of steps, and boxes lit per step are adjustable to vary working memory load. Contrasting harder against easier trials localizes the domain-general Multiple Demand (MD) network in frontal and parietal cortex. The easier>harder or easier>fixation contrasts can be used to localize the Default Mode Network (DMN). After each response, the participant receives trial-specific feedback: a green check mark for a correct answer and a red cross for an incorrect one.",
+        "detailed_description": "A spatial working memory task.  A grid is presented (typically 3x4) and at each step (typically 3) a number of boxes (typically 2) light up for 1.3 s.  Participants need to mentally integrate the steps to build the overall pattern. After the sequence, two grids appear side by side, one showing the correct pattern and the other with one of the steps modified. Participants need to make a button press (within 3s) to choose the correct options. Grid size, number of steps, and boxes lit per step are adjustable to vary working memory load. Contrasting harder against easier trials localizes the domain-general Multiple Demand (MD) network in frontal and parietal cortex. The easier>harder or easier>fixation contrasts can be used to localize the Default Mode Network (DMN). After each response, the participant receives trial-specific feedback: a green check mark for a correct answer and a red cross for an incorrect one.",
         "reference": "Fedorenko, E., Duncan, J., & Kanwisher, N. (2013). Broad domain generality in focal regions of frontal and parietal cortex. Proceedings of the National Academy of Sciences of the United States of America, 110(41), 16616-16621.",
         "recorded_metrics": "Accuracy + RT",
         "task_file_parameters": {
@@ -166,7 +166,8 @@
         "recorded_metrics": "Accuracy + RT"
     },
     "serial_reaction_time": {
-        "detailed_description": "Four boxes are displayed in a row. On each trial one box lights up green and the participant presses the corresponding button as fast as possible. Stimuli are randomized with the constraint that the same box never lights up on consecutive trials. The task measures basic visuomotor response speed.",
+        "short_description": "Participants need to make one of 4 button presses at time, cued by a spatial location of a box",
+        "detailed_description": "Four boxes are displayed in a row. On each trial one box lights up green (for 0.5s every 1,5s) and the participant presses the corresponding button as fast as possible. Stimuli are randomized, such that there is no implicit sequence learning. The only constraint is that the same box never lights up on consecutive trials. The task measures basic visuomotor response speed. By default, the 4 buttons are pressed with index and middle finger of the left and right hand.",
         "reference": "Nissen, M. J., & Bullemer, P. (1987). Attentional requirements of learning: Evidence from performance measures. Cognitive psychology, 19(1), 1-32.",
         "task_file_parameters": {
             "hand": {
@@ -195,7 +196,6 @@
                 "description": "Inter-trial interval duration in seconds."
             }
         },
-        "short_description": "Single boxes light up one at a time in a row of four. Press corrosponding button as fast as possible.",
         "recorded_metrics": "RT"
     },
     "verb_generation": {
@@ -222,10 +222,11 @@
         "reference":"Adapted by changing into covert rather than overt reading/generation from Raichle, M. E., Fiez, J. A., Videen, T. O., MacLeod, A. M. K., Pardo, J. V., Fox, P. T., & Petersen, S. E. (1994). Practice-related changes in human brain functional anatomy during nonmotor learning. Cerebral cortex, 4(1), 8-26.",
         "recorded_metrics": "None"
     },
+
     "rest": {
         "short_description": "Participants are instructed to fixate on a central crosshair.",
         "detailed_description": "Participants lie still and fixate on a central crosshair. No stimuli are presented and no response is required. For most fMRI experiments, rest is used as the baseline condition, and it therefore recommended to include it into every task battery to allow for alignment with other datasets. However, rest does not minimize brain activity. Some region (the default mode network) are quite activated during rest.",
-        "reference": "Gusnard, D.A., Raichle, M.E., and Raichle, M.E. (2001). Searching for a baseline: functional imaging and the resting human brain. Nat. Rev. Neurosci. 2, 685–694.",
+        "reference": "Gusnard, D.A., Raichle, M.E., and Raichle, M.E. (2001). Searching for a baseline: functional imaging and the resting human brain. Nat. Rev. Neurosci. 2, 685-694.",
         "task_file_parameters": {
         },
         "recorded_metrics": "None"
@@ -387,8 +388,8 @@
         }
     },
     "passage_listening": {
-        "short_description": "Participants listen to intact or accoustically degraded (mufffled) speech passages",
-        "detailed_description": "Participants listen to excerpts from speeches and talks from several sources (e.g., The moth podcast, Ted talks, celebrity interviews). In the intact codition the audio is intelligible. In the degraded condition the same type of audio is acoustically degraded so it is matched in lower level acoustic properties but the content can no longer be understood. Participants are instructed to only listen attentively; no response is required. The intact>degraded contrast localizes high-level language processing brain regions. ",
+        "short_description": "Participants listen to intact or acoustically degraded (muffled) speech passages",
+        "detailed_description": "Participants listen to excerpts from speeches and talks from several sources (e.g., The moth podcast, Ted talks, celebrity interviews). In the intact condition the audio is intelligible. In the degraded condition the same type of audio is acoustically degraded so it is matched in lower level acoustic properties but the content can no longer be understood. Participants are instructed to only listen attentively; no response is required. The intact>degraded contrast localizes high-level language processing brain regions. ",
         "Conditions": "intact, degraded",
         "reference": "Scott, T. L., Gallee, J., & Fedorenko, E. (2017). A new fun and robust version of an fMRI localizer for the frontotemporal language system. Cognitive Neuroscience, 8(3), 167-176.",
         "recorded_metrics": "None",
@@ -472,7 +473,7 @@
             }
         }
     },
-    "foot_movement": {
+    "toe_movement": {
         "short_description": "Toe movements. Alternating periods of flexing/extending toes.",
         "recorded_metrics": "None",
         "detailed_description": "Participants alternate between flexing and extending their toes, paced by visual cues.",
@@ -527,7 +528,7 @@
             }
         }
     },
-    "rmet": {
+    "reading_the_mind_in_the_eyes": {
         "short_description": "Participants see pictures of faces with different emotions presented (eyes only) along with four options (for either emotion or age), participants must identify which option describes person best.",
         "detailed_description": "Participants see a photograph of a person's eye region (just the eyes) together with four descriptive words, and press a button to choose the option that best fits the person. In the emotion condition the options are mental-state words and participants infer what the person is thinking or feeling, which engages mentalizing (theory of mind) and social cognition. In the age condition the same eye images are shown but the options are age ranges and participants judge the person's age instead; this is matched in low-level visual demands and face processing but does not require inferring a mental state, so it serves as a control. The emotion>age contrast isolates mental-state inference from basic face perception. After each response, the participant receives trial-specific feedback: a green check mark for a correct answer and a red cross for an incorrect one.",
         "reference": "Kim, H.A. et al. (2024) 'Multiracial Reading the Mind in the Eyes Test (MRMET): An inclusive version of an influential measure', Behavior Research Methods. Revised from Baron-Cohen, Wheelwright, Hill, Raste, & Plumb, 2001",
