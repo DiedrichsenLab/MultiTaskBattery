@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>MultiTaskBattery — Task-space MDS</title>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
+<style>
+  :root{
+    --bg:#0b0e13; --panel:#141a23; --panel2:#1b2430; --line:#27313f;
+    --fg:#eef2f7; --muted:#94a1b2; --accent:#5b9dff; --accent2:#7c5cff;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,sans-serif;
+       background:radial-gradient(1200px 600px at 80% -10%,#16202e 0%,var(--bg) 55%);
+       color:var(--fg);}
+  .app{display:grid;grid-template-columns:300px 1fr;height:100vh;}
+  /* sidebar */
+  aside{background:linear-gradient(180deg,var(--panel) 0%,#10151d 100%);
+        border-right:1px solid var(--line);padding:20px 18px;overflow-y:auto;}
+  .brand{font-size:17px;font-weight:700;letter-spacing:.2px;display:flex;align-items:center;gap:9px;}
+  .dot{width:10px;height:10px;border-radius:50%;
+       background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 0 12px var(--accent);}
+  .tag{color:var(--muted);font-size:12px;margin:6px 0 18px;line-height:1.5;}
+  .group{margin-bottom:18px;}
+  .group h3{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);
+            margin:0 0 8px;font-weight:600;}
+  select,input[type=search]{width:100%;background:var(--panel2);color:var(--fg);
+        border:1px solid var(--line);border-radius:9px;padding:9px 11px;font-size:13px;outline:none;}
+  select:focus,input:focus{border-color:var(--accent);}
+  /* segmented control */
+  .seg{display:flex;background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:3px;}
+  .seg button{flex:1;background:transparent;border:0;color:var(--muted);padding:7px 0;font-size:12.5px;
+        font-weight:600;border-radius:6px;cursor:pointer;transition:.15s;}
+  .seg button.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;}
+  /* toggle row */
+  .row{display:flex;align-items:center;justify-content:space-between;font-size:13px;color:var(--fg);
+       padding:6px 0;}
+  .row .muted{color:var(--muted);}
+  input[type=range]{width:120px;accent-color:var(--accent);}
+  .switch{position:relative;width:40px;height:22px;}
+  .switch input{opacity:0;width:0;height:0;}
+  .slider{position:absolute;inset:0;background:var(--panel2);border:1px solid var(--line);
+          border-radius:22px;cursor:pointer;transition:.2s;}
+  .slider:before{content:"";position:absolute;height:16px;width:16px;left:2px;top:2px;border-radius:50%;
+          background:var(--muted);transition:.2s;}
+  .switch input:checked + .slider{background:linear-gradient(135deg,var(--accent),var(--accent2));border-color:transparent;}
+  .switch input:checked + .slider:before{transform:translateX(18px);background:#fff;}
+  .btn{width:100%;background:var(--panel2);color:var(--fg);border:1px solid var(--line);
+       border-radius:9px;padding:9px;font-size:13px;font-weight:600;cursor:pointer;transition:.15s;}
+  .btn:hover{border-color:var(--accent);color:var(--accent);}
+  .stat{background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:13px 14px;}
+  .stat .big{font-size:22px;font-weight:700;}
+  .stat .lbl{font-size:11.5px;color:var(--muted);margin-top:2px;}
+  .foot{color:var(--muted);font-size:11px;line-height:1.6;margin-top:16px;}
+  a{color:var(--accent);text-decoration:none;}
+  /* main */
+  main{position:relative;}
+  #plot{position:absolute;inset:0;}
+  .hint{position:absolute;left:18px;bottom:14px;color:var(--muted);font-size:11.5px;
+        background:rgba(11,14,19,.6);backdrop-filter:blur(4px);padding:6px 11px;border-radius:8px;
+        border:1px solid var(--line);}
+  #loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--muted);}
+  @media (max-width:760px){.app{grid-template-columns:1fr;height:auto;}main{height:70vh;}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside>
+    <div class="brand"><span class="dot"></span>Task-space MDS</div>
+    <div class="tag">3D map of how tasks relate within a brain structure.
+      Closer = more similar activity pattern.</div>
+
+    <div class="group">
+      <h3>Brain structure</h3>
+      <select id="struct"></select>
+    </div>
+
+    <div class="group">
+      <h3>Color by</h3>
+      <div class="seg" id="colorseg">
+        <button data-mode="domain" class="active">Domain</button>
+        <button data-mode="task">Task</button>
+      </div>
+    </div>
+
+    <div class="group">
+      <h3>Highlight a condition</h3>
+      <select id="find"><option value="">— none —</option></select>
+    </div>
+
+    <div class="group">
+      <div class="row"><span>Show labels</span>
+        <label class="switch"><input type="checkbox" id="labels"><span class="slider"></span></label>
+      </div>
+      <div class="row"><span>Point size</span>
+        <input type="range" id="size" min="3" max="11" value="6">
+      </div>
+      <button class="btn" id="reset" style="margin-top:8px;">⟲ Reset view</button>
+    </div>
+
+    <div class="group"><div class="stat">
+      <div class="big" id="varbig">—</div>
+      <div class="lbl" id="varlbl">variance captured in 3D</div>
+    </div></div>
+
+    <div class="foot">
+      56 conditions · 21 brain structures · classical MDS of the double-centered
+      task×task matrix. Data: <a href="https://zenodo.org/records/18793343" target="_blank">Zenodo 18793343</a>.
+    </div>
+  </aside>
+
+  <main>
+    <div id="plot"></div>
+    <div id="loading">Loading…</div>
+    <div class="hint">drag to rotate · scroll to zoom · double-click to reset</div>
+  </main>
+</div>
+
+<script>
+// ---- editable: maps each task_code to a broad cognitive domain (verify against your taxonomy) ----
+const DOMAINS = {
+  // Motor
+  fingr:"Motor", respalt:"Motor",
+  // Cognition: executive control, working memory, math, attention, timing
+  gng:"Cognition", stroop:"Cognition", cpro:"Cognition", nbckverb:"Cognition",
+  nbckpic:"Cognition", arith:"Cognition", vissearch:"Cognition", intrval:"Cognition",
+  // Language
+  vrbgen:"Language", sntncpredict:"Language",
+  // Social & emotion
+  tom:"Social/Emotion", actobserv:"Social/Emotion", biomotion:"Social/Emotion",
+  affect:"Social/Emotion", emotface:"Social/Emotion",
+  // Spatial & imagery
+  spatialnav:"Spatial/Imagery", sptialmap:"Spatial/Imagery",
+  mtrimgry:"Spatial/Imagery", mntalrot:"Spatial/Imagery",
+  // Perception & rest (passive viewing / baseline)
+  checkbrd:"Perception/Rest", movie:"Perception/Rest", rest:"Perception/Rest",
+  // --- Language-localizer dataset additions ---
+  pssglisten:"Language", audnarrative:"Language", read:"Language",
+  motor:"Motor",
+  oddball:"Cognition", dmndgrid:"Cognition",
+};
+const PALETTE = ["#5b9dff","#ff6b6b","#3ddc84","#ffb454","#b07cff","#27d3e0","#ff79c6","#a3e635",
+  "#ff8c5a","#7c93ff","#4cd4a0","#e879f9","#38bdf8","#fbbf24","#94a3b8","#f472b6"];
+
+const DEFAULT_CAM = {eye:{x:1.4,y:1.4,z:1.1}};
+let DATA=null, COLORMODE="domain", HIGHLIGHT="";
+
+const groupKey = (i) => COLORMODE==="domain"
+  ? (DOMAINS[DATA.task_code[i]] || "Other") : DATA.task_code[i];
+
+function colorMap(keys){const m={};keys.forEach((k,i)=>m[k]=PALETTE[i%PALETTE.length]);return m;}
+// "task cond" when a real condition exists; just "task" when cond is a placeholder ("task")
+const NO_COND = new Set(["task",""]);
+function shortLabel(i){
+  const t=DATA.task_code[i], c=DATA.cond_code[i];
+  return (NO_COND.has(c) || c===t) ? t : t+" "+c;
+}
+
+function buildTraces(sKey){
+  const coords=DATA.structures[sKey].coords, n=DATA.labels.length;
+  const keys=[...new Set(Array.from({length:n},(_,i)=>groupKey(i)))];
+  const cmap=colorMap(keys);
+  const showLabels=document.getElementById("labels").checked;
+  const size=+document.getElementById("size").value;
+  const dim = HIGHLIGHT!=="";
+
+  const traces=keys.map(k=>{
+    const idx=[];for(let i=0;i<n;i++) if(groupKey(i)===k) idx.push(i);
+    return {type:"scatter3d",mode:showLabels?"markers+text":"markers",name:k,
+      x:idx.map(i=>coords[i][0]),y:idx.map(i=>coords[i][1]),z:idx.map(i=>coords[i][2]),
+      text:idx.map(i=>shortLabel(i)),textposition:"top center",
+      textfont:{size:9,color:dim?"#55606e":"#c7cdd6"},
+      hovertext:idx.map(i=>shortLabel(i)),hoverinfo:"text",
+      marker:{size:size,color:cmap[k],opacity:dim?0.28:0.95,
+              line:{width:.5,color:"#0b0e13"}}};
+  });
+
+  if(HIGHLIGHT!==""){
+    const i=DATA.labels.indexOf(HIGHLIGHT);
+    if(i>=0){const k=groupKey(i);
+      traces.push({type:"scatter3d",mode:"markers+text",name:"▶ "+shortLabel(i),
+        x:[coords[i][0]],y:[coords[i][1]],z:[coords[i][2]],
+        text:[shortLabel(i)],textposition:"top center",
+        textfont:{size:12,color:"#fff"},hovertext:[shortLabel(i)],hoverinfo:"text",showlegend:false,
+        marker:{size:size+7,color:cmap[k],opacity:1,line:{width:2.5,color:"#fff"}}});
+    }
+  }
+  return traces;
+}
+
+function layoutFor(sKey){
+  const v=DATA.structures[sKey].var_explained,pct=d=>(d*100).toFixed(1)+"%";
+  const ax=t=>({title:{text:t,font:{size:11}},backgroundcolor:"rgba(0,0,0,0)",
+    gridcolor:"#283340",zerolinecolor:"#3a4654",color:"#7e8a99",showspikes:false});
+  return {paper_bgcolor:"rgba(0,0,0,0)",font:{color:"#eef2f7"},
+    margin:{l:0,r:0,t:0,b:0},showlegend:true,
+    legend:{font:{size:11.5},itemsizing:"constant",bgcolor:"rgba(0,0,0,0)",y:.98,x:.01},
+    scene:{xaxis:ax("MDS 1 ("+pct(v[0])+")"),yaxis:ax("MDS 2 ("+pct(v[1])+")"),
+      zaxis:ax("MDS 3 ("+pct(v[2])+")"),aspectmode:"data",camera:DEFAULT_CAM}};
+}
+
+function render(){
+  const sKey=document.getElementById("struct").value;
+  Plotly.react("plot",buildTraces(sKey),layoutFor(sKey),
+    {responsive:true,displaylogo:false,
+     modeBarButtonsToRemove:["resetCameraLastSave3d"]});
+  const v=DATA.structures[sKey].var_explained;
+  document.getElementById("varbig").textContent=((v[0]+v[1]+v[2])*100).toFixed(0)+"%";
+}
+
+const REGIONS=[
+  ["Whole brain",["WHOLE_BRAIN"]],
+  ["Combined (L + R)",["CORTEX","CEREBELLUM","ACCUMBENS","AMYGDALA","CAUDATE","HIPPOCAMPUS",
+     "PALLIDUM","PUTAMEN","THALAMUS","DIENCEPHALON_VENTRAL","BRAIN_STEM"]],
+  ["Cortex (hemispheres)",["CORTEX_LEFT","CORTEX_RIGHT"]],
+  ["Cerebellum (hemispheres)",["CEREBELLUM_LEFT","CEREBELLUM_RIGHT"]],
+  ["Basal ganglia (hemispheres)",["ACCUMBENS_LEFT","ACCUMBENS_RIGHT","CAUDATE_LEFT","CAUDATE_RIGHT",
+     "PALLIDUM_LEFT","PALLIDUM_RIGHT","PUTAMEN_LEFT","PUTAMEN_RIGHT"]],
+  ["Limbic / diencephalon (hemispheres)",["AMYGDALA_LEFT","AMYGDALA_RIGHT","HIPPOCAMPUS_LEFT",
+     "HIPPOCAMPUS_RIGHT","THALAMUS_LEFT","THALAMUS_RIGHT","DIENCEPHALON_VENTRAL_LEFT",
+     "DIENCEPHALON_VENTRAL_RIGHT"]],
+];
+const pretty=k=>k.replace("DIENCEPHALON_VENTRAL","ventral dienceph.")
+  .replace("WHOLE_BRAIN","whole brain")
+  .replaceAll("_"," ").toLowerCase().replace("left","(L)").replace("right","(R)");
+
+fetch("mds_data.json").then(r=>r.json()).then(d=>{
+  DATA=d;
+  const sel=document.getElementById("struct");
+  REGIONS.forEach(([label,keys])=>{
+    const og=document.createElement("optgroup");og.label=label;
+    keys.filter(k=>k in d.structures).forEach(k=>{
+      const o=document.createElement("option");o.value=k;o.textContent=pretty(k);og.appendChild(o);});
+    sel.appendChild(og);
+  });
+  sel.value="CORTEX_LEFT";
+  const find=document.getElementById("find");
+  d.labels.map((l,i)=>({l,name:shortLabel(i)})).sort((a,b)=>a.name.localeCompare(b.name))
+    .forEach(({l,name})=>{const o=document.createElement("option");o.value=l;o.textContent=name;find.appendChild(o);});
+
+  sel.addEventListener("change",render);
+  find.addEventListener("change",e=>{HIGHLIGHT=e.target.value;render();});
+  document.getElementById("labels").addEventListener("change",render);
+  document.getElementById("size").addEventListener("input",render);
+  document.getElementById("reset").addEventListener("click",()=>
+    Plotly.relayout("plot",{"scene.camera":DEFAULT_CAM}));
+  document.querySelectorAll("#colorseg button").forEach(b=>b.addEventListener("click",()=>{
+    document.querySelectorAll("#colorseg button").forEach(x=>x.classList.remove("active"));
+    b.classList.add("active");COLORMODE=b.dataset.mode;render();}));
+
+  document.getElementById("loading").style.display="none";
+  render();
+}).catch(e=>{
+  document.getElementById("loading").innerHTML=
+    "Could not load mds_data.json — serve over http (<code>python -m http.server</code>).<br>"+e;
+});
+</script>
+</body>
+</html>
