@@ -703,10 +703,8 @@ class ActionObservation(TaskFile):
         for n in range(n_trials):
             trial = {}
             trial['trial_num'] = n
-            trial['hand'] = None
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
-            trial['display_trial_feedback'] = False
             knot_index = (run_number - 1) % len(self.knot_names)
             # 'condition' is a real per-trial column, so a hand-written task file
             # can order the conditions however it likes. The make_task_file default

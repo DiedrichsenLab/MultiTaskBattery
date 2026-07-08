@@ -197,10 +197,6 @@
                 "type": "int",
                 "description": "Trial number (0-indexed)."
             },
-            "hand": {
-                "type": "str",
-                "description": "Which hand responds ('left', 'right', or 'bimanual')."
-            },
             "trial_dur": {
                 "type": "float",
                 "description": "Duration of the trial (in seconds)."
@@ -208,10 +204,6 @@
             "iti_dur": {
                 "type": "float",
                 "description": "Inter-trial interval after the trial (in seconds)."
-            },
-            "display_trial_feedback": {
-                "type": "bool",
-                "description": "Whether to show green/red feedback after the trial."
             },
             "condition": {
                 "type": "str",
