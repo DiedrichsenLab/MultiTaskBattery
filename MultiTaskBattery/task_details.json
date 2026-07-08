@@ -554,10 +554,6 @@
                 "type": "float",
                 "description": "Inter-trial interval after the trial (in seconds)."
             },
-            "display_trial_feedback": {
-                "type": "bool",
-                "description": "Whether to show green/red feedback after the trial."
-            },
             "trial_type": {
                 "type": "str",
                 "description": "Cued movement direction: 'right' or 'left'."

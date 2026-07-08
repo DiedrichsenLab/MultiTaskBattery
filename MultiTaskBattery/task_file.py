@@ -360,7 +360,6 @@ class TongueMovement(TaskFile):
             trial['trial_num'] = n
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
-            trial['display_trial_feedback'] = False
             # Alternate between 'right' and 'left' for each trial
             trial['trial_type'] = 'right' if n % 2 == 0 else 'left'
             trial['start_time'] = t

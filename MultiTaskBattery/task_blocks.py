@@ -429,8 +429,8 @@ class TongueMovement(Task):
         # wait for trial duration
         self.ttl_clock.wait_until(self.ttl_clock.get_time() + trial['trial_dur'])
 
-        # display trial feedback
-        self.display_trial_feedback(give_feedback= trial['display_trial_feedback'], correct_response = None)
+        # return to a plain fixation cross (no response, so no feedback)
+        self.screen.fixation_cross()
 
         return trial
 
