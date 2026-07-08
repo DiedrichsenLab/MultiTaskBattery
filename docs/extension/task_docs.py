@@ -118,7 +118,7 @@ class TaskDescriptionsDirective(SphinxDirective):
         for img_path in image_paths:
             rel_path = os.path.relpath(img_path, self.env.srcdir)
             rel_path = rel_path.replace("\\", "/")
-            img_node = nodes.image(uri=rel_path, width="600px")
+            img_node = nodes.image(uri=rel_path, classes=["task-img"])
             section += img_node
 
         # Videos (MP4) — rendered as an inline HTML5 <video> player. The files are

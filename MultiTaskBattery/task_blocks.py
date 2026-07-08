@@ -332,36 +332,59 @@ class VerbGeneration(Task):
         self.trial_info = pd.read_csv(trial_info_file, sep='\t')
         self.trial_info['noun'] = self.trial_info['stim'].str.strip()
 
-    def display_instructions(self): # overriding the display instruction from the parent class
-        # Each block is a single condition ('read' or 'generate').
-        condition = self.trial_info['condition'].iloc[0]
-        if condition == 'read':
-            body = "Silently read each word as it appears."
-        else:  # generate
-            body = "For each word, silently think of a verb that goes with it."
-        self.instruction_text = f"{self.descriptive_name} Task \n\n {body}"
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1])
-        instr_visual.draw()
+    cue_labels = {'read': 'READ', 'generate': 'GENERATE'}
+    cue_colors = {'read': 'red',  'generate': 'green'}
+
+    def cue(self, condition):
+        """ Build the coloured condition label drawn just above the stimulus word. """
+        return visual.TextStim(self.window,
+                               text=self.cue_labels.get(condition, condition.upper()),
+                               pos=(0.0, 2.5), color=self.cue_colors.get(condition, 'black'),
+                               units='deg', height=1, bold=True)
+
+    def display_instructions(self):
+        stims = []
+        stims.append(visual.TextStim(self.window, text=f"{self.descriptive_name} Task",
+                                     pos=(0.0, 6.0), height=self.const.instruction_text_height,
+                                     color=[-1, -1, -1], bold=True))
+        stims.append(visual.TextStim(self.window,
+                                     text="A label at the top of the screen tells you what to do for each word:",
+                                     pos=(0.0, 3.0), height=self.const.instruction_text_height,
+                                     color=[-1, -1, -1], wrapWidth=28))
+        # Two aligned rows: coloured label (right-anchored) + its description
+        rows = [('read', "silently read the word", 0.0),
+                ('generate', "silently think of a verb that goes with it", -2.5)]
+        for cond, desc, y in rows:
+            stims.append(visual.TextStim(self.window, text=self.cue_labels[cond], pos=(-1.0, y),
+                                         color=self.cue_colors[cond], units='deg', height=1,
+                                         bold=True, anchorHoriz='right'))
+            stims.append(visual.TextStim(self.window, text=desc, pos=(0.0, y),
+                                         color=[-1, -1, -1], units='deg',
+                                         height=self.const.instruction_text_height,
+                                         anchorHoriz='left'))
+        for stim in stims:
+            stim.draw()
         self.window.flip()
 
-    def show_stim(self, noun):
-        """ Display a word for a fixed time. """
+    def show_stim(self, noun, condition):
+        """ Display the condition cue (top) and the word for a fixed time. """
         stim = visual.TextStim(self.window, text=noun, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height=2)
+        self.cue(condition).draw()
         stim.draw()
         self.window.flip()
 
     def run_trial(self, trial):
         """ Run a single trial of the VerbGeneration task. """
 
-        # Display the word; the block instruction tells the participant whether to
-        # silently read it or silently generate an associated verb.
-        self.show_stim(trial['noun'])
+        self.show_stim(trial['noun'], trial['condition'])
 
         # wait for trial duration
         self.ttl_clock.wait_until(self.ttl_clock.get_time() + trial['trial_dur'])
 
-        # display trial feedback
-        self.display_trial_feedback(give_feedback= trial['display_trial_feedback'], correct_response = None)
+        # ITI: blank the word but keep the cue on, so the context never disappears
+        self.cue(trial['condition']).draw()
+        self.screen.fixation_cross(flip=False)
+        self.window.flip()
         return trial
 
 class TongueMovement(Task):

@@ -1,3 +1,12 @@
 .wy-side-nav-search {
     background-color: transparent;
 }
+
+/* Cap task screenshot size while preserving aspect ratio. Tweak max-height /
+   max-width to make task images larger or smaller. */
+img.task-img {
+    max-width: 480px;
+    max-height: 340px;
+    width: auto;
+    height: auto;
+}

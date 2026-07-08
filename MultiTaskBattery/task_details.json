@@ -97,8 +97,7 @@
                 "description": "Trial end, relative to the block start (in seconds)."
             }
         },
-        "reference": "Du, J., DiNicola, L. M., Angeli, P. A., Saadon-Grosman, N., Sun, W., Kaiser, S., ... & Buckner, R. L. (2024). Organization of the human cerebral cortex estimated within individuals: networks, global topography, and function. Journal of neurophysiology, 131(6), 1014-1082.",
-        "conditions": "target, non-target"
+        "reference": "Du, J., DiNicola, L. M., Angeli, P. A., Saadon-Grosman, N., Sun, W., Kaiser, S., ... & Buckner, R. L. (2024). Organization of the human cerebral cortex estimated within individuals: networks, global topography, and function. Journal of neurophysiology, 131(6), 1014-1082."
     },
     "demand_grid": {
         "short_description": "Participants see a sequence of steps that each light up boxes in a grid, mentally combine them into a single pattern, then choose which of two grids matches the full sequence.",
@@ -893,8 +892,7 @@
                 "type": "float",
                 "description": "Trial end, relative to the block start (in seconds)."
             }
-        },
-        "conditions": "meaningful, meaningless"
+        }
     },
     "reading_the_mind_in_the_eyes": {
         "short_description": "Participants see pictures of faces with different emotions presented (eyes only) along with four options (for either emotion or age), participants must identify which option describes person best.",
@@ -1107,13 +1105,11 @@
                 "type": "float",
                 "description": "Trial end, relative to the block start (in seconds)."
             }
-        },
-        "conditions": "pleasant, unpleasant"
+        }
     },
     "finger_rhythmic": {
         "short_description": "Rhythmic tapping production task. Participants are instructed to produce a regular series of taps at a prescribed target interval.",
         "reference": "Ivry, R. B., & Keele, S. W. (1989). Timing Functions of the Cerebellum. Journal of Cognitive Neuroscience, 1(2), 136-152.",
-        "conditions": "self-paced tapping",
         "detailed_description": "A timing production task in which participants listen to a train of auditory tones and tap along at the same pace. The task engages motor timing.",
         "task_file_columns": {
             "key_one": {
@@ -1161,7 +1157,6 @@
     "time_perception": {
         "short_description": "Assess the precision of internal timing mechanisms by measuring participants' perceptual acuity in discriminating short auditory intervals. Participants are presented with sequences of tones and must decide whether a comparison interval is longer or shorter than a standard reference interval.",
         "reference": "Ivry, R. B., & Keele, S. W. (1989). Timing Functions of the Cerebellum. Journal of Cognitive Neuroscience, 1(2), 136-152.",
-        "conditions": "time interval",
         "recorded_metrics": "Accuracy + RT",
         "task_file_columns": {
             "trial_num": {

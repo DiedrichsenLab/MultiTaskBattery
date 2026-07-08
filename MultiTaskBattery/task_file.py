@@ -237,21 +237,29 @@ class VerbGeneration(TaskFile):
 
 
     def make_task_file(self,
-                        condition,             # 'read' or 'generate
+                        condition = ['read', 'generate'],
                         task_dur =  30,
                         trial_dur = 2,
                         iti_dur   = 0.5,
+                        order = 'blocked',
                         file_name = None,
                         stim_file = None):
         """
         Create a verb-generation task file.
 
         Args:
-            condition (str): 'read' (silently read each word) or 'generate'
-                (covertly generate an associated verb). Required.
+            condition (str or list): Which condition(s) to run. A single value
+                ('read' or 'generate') fills the whole block with one condition.
+                A list (e.g. ['read', 'generate']) mixes conditions within the
+                block.
             task_dur (float): Total task duration in seconds.
             trial_dur (float): Duration each word is displayed in seconds.
             iti_dur (float): Inter-trial interval duration in seconds.
+            order (str): How to arrange multiple conditions across trials:
+                'blocked' (default) runs each condition in a contiguous chunk in
+                the given order; 'interleaved' cycles through them trial by trial;
+                'random' assigns a balanced set in random order. Ignored for a
+                single condition.
             file_name (str): Name of the file to save the task data.
             stim_file (str): Optional path to a custom word-list CSV. Defaults to
                 the packaged verb_generation.csv.
@@ -259,10 +267,30 @@ class VerbGeneration(TaskFile):
         Returns:
             pd.DataFrame: Task information as a DataFrame.
         """
-        if condition not in ('read', 'generate'):
-            raise ValueError(f"VerbGeneration: condition must be 'read' or 'generate', got {condition!r}")
+        conditions = [condition] if isinstance(condition, str) else list(condition)
+        for c in conditions:
+            if c not in ('read', 'generate'):
+                raise ValueError(f"VerbGeneration: condition must be 'read' or 'generate', got {c!r}")
 
         n_trials = int(np.floor(task_dur / (trial_dur+iti_dur)))
+
+        # Assign a condition to each trial.
+        if len(conditions) == 1:
+            trial_conditions = [conditions[0]] * n_trials
+        elif order == 'interleaved':
+            trial_conditions = [conditions[i % len(conditions)] for i in range(n_trials)]
+        elif order == 'random':
+            balanced = (conditions * (n_trials // len(conditions) + 1))[:n_trials]
+            trial_conditions = [str(c) for c in np.random.permutation(balanced)]
+        elif order == 'blocked':
+            per = n_trials // len(conditions)
+            trial_conditions = []
+            for i, c in enumerate(conditions):
+                count = per if i < len(conditions) - 1 else n_trials - per * (len(conditions) - 1)
+                trial_conditions += [c] * count
+        else:
+            raise ValueError(f"VerbGeneration: order must be 'blocked', 'interleaved' or 'random', got {order!r}")
+
         trial_info = []
 
         if stim_file:
@@ -278,7 +306,7 @@ class VerbGeneration(TaskFile):
             selected_stim = stim.iloc[n]['word']
             trial = {}
             trial['trial_num'] = n
-            trial['condition'] = condition
+            trial['condition'] = trial_conditions[n]
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
             trial['start_time'] = t
