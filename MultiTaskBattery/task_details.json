@@ -647,10 +647,6 @@
                 "type": "str",
                 "description": "Speech condition: 'intact' (intelligible) or 'degraded' (acoustically degraded)."
             },
-            "display_trial_feedback": {
-                "type": "bool",
-                "description": "Whether to show green/red feedback after the trial."
-            },
             "stim": {
                 "type": "str",
                 "description": "Audio filename played this trial."
@@ -687,10 +683,6 @@
             "condition": {
                 "type": "str",
                 "description": "'sentences' or 'nonwords'."
-            },
-            "display_trial_feedback": {
-                "type": "bool",
-                "description": "Whether to show green/red feedback after the trial."
             },
             "stim": {
                 "type": "str",

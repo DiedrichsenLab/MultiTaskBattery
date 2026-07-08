@@ -641,7 +641,6 @@ class PassageListening(TaskFile):
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
             trial['condition'] = stim['condition'][n]
-            trial['display_trial_feedback'] = False
             trial['stim'] = stim['audio'][n]
             trial['start_time'] = t
             trial['end_time'] = t + trial_dur + iti_dur
@@ -1028,7 +1027,6 @@ class Reading(TaskFile):
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
             trial['condition'] = condition
-            trial['display_trial_feedback'] = False
             sentence_index = (run_number - 1) * n_trials + n
             trial['stim'] = stim['sentence'][sentence_index]
             trial['start_time'] = t
