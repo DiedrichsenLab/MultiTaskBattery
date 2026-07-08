@@ -341,7 +341,7 @@
     },
     "verb_generation": {
         "short_description": "Participants see words one at a time and, either silently read each word (read condition) or covertly generate a verb associated with it (generate condition).",
-        "detailed_description": "Participants see words presented one at a time. In the 'read' condition they silently read each word as it appears. In the 'generate' condition they covertly think of a verb associated with each word. No button response is required. The generate>read contrast is designed to engage language and semantic-retrieval processing.",
+        "detailed_description": "Participants see words presented one at a time. In the 'read' condition they silently read each word as it appears. In the 'generate' condition they covertly think of a verb associated with each word. A persistent colour-coded label at the top of the screen indicates the current condition ('READ' in red or 'GENERATE' in green) and stays on throughout. No button response is required. The generate>read contrast is designed to engage language and semantic-retrieval processing.",
         "task_file_columns": {
             "trial_num": {
                 "type": "int",
