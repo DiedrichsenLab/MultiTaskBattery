@@ -341,10 +341,6 @@
             "stim": {
                 "type": "str",
                 "description": "The word shown this trial."
-            },
-            "display_trial_feedback": {
-                "type": "bool",
-                "description": "Whether to show green/red feedback after the trial."
             }
         },
         "conditions": "read, generate",
@@ -797,7 +793,7 @@
             },
             "sentence": {
                 "type": "str",
-                "description": "The sentence shown word-by-word (without the final word)."
+                "description": "The lead-in sentence (without the final word), with words separated by '|'; the runtime splits on '|' and shows one word at a time (e.g. 'A|Dalmatian|dog|is|recognized|by|its|black|and|white')."
             },
             "trial_type": {
                 "type": "int",

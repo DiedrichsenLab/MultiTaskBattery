@@ -314,7 +314,6 @@ class VerbGeneration(TaskFile):
             trial['start_time'] = t
             trial['end_time'] = t + trial_dur + iti_dur
             trial['stim'] = selected_stim
-            trial['display_trial_feedback'] = False
             trial_info.append(trial)
 
             # Update for next trial:
