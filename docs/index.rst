@@ -9,6 +9,8 @@ The repository implements a number of validated tasks, from which the user can e
 
 The main benefit of using this framework is that you can include standardized tasks and stimuli in your battery that are also used in other studies. With our collaborators, we are aiming to build a library of datasets using this approach. Having multiple anchor-tasks across experiments (rather than just rest), allows a rich set of analyses to answer fundamental questions of human mental function. If you are interested in contributing to this library, please contact as us at jdiedric@uwo.ca.
 
+Explore how the tasks relate to one another within a brain structure in an `interactive 3D task-space map <https://diedrichsenlab.github.io/MultiTaskBattery/mds/>`_.
+
 Licence and Acknowledgements
 ----------------------------
 The software written and maintained by members of the Diedrichsen lab and collaborators (Bassel Arafat, Ince Husain, Caroline Nettekoven, Ladan Shahshahani, Suzanne Witt, Maedbh King, Jorn Diedrichsen). The software is distributed under the MIT License: The software is provided as is, without any warranty. If you use the toolbox please cite the following reference:
