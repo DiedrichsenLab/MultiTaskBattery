@@ -185,7 +185,8 @@
                 "type": "float",
                 "description": "Trial end, relative to the block start (in seconds)."
             }
-        }
+        },
+        "conditions": "Configurable (not predefined): vary the working-memory load through several parameters — grid size (grid_size) / number of steps (num_steps) / boxes lit per step (num_boxes_lit)."
     },
     "action_observation": {
         "short_description": "Participants watch a video of a  knot being tied, followed by a rotating 360 view of the knot. A made-up name of the knot is displayed.",
