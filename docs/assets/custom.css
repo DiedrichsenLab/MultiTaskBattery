@@ -6,7 +6,7 @@
    max-width to make task images larger or smaller. */
 img.task-img {
     max-width: 480px;
-    max-height: 340px;
+    max-height: 240px;
     width: auto;
     height: auto;
 }

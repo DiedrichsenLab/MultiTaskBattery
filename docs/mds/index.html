@@ -7,70 +7,135 @@
 <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
 <style>
   :root{
-    --bg:#0b0e13; --panel:#141a23; --panel2:#1b2430; --line:#27313f;
-    --fg:#eef2f7; --muted:#94a1b2; --accent:#5b9dff; --accent2:#7c5cff;
+    --bg:#0c1013;          /* slate-ink ground, faint cool bias */
+    --bg-2:#0e1317;        /* plot field base */
+    --panel:#10161b;       /* sidebar */
+    --panel-2:#141b21;     /* inputs */
+    --line:#1c252c;        /* hairline */
+    --line-2:#29343d;      /* stronger hairline / input border */
+    --fg:#e7ecef;
+    --muted:#869099;
+    --muted-2:#5c666e;
+    --accent:#5cb0a8;      /* muted signal teal */
+    --accent-soft:rgba(92,176,168,.13);
+    --serif:"Iowan Old Style",Georgia,"Times New Roman",serif;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,sans-serif;
+    --mono:"SF Mono","JetBrains Mono","Cascadia Code",ui-monospace,Consolas,monospace;
   }
   *{box-sizing:border-box;}
   html,body{height:100%;}
-  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,sans-serif;
-       background:radial-gradient(1200px 600px at 80% -10%,#16202e 0%,var(--bg) 55%);
-       color:var(--fg);}
-  .app{display:grid;grid-template-columns:300px 1fr;height:100vh;}
-  /* sidebar */
-  aside{background:linear-gradient(180deg,var(--panel) 0%,#10151d 100%);
-        border-right:1px solid var(--line);padding:20px 18px;overflow-y:auto;}
-  .brand{font-size:17px;font-weight:700;letter-spacing:.2px;display:flex;align-items:center;gap:9px;}
-  .dot{width:10px;height:10px;border-radius:50%;
-       background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 0 12px var(--accent);}
-  .tag{color:var(--muted);font-size:12px;margin:6px 0 18px;line-height:1.5;}
-  .group{margin-bottom:18px;}
-  .group h3{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);
-            margin:0 0 8px;font-weight:600;}
-  select,input[type=search]{width:100%;background:var(--panel2);color:var(--fg);
-        border:1px solid var(--line);border-radius:9px;padding:9px 11px;font-size:13px;outline:none;}
-  select:focus,input:focus{border-color:var(--accent);}
-  /* segmented control */
-  .seg{display:flex;background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:3px;}
-  .seg button{flex:1;background:transparent;border:0;color:var(--muted);padding:7px 0;font-size:12.5px;
-        font-weight:600;border-radius:6px;cursor:pointer;transition:.15s;}
-  .seg button.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;}
-  /* toggle row */
-  .row{display:flex;align-items:center;justify-content:space-between;font-size:13px;color:var(--fg);
-       padding:6px 0;}
-  .row .muted{color:var(--muted);}
-  input[type=range]{width:120px;accent-color:var(--accent);}
-  .switch{position:relative;width:40px;height:22px;}
+  body{margin:0;font-family:var(--sans);color:var(--fg);background:var(--bg);
+       -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;}
+  .app{display:grid;grid-template-columns:288px 1fr;height:100vh;}
+
+  /* ---------- sidebar : instrument panel ---------- */
+  aside{position:relative;background:var(--panel);border-right:1px solid var(--line);
+        padding:26px 22px 22px;overflow-y:auto;}
+  aside::-webkit-scrollbar{width:9px;}
+  aside::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:9px;border:2px solid var(--panel);}
+
+  .brand{display:flex;align-items:center;gap:11px;}
+  .brand svg{flex:none;width:25px;height:25px;color:var(--accent);}
+  .brand .name{font-family:var(--serif);font-size:19px;font-weight:600;letter-spacing:.15px;line-height:1;}
+  .tag{color:var(--muted);font-size:12.5px;margin:14px 0 2px;line-height:1.6;}
+
+  .rule{height:1px;background:var(--line);margin:20px 0;border:0;}
+  .group{margin-bottom:20px;}
+  .group:last-child{margin-bottom:0;}
+  .group h3{font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.16em;
+            color:var(--muted-2);margin:0 0 10px;font-weight:500;}
+
+  /* selects */
+  select{width:100%;appearance:none;-webkit-appearance:none;background:var(--panel-2);color:var(--fg);
+    border:1px solid var(--line-2);border-radius:8px;padding:10px 34px 10px 12px;font-size:13px;
+    font-family:inherit;cursor:pointer;transition:border-color .15s,background-color .15s;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none' stroke='%23869099' stroke-width='1.4'%3E%3Cpath d='M2.5 4.5 6 8l3.5-3.5'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:right 12px center;background-size:11px;}
+  select:hover{border-color:var(--muted-2);}
+  select:focus{outline:none;border-color:var(--accent);background-color:#0e141a;}
+  optgroup{color:var(--muted);background:var(--panel);font-style:normal;font-weight:600;}
+  option{color:var(--fg);background:var(--panel-2);}
+
+  /* control rows */
+  .row{display:flex;align-items:center;justify-content:space-between;font-size:13px;padding:8px 0;}
+  .row + .row{border-top:1px solid var(--line);}
+
+  /* slider */
+  input[type=range]{-webkit-appearance:none;appearance:none;width:118px;height:3px;border-radius:3px;
+    background:var(--line-2);outline:none;cursor:pointer;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;
+    background:var(--accent);border:2px solid var(--panel);cursor:pointer;box-shadow:0 0 0 1px var(--line-2);}
+  input[type=range]::-moz-range-thumb{width:13px;height:13px;border-radius:50%;background:var(--accent);
+    border:2px solid var(--panel);cursor:pointer;}
+  input[type=range]:focus-visible{box-shadow:0 0 0 3px var(--accent-soft);border-radius:3px;}
+
+  /* toggle */
+  .switch{position:relative;width:38px;height:21px;flex:none;}
   .switch input{opacity:0;width:0;height:0;}
-  .slider{position:absolute;inset:0;background:var(--panel2);border:1px solid var(--line);
-          border-radius:22px;cursor:pointer;transition:.2s;}
-  .slider:before{content:"";position:absolute;height:16px;width:16px;left:2px;top:2px;border-radius:50%;
+  .slider{position:absolute;inset:0;background:var(--panel-2);border:1px solid var(--line-2);
+          border-radius:21px;cursor:pointer;transition:.2s;}
+  .slider:before{content:"";position:absolute;height:13px;width:13px;left:3px;top:3px;border-radius:50%;
           background:var(--muted);transition:.2s;}
-  .switch input:checked + .slider{background:linear-gradient(135deg,var(--accent),var(--accent2));border-color:transparent;}
-  .switch input:checked + .slider:before{transform:translateX(18px);background:#fff;}
-  .btn{width:100%;background:var(--panel2);color:var(--fg);border:1px solid var(--line);
-       border-radius:9px;padding:9px;font-size:13px;font-weight:600;cursor:pointer;transition:.15s;}
-  .btn:hover{border-color:var(--accent);color:var(--accent);}
-  .stat{background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:13px 14px;}
-  .stat .big{font-size:22px;font-weight:700;}
-  .stat .lbl{font-size:11.5px;color:var(--muted);margin-top:2px;}
-  .foot{color:var(--muted);font-size:11px;line-height:1.6;margin-top:16px;}
+  .switch input:checked + .slider{background:var(--accent-soft);border-color:var(--accent);}
+  .switch input:checked + .slider:before{transform:translateX(17px);background:var(--accent);}
+  .switch input:focus-visible + .slider{box-shadow:0 0 0 3px var(--accent-soft);}
+
+  /* button */
+  .btn{width:100%;margin-top:14px;background:transparent;color:var(--muted);border:1px solid var(--line-2);
+       border-radius:8px;padding:10px;font-size:12.5px;font-weight:600;font-family:inherit;
+       letter-spacing:.02em;cursor:pointer;transition:.15s;}
+  .btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft);}
+  .btn:focus-visible{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
+
+  /* readout */
+  .stat{border:1px solid var(--line-2);border-radius:11px;padding:15px 16px;background:var(--panel-2);}
+  .stat .big{font-family:var(--mono);font-size:25px;font-weight:600;color:var(--accent);
+             letter-spacing:-.01em;font-variant-numeric:tabular-nums;}
+  .stat .lbl{font-size:11px;color:var(--muted);margin-top:5px;letter-spacing:.02em;}
+
+  .foot{color:var(--muted-2);font-size:11px;line-height:1.7;margin-top:20px;}
+  .foot a{color:var(--muted);border-bottom:1px solid var(--line-2);}
+  .foot a:hover{color:var(--accent);border-color:var(--accent);}
   a{color:var(--accent);text-decoration:none;}
-  /* main */
-  main{position:relative;}
+
+  /* ---------- main : plot field ---------- */
+  main{position:relative;background:
+      radial-gradient(760px 480px at 50% 40%,var(--bg-2),var(--bg) 78%);}
+  main::before{content:"";position:absolute;inset:0;pointer-events:none;
+    background-image:radial-gradient(rgba(231,236,239,.05) 1px,transparent 1.4px);
+    background-size:24px 24px;
+    -webkit-mask-image:radial-gradient(ellipse 62% 62% at 50% 45%,#000 40%,transparent 100%);
+    mask-image:radial-gradient(ellipse 62% 62% at 50% 45%,#000 40%,transparent 100%);}
   #plot{position:absolute;inset:0;}
-  .hint{position:absolute;left:18px;bottom:14px;color:var(--muted);font-size:11.5px;
-        background:rgba(11,14,19,.6);backdrop-filter:blur(4px);padding:6px 11px;border-radius:8px;
-        border:1px solid var(--line);}
-  #loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--muted);}
-  @media (max-width:760px){.app{grid-template-columns:1fr;height:auto;}main{height:70vh;}}
+  .hint{position:absolute;left:20px;bottom:16px;color:var(--muted);font-size:11px;letter-spacing:.02em;
+        font-family:var(--mono);
+        background:rgba(12,16,19,.62);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+        padding:7px 12px;border-radius:8px;border:1px solid var(--line);}
+  #loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+           color:var(--muted);font-size:13px;letter-spacing:.04em;font-family:var(--mono);}
+  #loading code{color:var(--accent);}
+
+  @media (max-width:760px){.app{grid-template-columns:1fr;height:auto;}main{height:72vh;}}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;}}
 </style>
 </head>
 <body>
 <div class="app">
   <aside>
-    <div class="brand"><span class="dot"></span>Task-space MDS</div>
-    <div class="tag">3D map of how tasks relate within a brain structure.
-      Closer = more similar activity pattern.</div>
+    <div class="brand">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5"
+           stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M8.5 8.5 16 15m0 0 7.5-7M16 15l8.5 6.5M16 15 9 24"/>
+        <circle cx="16" cy="15" r="3.1" fill="currentColor" fill-opacity=".16"/>
+        <circle cx="8.5" cy="8.5" r="2.3"/><circle cx="24" cy="7" r="2.3"/>
+        <circle cx="25" cy="22.5" r="2.3"/><circle cx="8.5" cy="25" r="2.3"/>
+      </svg>
+      <span class="name">Task-space MDS</span>
+    </div>
+    <div class="tag">A three-dimensional map of how tasks relate within a brain
+      structure. Points that sit closer together evoke more similar activity patterns.</div>
+
+    <hr class="rule">
 
     <div class="group">
       <h3>Brain structure</h3>
@@ -78,26 +143,18 @@
     </div>
 
     <div class="group">
-      <h3>Color by</h3>
-      <div class="seg" id="colorseg">
-        <button data-mode="domain" class="active">Domain</button>
-        <button data-mode="task">Task</button>
-      </div>
-    </div>
-
-    <div class="group">
       <h3>Highlight a condition</h3>
       <select id="find"><option value="">— none —</option></select>
     </div>
 
+    <hr class="rule">
+
     <div class="group">
+      <h3>Display</h3>
       <div class="row"><span>Show labels</span>
-        <label class="switch"><input type="checkbox" id="labels"><span class="slider"></span></label>
+        <label class="switch"><input type="checkbox" id="labels" checked><span class="slider"></span></label>
       </div>
-      <div class="row"><span>Point size</span>
-        <input type="range" id="size" min="3" max="11" value="6">
-      </div>
-      <button class="btn" id="reset" style="margin-top:8px;">⟲ Reset view</button>
+      <button class="btn" id="reset">⟲&nbsp;&nbsp;Reset view</button>
     </div>
 
     <div class="group"><div class="stat">
@@ -106,8 +163,8 @@
     </div></div>
 
     <div class="foot">
-      56 conditions · 21 brain structures · classical MDS of the double-centered
-      task×task matrix. Data: <a href="https://zenodo.org/records/18793343" target="_blank">Zenodo 18793343</a>.
+      <span id="meta">…</span> · classical MDS of the double-centered
+      task×task matrix.<br>Data: <a href="https://zenodo.org/records/18793343" target="_blank" rel="noopener">Zenodo 18793343</a>.
     </div>
   </aside>
 
@@ -119,36 +176,13 @@
 </div>
 
 <script>
-// ---- editable: maps each task_code to a broad cognitive domain (verify against your taxonomy) ----
-const DOMAINS = {
-  // Motor
-  fingr:"Motor", respalt:"Motor",
-  // Cognition: executive control, working memory, math, attention, timing
-  gng:"Cognition", stroop:"Cognition", cpro:"Cognition", nbckverb:"Cognition",
-  nbckpic:"Cognition", arith:"Cognition", vissearch:"Cognition", intrval:"Cognition",
-  // Language
-  vrbgen:"Language", sntncpredict:"Language",
-  // Social & emotion
-  tom:"Social/Emotion", actobserv:"Social/Emotion", biomotion:"Social/Emotion",
-  affect:"Social/Emotion", emotface:"Social/Emotion",
-  // Spatial & imagery
-  spatialnav:"Spatial/Imagery", sptialmap:"Spatial/Imagery",
-  mtrimgry:"Spatial/Imagery", mntalrot:"Spatial/Imagery",
-  // Perception & rest (passive viewing / baseline)
-  checkbrd:"Perception/Rest", movie:"Perception/Rest", rest:"Perception/Rest",
-  // --- Language-localizer dataset additions ---
-  pssglisten:"Language", audnarrative:"Language", read:"Language",
-  motor:"Motor",
-  oddball:"Cognition", dmndgrid:"Cognition",
-};
 const PALETTE = ["#5b9dff","#ff6b6b","#3ddc84","#ffb454","#b07cff","#27d3e0","#ff79c6","#a3e635",
   "#ff8c5a","#7c93ff","#4cd4a0","#e879f9","#38bdf8","#fbbf24","#94a3b8","#f472b6"];
 
 const DEFAULT_CAM = {eye:{x:1.4,y:1.4,z:1.1}};
-let DATA=null, COLORMODE="domain", HIGHLIGHT="";
+let DATA=null, HIGHLIGHT="";
 
-const groupKey = (i) => COLORMODE==="domain"
-  ? (DOMAINS[DATA.task_code[i]] || "Other") : DATA.task_code[i];
+const groupKey = (i) => DATA.task_code[i];
 
 function colorMap(keys){const m={};keys.forEach((k,i)=>m[k]=PALETTE[i%PALETTE.length]);return m;}
 // "task cond" when a real condition exists; just "task" when cond is a placeholder ("task")
@@ -163,7 +197,7 @@ function buildTraces(sKey){
   const keys=[...new Set(Array.from({length:n},(_,i)=>groupKey(i)))];
   const cmap=colorMap(keys);
   const showLabels=document.getElementById("labels").checked;
-  const size=+document.getElementById("size").value;
+  const size=6;
   const dim = HIGHLIGHT!=="";
 
   const traces=keys.map(k=>{
@@ -195,8 +229,7 @@ function layoutFor(sKey){
   const ax=t=>({title:{text:t,font:{size:11}},backgroundcolor:"rgba(0,0,0,0)",
     gridcolor:"#283340",zerolinecolor:"#3a4654",color:"#7e8a99",showspikes:false});
   return {paper_bgcolor:"rgba(0,0,0,0)",font:{color:"#eef2f7"},
-    margin:{l:0,r:0,t:0,b:0},showlegend:true,
-    legend:{font:{size:11.5},itemsizing:"constant",bgcolor:"rgba(0,0,0,0)",y:.98,x:.01},
+    margin:{l:0,r:0,t:0,b:0},showlegend:false,
     scene:{xaxis:ax("MDS 1 ("+pct(v[0])+")"),yaxis:ax("MDS 2 ("+pct(v[1])+")"),
       zaxis:ax("MDS 3 ("+pct(v[2])+")"),aspectmode:"data",camera:DEFAULT_CAM}};
 }
@@ -235,20 +268,19 @@ fetch("mds_data.json").then(r=>r.json()).then(d=>{
       const o=document.createElement("option");o.value=k;o.textContent=pretty(k);og.appendChild(o);});
     sel.appendChild(og);
   });
-  sel.value="CORTEX_LEFT";
+  sel.value="WHOLE_BRAIN";
   const find=document.getElementById("find");
   d.labels.map((l,i)=>({l,name:shortLabel(i)})).sort((a,b)=>a.name.localeCompare(b.name))
     .forEach(({l,name})=>{const o=document.createElement("option");o.value=l;o.textContent=name;find.appendChild(o);});
 
+  document.getElementById("meta").textContent =
+    d.labels.length + " conditions · " + Object.keys(d.structures).length + " brain-structure views";
+
   sel.addEventListener("change",render);
   find.addEventListener("change",e=>{HIGHLIGHT=e.target.value;render();});
   document.getElementById("labels").addEventListener("change",render);
-  document.getElementById("size").addEventListener("input",render);
   document.getElementById("reset").addEventListener("click",()=>
     Plotly.relayout("plot",{"scene.camera":DEFAULT_CAM}));
-  document.querySelectorAll("#colorseg button").forEach(b=>b.addEventListener("click",()=>{
-    document.querySelectorAll("#colorseg button").forEach(x=>x.classList.remove("active"));
-    b.classList.add("active");COLORMODE=b.dataset.mode;render();}));
 
   document.getElementById("loading").style.display="none";
   render();
