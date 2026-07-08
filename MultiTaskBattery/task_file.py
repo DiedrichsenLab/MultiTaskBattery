@@ -169,7 +169,10 @@ class NBack(TaskFile): # with the 5 stimuli used here only 1-back/2-back/3-back 
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
             trial['picture_scale'] = picture_scale
-            trial['n_back'] = n_back
+            # The n-back level is recorded once, as the modeling-level condition
+            # (e.g. '2-back'). n_back itself is only a generation parameter, so it
+            # is not duplicated as its own column - the runtime derives n from here.
+            trial['condition'] = f"{n_back}-back"
             trial['display_trial_feedback'] = True
             trial['key_match'] = responses[0]
             trial['key_nomatch'] = responses[1]

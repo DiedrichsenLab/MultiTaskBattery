@@ -257,8 +257,20 @@ class NBack(Task):
             img.size = img.size * picture_scale
             self.stim.append(img)
         self.corr_key = [self.trial_info['key_nomatch'].iloc[0], self.trial_info['key_match'].iloc[0]]
-        # n-back level (defaults to 2 for older task files without the column)
-        self.n_back = int(self.trial_info['n_back'].iloc[0]) if 'n_back' in self.trial_info.columns else 2
+        self.n_back = self.infer_n_back()
+
+    def infer_n_back(self):
+        """ Derive the numeric n-back level (used only for the instruction text).
+
+        The level lives in the 'condition' column as an 'N-back' label (e.g.
+        '2-back'), so a hand-made task file only needs that one column. Defaults
+        to 2 if no usable 'condition' label is present.
+        """
+        if 'condition' in self.trial_info.columns:
+            head = str(self.trial_info['condition'].iloc[0]).split('-')[0].strip()
+            if head.isdigit():
+                return int(head)
+        return 2
 
     def display_instructions(self):
         """

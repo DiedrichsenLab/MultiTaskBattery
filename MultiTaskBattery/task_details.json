@@ -382,7 +382,6 @@
     },
     "rest": {
         "short_description": "Participants are instructed to fixate on a central crosshair.",
-        "detailed_description": "Participants lie still and fixate on a central crosshair. No stimuli are presented and no response is required. For most fMRI experiments, rest is used as the baseline condition, and it therefore recommended to include it into every task battery to allow for alignment with other datasets. However, rest does not minimize brain activity. Some region (the default mode network) are quite activated during rest.",
         "reference": "Gusnard, D.A., Raichle, M.E., and Raichle, M.E. (2001). Searching for a baseline: functional imaging and the resting human brain. Nat. Rev. Neurosci. 2, 685-694.",
         "task_file_columns": {
             "trial_num": {
@@ -484,8 +483,11 @@
     "n_back": {
         "short_description": "Participants see a stream of images one at a time and press a button on each to indicate whether it matches the image shown n items earlier.",
         "recorded_metrics": "Accuracy + RT",
-        "reference": "Ragland, J. D., Turetsky, B. I., Gur, R. C., Gunning-Dixon, F., Turner, T., Schroeder, L., ... & Gur, R. E. (2002). Working memory for complex figures: an fMRI comparison of letter and fractal n-back tasks. Neuropsychology, 16(3), 370.",
-        "detailed_description": "Participants see a continuous stream of images presented one at a time, drawn from a small set of pictures. On every image they make a two-alternative button press indicating whether the current image is the same as the one shown n items earlier or not. The sequence is generated so that about half of the trials are n-back matches. Non-match trials never repeat any of the just presented images, so a match always requires holding the n-back item in mind rather than just detecting a repeat. The memory load is configurable through the n_back parameter (default 2), so the same task can run as a 1-back, 2-back, 3-back, and so on. This continuous n-back paradigm engages working memory and the domain-general multiple-demand / frontoparietal control network. After each response, the participant receives trial-specific feedback: a green check mark for a correct answer and a red cross for an incorrect one.",
+        "reference": [
+            "Ragland, J. D., Turetsky, B. I., Gur, R. C., Gunning-Dixon, F., Turner, T., Schroeder, L., ... & Gur, R. E. (2002). Working memory for complex figures: an fMRI comparison of letter and fractal n-back tasks. Neuropsychology, 16(3), 370.",
+            "King, M., Hernandez-Castillo, C. R., Poldrack, R. A., Ivry, R. B., & Diedrichsen, J. (2019). Functional boundaries in the human cerebellum revealed by a multi-domain task battery. Nature neuroscience, 22(8), 1371-1378."
+        ],
+        "detailed_description": "Participants see a continuous stream of images presented one at a time, drawn from a small set of pictures. On every image they make a two-alternative button press indicating whether the current image is the same as the one shown n items earlier or not. The sequence is generated so that about half of the trials are n-back matches. Non-match trials never repeat any of the just presented images, so a match always requires holding the n-back item in mind rather than just detecting a repeat. The memory load is configurable, so the same task can run as a 1-back, 2-back, 3-back, and so on. This continuous n-back paradigm engages working memory and the domain-general multiple-demand / frontoparietal control network. After each response, the participant receives trial-specific feedback: a green check mark for a correct answer and a red cross for an incorrect one.",
         "task_file_columns": {
             "trial_num": {
                 "type": "int",
@@ -507,9 +509,9 @@
                 "type": "float",
                 "description": "Scaling factor applied to the stimulus image (>1 enlarges)."
             },
-            "n_back": {
-                "type": "int",
-                "description": "How many items back a match refers to (2 = classic 2-back)."
+            "condition": {
+                "type": "str",
+                "description": "The n-back level as an 'N-back' label (e.g. '2-back' = a match refers to the item 2 back). This is the modeling-level condition and the only place the n-back level is stored."
             },
             "display_trial_feedback": {
                 "type": "bool",
@@ -543,7 +545,8 @@
                 "type": "float",
                 "description": "Trial end, relative to the block start (in seconds)."
             }
-        }
+        },
+        "conditions": "Configurable (not predefined): set the memory load via the n-back level (e.g. 1-back / 2-back / 3-back)."
     },
     "tongue_movement": {
         "short_description": "Participants move their tongue right to left against the upper premolar teeth, paced by a flashing circle around a fixation cross.",
