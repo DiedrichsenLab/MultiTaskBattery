@@ -1124,17 +1124,17 @@ class FingerSequence(TaskFile):
 
     def make_task_file(self,
                         hand = 'bimanual',
-                        responses = [1,2,3,4], # 1 = Key_one, 2 = Key_two, 3 = Key_three, 4 = Key_four
                         task_dur=30,
                         trial_dur=3.25,
                         iti_dur=0.5,
                         file_name=None):
         """
         Create a finger-sequence task file (press a 6-digit sequence in order).
+        Each digit (1-4) is the finger/key to press; scoring compares the pressed
+        key number directly to the sequence digit.
 
         Args:
             hand (str): Hand(s) used for response ('bimanual', 'right', or 'left').
-            responses (list): Response keys mapped to each finger.
             task_dur (float): Total task duration in seconds.
             trial_dur (float): Duration of each trial in seconds.
             iti_dur (float): Inter-trial interval duration in seconds.
@@ -1150,10 +1150,6 @@ class FingerSequence(TaskFile):
 
         for n in range(n_trials):
             trial = {}
-            trial['key_one'] = responses[0]
-            trial['key_two'] = responses[1]
-            trial['key_three'] = responses[2]
-            trial['key_four'] = responses[3]
             trial['trial_num'] = n
             trial['hand'] = hand
             trial['trial_dur'] = trial_dur

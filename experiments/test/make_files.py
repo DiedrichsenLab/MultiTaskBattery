@@ -5,7 +5,7 @@ import constants as const
 
 # Each block: (task_name, extra_kwargs_for_make_task_file).
 blocks = [
-    ('verb_generation', {'condition': ['read', 'generate'], 'order': 'blocked'}),
+    ('finger_sequence', {}),
 ]
 
 num_runs = 3  # Number of imaging runs

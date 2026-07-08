@@ -756,22 +756,6 @@
         "recorded_metrics": "Accuracy + RT",
         "reference": "Wiestler, T., & Diedrichsen, J. (2013). Skill learning strengthens cortical representations of motor sequences. eLife.",
         "task_file_columns": {
-            "key_one": {
-                "type": "int",
-                "description": "Response key for finger 1."
-            },
-            "key_two": {
-                "type": "int",
-                "description": "Response key for finger 2."
-            },
-            "key_three": {
-                "type": "int",
-                "description": "Response key for finger 3."
-            },
-            "key_four": {
-                "type": "int",
-                "description": "Response key for finger 4."
-            },
             "trial_num": {
                 "type": "int",
                 "description": "Trial number (0-indexed)."
