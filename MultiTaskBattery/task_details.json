@@ -212,6 +212,10 @@
                 "type": "bool",
                 "description": "Whether to show green/red feedback after the trial."
             },
+            "condition": {
+                "type": "str",
+                "description": "'action' (watching the knot being tied) or 'control' (a rotating 360-degree view of the completed knot)."
+            },
             "stim": {
                 "type": "str",
                 "description": "Knot video filename — 'knotAction<Name>.mov' on the first trial (tying), 'knotControl<Name>.mov' afterwards (360 deg view)."
@@ -225,6 +229,7 @@
                 "description": "Trial end, relative to the block start (in seconds)."
             }
         },
+        "conditions": "action, control",
         "recorded_metrics": "None"
     },
     "visual_search": {

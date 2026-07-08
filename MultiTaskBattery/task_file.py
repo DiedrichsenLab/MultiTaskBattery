@@ -708,11 +708,15 @@ class ActionObservation(TaskFile):
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
             trial['display_trial_feedback'] = False
-            #knot_index = (run_number - 1)
             knot_index = (run_number - 1) % len(self.knot_names)
+            # 'condition' is a real per-trial column, so a hand-written task file
+            # can order the conditions however it likes. The make_task_file default
+            # is the action clip first, then control.
             if n == 0:
+                trial['condition'] = 'action'
                 trial['stim'] = f'knotAction{self.knot_names[knot_index]}.mov'
             else:
+                trial['condition'] = 'control'
                 trial['stim'] = f'knotControl{self.knot_names[knot_index]}.mov'
             trial['start_time'] = t
             trial['end_time'] = t + trial_dur + iti_dur
