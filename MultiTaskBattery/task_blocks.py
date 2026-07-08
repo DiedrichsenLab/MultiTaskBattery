@@ -994,27 +994,12 @@ class FlexionExtension(Task):
         self.window.flip()
 
     def run_trial(self, trial):
-        real_start_time, start_ttl, start_ttl_time = self.ttl_clock.wait_until(trial['start_time'])
-        # Handle the display of each action
-        self.stim_pair = trial['stim'].split()
-        n_rep = int(trial['trial_dur'] / (trial['stim_dur'] * 2))
-        stim_actions = np.tile(self.stim_pair, n_rep)
-
-        for action in stim_actions:
-            # Display action
-            stim = visual.TextStim(self.window, text=action, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height=1.5)
-            stim.draw()
-            self.window.flip()
-
-            # Wait for the duration of the stimulus
-            start_time = self.ttl_clock.get_time()
-            self.ttl_clock.wait_until(start_time + trial['stim_dur'])
-
-        trial['real_start_time'] = real_start_time
-        trial['start_ttl'] = start_ttl
-        trial['start_ttl_time'] = start_ttl_time
-
-        # No response is expected in this task, so return trial as is
+        # Show this phase's cue ('flexion' or 'extension') for its duration; no response.
+        stim = visual.TextStim(self.window, text=trial['stim'], pos=(0.0, 0.0),
+                               color=(-1, -1, -1), units='deg', height=1.5)
+        stim.draw()
+        self.window.flip()
+        self.ttl_clock.wait_until(self.ttl_clock.get_time() + trial['trial_dur'])
         return trial
 
 class SemanticPrediction(Task):

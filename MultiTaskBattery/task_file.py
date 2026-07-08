@@ -223,7 +223,7 @@ class Rest(TaskFile):
             pd.DataFrame: Task information as a DataFrame.
         """
         trial = {}
-        trial['trial_num'] = [1]
+        trial['trial_num'] = [0]
         trial['trial_dur'] = [task_dur]
         trial['start_time'] = [0]
         trial['end_time'] =  [task_dur]
@@ -1179,45 +1179,36 @@ class FlexionExtension(TaskFile):
         self.name = 'flexion_extension'
 
     def make_task_file(self,
-                        task_dur =  30,
-                        trial_dur = 30,
-                        iti_dur   = 0,
+                        task_dur = 30,
                         stim_dur = 2,
                         file_name = None):
         """
-        Create a flexion-extension (foot/toe movement) task file. Participants
-        alternate flexing and extending, paced by visual cues.
+        Create a flexion-extension (toe movement) task file. The block is paced
+        by a cue that alternates between 'flexion' and 'extension' every stim_dur
+        seconds, written as one row per cue. The runtime just shows each cue for
+        its duration.
 
         Args:
-            task_dur (float): Total task duration in seconds.
-            trial_dur (float): Duration of the flexion/extension period in seconds.
-            iti_dur (float): Inter-trial interval duration in seconds.
-            stim_dur (float): Duration of each flex/extend cue in seconds.
+            task_dur (float): Total duration of the block in seconds.
+            stim_dur (float): Duration each cue ('flexion'/'extension') is shown.
             file_name (str): Name of the file to save the task data.
 
         Returns:
             pd.DataFrame: Task information as a DataFrame.
         """
-        n_trials = int(np.floor(task_dur / (trial_dur+iti_dur)))
+        cues = ['flexion', 'extension']
+        n_phases = int(np.floor(task_dur / stim_dur))
         trial_info = []
-
         t = 0
-
-        for n in range(n_trials):
-            trial = {}
-            trial['trial_num'] = n
-            trial['trial_dur'] = trial_dur
-            trial['iti_dur'] = iti_dur
-            trial['stim'] = "flexion extension"
-            trial['stim_dur'] = stim_dur
-            trial['display_trial_feedback'] = False
-            trial['trial_type'] = 'None'  # as there are no true or false responses
-            trial['start_time'] = t
-            trial['end_time'] = t + trial_dur + iti_dur
-            trial_info.append(trial)
-
-            # Update for next trial:
-            t = trial['end_time']
+        for n in range(n_phases):
+            trial_info.append({
+                'trial_num': n,
+                'stim': cues[n % 2],
+                'trial_dur': stim_dur,
+                'start_time': t,
+                'end_time': t + stim_dur,
+            })
+            t += stim_dur
 
         trial_info = pd.DataFrame(trial_info)
         if file_name is not None:

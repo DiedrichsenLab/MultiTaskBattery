@@ -813,39 +813,23 @@
         "task_file_columns": {
             "trial_num": {
                 "type": "int",
-                "description": "Trial number (0-indexed)."
-            },
-            "trial_dur": {
-                "type": "float",
-                "description": "Duration of the trial (in seconds)."
-            },
-            "iti_dur": {
-                "type": "float",
-                "description": "Inter-trial interval after the trial (in seconds)."
+                "description": "Cue index within the block (0-indexed); one row per cue."
             },
             "stim": {
                 "type": "str",
-                "description": "Constant cue label ('flexion extension')."
+                "description": "The cue shown this row: 'flexion' or 'extension'. Rows alternate between the two across the block."
             },
-            "stim_dur": {
+            "trial_dur": {
                 "type": "float",
-                "description": "Duration of each flex/extend cue (in seconds)."
-            },
-            "display_trial_feedback": {
-                "type": "bool",
-                "description": "Whether to show green/red feedback after the trial."
-            },
-            "trial_type": {
-                "type": "str",
-                "description": "Unused for this task (set to 'None'); no correct response."
+                "description": "How long this cue is shown, in seconds (e.g. 2)."
             },
             "start_time": {
                 "type": "float",
-                "description": "Trial start, relative to the block start (in seconds)."
+                "description": "Cue onset, relative to the block start (in seconds)."
             },
             "end_time": {
                 "type": "float",
-                "description": "Trial end, relative to the block start (in seconds)."
+                "description": "Cue offset, relative to the block start (in seconds)."
             }
         }
     },
