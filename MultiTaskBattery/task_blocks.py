@@ -455,11 +455,8 @@ class AuditoryNarrative(Task):
 
         trial_dur = audio_stim.getDuration()
 
-        # wait for trial duration
+        # wait for trial duration (fixation cross stays on screen during playback)
         self.ttl_clock.wait_until(self.ttl_clock.get_time() + trial['trial_dur'])
-
-        # display trial feedback
-        self.display_trial_feedback(give_feedback= trial['display_trial_feedback'], correct_response = None)
 
         return trial
 

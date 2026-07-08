@@ -419,7 +419,6 @@ class AuditoryNarrative(TaskFile):
             trial['trial_num'] = n
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
-            trial['display_trial_feedback'] = False
             trial['stim'] = f'narrative_{run_number:02d}.wav'
             trial['start_time'] = t
             trial['end_time'] = t + trial_dur + iti_dur
@@ -1520,7 +1519,6 @@ class Movie(TaskFile):
             trial['trial_num'] = n
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
-            trial['display_trial_feedback'] = False
             trial['stim'] = stim['video'][n]
             trial['condition'] = stim['condition'][n]
             trial['media_scale'] = media_scale

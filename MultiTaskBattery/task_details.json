@@ -19,10 +19,6 @@
                 "type": "float",
                 "description": "Inter-trial interval after the trial (in seconds)."
             },
-            "display_trial_feedback": {
-                "type": "bool",
-                "description": "Whether to show green/red feedback after the trial."
-            },
             "stim": {
                 "type": "str",
                 "description": "Movie clip filename played this trial."
@@ -561,10 +557,6 @@
             "iti_dur": {
                 "type": "float",
                 "description": "Inter-trial interval after the trial (in seconds)."
-            },
-            "display_trial_feedback": {
-                "type": "bool",
-                "description": "Whether to show green/red feedback after the trial."
             },
             "stim": {
                 "type": "str",
