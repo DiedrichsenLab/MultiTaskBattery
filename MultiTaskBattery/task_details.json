@@ -382,6 +382,7 @@
     },
     "rest": {
         "short_description": "Participants are instructed to fixate on a central crosshair.",
+        "detailed_description": "Participants lie still and fixate on a central crosshair. No stimuli are presented and no response is required. For most fMRI experiments, rest is used as the baseline condition, and it is therefore recommended to include it into every task battery to allow for alignment with other datasets. However, rest does not minimize brain activity. Some region (the default mode network) are quite activated during rest.",
         "reference": "Gusnard, D.A., Raichle, M.E., and Raichle, M.E. (2001). Searching for a baseline: functional imaging and the resting human brain. Nat. Rev. Neurosci. 2, 685-694.",
         "task_file_columns": {
             "trial_num": {
