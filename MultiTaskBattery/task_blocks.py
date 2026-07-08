@@ -1185,7 +1185,8 @@ class VisualSearch(Task):
         # Flush any keys in buffer
         event.clearEvents()
 
-        num_stimuli = self.trial_info.loc[trial['trial_num'], 'num_stimuli']  #indicates if trial is easy (4 stimuli) or hard (8 stimuli)
+        # Set size (difficulty) is stored as the condition, e.g. '8-items'.
+        num_stimuli = int(str(trial['condition']).split('-')[0])
 
         self.generate_trial_stimuli(num_stimuli)
 

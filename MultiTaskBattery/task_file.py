@@ -1341,15 +1341,11 @@ class VisualSearch(TaskFile):
             trial['iti_dur'] = iti_dur
             trial['display_trial_feedback'] = True
             trial['trial_type'] = random.choice([0,1])
-            trial['num_stimuli'] = '4' if random.random() < easy_prob else '8'  # Randomly select difficulty
-            trial['display_trial_feedback'] = True
+            # Difficulty is the condition: the number of search items (set size).
+            trial['condition'] = '4-items' if random.random() < easy_prob else '8-items'
             trial['feedback_type'] = 'acc'
             trial['start_time'] = t
             trial['end_time'] = t + trial_dur + iti_dur
-
-             # Determine the number of stimuli to display based on trial difficulty
-            num_stimuli = 4 if trial['num_stimuli'] == '4' else 8
-
             trial_info.append(trial)
 
             # Update for next trial:

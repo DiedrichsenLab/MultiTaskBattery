@@ -269,9 +269,9 @@
                 "type": "int",
                 "description": "Whether the target 'L' is present (1) or absent (0)."
             },
-            "num_stimuli": {
+            "condition": {
                 "type": "str",
-                "description": "Set size for this trial: '4' (easy) or '8' (hard)."
+                "description": "Difficulty as the number of search items / set size, e.g. '4-items' (easy) or '8-items' (hard)."
             },
             "feedback_type": {
                 "type": "str",
@@ -286,6 +286,7 @@
                 "description": "Trial end, relative to the block start (in seconds)."
             }
         },
+        "conditions": "Configurable difficulty via set size (e.g. 4-items / 8-items).",
         "recorded_metrics": "Accuracy + RT"
     },
     "serial_reaction_time": {
