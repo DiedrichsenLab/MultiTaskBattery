@@ -190,7 +190,6 @@ class NBack(TaskFile): # with the 5 stimuli used here only 1-back/2-back/3-back 
                 trial['stim'] = prev_stim[n_back-1]
 
             trial['display_trial_feedback'] = True
-            trial['feedback_type'] = 'acc'
             trial['start_time'] = t
             trial['end_time'] = t + trial_dur + iti_dur
             trial_info.append(trial)

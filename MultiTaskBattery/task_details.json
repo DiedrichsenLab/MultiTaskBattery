@@ -513,10 +513,6 @@
                 "type": "str",
                 "description": "Image filename shown this trial."
             },
-            "feedback_type": {
-                "type": "str",
-                "description": "Feedback mode used for scoring ('acc')."
-            },
             "start_time": {
                 "type": "float",
                 "description": "Trial start, relative to the block start (in seconds)."
