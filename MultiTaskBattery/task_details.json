@@ -295,22 +295,6 @@
         "detailed_description": "Four boxes are displayed in a row. On each trial one box lights up green (for 0.5s every 1,5s) and the participant presses the corresponding button as fast as possible. Stimuli are randomized, such that there is no implicit sequence learning. The only constraint is that the same box never lights up on consecutive trials. The task measures basic visuomotor response speed. By default, the 4 buttons are pressed with index and middle finger of the left and right hand.",
         "reference": "Nissen, M. J., & Bullemer, P. (1987). Attentional requirements of learning: Evidence from performance measures. Cognitive psychology, 19(1), 1-32.",
         "task_file_columns": {
-            "key_one": {
-                "type": "int",
-                "description": "Response key for box 1."
-            },
-            "key_two": {
-                "type": "int",
-                "description": "Response key for box 2."
-            },
-            "key_three": {
-                "type": "int",
-                "description": "Response key for box 3."
-            },
-            "key_four": {
-                "type": "int",
-                "description": "Response key for box 4."
-            },
             "trial_num": {
                 "type": "int",
                 "description": "Trial number (0-indexed)."
@@ -327,12 +311,8 @@
                 "type": "float",
                 "description": "Inter-trial interval after the trial (in seconds)."
             },
-            "display_trial_feedback": {
-                "type": "bool",
-                "description": "Whether to show green/red feedback after the trial."
-            },
             "stim": {
-                "type": "str",
+                "type": "int",
                 "description": "Which box lights up this trial (1-4)."
             },
             "start_time": {

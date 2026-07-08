@@ -1722,7 +1722,6 @@ class SerialReactionTime(TaskFile):
 
       def make_task_file(self,
                          hand='bimanual',
-                         responses=[1, 2, 3, 4],
                          task_dur=30,
                          initial_wait=1.0,
                          trial_dur=0.5,
@@ -1738,15 +1737,10 @@ class SerialReactionTime(TaskFile):
 
           for n in range(n_trials):
               trial = {}
-              trial['key_one'] = responses[0]
-              trial['key_two'] = responses[1]
-              trial['key_three'] = responses[2]
-              trial['key_four'] = responses[3]
-              trial['trial_num'] = n + 1
+              trial['trial_num'] = n
               trial['hand'] = hand
               trial['trial_dur'] = trial_dur
               trial['iti_dur'] = iti_dur
-              trial['display_trial_feedback'] = False
 
             # Ensure the same stimulus doesn't appear on consecutive trials
               stim = prev_stim
