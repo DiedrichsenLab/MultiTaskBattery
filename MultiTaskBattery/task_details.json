@@ -54,11 +54,7 @@
         "task_file_columns": {
             "key_one": {
                 "type": "int",
-                "description": "Response key (press on a red 'K' target)."
-            },
-            "key_two": {
-                "type": "int",
-                "description": "Secondary response key."
+                "description": "Response key to press when a red 'K' target appears."
             },
             "trial_num": {
                 "type": "int",
@@ -75,10 +71,6 @@
             "iti_dur": {
                 "type": "float",
                 "description": "Inter-trial interval after the trial (in seconds)."
-            },
-            "display_trial_feedback": {
-                "type": "bool",
-                "description": "Whether to show green/red feedback after the trial."
             },
             "trial_type": {
                 "type": "int",

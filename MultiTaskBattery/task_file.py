@@ -1084,12 +1084,10 @@ class OddBall(TaskFile):
         for n in range(len(stimuli)):
             trial = {}
             trial['key_one'] = responses[0]
-            trial['key_two'] = responses[1]
             trial['trial_num'] = n
             trial['hand'] = hand
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
-            trial['display_trial_feedback'] = False
             trial['trial_type'] = 1 if stimuli[n] == 'red_K' else 0
             trial['stim'] = stimuli[n]
             trial['start_time'] = t

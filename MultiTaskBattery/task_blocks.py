@@ -826,13 +826,13 @@ class OddBall(Task):
         """
         trial_info_file = self.const.task_dir / self.name / self.task_file
         self.trial_info = pd.read_csv(trial_info_file, sep='\t')
-        self.corr_key = [self.trial_info['key_one'].iloc[0],self.trial_info['key_two'].iloc[0]]
+        self.press_key = self.trial_info['key_one'].iloc[0]
 
     def display_instructions(self):
         """
         displays the instruction for the task
         """
-        str1 = f"Press {self.corr_key[0]} when you see a red K"
+        str1 = f"Press {self.press_key} when you see a red K"
         self.instruction_text = f"{self.descriptive_name} Task\n\n {str1} \n"
         instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1])
         instr_visual.draw()
@@ -857,7 +857,8 @@ class OddBall(Task):
         self.window.flip()
         self.ttl_clock.wait_until(self.ttl_clock.get_time() + trial['trial_dur'])
 
-        self.display_trial_feedback(trial['display_trial_feedback'], None)
+        # blank the letter to a fixation cross during the response window (no per-trial feedback)
+        self.screen.fixation_cross()
 
         # Flush any keys in buffer
         event.clearEvents()
