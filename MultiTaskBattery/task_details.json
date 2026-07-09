@@ -414,10 +414,6 @@
                 "type": "str",
                 "description": "'belief' (infer a false belief) or 'photo' (reason about an outdated representation)."
             },
-            "answer": {
-                "type": "bool",
-                "description": "The correct response to the statement (True/False)."
-            },
             "story_dur": {
                 "type": "float",
                 "description": "How long the story is displayed (in seconds)."

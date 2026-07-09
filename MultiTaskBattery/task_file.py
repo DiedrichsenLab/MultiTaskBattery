@@ -569,7 +569,6 @@ class TheoryOfMind(TaskFile):
             trial['story'] = stim['story'][n]
             trial['question'] = stim['question'][n]
             trial['condition'] = stim['condition'][n]
-            trial['answer'] = stim['answer'][n]
             trial['story_dur'] = story_dur
             trial['question_dur'] = question_dur
             trial['text_height'] = text_height
