@@ -481,13 +481,11 @@ class SpatialNavigation(Task):
         self.window.flip()
 
     def run_trial(self,trial):
+        # fixation cross stays on screen while the participant imagines the route (no response)
         self.screen.fixation_cross()
 
         # wait for trial duration
         self.ttl_clock.wait_until(self.ttl_clock.get_time() + trial['trial_dur'])
-
-        # display trial feedback
-        self.display_trial_feedback(give_feedback= trial['display_trial_feedback'], correct_response = None)
 
         return trial
 

@@ -590,10 +590,6 @@
                 "type": "float",
                 "description": "Inter-trial interval after the trial (in seconds)."
             },
-            "display_trial_feedback": {
-                "type": "bool",
-                "description": "Whether to show green/red feedback after the trial."
-            },
             "start_time": {
                 "type": "float",
                 "description": "Trial start, relative to the block start (in seconds)."
