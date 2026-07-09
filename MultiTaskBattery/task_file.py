@@ -1318,7 +1318,6 @@ class VisualSearch(TaskFile):
             trial['trial_type'] = random.choice([0,1])
             # Difficulty is the condition: the number of search items (set size).
             trial['condition'] = '4-items' if random.random() < easy_prob else '8-items'
-            trial['feedback_type'] = 'acc'
             trial['start_time'] = t
             trial['end_time'] = t + trial_dur + iti_dur
             trial_info.append(trial)

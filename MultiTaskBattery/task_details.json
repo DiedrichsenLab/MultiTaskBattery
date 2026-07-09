@@ -254,10 +254,6 @@
                 "type": "str",
                 "description": "Difficulty as the number of search items / set size, e.g. '4-items' (easy) or '8-items' (hard)."
             },
-            "feedback_type": {
-                "type": "str",
-                "description": "Feedback mode used for scoring ('acc')."
-            },
             "start_time": {
                 "type": "float",
                 "description": "Trial start, relative to the block start (in seconds)."
