@@ -87,12 +87,6 @@
   .btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft);}
   .btn:focus-visible{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
 
-  /* readout */
-  .stat{border:1px solid var(--line-2);border-radius:11px;padding:15px 16px;background:var(--panel-2);}
-  .stat .big{font-family:var(--mono);font-size:25px;font-weight:600;color:var(--accent);
-             letter-spacing:-.01em;font-variant-numeric:tabular-nums;}
-  .stat .lbl{font-size:11px;color:var(--muted);margin-top:5px;letter-spacing:.02em;}
-
   .foot{color:var(--muted-2);font-size:11px;line-height:1.7;margin-top:20px;}
   .foot a{color:var(--muted);border-bottom:1px solid var(--line-2);}
   .foot a:hover{color:var(--accent);border-color:var(--accent);}
@@ -157,11 +151,6 @@
       <button class="btn" id="reset">⟲&nbsp;&nbsp;Reset view</button>
     </div>
 
-    <div class="group"><div class="stat">
-      <div class="big" id="varbig">—</div>
-      <div class="lbl" id="varlbl">variance captured in 3D</div>
-    </div></div>
-
     <div class="foot">
       <span id="meta">…</span> · classical MDS of the double-centered
       task×task matrix.<br>Data: <a href="https://zenodo.org/records/18793343" target="_blank" rel="noopener">Zenodo 18793343</a>.
@@ -225,13 +214,12 @@ function buildTraces(sKey){
 }
 
 function layoutFor(sKey){
-  const v=DATA.structures[sKey].var_explained,pct=d=>(d*100).toFixed(1)+"%";
   const ax=t=>({title:{text:t,font:{size:11}},backgroundcolor:"rgba(0,0,0,0)",
     gridcolor:"#283340",zerolinecolor:"#3a4654",color:"#7e8a99",showspikes:false});
   return {paper_bgcolor:"rgba(0,0,0,0)",font:{color:"#eef2f7"},
     margin:{l:0,r:0,t:0,b:0},showlegend:false,
-    scene:{xaxis:ax("MDS 1 ("+pct(v[0])+")"),yaxis:ax("MDS 2 ("+pct(v[1])+")"),
-      zaxis:ax("MDS 3 ("+pct(v[2])+")"),aspectmode:"data",camera:DEFAULT_CAM}};
+    scene:{xaxis:ax("PC1"),yaxis:ax("PC2"),zaxis:ax("PC3"),
+      aspectmode:"data",camera:DEFAULT_CAM}};
 }
 
 function render(){
@@ -239,8 +227,6 @@ function render(){
   Plotly.react("plot",buildTraces(sKey),layoutFor(sKey),
     {responsive:true,displaylogo:false,
      modeBarButtonsToRemove:["resetCameraLastSave3d"]});
-  const v=DATA.structures[sKey].var_explained;
-  document.getElementById("varbig").textContent=((v[0]+v[1]+v[2])*100).toFixed(0)+"%";
 }
 
 const REGIONS=[
