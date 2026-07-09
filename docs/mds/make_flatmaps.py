@@ -17,7 +17,7 @@ SUITPy, surfAnalysisPy, Functional_Fusion, nitools — plus `nilearn`.
 
 Output:  flatmaps/cortex/<full_code>.png , flatmaps/cerebellum/<full_code>.png
 """
-import os, sys, json
+import os, sys, json, io
 from unittest.mock import MagicMock
 
 # --- toolbox paths (adjust to your machine) -------------------------------
@@ -51,6 +51,42 @@ def savepng(fig, path):
     fig.savefig(path, dpi=DPI, bbox_inches='tight', transparent=True)
     Image.open(path).convert('RGBA').quantize(
         colors=256, method=Image.FASTOCTREE, dither=Image.NONE).save(path, optimize=True)
+
+
+def _surf_view(mesh, bg, stat, hemi, view, vmax):
+    """Render one inflated-surface view, transparent, auto-cropped to the brain
+    (removes nilearn's wide 3D-axes padding so views can sit close together)."""
+    fig = plt.figure(figsize=(4.2, 4.2))
+    ax = fig.add_axes([0, 0, 1, 1], projection='3d')
+    plotting.plot_surf_stat_map(mesh, stat_map=stat, bg_map=bg, hemi=hemi, view=view,
+                                cmap=CMAP, vmax=vmax, colorbar=False,
+                                bg_on_data=True, alpha=1, axes=ax, figure=fig)
+    buf = io.BytesIO()
+    fig.savefig(buf, format='png', dpi=DPI, bbox_inches='tight', transparent=True)
+    plt.close(fig); buf.seek(0)
+    im = Image.open(buf).convert('RGBA')
+    return im.crop(im.getbbox())          # trim transparent margin -> brain only
+
+
+def cortex_grid(infl_L, infl_R, bg_L, bg_R, statL, statR, vmax, gap=10):
+    """2x2 grid: lateral (top) / medial (bottom), left / right, tightly packed."""
+    v = {('L', 'lat'): _surf_view(infl_L, bg_L, statL, 'left',  'lateral', vmax),
+         ('R', 'lat'): _surf_view(infl_R, bg_R, statR, 'right', 'lateral', vmax),
+         ('L', 'med'): _surf_view(infl_L, bg_L, statL, 'left',  'medial',  vmax),
+         ('R', 'med'): _surf_view(infl_R, bg_R, statR, 'right', 'medial',  vmax)}
+    colL = max(v[('L', 'lat')].width, v[('L', 'med')].width)
+    colR = max(v[('R', 'lat')].width, v[('R', 'med')].width)
+    row1 = max(v[('L', 'lat')].height, v[('R', 'lat')].height)
+    row2 = max(v[('L', 'med')].height, v[('R', 'med')].height)
+    canvas = Image.new('RGBA', (colL + gap + colR, row1 + gap + row2), (0, 0, 0, 0))
+
+    def place(im, cx, cy, cw, ch):
+        canvas.alpha_composite(im, (cx + (cw - im.width) // 2, cy + (ch - im.height) // 2))
+    place(v[('L', 'lat')], 0,          0,          colL, row1)
+    place(v[('R', 'lat')], colL + gap, 0,          colR, row1)
+    place(v[('L', 'med')], 0,          row1 + gap, colL, row2)
+    place(v[('R', 'med')], colL + gap, row1 + gap, colR, row2)
+    return canvas
 
 # fs32k inflated surfaces (bundled Functional_Fusion atlas) + sulc background
 FS32K_DIR = os.path.join([p for p in REPO_PATHS if p.endswith('Functional_Fusion')][0],
@@ -109,24 +145,11 @@ def main():
     cb_cscale = [-cb_vmax, cb_vmax]
     print(f"{len(codes)} conditions | cortex cscale ±{ctx_vmax:.3f} | cerebellum cscale ±{cb_vmax:.3f}")
 
-    # 2x2 panel layout: (left, bottom) for L-lat, R-lat, L-med, R-med
-    cw, ch = 0.46, 0.50
-    layout = [(0.02, 0.46, 'left', 'lateral'), (0.50, 0.46, 'right', 'lateral'),
-              (0.02, -0.02, 'left', 'medial'), (0.50, -0.02, 'right', 'medial')]
-
     for i, code in enumerate(codes):
-        # cortex — 4-view inflated surface
-        fig = plt.figure(figsize=(11, 6.5))
-        for left, bottom, hemi, view in layout:
-            mesh = infl_L if hemi == 'left' else infl_R
-            bg = sulc_L if hemi == 'left' else sulc_R
-            stat = surfL[i] if hemi == 'left' else surfR[i]
-            ax = fig.add_axes([left, bottom, cw, ch], projection='3d')
-            plotting.plot_surf_stat_map(mesh, stat_map=stat, bg_map=bg, hemi=hemi, view=view,
-                                        cmap=CMAP, vmax=ctx_vmax, colorbar=False,
-                                        bg_on_data=True, alpha=1, axes=ax, figure=fig)
-        savepng(fig, os.path.join(OUT, 'cortex', code + '.png'))
-        plt.close(fig)
+        # cortex — 4-view inflated surface, tightly tiled
+        grid = cortex_grid(infl_L, infl_R, sulc_L, sulc_R, surfL[i], surfR[i], ctx_vmax)
+        grid.quantize(colors=256, method=Image.FASTOCTREE, dither=Image.NONE).save(
+            os.path.join(OUT, 'cortex', code + '.png'), optimize=True)
 
         # cerebellum — single SUIT flatmap (MNI voxels -> flatmap)
         vol = nb.Nifti1Image(cvol[..., i], caffine)
