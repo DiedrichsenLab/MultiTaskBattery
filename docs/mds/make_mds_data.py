@@ -11,7 +11,7 @@ CACHE_DIR = pooch.os_cache("MTB_task_library")
 VERSION = "V1"
 ATLAS = "multiatlasHCP"
 
-N_DIMS = 3  # MDS dimensions to keep
+N_DIMS = 8  # MDS dimensions to keep (viewer lets you pick which 2 or 3 to plot)
 
 
 def fetch_library():

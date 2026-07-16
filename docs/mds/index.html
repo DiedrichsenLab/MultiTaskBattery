@@ -60,6 +60,11 @@
   .row{display:flex;align-items:center;justify-content:space-between;font-size:13px;padding:8px 0;}
   .row + .row{border-top:1px solid var(--line);}
 
+  /* axis picker rows */
+  .axrow{display:flex;align-items:center;gap:10px;margin-top:8px;}
+  .axrow span{font-family:var(--mono);font-size:11px;color:var(--muted-2);width:10px;flex:none;}
+  .axrow select{padding:7px 30px 7px 10px;font-size:12.5px;}
+
   /* slider */
   input[type=range]{-webkit-appearance:none;appearance:none;width:118px;height:3px;border-radius:3px;
     background:var(--line-2);outline:none;cursor:pointer;}
@@ -123,7 +128,8 @@
   .flat-x{flex:none;background:transparent;border:1px solid var(--line-2);color:var(--muted);
           width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:17px;line-height:1;transition:.15s;}
   .flat-x:hover{border-color:var(--accent);color:var(--accent);}
-  .seg{display:flex;margin:16px 20px 0;border:1px solid var(--line-2);border-radius:8px;overflow:hidden;}
+  .seg{display:flex;border:1px solid var(--line-2);border-radius:8px;overflow:hidden;}
+  #flat .seg{margin:16px 20px 0;}
   .seg button{flex:1;background:var(--panel-2);color:var(--muted);border:0;padding:9px;font-size:12.5px;
               font-family:inherit;font-weight:600;cursor:pointer;transition:.15s;letter-spacing:.02em;}
   .seg button + button{border-left:1px solid var(--line-2);}
@@ -150,8 +156,8 @@
       </svg>
       <span class="name">Task-space MDS</span>
     </div>
-    <div class="tag">A three-dimensional map of how tasks relate within a brain
-      structure. Points that sit closer together evoke more similar activity patterns.</div>
+    <div class="tag">A map of how tasks relate within a brain structure. Points that
+      sit closer together evoke more similar activity patterns.</div>
 
     <hr class="rule">
 
@@ -163,6 +169,19 @@
     <div class="group">
       <h3>Highlight a condition</h3>
       <select id="find"><option value="">— none —</option></select>
+    </div>
+
+    <hr class="rule">
+
+    <div class="group">
+      <h3>Components</h3>
+      <div class="seg" id="modeseg">
+        <button data-mode="3d" class="on">3D</button>
+        <button data-mode="2d">2D</button>
+      </div>
+      <div class="axrow"><span>X</span><select id="axX"></select></div>
+      <div class="axrow"><span>Y</span><select id="axY"></select></div>
+      <div class="axrow" id="axZrow"><span>Z</span><select id="axZ"></select></div>
     </div>
 
     <hr class="rule">
@@ -184,7 +203,7 @@
   <main>
     <div id="plot"></div>
     <div id="loading">Loading…</div>
-    <div class="hint">drag to rotate · scroll to zoom · click a point → brain maps</div>
+    <div class="hint" id="hint">drag to rotate · scroll to zoom · click a point → brain maps</div>
 
     <section id="flat" aria-hidden="true">
       <div class="flat-top">
@@ -207,6 +226,8 @@ const PALETTE = ["#5b9dff","#ff6b6b","#3ddc84","#ffb454","#b07cff","#27d3e0","#f
 
 const DEFAULT_CAM = {eye:{x:1.4,y:1.4,z:1.1}};
 let DATA=null, HIGHLIGHT="";
+let MODE="3d", AX=[0,1,2];          // which MDS components map to X, Y, Z
+const pcName = d => "PC"+(d+1);
 
 /* ---------- flatmap drawer ---------- */
 let FLAT_CODE=null, FLAT_VIEW="cortex";
@@ -249,26 +270,35 @@ function buildTraces(sKey){
   const size=6;
   const dim = HIGHLIGHT!=="";
 
+  const is3d = MODE==="3d";
+  const type = is3d?"scatter3d":"scatter";
+  // pull the selected components; in 2D the z key is simply omitted
+  const pos = (idx,a) => idx.map(i=>coords[i][AX[a]]);
+
   const traces=keys.map(k=>{
     const idx=[];for(let i=0;i<n;i++) if(groupKey(i)===k) idx.push(i);
-    return {type:"scatter3d",mode:showLabels?"markers+text":"markers",name:k,
-      x:idx.map(i=>coords[i][0]),y:idx.map(i=>coords[i][1]),z:idx.map(i=>coords[i][2]),
+    const t={type:type,mode:showLabels?"markers+text":"markers",name:k,
+      x:pos(idx,0),y:pos(idx,1),
       text:idx.map(i=>shortLabel(i)),textposition:"top center",
       textfont:{size:9,color:dim?"#55606e":"#c7cdd6"},
       customdata:idx.map(i=>DATA.labels[i]),
       hovertext:idx.map(i=>shortLabel(i)),hoverinfo:"text",
-      marker:{size:size,color:cmap[k],opacity:dim?0.28:0.95,
+      marker:{size:is3d?size:size+2,color:cmap[k],opacity:dim?0.28:0.95,
               line:{width:.5,color:"#0b0e13"}}};
+    if(is3d) t.z=pos(idx,2);
+    return t;
   });
 
   if(HIGHLIGHT!==""){
     const i=DATA.labels.indexOf(HIGHLIGHT);
     if(i>=0){const k=groupKey(i);
-      traces.push({type:"scatter3d",mode:"markers+text",name:"▶ "+shortLabel(i),
-        x:[coords[i][0]],y:[coords[i][1]],z:[coords[i][2]],
+      const t={type:type,mode:"markers+text",name:"▶ "+shortLabel(i),
+        x:[coords[i][AX[0]]],y:[coords[i][AX[1]]],
         text:[shortLabel(i)],textposition:"top center",customdata:[DATA.labels[i]],
         textfont:{size:12,color:"#fff"},hovertext:[shortLabel(i)],hoverinfo:"text",showlegend:false,
-        marker:{size:size+7,color:cmap[k],opacity:1,line:{width:2.5,color:"#fff"}}});
+        marker:{size:size+7,color:cmap[k],opacity:1,line:{width:2.5,color:"#fff"}}};
+      if(is3d) t.z=[coords[i][AX[2]]];
+      traces.push(t);
     }
   }
   return traces;
@@ -277,10 +307,16 @@ function buildTraces(sKey){
 function layoutFor(sKey){
   const ax=t=>({title:{text:t,font:{size:11}},backgroundcolor:"rgba(0,0,0,0)",
     gridcolor:"#283340",zerolinecolor:"#3a4654",color:"#7e8a99",showspikes:false});
-  return {paper_bgcolor:"rgba(0,0,0,0)",font:{color:"#eef2f7"},
-    margin:{l:0,r:0,t:0,b:0},showlegend:false,
-    scene:{xaxis:ax("PC1"),yaxis:ax("PC2"),zaxis:ax("PC3"),
-      aspectmode:"data",camera:DEFAULT_CAM}};
+  const base={paper_bgcolor:"rgba(0,0,0,0)",plot_bgcolor:"rgba(0,0,0,0)",
+    font:{color:"#eef2f7"},showlegend:false};
+  if(MODE==="3d")
+    return {...base,margin:{l:0,r:0,t:0,b:0},
+      scene:{xaxis:ax(pcName(AX[0])),yaxis:ax(pcName(AX[1])),zaxis:ax(pcName(AX[2])),
+        aspectmode:"data",camera:DEFAULT_CAM}};
+  return {...base,margin:{l:56,r:24,t:24,b:52},
+    xaxis:{...ax(pcName(AX[0])),zeroline:true},
+    yaxis:{...ax(pcName(AX[1])),zeroline:true,scaleanchor:"x",scaleratio:1},
+    hovermode:"closest"};
 }
 
 function render(){
@@ -330,11 +366,43 @@ fetch("mds_data.json").then(r=>r.json()).then(d=>{
   document.getElementById("meta").textContent =
     d.labels.length + " conditions · " + Object.keys(d.structures).length + " brain-structure views";
 
+  // --- component pickers (populate from however many dims the data has) ---
+  const nDims = d.structures[sel.value].coords[0].length;
+  const axSel = ["axX","axY","axZ"].map(id=>document.getElementById(id));
+  axSel.forEach((s,a)=>{
+    for(let k=0;k<nDims;k++){
+      const o=document.createElement("option");o.value=k;o.textContent=pcName(k);s.appendChild(o);
+    }
+    s.value=AX[a];
+    s.addEventListener("change",e=>{
+      const v=+e.target.value, prev=AX[a];
+      const clash=AX.indexOf(v);                 // same PC already on another axis -> swap
+      if(clash>=0 && clash!==a){AX[clash]=prev;axSel[clash].value=prev;}
+      AX[a]=v;
+      render();
+    });
+  });
+
+  function setMode(m){
+    MODE=m;
+    document.querySelectorAll("#modeseg button").forEach(b=>b.classList.toggle("on",b.dataset.mode===m));
+    document.getElementById("axZrow").style.display = (m==="3d")?"":"none";
+    document.getElementById("hint").textContent = (m==="3d")
+      ? "drag to rotate · scroll to zoom · click a point → brain maps"
+      : "drag to pan · scroll to zoom · click a point → brain maps";
+    Plotly.purge("plot");                        // 2d<->3d is a different trace type
+    render();
+  }
+  document.querySelectorAll("#modeseg button").forEach(b=>
+    b.addEventListener("click",()=>setMode(b.dataset.mode)));
+
   sel.addEventListener("change",render);
   find.addEventListener("change",e=>{HIGHLIGHT=e.target.value;render();if(e.target.value)openFlat(e.target.value);});
   document.getElementById("labels").addEventListener("change",render);
-  document.getElementById("reset").addEventListener("click",()=>
-    Plotly.relayout("plot",{"scene.camera":DEFAULT_CAM}));
+  document.getElementById("reset").addEventListener("click",()=>{
+    if(MODE==="3d") Plotly.relayout("plot",{"scene.camera":DEFAULT_CAM});
+    else Plotly.relayout("plot",{"xaxis.autorange":true,"yaxis.autorange":true});
+  });
 
   document.querySelectorAll("#flat .seg button").forEach(b=>
     b.addEventListener("click",()=>setFlatView(b.dataset.v)));
