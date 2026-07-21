@@ -49,6 +49,8 @@ def main():
     labels = info["full_code"].tolist()
     task_code = info["task_code"].tolist()  # used for color grouping in the viewer
     cond_code = info["cond_code"].tolist()  # condition; "task" means no real condition
+    source = info["source"].tolist()        # dataset(s) the group map came from
+    n_subjects = [int(round(x)) for x in info["total_subjects"].tolist()]  # subjects in the average
     n_chan = data.shape[1]
 
     out = {
@@ -58,6 +60,8 @@ def main():
         "labels": labels,
         "task_code": task_code,
         "cond_code": cond_code,
+        "source": source,
+        "n_subjects": n_subjects,
         "structures": {},
     }
 

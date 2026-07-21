@@ -128,6 +128,13 @@
   .flat-x{flex:none;background:transparent;border:1px solid var(--line-2);color:var(--muted);
           width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:17px;line-height:1;transition:.15s;}
   .flat-x:hover{border-color:var(--accent);color:var(--accent);}
+  /* provenance strip: which dataset(s) + how many subjects the average spans */
+  .flat-prov{display:flex;gap:26px;padding:13px 20px;border-bottom:1px solid var(--line);
+             background:var(--panel-2);}
+  .flat-prov .k{font-family:var(--mono);font-size:9.5px;text-transform:uppercase;letter-spacing:.13em;
+                color:var(--muted-2);margin-bottom:4px;}
+  .flat-prov .v{font-size:12.5px;color:var(--fg);line-height:1.35;}
+  .flat-prov .v b{font-variant-numeric:tabular-nums;font-weight:600;}
   .seg{display:flex;border:1px solid var(--line-2);border-radius:8px;overflow:hidden;}
   #flat .seg{margin:16px 20px 0;}
   .seg button{flex:1;background:var(--panel-2);color:var(--muted);border:0;padding:9px;font-size:12.5px;
@@ -210,6 +217,10 @@
         <div><div class="t" id="flatTitle">—</div><div class="c" id="flatCode"></div></div>
         <button class="flat-x" id="flatClose" aria-label="Close">×</button>
       </div>
+      <div class="flat-prov">
+        <div><div class="k">Dataset</div><div class="v" id="flatSource">—</div></div>
+        <div><div class="k">Group average of</div><div class="v" id="flatSubj">—</div></div>
+      </div>
       <div class="seg">
         <button data-v="cortex" class="on">Cortex</button>
         <button data-v="cerebellum">Cerebellum</button>
@@ -241,12 +252,29 @@ function setFlatView(v){
   document.getElementById("flatImg").src="flatmaps/"+v+"/"+encodeURIComponent(FLAT_CODE)+".png";
   document.getElementById("flatCap").textContent=FLAT_CAP[v];
 }
+// "MDTB-s1+MDTB-s2" -> "MDTB · sessions 1, 2"; "Language-localizer" -> "Language localizer"
+function sourceLabel(s){
+  const byDs={};
+  s.split("+").forEach(p=>{
+    const m=p.match(/^(.*?)-s(\d+)$/);
+    const ds=m?m[1]:p.replace(/-/g," ");
+    (byDs[ds]=byDs[ds]||[]).push(m?m[2]:null);
+  });
+  return Object.entries(byDs).map(([ds,sess])=>{
+    const ss=sess.filter(Boolean);
+    return ss.length ? `${ds} · session${ss.length>1?"s":""} ${ss.join(", ")}` : ds;
+  }).join("  ·  ");
+}
 function openFlat(code){
   if(!code) return;
   FLAT_CODE=code;
   const i=DATA.labels.indexOf(code);
   document.getElementById("flatTitle").textContent=i>=0?shortLabel(i):code;
   document.getElementById("flatCode").textContent=code;
+  const src=(i>=0 && DATA.source)?DATA.source[i]:null;
+  const nsub=(i>=0 && DATA.n_subjects)?DATA.n_subjects[i]:null;
+  document.getElementById("flatSource").textContent=src?sourceLabel(src):"—";
+  document.getElementById("flatSubj").innerHTML=nsub!=null?`<b>${nsub}</b> subjects`:"—";
   setFlatView(FLAT_VIEW);
   const f=document.getElementById("flat");f.classList.add("open");f.setAttribute("aria-hidden","false");
 }
