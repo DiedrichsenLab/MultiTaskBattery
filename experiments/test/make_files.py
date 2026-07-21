@@ -5,10 +5,10 @@ import constants as const
 
 # Each block: (task_name, extra_kwargs_for_make_task_file).
 blocks = [
-    ('finger_sequence', {}),
+    ('rest', {}),
 ]
 
-num_runs = 3  # Number of imaging runs
+num_runs = 2  # Number of imaging runs
 
 # Ensure task and run directories exist
 ut.dircheck(const.run_dir)
@@ -19,7 +19,7 @@ for task, _ in blocks:
 for r in range(1, num_runs + 1):
     tasks = [task for task, _ in blocks]
     tfiles = [f'{task}_{r:02d}.tsv' for task, _ in blocks]
-    T = tf.make_run_file(tasks, tfiles)
+    T = tf.make_run_file(tasks, tfiles, instruction_dur=1, task_dur=5)
     T.to_csv(const.run_dir / f'run_{r:02d}.tsv', sep='\t', index=False)
 
     # Generate a task_file for each block that specifies the trial information

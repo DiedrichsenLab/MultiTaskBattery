@@ -1767,6 +1767,11 @@ class FingerRhythmic(TaskFile):
 
         # count number of trials
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
+        if n_trials < 1:
+            raise ValueError(
+                f"FingerRhythmic: task_dur ({task_dur}s) is shorter than one trial "
+                f"(trial_dur+iti_dur = {trial_dur + iti_dur}s), so no trials would be generated. "
+                f"Give this task a longer block (the default task_dur=70s fits two 35s trials).")
         trial_info = []
         t = 0
 
