@@ -40,6 +40,7 @@ class Experiment:
         # connect to the eyetracker already
         if self.const.eye_tracker:
             import pylink as pl
+            self.pl = pl  # keep a handle so run() can call pylink (optional import, only when eye_tracker=True)
             # create an Eyelink class
             ## the default ip address is 100.1.1.1.
             ## in the ethernet settings of the laptop,
@@ -151,7 +152,7 @@ class Experiment:
 
             ## sending a message to the edf file specifying task name
             if self.const.eye_tracker:
-                pl.sendMessageToFile(f"task_name: {task.name} start_track: {pl.currentUsec()} real start time {r_data.real_start_time} TR count {self.ttl_clock.ttl_count}")
+                self.pl.sendMessageToFile(f"task_name: {task.name} start_track: {self.pl.currentUsec()} real start time {r_data.real_start_time} TR count {self.ttl_clock.ttl_count}")
 
             # display the instruction text for the task. (instructions are task specific)
             if r_data.instruction_dur > 0:
