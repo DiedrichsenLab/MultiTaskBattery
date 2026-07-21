@@ -1160,7 +1160,9 @@ class FingerSequence(TaskFile):
 class FlexionExtension(TaskFile):
     def __init__(self, const):
         super().__init__(const)
-        self.name = 'flexion_extension'
+        # Must match the 'name' column in task_table.tsv: the runtime reads the
+        # generated file from task_dir/<name>/, i.e. task_dir/toe_movement/.
+        self.name = 'toe_movement'
 
     def make_task_file(self,
                         task_dur = 30,

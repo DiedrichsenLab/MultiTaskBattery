@@ -717,7 +717,8 @@
     "toe_movement": {
         "short_description": "Toe movements. Alternating periods of flexing/extending toes.",
         "recorded_metrics": "None",
-        "detailed_description": "Participants alternate between flexing and extending their toes, paced by visual cues.",
+        "detailed_description": "Participants repeatedly flex and extend the toes of both feet, paced by a visual cue at the center of the screen that alternates between the words 'flexion' and 'extension' every couple of seconds. Each cue is shown for a fixed duration and the participant performs the indicated movement for as long as it is displayed; no button response is collected and no feedback is given. The block simply alternates between the two movements for its entire duration. The task is used to drive the foot/toe somatomotor representation and to help map the somatomotor territory of the cerebellum and cortex.",
+        "reference": "Saadon-Grosman, N., Angeli, P. A., DiNicola, L. M., & Buckner, R. L. (2022). A third somatomotor representation in the human cerebellum. Journal of Neurophysiology, 128(4), 1051-1073.",
         "task_file_columns": {
             "trial_num": {
                 "type": "int",
