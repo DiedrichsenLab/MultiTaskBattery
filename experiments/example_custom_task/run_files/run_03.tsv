@@ -1,5 +1,5 @@
 task_name	task_code	task_file	instruction_dur	task_dur	start_time	end_time
-odd_even	odev	odd_even_03.tsv	5	30	0	35
-n_back	nbko	n_back_03.tsv	5	30	35	70
-silent_word	sword	silent_word_03.tsv	5	30	70	105
-rest	rest	rest_03.tsv	5	30	105	140
+silent_word	sword	silent_word_03.tsv	5	30	0	35
+rest	rest	rest_03.tsv	5	30	35	70
+n_back	nbko	n_back_03.tsv	5	30	70	105
+odd_even	odev	odd_even_03.tsv	5	30	105	140

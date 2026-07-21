@@ -97,10 +97,10 @@ Tasks vs. conditions
 
 For each task block, you have two choices:
 
-- you can run all trials within the task block in one single condition. If you want to include multiple conditions of the task in your experiment, you would add two blocks of the same task in the imaging run - one in condition A and one in condition
-- you can also add trials of both conditions in the task file for a single task block. For example, the first 15s of a task block could be ``reading`` → ``sentences`` and the second 15s could b ``reading`` → ``non-words``. In the GLM modeling the two phases of the task block would be modelled separately.
+- you can run all trials within the task block in one single condition. If you want to include multiple conditions of the task in your experiment, add two blocks of the same task to the run — one with ``{'condition': 'A'}`` and one with ``{'condition': 'B'}`` (each is generated as its own task file).
+- you can also add trials of both conditions in the task file for a single task block. For example, the first 15s of a task block could be ``reading`` → ``sentences`` and the second 15s could be ``reading`` → ``nonwords``. In the GLM modeling the two phases of the task block would be modelled separately.
 
-Note that some tasks have trials of different **trial types**, which usually are modelled together as one condition in the GLM. block.
+Note that some tasks have trials of different **trial types**, which usually are modelled together as one condition in the GLM.
 
 The **Task file columns** table in each task's entry on the :ref:`task descriptions <task_descriptions>` page shows which (if any) of these columns a task uses, and what its values mean.
 

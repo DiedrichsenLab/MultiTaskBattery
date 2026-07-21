@@ -1,13 +1,13 @@
-trial_num	condition	trial_dur	iti_dur	start_time	end_time	stim	display_trial_feedback
-0	generate	2	0.5	0.0	2.5	flag        	False
-1	generate	2	0.5	2.5	5.0	beetle      	False
-2	generate	2	0.5	5.0	7.5	truck       	False
-3	generate	2	0.5	7.5	10.0	harp        	False
-4	generate	2	0.5	10.0	12.5	owl         	False
-5	generate	2	0.5	12.5	15.0	passport    	False
-6	generate	2	0.5	15.0	17.5	onion       	False
-7	generate	2	0.5	17.5	20.0	rabbit      	False
-8	generate	2	0.5	20.0	22.5	wrench      	False
-9	generate	2	0.5	22.5	25.0	game        	False
-10	generate	2	0.5	25.0	27.5	carrot      	False
-11	generate	2	0.5	27.5	30.0	well        	False
+trial_num	condition	trial_dur	iti_dur	start_time	end_time	stim
+0	generate	2	0.5	0.0	2.5	church      
+1	generate	2	0.5	2.5	5.0	knife       
+2	generate	2	0.5	5.0	7.5	toe         
+3	generate	2	0.5	7.5	10.0	well        
+4	generate	2	0.5	10.0	12.5	library     
+5	generate	2	0.5	12.5	15.0	wrench      
+6	generate	2	0.5	15.0	17.5	skirt       
+7	generate	2	0.5	17.5	20.0	ball        
+8	generate	2	0.5	20.0	22.5	brush       
+9	generate	2	0.5	22.5	25.0	leopard     
+10	generate	2	0.5	25.0	27.5	sentence   
+11	generate	2	0.5	27.5	30.0	flower      

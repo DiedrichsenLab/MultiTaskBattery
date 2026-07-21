@@ -1,13 +1,13 @@
-trial_num	condition	trial_dur	iti_dur	start_time	end_time	stim	display_trial_feedback
-0	read	2	0.5	0.0	2.5	toothbrush  	False
-1	read	2	0.5	2.5	5.0	helicopter  	False
-2	read	2	0.5	5.0	7.5	snowman     	False
-3	read	2	0.5	7.5	10.0	turtle      	False
-4	read	2	0.5	10.0	12.5	lock        	False
-5	read	2	0.5	12.5	15.0	shoe        	False
-6	read	2	0.5	15.0	17.5	suit        	False
-7	read	2	0.5	17.5	20.0	top         	False
-8	read	2	0.5	20.0	22.5	gym         	False
-9	read	2	0.5	22.5	25.0	flag        	False
-10	read	2	0.5	25.0	27.5	saw         	False
-11	read	2	0.5	27.5	30.0	trousers   	False
+trial_num	condition	trial_dur	iti_dur	start_time	end_time	stim
+0	read	2	0.5	0.0	2.5	pizza      
+1	read	2	0.5	2.5	5.0	flower      
+2	read	2	0.5	5.0	7.5	beard       
+3	read	2	0.5	7.5	10.0	helicopter  
+4	read	2	0.5	10.0	12.5	store       
+5	read	2	0.5	12.5	15.0	breakfast   
+6	read	2	0.5	15.0	17.5	shoe        
+7	read	2	0.5	17.5	20.0	rhinoceros  
+8	read	2	0.5	20.0	22.5	lemon       
+9	read	2	0.5	22.5	25.0	museum      
+10	read	2	0.5	25.0	27.5	hanger      
+11	read	2	0.5	27.5	30.0	grasshopper 

@@ -124,8 +124,9 @@ stimuli procedurally, skip this step.
 5. Test
 ^^^^^^^
 Add your task to the ``blocks`` list in your experiment's
-``make_files.py`` (as ``('my_task', None)``, or with a condition),
-generate the run and task files, and run ``run.py``.
+``make_files.py`` (as ``('my_task', {})``, or with kwargs such as
+``('my_task', {'condition': 'A'})``), generate the run and task files,
+and run ``run.py``.
 ``experiments/example_custom_task`` is the reference for a working
 custom-task setup.
 

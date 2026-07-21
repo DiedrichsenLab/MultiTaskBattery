@@ -116,19 +116,9 @@ specific to a single task are listed per task on the
 
 Some tasks require a ``run_number`` because the stimuli depend on the run (e.g., movie clips have a specific order for each run). Tasks that generate random stimuli each run do not need a run number. The framework detects which case applies by inspecting the signature of each task's ``make_task_file`` — if it declares a ``run_number`` parameter, one is passed; otherwise it is not. To opt out, simply omit ``run_number`` from your task's ``make_task_file`` signature.
 
-Each task's ``make_task_file`` accepts parameters that control the trial structure (e.g., grid size, trial duration, number of steps). See the :doc:`Task_file module reference <reference_task_file>` for each task's parameters and their defaults (the resulting task-file columns are documented on the :ref:`task descriptions <task_descriptions>` page). You can pass any of these as keyword arguments:
+Each task's ``make_task_file`` accepts parameters that control the trial structure (e.g., grid size, trial duration, number of steps, n-back level). See the :doc:`Task_file module reference <reference_task_file>` for each task's parameters and their defaults (the resulting task-file columns are documented on the :ref:`task descriptions <task_descriptions>` page). You specify these per block as a small dictionary of keyword arguments — e.g. ``{'trial_dur': 10, 'grid_size': (4, 5)}`` — as shown in the ``blocks`` list below.
 
-.. code-block:: python
-
-    myTask.make_task_file(file_name=tfile, trial_dur=10, grid_size=(4, 5), **args)
-
-Some tasks also have multiple **conditions** (e.g., ``movie`` has ``romance``, ``nature``, ``landscape``). If you want a specific condition, pass it as an argument to ``make_task_file``:
-
-.. code-block:: python
-
-    myTask.make_task_file(file_name=tfile, condition='romance', **args)
-
-Check the :ref:`task descriptions <task_descriptions>` page to see which tasks have conditions.
+Some tasks also have multiple **conditions** (e.g., ``reading`` has ``sentences`` / ``nonwords``; ``movie`` has ``romance`` / ``nature`` / ``landscape``). A condition is just another keyword argument — pass ``{'condition': 'romance'}`` in the block. A ``condition`` value is *also* used to name the task file, so two blocks of the same task in different conditions produce separate files (e.g. ``reading_sentences_01.tsv`` and ``reading_nonwords_01.tsv``). Check the :ref:`task descriptions <task_descriptions>` page to see which tasks have conditions.
 
 **Example Code**
 
@@ -139,53 +129,61 @@ Check the :ref:`task descriptions <task_descriptions>` page to see which tasks h
     import MultiTaskBattery.utils as ut
     import constants as const
 
-    # (task, condition) pairs. Use None for single-condition tasks; pass an
-    # explicit condition for tasks that have several (e.g. verb_generation,
-    # reading) - each condition is generated as its own block.
-    blocks = [('finger_sequence', None),
-              ('n_back', None),
-              ('demand_grid', None),
-              ('auditory_narrative', None),
-              ('reading', 'sentences'),
-              ('verb_generation', 'read'),
-              ('verb_generation', 'generate'),
-              ('action_observation', None),
-              ('tongue_movement', None),
-              ('theory_of_mind', None),
-              ('rest', None)]
+    # Each block is (task_name, kwargs). The kwargs are passed straight to that
+    # task's make_task_file() — a condition, an n-back level, a grid size, etc.
+    # A 'condition' kwarg is also used to name the task file, so two blocks of
+    # the same task in different conditions get their own files. Empty {} = defaults.
+    blocks = [
+        ('finger_sequence', {}),                          # defaults
+        ('reading',         {'condition': 'sentences'}),  # a condition
+        ('reading',         {'condition': 'nonwords'}),   # same task, other condition -> its own file
+        ('n_back',          {'n_back': 3}),               # any make_task_file kwarg
+        ('rest',            {}),
+    ]
 
     num_runs = 8  # Number of imaging runs
 
     # Ensure task and run directories exist
     ut.dircheck(const.run_dir)
-    for task, cond in blocks:
+    for task, _ in blocks:
         ut.dircheck(const.task_dir / task)
 
-    # Generate run and task files
+    # Generate the run file and each task file, for every run
     for r in range(1, num_runs + 1):
-        tasks = [task for task, cond in blocks]
-        tfiles = [f'{task}_{cond}_{r:02d}.tsv' if cond else f'{task}_{r:02d}.tsv'
-                  for task, cond in blocks]
+        tasks  = [task for task, _ in blocks]
+        # Name each task file after its condition, if any. A list condition is
+        # joined with '-' (e.g. ['read', 'generate'] -> read-generate), so
+        # repeated blocks of the same task in different conditions get their
+        # own files.
+        tfiles = []
+        for task, kw in blocks:
+            cond = kw.get('condition')
+            if isinstance(cond, (list, tuple)):
+                tag = '-'.join(map(str, cond))
+            else:
+                tag = str(cond) if cond is not None else ''
+            tfiles.append(f"{task}_{tag}_{r:02d}.tsv" if tag else f"{task}_{r:02d}.tsv")
+        assert len(set(tfiles)) == len(tfiles), (
+            "Two blocks map to the same task file — give repeated blocks of the "
+            "same task distinct 'condition' values so their task files differ.")
 
         # Pass exp_dir so any local task_table.tsv (for custom tasks) is merged
         # with the framework's table.
         T = tf.make_run_file(tasks, tfiles, exp_dir=const.exp_dir)
         T.to_csv(const.run_dir / f'run_{r:02d}.tsv', sep='\t', index=False)
 
-        # Generate task files for each run
-        for (task, cond), tfile in zip(blocks, tfiles):
+        # Generate a task file for each block
+        for (task, kw), tfile in zip(blocks, tfiles):
+            row = T.loc[T['task_file'] == tfile].iloc[0]
+
+            # Resolve the TaskFile generator: a custom '<Class>File' in
+            # const.task_modules if present, otherwise the built-in one.
             cl = tf.get_task_class(task, exp_dir=const.exp_dir)
+            myTask = ut.get_task_file_class(const, cl)(const)
 
-            # Looks up the TaskFile class: checks const.task_modules first
-            # (for custom tasks), then falls back to MultiTaskBattery.task_file.
-            TaskFileCls = ut.get_task_file_class(const, cl)
-            myTask = TaskFileCls(const)
-
-            # Pass condition only when the block has one, and run_number only if
-            # the task's make_task_file accepts it.
-            args = {}
-            if cond is not None:
-                args['condition'] = cond
+            # Start from the block's task_dur, add its kwargs, and pass
+            # run_number only if this task's make_task_file declares it.
+            args = {'task_dur': row['task_dur'], **kw}
             if 'run_number' in inspect.signature(myTask.make_task_file).parameters:
                 args['run_number'] = r
 
