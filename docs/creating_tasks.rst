@@ -55,6 +55,8 @@ that defines both classes:
             self.name = 'my_task'  # must match the row in task_table.tsv
 
         def make_task_file(self, ..., file_name=None):
+            # Every row MUST include trial_num, start_time, end_time and
+            # trial_dur — Task.run() waits on trial.start_time for all tasks.
             ...  # generate trial-level rows, write tsv
 
 Methods to implement on the ``Task`` subclass:
@@ -73,8 +75,12 @@ Useful methods inherited from the ``Task`` parent:
   red cross based on correctness.
 - ``screen_quit()``: Check for the escape key to quit the experiment.
 
-``feedback_type`` controls the end-of-run scoreboard: ``'none'``, ``'acc'``,
-``'rt'``, or ``'acc+rt'``.
+``feedback_type`` selects the end-of-run scoreboard (``'none'``, ``'acc'``,
+``'rt'``, or ``'acc+rt'``) and is load-bearing: if it contains ``'acc'``,
+``run_trial`` **must** set ``trial['correct']`` on the returned row; if it
+contains ``'rt'``, it **must** set ``trial['rt']``. ``Task.run()`` averages
+those columns at the end of the block, so a missing one raises ``KeyError`` on
+every run. The skeleton above uses ``'acc+rt'``, which requires **both**.
 
 If your task generates random stimuli (no fixed stimulus file per run),
 omit ``run_number`` from the ``make_task_file`` signature — ``make_files.py``

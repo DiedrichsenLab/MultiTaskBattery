@@ -59,6 +59,7 @@ Each run file (``run_xx.tsv``) has one row per task block, with these columns:
 - ``task_code``: Short code for the task (from ``task_table.tsv``).
 - ``task_file``: Name of the task file holding the trials for this block.
 - ``instruction_dur``: Duration of the instruction screen before the block (in seconds).
+- ``task_dur``: Duration of the task-performance period of the block (in seconds; default 30). The full block span also includes ``instruction_dur``.
 - ``start_time`` / ``end_time``: When the block starts and ends, relative to the start of the run (in seconds).
 
 Task file columns
@@ -81,7 +82,7 @@ Task files (``task_xx.tsv``) have one row per trial. The exact set of columns va
 - ``hand``: Which hand responds (``left``, ``right``, or ``bimanual``). Present whenever the task collects a manual response.
 
 *Response-key columns:*
-Tasks that collect a button press include one column per response option, named after what the option means. The exact names depend on the task's answer space — for example ``key_one`` … ``key_four`` (a generic four-choice task such as RMET or Finger Sequence), ``key_true`` / ``key_false`` (Theory of Mind), ``key_match`` / ``key_nomatch`` (n-back), or ``key_pleasant`` / ``key_unpleasant`` (Affective).
+Tasks that collect a button press include one column per response option, named after what the option means. The exact names depend on the task's answer space — for example ``key_one`` … ``key_four`` (a generic four-choice task such as RMET), ``key_true`` / ``key_false`` (Theory of Mind), ``key_match`` / ``key_nomatch`` (n-back), or ``key_pleasant`` / ``key_unpleasant`` (Affective).
 
 *Condition / trial-type columns:*
 A task may also record a ``condition`` and/or a ``trial_type`` column. These two are easy to confuse, so they are explained in their own section just below.

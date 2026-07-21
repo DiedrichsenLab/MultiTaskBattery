@@ -37,7 +37,7 @@ Install Python::
 Option B: Using system Python
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Ensure `python --version` reports 3.10.
+Ensure ``python --version`` reports 3.10.
 
 Step 3: Create a Virtual Environment
 ------------------------------------
