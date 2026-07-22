@@ -1,5 +1,6 @@
 name	task_class	descriptive_name	code
 rest	Rest	rest	rest
+motor_localizer	MotorLocalizer	motor localizer	motloc
 toe_movement	FlexionExtension	toe	flexexten
 finger_sequence	FingerSequence	finger_sequence	fingseq
 serial_reaction_time	SerialReactionTime	serial_reaction_time	srt
@@ -22,4 +23,3 @@ affective	Affective	affective	affect
 theory_of_mind	TheoryOfMind	story	tom
 rmet	RMET	eyes	rmet
 faux_pas	FauxPas	faux pas	faux_pas
-motor_localizer	MotorLocalizer	motor localizer	motloc
