@@ -117,9 +117,42 @@ zero changes for new tasks.
 
 4. Add stimuli (if your task uses them)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Stimulus files (images, audio, video) live under
-``stimuli/<task_name>/`` at the repository root. If your task generates
-stimuli procedurally, skip this step.
+Stimulus files (images, audio, video) live in a per-task subfolder
+``<root>/<task_name>/`` (the ``<task_name>`` matches the ``name`` column in
+``task_table.tsv``). If your task generates stimuli procedurally, skip this
+step.
+
+Stimuli are resolved with the **same local-first, package-fallback logic as
+task classes**. Both at runtime and during file generation, each stimulus is
+looked up as ``<root>/<task_name>/<file>`` across a search path of roots, in
+order, and the first existing file wins. The search path is:
+
+1. the root(s) in ``const.stim_dirs`` (a list) if you define it, otherwise the
+   single ``const.stim_dir``; then
+2. the package's own bundled ``stimuli`` folder, always appended as a final
+   fallback.
+
+Because your own roots are searched first, the package fallback can only *add*
+resolvable files — it never overrides yours. This lets a custom task keep its
+stimuli **inside your experiment folder** while the built-in tasks still
+resolve their stimuli from the package. So you have two options:
+
+- **Local (recommended for custom tasks):** add your experiment's stimulus
+  folder to the search path in ``constants.py`` and put files there::
+
+      stim_dirs = [exp_dir / "stimuli", stim_dir]   # local first, package fallback
+
+  then place your files in ``<exp_dir>/stimuli/<task_name>/``.
+
+- **Shared library (when contributing a task):** place files under the
+  package's ``stimuli/<task_name>/`` at the repository root.
+
+If your task reads stimuli, resolve them with the helpers
+``ut.find_stim(const, task_name, *parts)`` (a single file — e.g.
+``ut.find_stim(self.const, self.name, 'clip.mov')``) and
+``ut.find_stim_dir(const, task_name)`` (the task's folder, e.g. for globbing),
+rather than building the path from ``const.stim_dir`` directly, so your task
+picks up the full search path.
 
 5. Test
 ^^^^^^^

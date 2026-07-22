@@ -118,6 +118,7 @@ class TaskFile():
         Args:
             const: module for constants
         """
+        self.const              = const
         self.exp_name           = const.exp_name
         self.task_dir           = const.task_dir
         self.stim_dir           = const.stim_dir
@@ -298,7 +299,7 @@ class VerbGeneration(TaskFile):
         if stim_file:
             stim = pd.read_csv(stim_file)
         else:
-            stim = pd.read_csv(self.stim_dir / 'verb_generation' / 'verb_generation.csv')
+            stim = pd.read_csv(ut.find_stim(self.const, 'verb_generation', 'verb_generation.csv'))
 
         stim = stim.sample(frac=1).reset_index(drop=True)
 
@@ -405,7 +406,7 @@ class AuditoryNarrative(TaskFile):
         trial_info = []
 
         # Each run uses a distinct narrative (narrative_NN.wav) - novelty matters error if no enough files
-        available = sorted((self.stim_dir / self.name).glob('narrative_[0-9][0-9].wav'))
+        available = sorted(ut.find_stim_dir(self.const, self.name).glob('narrative_[0-9][0-9].wav'))
         if run_number is None or run_number > len(available):
             raise ValueError(
                 f"AuditoryNarrative: only {len(available)} narratives available; "
@@ -537,7 +538,7 @@ class TheoryOfMind(TaskFile):
         if stim_file:
             stim = pd.read_csv(stim_file)
         else:
-            stim = pd.read_csv(self.stim_dir / 'theory_of_mind' / 'theory_of_mind.csv')
+            stim = pd.read_csv(ut.find_stim(self.const, 'theory_of_mind', 'theory_of_mind.csv'))
 
         if condition:
             stim = stim[stim['condition'] == condition]
@@ -616,7 +617,7 @@ class PassageListening(TaskFile):
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
 
         # Load the audio/condition table and keep only the requested condition
-        stim = pd.read_csv(self.stim_dir / self.name / (stim_file or f'{self.name}.csv'))
+        stim = pd.read_csv(ut.find_stim(self.const, self.name, stim_file or f'{self.name}.csv'))
         valid = sorted (stim['condition'].unique()) # check if the condition is there
         if condition not in valid:
             raise ValueError(f"PassageListening: unknown condition {condition!r} (expected one of {valid})")
@@ -1013,7 +1014,7 @@ class Reading(TaskFile):
                 csv = 'nonwords_shuffled.csv'
             else:
                 raise ValueError( F" task Reading: unknown condition {condition!r} (expected 'sentences' or 'nonwords')")
-            stim = pd.read_csv(self.stim_dir / self.name / csv)
+            stim = pd.read_csv(ut.find_stim(self.const, self.name, csv))
 
         t = 0
 
@@ -1241,7 +1242,7 @@ class SemanticPrediction(TaskFile):
         if stim_file:
             stim = pd.read_csv(stim_file)
         else:
-            stim = pd.read_csv(self.stim_dir / 'semantic_prediction' / 'semantic_prediction.csv')
+            stim = pd.read_csv(ut.find_stim(self.const, 'semantic_prediction', 'semantic_prediction.csv'))
 
         # Ignore stim_list and stimulus_seed: selection is driven entirely by
         # the provided stim_file (if any) or by run_number-based slicing.
@@ -1386,9 +1387,9 @@ class RMET(TaskFile):
         t = 0
 
         if stim_file:
-            stim = pd.read_csv(self.stim_dir / self.name / stim_file)
+            stim = pd.read_csv(ut.find_stim(self.const, self.name, stim_file))
         else:
-            stim = pd.read_csv(self.stim_dir / self.name / f'{self.name}.csv')
+            stim = pd.read_csv(ut.find_stim(self.const, self.name, f'{self.name}.csv'))
 
         if condition:
             stim = stim[stim['condition'] == condition]
@@ -1491,9 +1492,9 @@ class Movie(TaskFile):
         t = 0
 
         if stim_file:
-            stim = pd.read_csv(self.stim_dir / self.name / stim_file)
+            stim = pd.read_csv(ut.find_stim(self.const, self.name, stim_file))
         else:
-            stim = pd.read_csv(self.stim_dir / self.name / f'{self.name}.csv')
+            stim = pd.read_csv(ut.find_stim(self.const, self.name, f'{self.name}.csv'))
 
         if condition:
             stim = stim[stim['condition'] == condition]
@@ -1565,7 +1566,7 @@ class FauxPas(TaskFile):
         if stim_file:
             stim = pd.read_csv(stim_file)
         else:
-            stim = pd.read_csv(self.stim_dir / self.name / f'{self.name}.csv')
+            stim = pd.read_csv(ut.find_stim(self.const, self.name, f'{self.name}.csv'))
 
         if condition:
             stim = stim[stim['condition'] == condition]
@@ -1913,9 +1914,9 @@ class SensMotControl(TaskFile):
         t = 0
 
         if stim_file:
-            stim = pd.read_csv(self.stim_dir / self.name / stim_file, sep='\t')
+            stim = pd.read_csv(ut.find_stim(self.const, self.name, stim_file), sep='\t')
         else:
-            stim = pd.read_csv(self.stim_dir / self.name / f'{self.name}_block1.csv', sep='\t')
+            stim = pd.read_csv(ut.find_stim(self.const, self.name, f'{self.name}_block1.csv'), sep='\t')
 
         if condition:
             stim = stim[stim['condition'] == condition]

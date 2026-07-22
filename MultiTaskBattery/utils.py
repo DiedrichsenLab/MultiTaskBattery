@@ -1,5 +1,6 @@
 # Created 2023: Bassel Arafat, Jorn Diedrichsen, Ince Hussain
 import os
+from pathlib import Path
 import pandas as pd
 import MultiTaskBattery.task_blocks as tasks
 import MultiTaskBattery.task_file as task_files
@@ -103,3 +104,89 @@ def get_task_file_class(const, class_name):
         return getattr(task_files, class_name)
     else:
         raise NameError(f"TaskFile class {class_name} (or {class_name}File) not found in any task module, make sure to add the module to task_modules in constants.py")
+
+
+# --- Stimulus resolution -------------------------------------------------
+# Stimuli are resolved with the same local-first, package-fallback logic that
+# task *classes* use (see get_task_class / get_task_file_class): each root is
+# searched in order, and the package's own bundled stimuli are always appended
+# as a final fallback. This lets a custom task keep its stimuli in the
+# experiment folder while built-in tasks still resolve from the package.
+# The package's stimuli live at <repo_root>/stimuli, i.e. one level up from this
+# module's package directory.
+_PACKAGE_STIM_DIR = Path(__file__).resolve().parents[1] / 'stimuli'
+
+
+def stim_roots(const):
+    """Return the ordered list of stimulus root directories to search.
+
+    Uses ``const.stim_dirs`` (a list of roots) if it is defined, otherwise falls
+    back to the single ``const.stim_dir``. The package's bundled ``stimuli``
+    folder is always appended as the final fallback (deduplicated), so built-in
+    tasks still resolve even when the primary root points at an experiment-local
+    folder.
+
+    Args:
+        const: the experiment constants module/object.
+    Returns:
+        list[Path]: roots to search, in priority order (local first, package last).
+    """
+    roots = getattr(const, 'stim_dirs', None) or [const.stim_dir]
+    roots = [Path(r) for r in roots]
+    if _PACKAGE_STIM_DIR not in roots:
+        roots.append(_PACKAGE_STIM_DIR)
+    return roots
+
+
+def find_stim(const, task_name, *parts, must_exist=True):
+    """Resolve a single stimulus file for a task across the stimulus roots.
+
+    Searches ``<root>/<task_name>/<parts...>`` in each root (local first, package
+    last) and returns the first path that exists. Because the local roots are
+    searched first, appending the package fallback can never change a lookup that
+    already succeeds - it can only rescue one that would otherwise fail.
+
+    Args:
+        const: the experiment constants module/object.
+        task_name (str): task subfolder name (usually ``self.name``).
+        *parts (str): path components under the task folder - a filename, or e.g.
+            ``'clips', 'foo.mov'`` for a nested subfolder.
+        must_exist (bool): if True (default) raise ``FileNotFoundError`` when the
+            file is in none of the roots; if False, return the path under the
+            first root (useful when writing a file rather than reading one).
+    Returns:
+        Path: the resolved stimulus path.
+    """
+    roots = stim_roots(const)
+    for r in roots:
+        p = r.joinpath(task_name, *parts)
+        if p.exists():
+            return p
+    if must_exist:
+        sub = str(Path(*parts)) if parts else ''
+        raise FileNotFoundError(
+            f"Stimulus '{task_name}/{sub}' not found in any stimulus root: "
+            f"{[str(r) for r in roots]}")
+    return roots[0].joinpath(task_name, *parts)
+
+
+def find_stim_dir(const, task_name):
+    """Resolve a task's stimulus *directory* across the stimulus roots.
+
+    Returns the first ``<root>/<task_name>`` that is an existing directory. Use
+    this for the cases that operate on the folder itself (e.g. globbing for a set
+    of files) rather than resolving one named file. If no root has the folder,
+    the path under the first root is returned so callers get a sensible location
+    for error messages.
+
+    Args:
+        const: the experiment constants module/object.
+        task_name (str): task subfolder name (usually ``self.name``).
+    Returns:
+        Path: the resolved task stimulus directory.
+    """
+    for r in stim_roots(const):
+        d = r / task_name
+        if d.is_dir():
+            return d
+    return stim_roots(const)[0] / task_name

@@ -252,7 +252,7 @@ class NBack(Task):
         self.stim = []
         picture_scale = self.trial_info['picture_scale'].iloc[0] if 'picture_scale' in self.trial_info.columns else 1.0
         for stim in self.trial_info['stim']:
-            stim_path = self.const.stim_dir / self.name / stim
+            stim_path = ut.find_stim(self.const, self.name, stim)
             img = visual.ImageStim(self.window, str(stim_path))
             img.size = img.size * picture_scale
             self.stim.append(img)
@@ -449,7 +449,7 @@ class AuditoryNarrative(Task):
         self.screen.fixation_cross()
 
         # Load and play audio stimulus for the current trial
-        audio_path = self.const.stim_dir / self.name / trial['stim']
+        audio_path = ut.find_stim(self.const, self.name, trial['stim'])
         audio_stim = sound.Sound(str(audio_path))
         audio_stim.play()
 
@@ -567,7 +567,7 @@ class PassageListening(Task):
         self.screen.fixation_cross()
 
         # Load and play audio stimulus for the current trial
-        audio_path = self.const.stim_dir / self.name / trial['stim']
+        audio_path = ut.find_stim(self.const, self.name, trial['stim'])
         audio_stim = sound.Sound(str(audio_path))
         audio_stim.play()
 
@@ -592,7 +592,7 @@ class ActionObservation(Task):
         movie_file_name = trial['stim']
 
         # Construct the movie file path
-        movie_path = Path(self.const.stim_dir) / self.name / 'clips' / movie_file_name
+        movie_path = ut.find_stim(self.const, self.name, 'clips', movie_file_name)
 
         # Convert Path object to string for compatibility
         movie_path_str = str(movie_path)
@@ -790,13 +790,13 @@ class Reading(Task):
         event.clearEvents()
 
         # show press button image
-        button_stim = visual.ImageStim(self.window, image=str(self.const.stim_dir / self.name / 'hand_press_transparent.png'))
+        button_stim = visual.ImageStim(self.window, image=str(ut.find_stim(self.const, self.name, 'hand_press_transparent.png')))
         button_stim.draw()
         self.window.flip()
         trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), 0.4)
 
         # show blank_transparent image
-        blank_stim = visual.ImageStim(self.window, image=str(self.const.stim_dir / self.name / 'blank_transparent.png'))
+        blank_stim = visual.ImageStim(self.window, image=str(ut.find_stim(self.const, self.name, 'blank_transparent.png')))
         blank_stim.draw()
         self.window.flip()
 
@@ -1132,7 +1132,7 @@ class VisualSearch(Task):
                 stim_random_idx = random.randint(0, len(stim_images)-1)  #chooses random stimuli from stim_images list
                 stim_current = stim_images[stim_random_idx]
 
-            stim_path = self.const.stim_dir/ self.name / stim_current
+            stim_path = ut.find_stim(self.const, self.name, stim_current)
             stimulus = visual.ImageStim(self.window, str(stim_path), size=(0.8,0.8))
             stimulus.setPos([aperture.pos[0], aperture.pos[1]]) #puts stimuli within apertures
             self.stim.append(stimulus) #creates list of all randomly selected stimuli
@@ -1218,7 +1218,7 @@ class RMET(Task):
         # Get the file name
         picture_file_name = trial['stim']
         # Construct the picture file path
-        picture_path = Path(self.const.stim_dir) / self.name / 'pictures' / picture_file_name
+        picture_path = ut.find_stim(self.const, self.name, 'pictures', picture_file_name)
         # Convert Pathself object to string for compatibility
         picture_path_str = str(picture_path)
         # Create an ImageStim object, explicitly centered so that the four answer
@@ -1326,7 +1326,7 @@ class Movie(Task):
         movie_file_name = trial['stim']
 
         # Construct the movie file path
-        movie_path = Path(self.const.stim_dir) / self.name / 'clips' / movie_file_name
+        movie_path = ut.find_stim(self.const, self.name, 'clips', movie_file_name)
 
         # Convert Path object to string for compatibility
         movie_path_str = str(movie_path)
@@ -1435,7 +1435,7 @@ class Affective(Task):
 
         self.stim = []
         for stim_file in self.trial_info['stim']:
-            stim_path = self.const.stim_dir / self.name / stim_file
+            stim_path = ut.find_stim(self.const, self.name, stim_file)
             self.stim.append(visual.ImageStim(self.window, image=str(stim_path)))
 
     def display_instructions(self):

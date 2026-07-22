@@ -31,6 +31,12 @@ Create a file called ``constants.py`` in the project folder. This file contains 
     package_dir = Path(os.path.dirname(os.path.dirname(os.path.realpath(mtb.__file__))))
     stim_dir   = package_dir / "stimuli"
 
+    # Optional: search several stimulus roots, local first. The package's own
+    # stimuli/ folder is always appended as a final fallback, so built-in tasks
+    # keep resolving. Use this to keep a custom task's stimuli in your
+    # experiment folder (see the "Implementing new tasks" page).
+    # stim_dirs = [exp_dir / "stimuli", stim_dir]
+
     # Optional: list of local Python modules that hold custom Task / TaskFile
     # classes. Uncomment and import your module if you want to add custom
     # tasks without editing the shared MultiTaskBattery package. See
@@ -91,6 +97,13 @@ defaults are used.
      - ``1``
      - Height (in degrees of visual angle) of the instruction-screen text
        shown before each task.  Reduce for smaller screens.
+   * - ``stim_dirs``
+     - ``[stim_dir]``
+     - List of stimulus root directories, searched in order (local first). The
+       package's bundled ``stimuli`` folder is always appended as a final
+       fallback, so built-in tasks still resolve even when the first root is an
+       experiment-local folder. Use this to keep a custom task's stimuli in your
+       experiment folder. See :doc:`creating_tasks`.
 
 .. note::
 
