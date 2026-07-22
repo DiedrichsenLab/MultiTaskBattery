@@ -9,9 +9,10 @@ import constants as const
 # the same task in different conditions get their own files. Empty {} = defaults.
 blocks = [
     ('motor_localizer', {}),
+    ('n_back',          {'n_back': 2}),
 ]
 
-num_runs = 1  # Number of imaging runs
+num_runs = 2  # Number of imaging runs
 
 # Ensure task and run directories exist
 ut.dircheck(const.run_dir)
