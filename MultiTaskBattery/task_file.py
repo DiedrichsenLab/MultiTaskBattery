@@ -373,6 +373,66 @@ class TongueMovement(TaskFile):
             trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
         return trial_info
 
+class MotorLocalizer(TaskFile):
+    def __init__(self, const):
+        super().__init__(const)
+        self.name = 'motor_localizer'
+
+    def make_task_file(self,
+                        task_dur=30,
+                        trial_dur=1,
+                        conditions=['hand', 'foot', 'tongue'],
+                        file_name=None):
+        """
+        Create a motor-localizer task file. The block is split into one equal
+        segment per condition (segment_dur = task_dur / len(conditions), e.g.
+        10 s each for three conditions in a 30 s block) and the condition order
+        is RANDOMISED for the block. Within a condition's segment the circle
+        toggles present (trial_type=1) / absent (trial_type=0) every trial_dur
+        seconds, which paces the movement.
+
+        What circle-present vs circle-absent means (e.g. move right vs move
+        left, or move vs hold) is decided per experiment and explained to the
+        participant in training -- it is deliberately NOT encoded here. This is
+        only the default layout; the runtime renders whatever the file
+        specifies, so a hand-written file can use any condition order, segment
+        length or on/off pattern.
+
+        Args:
+            task_dur (float): Total block duration in seconds.
+            trial_dur (float): Circle on/off toggle interval within a segment (seconds).
+            conditions (list): Condition labels (body parts); each gets an equal, randomly ordered share of the block.
+            file_name (str): Name of the file to save the task data.
+
+        Returns:
+            pd.DataFrame: Task information as a DataFrame.
+        """
+        order = list(conditions)
+        random.shuffle(order)                            # random condition order for this block
+        segment_dur = task_dur / len(order)              # equal time per condition
+        n_phases = int(round(segment_dur / trial_dur))   # circle toggles within each segment
+
+        trial_info = []
+        t = 0
+        n = 0
+        for cond in order:
+            for p in range(n_phases):
+                trial = {}
+                trial['trial_num'] = n
+                trial['condition'] = cond
+                trial['trial_type'] = 1 - (p % 2)        # 1 = circle present, 0 = circle absent
+                trial['trial_dur'] = trial_dur
+                trial['start_time'] = t
+                trial['end_time'] = t + trial_dur
+                trial_info.append(trial)
+                t = trial['end_time']
+                n += 1
+
+        trial_info = pd.DataFrame(trial_info)
+        if file_name is not None:
+            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
+        return trial_info
+
 class AuditoryNarrative(TaskFile):
     def __init__(self, const):
         super().__init__(const)

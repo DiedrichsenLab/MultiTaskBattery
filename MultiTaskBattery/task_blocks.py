@@ -434,6 +434,58 @@ class TongueMovement(Task):
 
         return trial
 
+class MotorLocalizer(Task):
+    """
+    General motor localizer. Each row shows a condition label (e.g. 'hand',
+    'foot', 'tongue') at the top of the screen in black, plus a central
+    fixation cross. A circle appears around the fixation when trial_type == 1
+    and is absent when trial_type == 0. The participant performs the movement
+    associated with the current condition.
+
+    The condition -> movement mapping (e.g. tongue = left-right, foot =
+    flex/extend) and the meaning of the circle appearing/disappearing are
+    explained to the participant during training and are deliberately NOT
+    encoded here: the code only reads the condition and trial_type and renders
+    them. No response is collected, so there is no feedback. Because the
+    condition can change within a block, a single block can localize several
+    body parts (e.g. tongue, hand and foot).
+    """
+    def __init__(self, info, screen, ttl_clock, const, subj_id):
+        super().__init__(info, screen, ttl_clock, const, subj_id)
+        self.feedback_type = 'None'
+
+    def init_task(self):
+        self.trial_info = pd.read_csv(self.const.task_dir / self.name / self.task_file, sep='\t')
+
+    def display_instructions(self):
+        self.instruction_text = f"{self.descriptive_name} Task \n\n Move the indicated body part as instructed"
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text,
+                                       height=self.const.instruction_text_height, color=[-1, -1, -1])
+        instr_visual.draw()
+        self.window.flip()
+
+    def run_trial(self, trial):
+        """ Run a single row of the motor-localizer task. """
+        # Condition label (body part) at the top of the screen, in black
+        cond_visual = visual.TextStim(self.window, text=str(trial['condition']), pos=(0.0, 6.0),
+                                      color=(-1, -1, -1), units='deg', height=1.5)
+        cond_visual.draw()
+
+        # Central fixation cross (drawn without flipping yet)
+        self.screen.fixation_cross(flip=False)
+
+        # Circle around the fixation only when trial_type == 1
+        if int(trial['trial_type']) == 1:
+            circle_visual = visual.Circle(self.window, radius=3, edges=100, lineWidth=20,
+                                          fillColor=None, lineColor='black')
+            circle_visual.draw()
+
+        self.window.flip()
+
+        # hold this row for its duration (no response, so no feedback)
+        self.ttl_clock.wait_until(self.ttl_clock.get_time() + trial['trial_dur'])
+        return trial
+
 class AuditoryNarrative(Task):
     def __init__(self, info, screen, ttl_clock, const, subj_id):
         super().__init__(info, screen, ttl_clock, const, subj_id)

@@ -1120,5 +1120,38 @@
                 "description": "Trial end, relative to the block start (in seconds)."
             }
         }
+    },
+    "motor_localizer": {
+        "short_description": "A general somatomotor localizer. Each block cycles through body-part conditions (e.g. hand, foot, tongue) shown as a label above a fixation cross, while a circle around the fixation appears and disappears to pace the movement.",
+        "detailed_description": "A general motor localizer for mapping somatomotor cortex and cerebellum. The block is divided into equal segments, one per condition (e.g. 10 s each for hand, foot and tongue in a 30 s block), presented in a randomized order. The current condition is shown as a label at the top of the screen (in black) above a central fixation cross, telling the participant which body part to move. Around the fixation a black circle appears (trial_type = 1) and disappears (trial_type = 0) to pace the movement. The mapping from condition to movement (e.g. tongue = left-right, foot = flex/extend) and the meaning of the circle appearing versus disappearing are explained to the participant during training and are deliberately NOT encoded in the task file: the code only reads the condition and trial_type and renders them. No response is collected and no feedback is given. Because several body-part conditions are cued within one block, a single localizer block can target multiple somatomotor representations.",
+        "reference": "Saadon-Grosman, N., Angeli, P. A., DiNicola, L. M., & Buckner, R. L. (2022). A third somatomotor representation in the human cerebellum. Journal of Neurophysiology, 128(4), 1051-1073.",
+        "recorded_metrics": "None",
+        "conditions": "Configurable: the body parts to localize (default hand, foot, tongue). Each condition gets an equal, randomly ordered segment of the block.",
+        "task_file_columns": {
+            "trial_num": {
+                "type": "int",
+                "description": "Row index within the block (0-indexed); one row per circle on/off phase."
+            },
+            "condition": {
+                "type": "str",
+                "description": "The body part to move for this segment (e.g. 'hand', 'foot', 'tongue'), shown as a label at the top of the screen. Conditions are cued one equal-length segment each, in a randomized order."
+            },
+            "trial_type": {
+                "type": "int",
+                "description": "Whether the circle is drawn around the fixation this row: 1 = circle present, 0 = circle absent. What present vs absent means (e.g. move vs hold, or move right vs left) is defined in training, not in the code."
+            },
+            "trial_dur": {
+                "type": "float",
+                "description": "How long this row is shown, in seconds (the circle on/off toggle interval within a segment)."
+            },
+            "start_time": {
+                "type": "float",
+                "description": "Row onset, relative to the block start (in seconds)."
+            },
+            "end_time": {
+                "type": "float",
+                "description": "Row offset, relative to the block start (in seconds)."
+            }
+        }
     }
 }
