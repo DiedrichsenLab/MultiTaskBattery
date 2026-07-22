@@ -8,11 +8,10 @@ import constants as const
 # 'condition' kwarg is also used to name the task file, so repeated blocks of
 # the same task in different conditions get their own files. Empty {} = defaults.
 blocks = [
-    ('finger_sequence', {}),
-    ('n_back',          {'n_back': 2}),
+    ('motor_localizer', {}),
 ]
 
-num_runs = 3  # Number of imaging runs
+num_runs = 1  # Number of imaging runs
 
 # Ensure task and run directories exist
 ut.dircheck(const.run_dir)

@@ -32,6 +32,10 @@ stim_dir   = package_dir / "stimuli"
 # Is the Eye tracker being used?
 eye_tracker = False                                     # do you want to do  eyetracking?
 
+# MEG / photodiode timing marker (see docs/meg.rst). When True, the first flip
+# of each trial flashes a photodiode square and logs 'flip_time'.
+photodiode = True
+
 # Running in debug mode?
 debug = False                                           # set to True for debugging
 
@@ -39,4 +43,4 @@ debug = False                                           # set to True for debugg
 screen = {}
 screen['size'] = [1100, 800]        # screen resolution
 screen['fullscr'] = False           # full screen, if false it's in a separate window
-screen['number'] = 1                # 0 = main display, 1 = secondary display
+screen['number'] = 0                # 0 = main display, 1 = secondary display
