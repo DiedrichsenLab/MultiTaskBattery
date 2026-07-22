@@ -1816,7 +1816,8 @@ class TimePerception(TaskFile):
     def make_task_file(self,
                        modality='time',          # 'time' or 'volume'
                        responses=[1, 2],         # code 1 = left option, 2 = right option
-                       n_trials= 30,              # must be even
+                       task_dur=30,               # total block duration in seconds
+                       n_trials=None,             # if None, derived from task_dur; forced even
                        trial_dur=4,            # tone + question window duration
                        iti_dur=1.0,
                        question_dur=2.0,
@@ -1824,6 +1825,32 @@ class TimePerception(TaskFile):
                        run_number=None,
                        file_name=None,
                        **unused):
+        """
+        Create a time/volume-perception task file (2AFC discrimination).
+
+        Args:
+            modality (str): Dimension judged: 'time' (shorter/longer) or 'volume' (quieter/louder).
+            responses (list): Response keys for [left option, right option].
+            task_dur (float): Total block duration in seconds. Used to derive n_trials when n_trials is None.
+            n_trials (int): Number of trials. If None, computed from task_dur as
+                floor(task_dur / (trial_dur + iti_dur)); rounded down to an even number
+                so the two response sides stay balanced.
+            trial_dur (float): Tone + question window duration per trial in seconds.
+            iti_dur (float): Inter-trial interval duration in seconds.
+            question_dur (float): Response window after the tones in seconds.
+            display_feedback (bool): Whether to show green/red trial feedback.
+            run_number (int): Run number; seeds the side-order shuffle.
+            file_name (str): Name of the file to save the task data.
+
+        Returns:
+            pd.DataFrame: Task information as a DataFrame.
+        """
+        # Derive the trial count from the block duration when not given explicitly,
+        # so the block fits task_dur like every other task. Force an even count so
+        # the two response sides are balanced.
+        if n_trials is None:
+            n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
+        n_trials -= n_trials % 2
 
         # sides per modality
         if modality == 'time':
