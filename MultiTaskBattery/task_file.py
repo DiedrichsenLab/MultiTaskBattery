@@ -996,6 +996,7 @@ class DemandGrid(TaskFile):
                    question_dur=3,
                    sequence_dur=4,
                    iti_dur=0.5,
+                   condition=None,
                    file_name=None):
         """
         Create a task file with the specified parameters.
@@ -1053,6 +1054,10 @@ class DemandGrid(TaskFile):
                 'start_time': current_time,
                 'end_time': current_time + trial_dur + iti_dur
             }
+            # Optional difficulty label (e.g. 'easy'/'hard' for the MD localizer),
+            # written only when provided so existing task files are unchanged.
+            if condition is not None:
+                trial['condition'] = condition
             trial_info.append(trial)
 
             # Update for the next trial:
