@@ -396,11 +396,11 @@ class MotorLocalizer(TaskFile):
     def make_task_file(self,
                         task_dur=30,
                         trial_dur=1,
-                        conditions=['hand', 'foot', 'tongue'],
+                        condition=['hand', 'foot', 'tongue'],
                         file_name=None):
         """
         Create a motor-localizer task file. The block is split into one equal
-        segment per condition (segment_dur = task_dur / len(conditions), e.g.
+        segment per condition (segment_dur = task_dur / len(condition), e.g.
         10 s each for three conditions in a 30 s block) and the condition order
         is RANDOMISED for the block. Within a condition's segment the circle
         toggles present (trial_type=1) / absent (trial_type=0) every trial_dur
@@ -416,13 +416,13 @@ class MotorLocalizer(TaskFile):
         Args:
             task_dur (float): Total block duration in seconds.
             trial_dur (float): Circle on/off toggle interval within a segment (seconds).
-            conditions (list): Condition labels (body parts); each gets an equal, randomly ordered share of the block.
+            condition (str or list): Condition label(s), e.g. body parts; each gets an equal, randomly ordered share of the block.
             file_name (str): Name of the file to save the task data.
 
         Returns:
             pd.DataFrame: Task information as a DataFrame.
         """
-        order = list(conditions)
+        order = [condition] if isinstance(condition, str) else list(condition)
         random.shuffle(order)                            # random condition order for this block
         segment_dur = task_dur / len(order)              # equal time per condition
         n_phases = int(round(segment_dur / trial_dur))   # circle toggles within each segment
