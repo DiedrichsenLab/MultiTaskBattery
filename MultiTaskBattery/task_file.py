@@ -54,24 +54,27 @@ def move_edge_tasks_to_middle(dataframe, keep_in_middle):
     return dataframe
 
 
-def add_start_end_times(dataframe, offset, task_dur, run_time=None):
+def add_start_end_times(dataframe, offset, run_time=None):
     """
-    adds start and end times to the dataframe
+    Lay blocks end-to-end using each row's own instruction_dur + task_dur, so
+    blocks in a run can have different lengths.
 
     Args:
-        dataframe (dataframe): dataframe to be shuffled
-        offset (float): offset of the task
-        task_dur (float): duration of the task
-        run_time (float): Time (in seconds) that the run should last. Use this to ensure the last task runs until the end of the imaging run
+        dataframe (dataframe): the run dataframe (rows already in final order,
+            with 'instruction_dur' and 'task_dur' columns)
+        offset (float): start time of the first block
+        run_time (float): if set, the last block's end_time is extended to this
+            (e.g. to capture activity overhang from the final task in a run)
     Returns:
-        dataframe (dataframe): dataframe with start and end times
+        dataframe (dataframe): dataframe with start_time and end_time columns
     """
-    dataframe['start_time'] = np.arange(offset, offset + len(dataframe)*task_dur, task_dur)
-    dataframe['end_time']   = dataframe['start_time'] + task_dur
+    block_dur = dataframe['instruction_dur'] + dataframe['task_dur']
+    dataframe['start_time'] = offset + block_dur.cumsum().shift(fill_value=0)
+    dataframe['end_time']   = dataframe['start_time'] + block_dur
     if run_time:
         if run_time < dataframe['end_time'].iloc[-1]:
             raise ValueError('Run time is shorter than the last task')
-        # Add add_end_time seconds to the last task to ensure the task runs until the end of the run (e.g. for capturing the activity overhang from the final task in an imaging run)
+        # Extend the last block's end so the run lasts run_time (captures overhang).
         dataframe.loc[dataframe.index[-1], 'end_time'] = run_time
     return dataframe
 
@@ -84,19 +87,31 @@ def make_run_file(task_list,
                   keep_in_middle=None,
                   exp_dir=None):
     """
-    Make a single run file
+    Make a single run file.
+
+    instruction_dur and task_dur may each be a scalar (applied to every task)
+    or a per-task list matching task_list, so a single run can mix blocks of
+    different lengths (e.g. task_dur=[30, 30, 70]). The per-task durations are
+    stored as columns and travel with their task through the row shuffle;
+    blocks are then laid out end-to-end by their own duration.
     """
     task_table = ut.get_task_table(exp_dir)
     # Get rows of the task_table corresponding to the task_list
     indx = [np.where(task_table['name']==t)[0][0] for t in task_list]
+    n = len(task_list)
+    # A single duration applies to every task; a list gives per-task durations.
+    if not isinstance(instruction_dur, (list, tuple)):
+        instruction_dur = [instruction_dur] * n
+    if not isinstance(task_dur, (list, tuple)):
+        task_dur = [task_dur] * n
     R = {'task_name':task_list,
          'task_code':task_table['code'].iloc[indx],
          'task_file':tfiles,
-         'instruction_dur':[instruction_dur]*len(task_list),
-         'task_dur':[task_dur]*len(task_list)}
+         'instruction_dur':instruction_dur,
+         'task_dur':task_dur}
     R = pd.DataFrame(R)
     R = shuffle_rows(R, keep_in_middle=keep_in_middle)
-    R = add_start_end_times(R, offset, task_dur+instruction_dur, run_time=run_time)
+    R = add_start_end_times(R, offset, run_time=run_time)
     return R
 
 def get_task_class(name, exp_dir=None):
