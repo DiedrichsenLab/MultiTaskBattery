@@ -89,11 +89,28 @@ def make_run_file(task_list,
     """
     Make a single run file.
 
-    instruction_dur and task_dur may each be a scalar (applied to every task)
-    or a per-task list matching task_list, so a single run can mix blocks of
-    different lengths (e.g. task_dur=[30, 30, 70]). The per-task durations are
-    stored as columns and travel with their task through the row shuffle;
-    blocks are then laid out end-to-end by their own duration.
+    Args:
+        task_list (list): Task names for this run (one per block).
+        tfiles (list): Task-file name for each block, matching task_list.
+        offset (float): Start time of the first block (e.g. to skip dummy scans).
+        instruction_dur (float or list): Instruction-period duration. A scalar
+            applies to every block; a per-task list gives each block its own.
+        task_dur (float or list): Task duration. A scalar applies to every block;
+            a per-task list lets a run mix blocks of different lengths
+            (e.g. task_dur=[30, 30, 70]).
+        run_time (float): If set, the last block's end_time is extended to this,
+            so the run lasts run_time (captures overhang from the final task).
+        keep_in_middle (list): Task names to keep away from the first/last block
+            (passed to shuffle_rows).
+        exp_dir (str, Path): Experiment directory, used to load the task table.
+
+    Any list passed for instruction_dur/task_dur must have one value per task.
+    The per-task durations are stored as columns and travel with their task
+    through the row shuffle; blocks are then laid out end-to-end by their own
+    duration.
+
+    Returns:
+        pd.DataFrame: the run file (one row per block, with start/end times).
     """
     task_table = ut.get_task_table(exp_dir)
     # Get rows of the task_table corresponding to the task_list
