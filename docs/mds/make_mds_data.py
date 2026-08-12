@@ -96,7 +96,15 @@ def main():
         if len(ranges) > 1:                      # only emit if there were L/R parts to merge
             add(base, ranges)
 
-    # 3) Whole brain (all greyordinates)
+    # 3) Subcortex: everything that is neither cortex nor cerebellum. The brain
+    # stem has no L/R split in CIFTI, so it only enters the bilateral version.
+    sub_keys = [k for k in base_ranges
+                if not (k.startswith("CORTEX") or k.startswith("CEREBELLUM"))]
+    add("SUBCORTICAL", [base_ranges[k] for k in sub_keys])
+    add("SUBCORTICAL_LEFT", [base_ranges[k] for k in sub_keys if k.endswith("_LEFT")])
+    add("SUBCORTICAL_RIGHT", [base_ranges[k] for k in sub_keys if k.endswith("_RIGHT")])
+
+    # 4) Whole brain (all greyordinates)
     add("WHOLE_BRAIN", list(base_ranges.values()))
 
     out_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "mds_data.json")
