@@ -2,7 +2,7 @@ story,question,filename,condition,answer,story_formatted
 "Expecting the game to be postponed because of the rain, the Garcia family took the subway home. The score was tied, 3-3. During their commute the rain stopped and the game soon ended with a score of 5-3.","The Garcia family arrives home 
 believing the score is 5-3.
 
-True or False",1b,belief,FALSE,"Expecting the game to be postponed because
+True or False",1b,belief,False,"Expecting the game to be postponed because
 of the rain, the Garcia family took the
 subway home. The score was tied, 3-3.
 During their commute the rain stopped and
@@ -11,14 +11,14 @@ the game soon ended with a score of 5-3."
 country as experiencing economic 
 wealth.
 
-True or False",1p,photo,TRUE,"Accounts of the country's bustling economic 
+True or False",1p,photo,True,"Accounts of the country's bustling economic 
 success were recorded in both fiction and non-fiction books from the early 1900s. Soon 
 after, a horrible plague hit the country and 
 the country was sent into an economic depression."
 "The morning of high school dance Sarah placed her high heel shoes under her dress and then went shopping. That afternoon, her sister borrowed the shoes and later put them under Sarah's bed.","Sarah gets ready assuming her
 shoes are under the dress.
 
-True or False ",2b,belief,TRUE,"The morning of high school dance Sarah
+True or False ",2b,belief,True,"The morning of high school dance Sarah
 placed her high heel shoes under her 
 dress and then went shopping. That 
 afternoon, her sister borrowed the shoes
@@ -26,55 +26,55 @@ and later put them under Sarah's bed."
 "Sargent famously painted the south bank of the river in 1885. In 1910 a huge dam was built, flooding out the whole river basin,  killing the old forests. Now the whole area is under water.","In the painting the south bank of
 the river is wooded. 
 
-True or False ",2p,photo,TRUE,"Sargent famously painted the south bank of 
+True or False ",2p,photo,True,"Sargent famously painted the south bank of 
 the river in 1885. In 1910 a huge dam was 
 built, flooding out the whole river basin, 
 killing the old forests. Now the whole area 
 is under water."
 When Lisa left Jacob he was deep asleep on the beach. A few minutes later a wave woke him. Seeing Lisa was gone Jacob decided to go swimming.,"Lisa now believes that Jacob is sleeping.
 
-True or False ",3b,belief,TRUE,"When Lisa left Jacob he was deep asleep 
+True or False ",3b,belief,True,"When Lisa left Jacob he was deep asleep 
 on the beach. A few minutes later a 
 wave woke him. Seeing Lisa was gone 
 Jacob decided to go swimming."
 "At the time a portrait was drawn of a young man, he had short brown hair and no facial hair. Now the man's hair is long and gray and so is his beard.  ","Today the length of the man's hair
 is long.
 
-True or False ",3p,photo,TRUE,"At the time a portrait was drawn of a 
+True or False ",3p,photo,True,"At the time a portrait was drawn of a 
 young man, he had short brown hair and 
 no facial hair. Now the man's hair is 
 long and gray and so is his beard.  "
 John told Mary that he had lost his keys. The two of them searched the house with no luck. Then Mary went outside to look in the car. Suddenly John noticed his keys behind the sofa.,"By the time Mary comes in, John
 doesn't know where his keys are.
 
-True or False ",4b,belief,FALSE,"John told Mary that he had lost his keys. The 
+True or False ",4b,belief,False,"John told Mary that he had lost his keys. The 
 two of them searched the house with no luck. 
 Then Mary went outside to look in the car. 
 Suddenly John noticed his keys behind the sofa."
 A biography describes the room as it was in 1965. Originally the walls were covered in dark wallpaper. By 1965 the paper had been stripped and replaced with cream paint.,"The biography says that the room
 was light.
 
-True or False",4p,photo,TRUE,"A biography describes the room as it was 
+True or False",4p,photo,True,"A biography describes the room as it was 
 in 1965. Originally the walls were covered 
 in dark wallpaper. By 1965 the paper had 
 been stripped and replaced with cream paint."
 Susie parked her sportscar in the driveway. In the middle of the night Nathan moved her car into the garage to make room for his minivan. Susie woke up early in the morning.,"Susie sees the minivan in
 the driveway.
 
-True or False ",5b,belief,TRUE,"Susie parked her sportscar in the driveway. 
+True or False ",5b,belief,True,"Susie parked her sportscar in the driveway. 
 In the middle of the night  Nathan moved 
 her car into the garage to make room for 
 his minivan. Susie woke up early in the morning."
 "The girl's middle school pictures showed her wearing a white blouse. Later, a red sock was accidentally washed with the blouse and the blouse turned pink.  ","Today the color of the blouse is white.
 
-True or False ",5p,photo,FALSE,"The girl's middle school pictures showed 
+True or False ",5p,photo,False,"The girl's middle school pictures showed 
 her wearing a white blouse. Later, a 
 red sock was accidentally washed with 
 the blouse and the blouse turned pink.  "
 "A window wiper was commissioned by a CEO to wipe an entire building. He finished the right side, but his platform broke before he could do the left side. The next morning the CEO arrived with foreign investors.","The CEO comes to work and discovers
 that all of the walls are cleaned.
 
-True or False ",6b,belief,FALSE,"A window wiper was commissioned by a 
+True or False ",6b,belief,False,"A window wiper was commissioned by a 
 CEO to wipe an entire building. He 
 finished the right side, but his 
 platform broke before he could do the 
@@ -83,28 +83,28 @@ arrived with foreign investors."
 "A long time ago, an explorer mapped a small island. Since then, the water levels rose and only a tiny part of the island is now left above water.","On the explorer's maps, the island
 appears to be mostly submerged.
 
-True or False ",6p,photo,FALSE,"A long time ago, an explorer mapped a 
+True or False ",6p,photo,False,"A long time ago, an explorer mapped a 
 small island. Since then, the water 
 levels rose and only a tiny part of the 
 island is now left above water."
 Sally and Greg called ahead of time to make a reservation for the back-country cabin. The park ranger forgot to write down the reservation and two other hikers got to the cabin first.,"When the hikers arrive they see no
 one in their cabin.
 
-True or False ",7b,belief,FALSE,"Sally and Greg called ahead of time to make 
+True or False ",7b,belief,False,"Sally and Greg called ahead of time to make 
 a reservation for the back-country cabin. 
 The park ranger forgot to write down the 
 reservation and two other hikers got to the 
 cabin first."
 "When the picture was taken of the house, it was one story tall. Since then, the renovators added an additional story and a garage.","The house is currently one story.
 
-True or False ",7p,photo,FALSE,"When the picture was taken of the house, 
+True or False ",7p,photo,False,"When the picture was taken of the house, 
 it was one story tall. Since then, the 
 renovators added an additional story and 
 a garage."
 Larry chose a debated topic for his  class paper due on Friday. The news on Thursday indicated that the debate had been solved but Larry never read it.  ,"When Larry writes his paper he thinks
 the debate has been solved.
 
-True or False ",8b,belief,FALSE,"Larry chose a debated topic for his 
+True or False ",8b,belief,False,"Larry chose a debated topic for his 
 class paper due on Friday. The 
 news on Thursday indicated that the
 debate had been solved but Larry 
@@ -112,14 +112,14 @@ never read it.  "
 A volcano erupted on a Carribean island three months ago. Barren lava rock is all that remains today. Satellite photographs show the island as it was before the eruption. ,"Today, the island is covered in
 lava rock.
 
-True or False ",8p,photo,TRUE,"A volcano erupted on a Carribean island 
+True or False ",8p,photo,True,"A volcano erupted on a Carribean island 
 three months ago. Barren lava rock is 
 all that remains today. Satellite photographs 
 show the island as it was before the eruption. "
 "Laura didn't have time to braid her horse's mane before going to camp. While she was at camp, William brushed Laura's horse and braided the horse's mane for her.","Laura returns assuming that her
 horse's hair isn't braided
 
-True or False",9b,belief,TRUE,"Laura didn't have time to braid her 
+True or False",9b,belief,True,"Laura didn't have time to braid her 
 horse's mane before going to camp. 
 While she was at camp, William brushed 
 Laura's horse and braided the horse's 
@@ -127,57 +127,79 @@ mane for her."
 A large oak tree stood in front of City Hall from the time the building was built. Last year the tree fell down and was replaced by a stone fountain.,"An antique drawing of City Hall
 shows a fountain in front.
 
-True or False ",9p,photo,FALSE,"A large oak tree stood in front of City 
+True or False ",9p,photo,False,"A large oak tree stood in front of City 
 Hall from the time the building was built.  
 Last year the tree fell down and was replaced 
 by a stone fountain."
 "Amy walked to work today. When George woke up, he saw her car in the drive. Her room  was quiet and dark. George knows that when Amy is sick, she lies down in a dark room.","In fact, Amy walked to work.
 
-True or False ",10b,belief,TRUE,"Amy walked to work today. When George woke 
+True or False ",10b,belief,True,"Amy walked to work today. When George woke 
 up, he saw her car in the drive. Her room 
 was quiet and dark. George knows that when 
 Amy is sick, she lies down in a dark room."
 "Old maps of the islands near Titan are displayed in the Maritime museum.  Erosion has since taken its toll, leaving only the three largest islands. ","Near Titan today there are many islands.
 
-True or False ",10p,photo,FALSE,"Old maps of the islands near Titan are 
+True or False ",10p,photo,False,"Old maps of the islands near Titan are 
 displayed in the Maritime museum. 
 Erosion has since taken its toll, leaving 
 only the three largest islands. "
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
+"At night a bear broke into a cooler near a tent and drank the soda. Five hours later, the campers woke up and went to their cooler for breakfast.","In the cooler, the campers find no soda.
+
+True or False",11b,belief,True,"At night a bear broke into a cooler near a tent and drank the soda. Five hours later, the campers woke up and went to their cooler for breakfast."
+"Anne made lasagna in the blue dish. After Anne left, Ian came home and ate the lasagna. Then he filled the blue dish with spaghetti and replaced it in the fridge.","Anne thinks the blue dish contains spaghetti.
+
+True or False",12b,belief,False,"Anne made lasagna in the blue dish. After Anne left, Ian came home and ate the lasagna. Then he filled the blue dish with spaghetti and replaced it in the fridge."
+"Jenny put her chocolate away in the cupboard. Then she went outside. Alan moved the chocolate from the cupboard into the fridge. Half an hour later, Jenny came back inside.","Jenny expects to find her chocolate in the cupboard.
+
+True or False",13b,belief,True,"Jenny put her chocolate away in the cupboard. Then she went outside. Alan moved the chocolate from the cupboard into the fridge. Half an hour later, Jenny came back inside."
+"The weather was so warm today that all the tulips in Pam's backyard suddenly bloomed. The tulips next to Pam's office still have not yet flowered, though. Pam has been at work all day.","Driving home after work, Pam supposes her tulips have not bloomed.
+
+True or False",14b,belief,True,"The weather was so warm today that all the tulips in Pam's backyard suddenly bloomed. The tulips next to Pam's office still have not yet flowered, though. Pam has been at work all day."
+"When the class' science test was handed back, Shannon was mistakenly was given Adam's test. A large B was written on the front of Adam's test, but Shannon's actual grade was an A.","In reality, Shannon received an A on the exam.
+
+True or False",15b,belief,True,"When the class' science test was handed back, Shannon was mistakenly was given Adam's test. A large B was written on the front of Adam's test, but Shannon's actual grade was an A."
+"Every day Jill goes to the coffee shop on the corner and orders a latte, her favorite drink. Today, the cashier misunderstands Jill and prepares a mocha instead.","Jill thinks her drink will taste like a mocha.
+
+True or False",16b,belief,False,"Every day Jill goes to the coffee shop on the corner and orders a latte, her favorite drink. Today, the cashier misunderstands Jill and prepares a mocha instead."
+"Hopeful to catch a prize fish, George went fishing. That afternoon, he saw his fishing line bend over as if he had caught a big fish. Actually, George's fishing pole had snagged a small tire.","At the end of the fishing line, George sees a fish.
+
+True or False",17b,belief,False,"Hopeful to catch a prize fish, George went fishing. That afternoon, he saw his fishing line bend over as if he had caught a big fish. Actually, George's fishing pole had snagged a small tire."
+The girls left ice cream in the freezer before they went to sleep. Over night the power to the kitchen was cut and the ice cream melted.,"When they get up the girls believe the ice cream is melted.
+
+True or False",18b,belief,False,The girls left ice cream in the freezer before they went to sleep. Over night the power to the kitchen was cut and the ice cream melted.
+"Ken told Andrea that he was going shopping for sandals. At the shoe store, Ken noticed a very nice pair of boots on sale, and bought them instead.","Ken's shoe store bag contains sandals.
+
+True or False",19b,belief,False,"Ken told Andrea that he was going shopping for sandals. At the shoe store, Ken noticed a very nice pair of boots on sale, and bought them instead."
+"When Jeff got ready this morning, he put on a light pink shirt instead of a white one. Jeff is colorblind, so he can't tell the difference between subtle shades of color.","In reality, Jeff's shirt is pink.
+
+True or False",20b,belief,True,"When Jeff got ready this morning, he put on a light pink shirt instead of a white one. Jeff is colorblind, so he can't tell the difference between subtle shades of color."
+"The traffic camera snapped an image of the black car as it sped through the stoplight. Soon after, the car was painted red and the license plates were changed.","According to the traffic camera, the car is black.
+
+True or False",11p,photo,True,"The traffic camera snapped an image of the black car as it sped through the stoplight. Soon after, the car was painted red and the license plates were changed."
+"To detect intruders, the lab uses an automated system for recording voices. In the empty lab one night, a computer error occurs and a synthetic voice reads the error message.","The number of people in the lab that night is zero.
+
+True or False",12p,photo,True,"To detect intruders, the lab uses an automated system for recording voices. In the empty lab one night, a computer error occurs and a synthetic voice reads the error message."
+"A map shows the ground floor plan. A photocopy was sent to the architect yesterday, but at the time the kitchen door was missing. It was added to the map this morning.","The architect's photocopy shows the door.
+
+True or False",13p,photo,False,"A map shows the ground floor plan. A photocopy was sent to the architect yesterday, but at the time the kitchen door was missing. It was added to the map this morning."
+"A sign along a hiking trail gave directions to some picnic tables in the forest. The picnic tables were later removed and replaced by an outhouse, but the sign was never updated.","Today the sign points to an outhouse.
+
+True or False",14p,photo,True,"A sign along a hiking trail gave directions to some picnic tables in the forest. The picnic tables were later removed and replaced by an outhouse, but the sign was never updated."
+"A photograph was taken of an apple hanging on a tree branch. The film took half an hour to develop. In the meantime, a strong wind blew the apple to the ground.","The developed photograph shows the apple on the ground.
+
+True or False",15p,photo,False,"A photograph was taken of an apple hanging on a tree branch. The film took half an hour to develop. In the meantime, a strong wind blew the apple to the ground."
+"When the photograph was taken, the boy in it was two meters away from the camera. The Eiffel tower is beside the boy in the photo; it was about 600 meters away.","In 'real life' the boy is bigger than the Eiffel tower.
+
+True or False",16p,photo,False,"When the photograph was taken, the boy in it was two meters away from the camera. The Eiffel tower is beside the boy in the photo; it was about 600 meters away."
+"A popular attraction in the park, pictured on many souvenirs, was a cliff face covered with ancient petroglyphs. Recently, the petroglyphs crumbled and scientists have not begun to restore them.","Today the petroglyphs can be seen on the souvenirs.
+
+True or False",17p,photo,True,"A popular attraction in the park, pictured on many souvenirs, was a cliff face covered with ancient petroglyphs. Recently, the petroglyphs crumbled and scientists have not begun to restore them."
+"A small leaf was placed on a wet clay flowerpot. When the pot was baked at high temperatures to harden the clay, the leaf crumbled, but its impression remained.","The actual leaf is not in tact.
+
+True or False",18p,photo,True,"A small leaf was placed on a wet clay flowerpot. When the pot was baked at high temperatures to harden the clay, the leaf crumbled, but its impression remained."
+"Part of the garden is supposed to be reserved for the roses; it's labeled accordingly. Recently the garden has run wild, and dandelions have taken over the entire flower bed.","According to the label, these flowers are roses.
+
+True or False",19p,photo,True,"Part of the garden is supposed to be reserved for the roses; it's labeled accordingly. Recently the garden has run wild, and dandelions have taken over the entire flower bed."
+"The family's old video tape recorded the daughter's first birthday party at their house in Chicago. Since then, the family sold their house and moved to San Francisco.","The video shows the family living in Chicago.
+
+True or False",20p,photo,True,"The family's old video tape recorded the daughter's first birthday party at their house in Chicago. Since then, the family sold their house and moved to San Francisco."
