@@ -145,61 +145,130 @@ Erosion has since taken its toll, leaving
 only the three largest islands. "
 "At night a bear broke into a cooler near a tent and drank the soda. Five hours later, the campers woke up and went to their cooler for breakfast.","In the cooler, the campers find no soda.
 
-True or False",11b,belief,True,"At night a bear broke into a cooler near a tent and drank the soda. Five hours later, the campers woke up and went to their cooler for breakfast."
-"Anne made lasagna in the blue dish. After Anne left, Ian came home and ate the lasagna. Then he filled the blue dish with spaghetti and replaced it in the fridge.","Anne thinks the blue dish contains spaghetti.
-
-True or False",12b,belief,False,"Anne made lasagna in the blue dish. After Anne left, Ian came home and ate the lasagna. Then he filled the blue dish with spaghetti and replaced it in the fridge."
-"Jenny put her chocolate away in the cupboard. Then she went outside. Alan moved the chocolate from the cupboard into the fridge. Half an hour later, Jenny came back inside.","Jenny expects to find her chocolate in the cupboard.
-
-True or False",13b,belief,True,"Jenny put her chocolate away in the cupboard. Then she went outside. Alan moved the chocolate from the cupboard into the fridge. Half an hour later, Jenny came back inside."
-"The weather was so warm today that all the tulips in Pam's backyard suddenly bloomed. The tulips next to Pam's office still have not yet flowered, though. Pam has been at work all day.","Driving home after work, Pam supposes her tulips have not bloomed.
-
-True or False",14b,belief,True,"The weather was so warm today that all the tulips in Pam's backyard suddenly bloomed. The tulips next to Pam's office still have not yet flowered, though. Pam has been at work all day."
-"When the class' science test was handed back, Shannon was mistakenly was given Adam's test. A large B was written on the front of Adam's test, but Shannon's actual grade was an A.","In reality, Shannon received an A on the exam.
-
-True or False",15b,belief,True,"When the class' science test was handed back, Shannon was mistakenly was given Adam's test. A large B was written on the front of Adam's test, but Shannon's actual grade was an A."
-"Every day Jill goes to the coffee shop on the corner and orders a latte, her favorite drink. Today, the cashier misunderstands Jill and prepares a mocha instead.","Jill thinks her drink will taste like a mocha.
-
-True or False",16b,belief,False,"Every day Jill goes to the coffee shop on the corner and orders a latte, her favorite drink. Today, the cashier misunderstands Jill and prepares a mocha instead."
-"Hopeful to catch a prize fish, George went fishing. That afternoon, he saw his fishing line bend over as if he had caught a big fish. Actually, George's fishing pole had snagged a small tire.","At the end of the fishing line, George sees a fish.
-
-True or False",17b,belief,False,"Hopeful to catch a prize fish, George went fishing. That afternoon, he saw his fishing line bend over as if he had caught a big fish. Actually, George's fishing pole had snagged a small tire."
-The girls left ice cream in the freezer before they went to sleep. Over night the power to the kitchen was cut and the ice cream melted.,"When they get up the girls believe the ice cream is melted.
-
-True or False",18b,belief,False,The girls left ice cream in the freezer before they went to sleep. Over night the power to the kitchen was cut and the ice cream melted.
-"Ken told Andrea that he was going shopping for sandals. At the shoe store, Ken noticed a very nice pair of boots on sale, and bought them instead.","Ken's shoe store bag contains sandals.
-
-True or False",19b,belief,False,"Ken told Andrea that he was going shopping for sandals. At the shoe store, Ken noticed a very nice pair of boots on sale, and bought them instead."
-"When Jeff got ready this morning, he put on a light pink shirt instead of a white one. Jeff is colorblind, so he can't tell the difference between subtle shades of color.","In reality, Jeff's shirt is pink.
-
-True or False",20b,belief,True,"When Jeff got ready this morning, he put on a light pink shirt instead of a white one. Jeff is colorblind, so he can't tell the difference between subtle shades of color."
+True or False",11b,belief,True,"At night a bear broke into a cooler near a
+tent and drank the soda. Five hours later,
+the campers woke up and went to their cooler
+for breakfast."
 "The traffic camera snapped an image of the black car as it sped through the stoplight. Soon after, the car was painted red and the license plates were changed.","According to the traffic camera, the car is black.
 
-True or False",11p,photo,True,"The traffic camera snapped an image of the black car as it sped through the stoplight. Soon after, the car was painted red and the license plates were changed."
+True or False",11p,photo,True,"The traffic camera snapped an image of the
+black car as it sped through the stoplight.
+Soon after, the car was painted red and the
+license plates were changed."
+"Anne made lasagna in the blue dish. After Anne left, Ian came home and ate the lasagna. Then he filled the blue dish with spaghetti and replaced it in the fridge.","Anne thinks the blue dish contains spaghetti.
+
+True or False",12b,belief,False,"Anne made lasagna in the blue dish. After
+Anne left, Ian came home and ate the
+lasagna. Then he filled the blue dish with
+spaghetti and replaced it in the fridge."
 "To detect intruders, the lab uses an automated system for recording voices. In the empty lab one night, a computer error occurs and a synthetic voice reads the error message.","The number of people in the lab that night is zero.
 
-True or False",12p,photo,True,"To detect intruders, the lab uses an automated system for recording voices. In the empty lab one night, a computer error occurs and a synthetic voice reads the error message."
+True or False",12p,photo,True,"To detect intruders, the lab uses an
+automated system for recording voices. In
+the empty lab one night, a computer error
+occurs and a synthetic voice reads the error
+message."
+"Jenny put her chocolate away in the cupboard. Then she went outside. Alan moved the chocolate from the cupboard into the fridge. Half an hour later, Jenny came back inside.","Jenny expects to find her chocolate in the cupboard.
+
+True or False",13b,belief,True,"Jenny put her chocolate away in the
+cupboard. Then she went outside. Alan moved
+the chocolate from the cupboard into the
+fridge. Half an hour later, Jenny came back
+inside."
 "A map shows the ground floor plan. A photocopy was sent to the architect yesterday, but at the time the kitchen door was missing. It was added to the map this morning.","The architect's photocopy shows the door.
 
-True or False",13p,photo,False,"A map shows the ground floor plan. A photocopy was sent to the architect yesterday, but at the time the kitchen door was missing. It was added to the map this morning."
+True or False",13p,photo,False,"A map shows the ground floor plan. A
+photocopy was sent to the architect
+yesterday, but at the time the kitchen door
+was missing. It was added to the map this
+morning."
+"The weather was so warm today that all the tulips in Pam's backyard suddenly bloomed. The tulips next to Pam's office still have not yet flowered, though. Pam has been at work all day.","Driving home after work, Pam supposes her tulips have not bloomed.
+
+True or False",14b,belief,True,"The weather was so warm today that all the
+tulips in Pam's backyard suddenly bloomed.
+The tulips next to Pam's office still have
+not yet flowered, though. Pam has been at
+work all day."
 "A sign along a hiking trail gave directions to some picnic tables in the forest. The picnic tables were later removed and replaced by an outhouse, but the sign was never updated.","Today the sign points to an outhouse.
 
-True or False",14p,photo,True,"A sign along a hiking trail gave directions to some picnic tables in the forest. The picnic tables were later removed and replaced by an outhouse, but the sign was never updated."
+True or False",14p,photo,True,"A sign along a hiking trail gave directions
+to some picnic tables in the forest. The
+picnic tables were later removed and
+replaced by an outhouse, but the sign was
+never updated."
+"When the class' science test was handed back, Shannon was mistakenly was given Adam's test. A large B was written on the front of Adam's test, but Shannon's actual grade was an A.","In reality, Shannon received an A on the exam.
+
+True or False",15b,belief,True,"When the class' science test was handed
+back, Shannon was mistakenly was given
+Adam's test. A large B was written on the
+front of Adam's test, but Shannon's actual
+grade was an A."
 "A photograph was taken of an apple hanging on a tree branch. The film took half an hour to develop. In the meantime, a strong wind blew the apple to the ground.","The developed photograph shows the apple on the ground.
 
-True or False",15p,photo,False,"A photograph was taken of an apple hanging on a tree branch. The film took half an hour to develop. In the meantime, a strong wind blew the apple to the ground."
+True or False",15p,photo,False,"A photograph was taken of an apple hanging
+on a tree branch. The film took half an hour
+to develop. In the meantime, a strong wind
+blew the apple to the ground."
+"Every day Jill goes to the coffee shop on the corner and orders a latte, her favorite drink. Today, the cashier misunderstands Jill and prepares a mocha instead.","Jill thinks her drink will taste like a mocha.
+
+True or False",16b,belief,False,"Every day Jill goes to the coffee shop on
+the corner and orders a latte, her favorite
+drink. Today, the cashier misunderstands
+Jill and prepares a mocha instead."
 "When the photograph was taken, the boy in it was two meters away from the camera. The Eiffel tower is beside the boy in the photo; it was about 600 meters away.","In 'real life' the boy is bigger than the Eiffel tower.
 
-True or False",16p,photo,False,"When the photograph was taken, the boy in it was two meters away from the camera. The Eiffel tower is beside the boy in the photo; it was about 600 meters away."
+True or False",16p,photo,False,"When the photograph was taken, the boy in it
+was two meters away from the camera. The
+Eiffel tower is beside the boy in the photo;
+it was about 600 meters away."
+"Hopeful to catch a prize fish, George went fishing. That afternoon, he saw his fishing line bend over as if he had caught a big fish. Actually, George's fishing pole had snagged a small tire.","At the end of the fishing line, George sees a fish.
+
+True or False",17b,belief,False,"Hopeful to catch a prize fish, George went
+fishing. That afternoon, he saw his fishing
+line bend over as if he had caught a big
+fish. Actually, George's fishing pole had
+snagged a small tire."
 "A popular attraction in the park, pictured on many souvenirs, was a cliff face covered with ancient petroglyphs. Recently, the petroglyphs crumbled and scientists have not begun to restore them.","Today the petroglyphs can be seen on the souvenirs.
 
-True or False",17p,photo,True,"A popular attraction in the park, pictured on many souvenirs, was a cliff face covered with ancient petroglyphs. Recently, the petroglyphs crumbled and scientists have not begun to restore them."
+True or False",17p,photo,True,"A popular attraction in the park, pictured
+on many souvenirs, was a cliff face covered
+with ancient petroglyphs. Recently, the
+petroglyphs crumbled and scientists have not
+begun to restore them."
+The girls left ice cream in the freezer before they went to sleep. Over night the power to the kitchen was cut and the ice cream melted.,"When they get up the girls believe the ice cream is melted.
+
+True or False",18b,belief,False,"The girls left ice cream in the freezer
+before they went to sleep. Over night the
+power to the kitchen was cut and the ice
+cream melted."
 "A small leaf was placed on a wet clay flowerpot. When the pot was baked at high temperatures to harden the clay, the leaf crumbled, but its impression remained.","The actual leaf is not in tact.
 
-True or False",18p,photo,True,"A small leaf was placed on a wet clay flowerpot. When the pot was baked at high temperatures to harden the clay, the leaf crumbled, but its impression remained."
+True or False",18p,photo,True,"A small leaf was placed on a wet clay
+flowerpot. When the pot was baked at high
+temperatures to harden the clay, the leaf
+crumbled, but its impression remained."
+"Ken told Andrea that he was going shopping for sandals. At the shoe store, Ken noticed a very nice pair of boots on sale, and bought them instead.","Ken's shoe store bag contains sandals.
+
+True or False",19b,belief,False,"Ken told Andrea that he was going shopping
+for sandals. At the shoe store, Ken noticed
+a very nice pair of boots on sale, and
+bought them instead."
 "Part of the garden is supposed to be reserved for the roses; it's labeled accordingly. Recently the garden has run wild, and dandelions have taken over the entire flower bed.","According to the label, these flowers are roses.
 
-True or False",19p,photo,True,"Part of the garden is supposed to be reserved for the roses; it's labeled accordingly. Recently the garden has run wild, and dandelions have taken over the entire flower bed."
+True or False",19p,photo,True,"Part of the garden is supposed to be
+reserved for the roses; it's labeled
+accordingly. Recently the garden has run
+wild, and dandelions have taken over the
+entire flower bed."
+"When Jeff got ready this morning, he put on a light pink shirt instead of a white one. Jeff is colorblind, so he can't tell the difference between subtle shades of color.","In reality, Jeff's shirt is pink.
+
+True or False",20b,belief,True,"When Jeff got ready this morning, he put on
+a light pink shirt instead of a white one.
+Jeff is colorblind, so he can't tell the
+difference between subtle shades of color."
 "The family's old video tape recorded the daughter's first birthday party at their house in Chicago. Since then, the family sold their house and moved to San Francisco.","The video shows the family living in Chicago.
 
-True or False",20p,photo,True,"The family's old video tape recorded the daughter's first birthday party at their house in Chicago. Since then, the family sold their house and moved to San Francisco."
+True or False",20p,photo,True,"The family's old video tape recorded the
+daughter's first birthday party at their
+house in Chicago. Since then, the family
+sold their house and moved to San Francisco."
