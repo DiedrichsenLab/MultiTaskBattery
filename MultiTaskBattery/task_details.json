@@ -503,7 +503,7 @@
     "tongue_movement": {
         "short_description": "Participants move their tongue right to left against the upper premolar teeth, paced by a flashing circle around a fixation cross.",
         "detailed_description": "Participants move their tongue from right to left, touching their upper premolar teeth on each side. A flashing black circle around a fixation crosshair guides the rhythm at 1-second periods: a black circle cues a movement to the right, no circle cues a movement to the left. The task targets tongue-related somatomotor activation.",
-        "reference": "A Third Somatomotor Representation in the Human Cerebellum (Bucknet et al., 2022)",
+        "reference": "A Third Somatomotor Representation in the Human Cerebellum (Saadon-Grosmanet al., 2022)",
         "recorded_metrics": "None",
         "task_file_columns": {
             "trial_num": {
