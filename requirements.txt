@@ -1,3 +1,7 @@
+# Linux: wxPython (a hard dependency of psychopy) has no wheels on PyPI, so pip fails building it
+# Pull prebuilt wheels from the wxPython  server instead
+-f https://extras.wxpython.org/wxPython4/extras/linux/gtk3/ubuntu-24.04/
+
 psychopy==2026.1.3
 pandas
 numpy>=1.26.4
