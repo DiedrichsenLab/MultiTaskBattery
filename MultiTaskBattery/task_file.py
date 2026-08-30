@@ -54,24 +54,27 @@ def move_edge_tasks_to_middle(dataframe, keep_in_middle):
     return dataframe
 
 
-def add_start_end_times(dataframe, offset, task_dur, run_time=None):
+def add_start_end_times(dataframe, offset, run_time=None):
     """
-    adds start and end times to the dataframe
+    Lay blocks end-to-end using each row's own instruction_dur + task_dur, so
+    blocks in a run can have different lengths.
 
     Args:
-        dataframe (dataframe): dataframe to be shuffled
-        offset (float): offset of the task
-        task_dur (float): duration of the task
-        run_time (float): Time (in seconds) that the run should last. Use this to ensure the last task runs until the end of the imaging run
+        dataframe (dataframe): the run dataframe (rows already in final order,
+            with 'instruction_dur' and 'task_dur' columns)
+        offset (float): start time of the first block
+        run_time (float): if set, the last block's end_time is extended to this
+            (e.g. to capture activity overhang from the final task in a run)
     Returns:
-        dataframe (dataframe): dataframe with start and end times
+        dataframe (dataframe): dataframe with start_time and end_time columns
     """
-    dataframe['start_time'] = np.arange(offset, offset + len(dataframe)*task_dur, task_dur)
-    dataframe['end_time']   = dataframe['start_time'] + task_dur
+    block_dur = dataframe['instruction_dur'] + dataframe['task_dur']
+    dataframe['start_time'] = offset + block_dur.cumsum().shift(fill_value=0)
+    dataframe['end_time']   = dataframe['start_time'] + block_dur
     if run_time:
         if run_time < dataframe['end_time'].iloc[-1]:
             raise ValueError('Run time is shorter than the last task')
-        # Add add_end_time seconds to the last task to ensure the task runs until the end of the run (e.g. for capturing the activity overhang from the final task in an imaging run)
+        # Extend the last block's end so the run lasts run_time (captures overhang).
         dataframe.loc[dataframe.index[-1], 'end_time'] = run_time
     return dataframe
 
@@ -84,19 +87,48 @@ def make_run_file(task_list,
                   keep_in_middle=None,
                   exp_dir=None):
     """
-    Make a single run file
+    Make a single run file.
+
+    Args:
+        task_list (list): Task names for this run (one per block).
+        tfiles (list): Task-file name for each block, matching task_list.
+        offset (float): Start time of the first block (e.g. to skip dummy scans).
+        instruction_dur (float or list): Instruction-period duration. A scalar
+            applies to every block; a per-task list gives each block its own.
+        task_dur (float or list): Task duration. A scalar applies to every block;
+            a per-task list lets a run mix blocks of different lengths
+            (e.g. task_dur=[30, 30, 70]).
+        run_time (float): If set, the last block's end_time is extended to this,
+            so the run lasts run_time (captures overhang from the final task).
+        keep_in_middle (list): Task names to keep away from the first/last block
+            (passed to shuffle_rows).
+        exp_dir (str, Path): Experiment directory, used to load the task table.
+
+    Any list passed for instruction_dur/task_dur must have one value per task.
+    The per-task durations are stored as columns and travel with their task
+    through the row shuffle; blocks are then laid out end-to-end by their own
+    duration.
+
+    Returns:
+        pd.DataFrame: the run file (one row per block, with start/end times).
     """
     task_table = ut.get_task_table(exp_dir)
     # Get rows of the task_table corresponding to the task_list
     indx = [np.where(task_table['name']==t)[0][0] for t in task_list]
+    n = len(task_list)
+    # A single duration applies to every task; a list gives per-task durations.
+    if not isinstance(instruction_dur, (list, tuple)):
+        instruction_dur = [instruction_dur] * n
+    if not isinstance(task_dur, (list, tuple)):
+        task_dur = [task_dur] * n
     R = {'task_name':task_list,
          'task_code':task_table['code'].iloc[indx],
          'task_file':tfiles,
-         'instruction_dur':[instruction_dur]*len(task_list),
-         'task_dur':[task_dur]*len(task_list)}
+         'instruction_dur':instruction_dur,
+         'task_dur':task_dur}
     R = pd.DataFrame(R)
     R = shuffle_rows(R, keep_in_middle=keep_in_middle)
-    R = add_start_end_times(R, offset, task_dur+instruction_dur, run_time=run_time)
+    R = add_start_end_times(R, offset, run_time=run_time)
     return R
 
 def get_task_class(name, exp_dir=None):
@@ -381,11 +413,11 @@ class MotorLocalizer(TaskFile):
     def make_task_file(self,
                         task_dur=30,
                         trial_dur=1,
-                        conditions=['hand', 'foot', 'tongue'],
+                        condition=['hand', 'foot', 'tongue'],
                         file_name=None):
         """
         Create a motor-localizer task file. The block is split into one equal
-        segment per condition (segment_dur = task_dur / len(conditions), e.g.
+        segment per condition (segment_dur = task_dur / len(condition), e.g.
         10 s each for three conditions in a 30 s block) and the condition order
         is RANDOMISED for the block. Within a condition's segment the circle
         toggles present (trial_type=1) / absent (trial_type=0) every trial_dur
@@ -401,13 +433,13 @@ class MotorLocalizer(TaskFile):
         Args:
             task_dur (float): Total block duration in seconds.
             trial_dur (float): Circle on/off toggle interval within a segment (seconds).
-            conditions (list): Condition labels (body parts); each gets an equal, randomly ordered share of the block.
+            condition (str or list): Condition label(s), e.g. body parts; each gets an equal, randomly ordered share of the block.
             file_name (str): Name of the file to save the task data.
 
         Returns:
             pd.DataFrame: Task information as a DataFrame.
         """
-        order = list(conditions)
+        order = [condition] if isinstance(condition, str) else list(condition)
         random.shuffle(order)                            # random condition order for this block
         segment_dur = task_dur / len(order)              # equal time per condition
         n_phases = int(round(segment_dur / trial_dur))   # circle toggles within each segment
@@ -964,6 +996,7 @@ class DemandGrid(TaskFile):
                    question_dur=3,
                    sequence_dur=4,
                    iti_dur=0.5,
+                   condition=None,
                    file_name=None):
         """
         Create a task file with the specified parameters.
@@ -1021,6 +1054,10 @@ class DemandGrid(TaskFile):
                 'start_time': current_time,
                 'end_time': current_time + trial_dur + iti_dur
             }
+            # Optional difficulty label (e.g. 'easy'/'hard' for the MD localizer),
+            # written only when provided so existing task files are unchanged.
+            if condition is not None:
+                trial['condition'] = condition
             trial_info.append(trial)
 
             # Update for the next trial:

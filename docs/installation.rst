@@ -49,12 +49,18 @@ Step 3: Create a Virtual Environment
 
 Step 4: Install Dependencies
 ----------------------------
-Make sure you upgrade pip first, then install the required packages from the `requirements.txt` file.
+Make sure you upgrade pip first, then install the required packages.
 
 ::
 
     pip install --upgrade pip
-    pip install -r requirements.txt
+    python install.py
+
+``install.py`` installs everything from ``requirements.txt``. On Linux it also
+detects your distribution and fetches a prebuilt wxPython wheel (wxPython has no
+Linux wheels on PyPI, so a plain pip install would fail trying to compile it).
+On Windows and macOS it is equivalent to ``pip install -r requirements.txt``,
+which you can still use directly.
 
 Step 5: Add to Python Path
 --------------------------

@@ -1,3 +1,10 @@
+# Linux only: wxPython (needed by psychopy) has no Linux wheels on PyPI, so pip
+# tries to compile it from source and fails. Prebuilt wheels exist per distro. Install.py will download the correct wheel for your distro and install it.
+-f https://extras.wxpython.org/wxPython4/extras/linux/gtk3/${MTB_WX_DISTRO}/
+# Never compile wxPython from source: use the newest version that has a wheel
+# (PyPI's newest is source-only on Linux, which would otherwise always win).
+--only-binary wxPython
+
 psychopy==2026.1.3
 pandas
 numpy>=1.26.4

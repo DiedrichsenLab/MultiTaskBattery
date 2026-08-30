@@ -365,7 +365,7 @@
     },
     "theory_of_mind": {
         "short_description": "Participants read a short story, followed by a statement they must judge as true or false.",
-        "reference": "Saxe, R. and Kanwisher, N. (2003) People thinking about thinking people: The role of the temporo-parietal junction in “theory of mind”, NeuroImage, 19(4), pp. 1835-1842.",
+        "reference": "Dodell-Feder, D., Koster-Hale, J., Bedny, M., & Saxe, R. (2011). fMRI item analysis in a theory of mind task. NeuroImage, 55(2), 705-712. Saxe, R. and Kanwisher, N. (2003) People thinking about thinking people: The role of the temporo-parietal junction in “theory of mind”, NeuroImage, 19(4), pp. 1835-1842.",
         "conditions": "belief, photo",
         "recorded_metrics": "Accuracy + RT",
         "detailed_description": "Participants read short stories. Each story is followed by a statement and a true/false judgment. In the belief condition, stories require inferring what another person believes, even if this belief does not match the state of the world (false belief); in the photo condition, stories require reasoning about outdated content of a physical or external representation such as a photograph, a map or a book, whose information no longer accurate. Both conditions are matched in structure (each involves holding a mental representation that conflicts with the current reality). Only the belief condition involves another person's mind. Participants press a button to indicate whether the statement about the story is true or false. Task is designed to engage mentalizing (theory of mind): reasoning about other people's mental states. After each response, the participant receives trial-specific feedback: a green check mark for a correct answer and a red cross for an incorrect one.",
@@ -503,7 +503,7 @@
     "tongue_movement": {
         "short_description": "Participants move their tongue right to left against the upper premolar teeth, paced by a flashing circle around a fixation cross.",
         "detailed_description": "Participants move their tongue from right to left, touching their upper premolar teeth on each side. A flashing black circle around a fixation crosshair guides the rhythm at 1-second periods: a black circle cues a movement to the right, no circle cues a movement to the left. The task targets tongue-related somatomotor activation.",
-        "reference": "A Third Somatomotor Representation in the Human Cerebellum (Bucknet et al., 2022)",
+        "reference": "A Third Somatomotor Representation in the Human Cerebellum (Saadon-Grosmanet al., 2022)",
         "recorded_metrics": "None",
         "task_file_columns": {
             "trial_num": {
