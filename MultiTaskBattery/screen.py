@@ -110,13 +110,14 @@ class Screen:
                 Returns:
                     None
         """
-        # Draw the check mark
+        # Draw the check mark as a filled outline (two thick lines leave a notch
+        # where they meet), in height units so it keeps its shape on any screen
         check = visual.ShapeStim(self.window,
-            vertices=((-0.04, 0.005), (-0.017, -0.025), (0.035, 0.06),
-                      (0.052, 0.045), (-0.014, -0.062), (-0.055, 0.017)),
+            vertices=((-0.030, 0.012), (-0.011, -0.009), (0.034, 0.045),
+                      (0.051, 0.031), (-0.010, -0.042), (-0.046, -0.003)),
             fillColor=color,
             lineColor=None,
-            units='norm'
+            units='height'
         )
         check.draw()
 

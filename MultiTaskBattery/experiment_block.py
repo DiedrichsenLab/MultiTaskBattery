@@ -142,7 +142,8 @@ class Experiment:
             # clear keys in buffer
             event.clearEvents()
 
-            print(f"Starting task {t_num+1}: {task.name}")
+            # padded, to overwrite the TR counter line (printed with end='\r')
+            print(f"Starting task {t_num+1}: {task.name}".ljust(60))
 
             # Take the task data from the run_info dataframe
             r_data = self.run_info.iloc[t_num].copy()
