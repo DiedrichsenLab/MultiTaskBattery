@@ -18,8 +18,9 @@ class Screen:
         self.units    = 'deg'
         self.color    = '#808080'
         self.size     = const['size'] #[800, 800] #[1440, 900]
-        self.distance = 57.0
-        self.width    = 30.0
+        # physical width of the screen and eye-to-screen distance (cm); used to convert deg / cm to pixels
+        self.distance = const.get('distance', 57.0)
+        self.width    = const.get('width', 30.0)
         self.allowGUI = True
         self.screen_number = const['number']
         self.monitor  = monitors.Monitor(
