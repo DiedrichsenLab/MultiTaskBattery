@@ -112,10 +112,10 @@ class Screen:
         """
         # Draw the check mark
         check = visual.ShapeStim(self.window,
-            vertices=((-0.04,0), (0, -0.06), (0.04, 0.06)),
-            lineWidth=20,
-            closeShape=False,
-            lineColor=color,
+            vertices=((-0.04, 0.005), (-0.017, -0.025), (0.035, 0.06),
+                      (0.052, 0.045), (-0.014, -0.062), (-0.055, 0.017)),
+            fillColor=color,
+            lineColor=None,
             units='norm'
         )
         check.draw()
