@@ -18,8 +18,9 @@ class Screen:
         self.units    = 'deg'
         self.color    = '#808080'
         self.size     = const['size'] #[800, 800] #[1440, 900]
-        self.distance = 57.0
-        self.width    = 30.0
+        # physical width of the screen and eye-to-screen distance (cm); used to convert deg / cm to pixels
+        self.distance = const.get('distance', 57.0)
+        self.width    = const.get('width', 30.0)
         self.allowGUI = True
         self.screen_number = const['number']
         self.monitor  = monitors.Monitor(
@@ -109,13 +110,14 @@ class Screen:
                 Returns:
                     None
         """
-        # Draw the check mark
+        # Draw the check mark as a filled outline (two thick lines leave a notch
+        # where they meet), in height units so it keeps its shape on any screen
         check = visual.ShapeStim(self.window,
-            vertices=((-0.04,0), (0, -0.06), (0.04, 0.06)),
-            lineWidth=20,
-            closeShape=False,
-            lineColor=color,
-            units='norm'
+            vertices=((-0.030, 0.012), (-0.011, -0.009), (0.034, 0.045),
+                      (0.051, 0.031), (-0.010, -0.042), (-0.046, -0.003)),
+            fillColor=color,
+            lineColor=None,
+            units='height'
         )
         check.draw()
 

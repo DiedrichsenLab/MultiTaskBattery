@@ -85,6 +85,7 @@ def make_run_file(task_list,
                   task_dur = 30,
                   run_time = None,
                   keep_in_middle=None,
+                  shuffle=True,
                   exp_dir=None):
     """
     Make a single run file.
@@ -102,6 +103,8 @@ def make_run_file(task_list,
             so the run lasts run_time (captures overhang from the final task).
         keep_in_middle (list): Task names to keep away from the first/last block
             (passed to shuffle_rows).
+        shuffle (bool): If False, the blocks are kept in the order given in
+            task_list (for designs that need a fixed block order).
         exp_dir (str, Path): Experiment directory, used to load the task table.
 
     Any list passed for instruction_dur/task_dur must have one value per task.
@@ -127,7 +130,8 @@ def make_run_file(task_list,
          'instruction_dur':instruction_dur,
          'task_dur':task_dur}
     R = pd.DataFrame(R)
-    R = shuffle_rows(R, keep_in_middle=keep_in_middle)
+    if shuffle:
+        R = shuffle_rows(R, keep_in_middle=keep_in_middle)
     R = add_start_end_times(R, offset, run_time=run_time)
     return R
 
