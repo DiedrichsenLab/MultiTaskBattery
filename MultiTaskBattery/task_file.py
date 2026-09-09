@@ -1580,7 +1580,7 @@ class Movie(TaskFile):
             iti_dur (float): Inter-trial interval duration in seconds.
             file_name (str): Name of the file to save the task data.
             stim_file (str): Optional path to a custom stimulus CSV.
-            condition (str): Which clips to use ('romance', 'nature', "animation", "narrative" or
+            condition (str): Which clips to use ('romance', 'nature', "animation", "training" or
                 'landscape'). If None, all non-practice clips are used.
             media_scale (float): Clip width as a fraction of the window width.
 
