@@ -54,24 +54,27 @@ def move_edge_tasks_to_middle(dataframe, keep_in_middle):
     return dataframe
 
 
-def add_start_end_times(dataframe, offset, task_dur, run_time=None):
+def add_start_end_times(dataframe, offset, run_time=None):
     """
-    adds start and end times to the dataframe
+    Lay blocks end-to-end using each row's own instruction_dur + task_dur, so
+    blocks in a run can have different lengths.
 
     Args:
-        dataframe (dataframe): dataframe to be shuffled
-        offset (float): offset of the task
-        task_dur (float): duration of the task
-        run_time (float): Time (in seconds) that the run should last. Use this to ensure the last task runs until the end of the imaging run
+        dataframe (dataframe): the run dataframe (rows already in final order,
+            with 'instruction_dur' and 'task_dur' columns)
+        offset (float): start time of the first block
+        run_time (float): if set, the last block's end_time is extended to this
+            (e.g. to capture activity overhang from the final task in a run)
     Returns:
-        dataframe (dataframe): dataframe with start and end times
+        dataframe (dataframe): dataframe with start_time and end_time columns
     """
-    dataframe['start_time'] = np.arange(offset, offset + len(dataframe)*task_dur, task_dur)
-    dataframe['end_time']   = dataframe['start_time'] + task_dur
+    block_dur = dataframe['instruction_dur'] + dataframe['task_dur']
+    dataframe['start_time'] = offset + block_dur.cumsum().shift(fill_value=0)
+    dataframe['end_time']   = dataframe['start_time'] + block_dur
     if run_time:
         if run_time < dataframe['end_time'].iloc[-1]:
             raise ValueError('Run time is shorter than the last task')
-        # Add add_end_time seconds to the last task to ensure the task runs until the end of the run (e.g. for capturing the activity overhang from the final task in an imaging run)
+        # Extend the last block's end so the run lasts run_time (captures overhang).
         dataframe.loc[dataframe.index[-1], 'end_time'] = run_time
     return dataframe
 
@@ -81,30 +84,68 @@ def make_run_file(task_list,
                   instruction_dur = 5,
                   task_dur = 30,
                   run_time = None,
-                  keep_in_middle=None):
+                  keep_in_middle=None,
+                  shuffle=True,
+                  exp_dir=None):
     """
-    Make a single run file
+    Make a single run file.
+
+    Args:
+        task_list (list): Task names for this run (one per block).
+        tfiles (list): Task-file name for each block, matching task_list.
+        offset (float): Start time of the first block (e.g. to skip dummy scans).
+        instruction_dur (float or list): Instruction-period duration. A scalar
+            applies to every block; a per-task list gives each block its own.
+        task_dur (float or list): Task duration. A scalar applies to every block;
+            a per-task list lets a run mix blocks of different lengths
+            (e.g. task_dur=[30, 30, 70]).
+        run_time (float): If set, the last block's end_time is extended to this,
+            so the run lasts run_time (captures overhang from the final task).
+        keep_in_middle (list): Task names to keep away from the first/last block
+            (passed to shuffle_rows).
+        shuffle (bool): If False, the blocks are kept in the order given in
+            task_list (for designs that need a fixed block order).
+        exp_dir (str, Path): Experiment directory, used to load the task table.
+
+    Any list passed for instruction_dur/task_dur must have one value per task.
+    The per-task durations are stored as columns and travel with their task
+    through the row shuffle; blocks are then laid out end-to-end by their own
+    duration.
+
+    Returns:
+        pd.DataFrame: the run file (one row per block, with start/end times).
     """
+    task_table = ut.get_task_table(exp_dir)
     # Get rows of the task_table corresponding to the task_list
-    indx = [np.where(ut.task_table['name']==t)[0][0] for t in task_list]
+    indx = [np.where(task_table['name']==t)[0][0] for t in task_list]
+    n = len(task_list)
+    # A single duration applies to every task; a list gives per-task durations.
+    if not isinstance(instruction_dur, (list, tuple)):
+        instruction_dur = [instruction_dur] * n
+    if not isinstance(task_dur, (list, tuple)):
+        task_dur = [task_dur] * n
     R = {'task_name':task_list,
-         'task_code':ut.task_table['code'].iloc[indx],
+         'task_code':task_table['code'].iloc[indx],
          'task_file':tfiles,
-         'instruction_dur':[instruction_dur]*len(task_list)}
+         'instruction_dur':instruction_dur,
+         'task_dur':task_dur}
     R = pd.DataFrame(R)
-    R = shuffle_rows(R, keep_in_middle=keep_in_middle)
-    R = add_start_end_times(R, offset, task_dur+instruction_dur, run_time=run_time)
+    if shuffle:
+        R = shuffle_rows(R, keep_in_middle=keep_in_middle)
+    R = add_start_end_times(R, offset, run_time=run_time)
     return R
 
-def get_task_class(name):
+def get_task_class(name, exp_dir=None):
     """Creates an object of the task class based on the task name
     Args:
         name (str): name of the task
+        exp_dir (str, path, optional): path to the experiment directory
     Returns:
         class_name (str): class name for task
     """
-    index = np.where(ut.task_table['name']==name)[0][0]
-    class_name = ut.task_table.iloc[index]['task_class']
+    task_table = ut.get_task_table(exp_dir)
+    index = np.where(task_table['name']==name)[0][0]
+    class_name = task_table.iloc[index]['task_class']
     return class_name
 
 class TaskFile():
@@ -113,6 +154,7 @@ class TaskFile():
         Args:
             const: module for constants
         """
+        self.const              = const
         self.exp_name           = const.exp_name
         self.task_dir           = const.task_dir
         self.stim_dir           = const.stim_dir
@@ -120,7 +162,7 @@ class TaskFile():
         self.half_assigned      = False # whether the stimuli have assigne halves or not (for assigning different stimuli to different participants)
 
 
-class NBack(TaskFile):
+class NBack(TaskFile): # with the 5 stimuli used here only 1-back/2-back/3-back is safe and tested
     def __init__(self, const):
         super().__init__(const)
         self.name = 'n_back'
@@ -132,12 +174,30 @@ class NBack(TaskFile):
                         trial_dur = 2,
                         iti_dur   = 0.5,
                         picture_scale = 1.0,
+                        n_back = 2, # number of items back a match refers to (2 = classic 2-back)
                         stim = ['9.jpg','11.jpg','18.jpg','28.jpg'],
                         file_name = None ):
+        """
+        Create an n-back working-memory task file.
+
+        Args:
+            hand (str): Hand used for response ('right' or 'left').
+            responses (list): Response keys for [match, no-match].
+            task_dur (float): Total task duration in seconds.
+            trial_dur (float): Duration each stimulus is displayed in seconds.
+            iti_dur (float): Inter-trial interval duration in seconds.
+            picture_scale (float): Scaling factor for stimulus images (>1 enlarges).
+            n_back (int): How many items back a match refers to (2 = classic 2-back).
+            stim (list): List of stimulus image filenames to draw from.
+            file_name (str): Name of the file to save the task data.
+
+        Returns:
+            pd.DataFrame: Task information as a DataFrame.
+        """
         n_trials = int(np.floor(task_dur / (trial_dur+iti_dur)))
         trial_info = []
 
-        prev_stim = ['x','x']
+        prev_stim = ['x'] * n_back  # sliding window of the last n_back stimuli (index n_back-1 = the n-back item)
         t = 0
         for n in range(n_trials):
             trial = {}
@@ -146,33 +206,34 @@ class NBack(TaskFile):
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
             trial['picture_scale'] = picture_scale
+            # The n-back level is recorded once, as the modeling-level condition
+            # (e.g. '2-back'). n_back itself is only a generation parameter, so it
+            # is not duplicated as its own column - the runtime derives n from here.
+            trial['condition'] = f"{n_back}-back"
             trial['display_trial_feedback'] = True
             trial['key_match'] = responses[0]
             trial['key_nomatch'] = responses[1]
-            # Determine if this should be N-2 repetition trial
-
-            if n<2:
+            # Determine if this should be an n-back repetition trial
+            if n < n_back:
                 trial['trial_type'] = 0
             else:
                 trial['trial_type'] = np.random.randint(0,2)
-            # Now choose the stimulus accordingly: avoid any reps
+            # Now choose the stimulus accordingly: avoid any reps within the window
             if trial['trial_type']==0:
-                trial['stim'] = prev_stim[1]
-                while (trial['stim'] == prev_stim[0]) | (trial['stim'] == prev_stim[1]):
+                trial['stim'] = prev_stim[n_back-1]
+                while trial['stim'] in prev_stim:
                     trial['stim'] = stim[np.random.randint(0,len(stim))]
             else:
-                trial['stim'] = prev_stim[1]
+                trial['stim'] = prev_stim[n_back-1]
 
             trial['display_trial_feedback'] = True
-            trial['feedback_type'] = 'acc'
             trial['start_time'] = t
             trial['end_time'] = t + trial_dur + iti_dur
             trial_info.append(trial)
 
-            # Update for next trial:
+            # Update for next trial: slide the window, newest stimulus first
             t= trial['end_time']
-            prev_stim[1] = prev_stim[0]
-            prev_stim[0] = trial['stim']
+            prev_stim = [trial['stim']] + prev_stim[:-1]
 
         trial_info = pd.DataFrame(trial_info)
         if file_name is not None:
@@ -187,8 +248,18 @@ class Rest(TaskFile):
     def make_task_file(self,
                         task_dur =  30,
                         file_name = None):
+        """
+        Create a rest task file (single fixation block, no stimuli or response).
+
+        Args:
+            task_dur (float): Total duration of the rest block in seconds.
+            file_name (str): Name of the file to save the task data.
+
+        Returns:
+            pd.DataFrame: Task information as a DataFrame.
+        """
         trial = {}
-        trial['trial_num'] = [1]
+        trial['trial_num'] = [0]
         trial['trial_dur'] = [task_dur]
         trial['start_time'] = [0]
         trial['end_time'] =  [task_dur]
@@ -196,6 +267,7 @@ class Rest(TaskFile):
         if file_name is not None:
             trial_info.to_csv(self.task_dir / self.name / file_name,sep='\t',index=False)
         return trial_info
+    
 
 class VerbGeneration(TaskFile):
     def __init__(self, const):
@@ -204,18 +276,66 @@ class VerbGeneration(TaskFile):
 
 
     def make_task_file(self,
+                        condition = ['read', 'generate'],
                         task_dur =  30,
                         trial_dur = 2,
                         iti_dur   = 0.5,
+                        order = 'blocked',
                         file_name = None,
                         stim_file = None):
+        """
+        Create a verb-generation task file.
+
+        Args:
+            condition (str or list): Which condition(s) to run. A single value
+                ('read' or 'generate') fills the whole block with one condition.
+                A list (e.g. ['read', 'generate']) mixes conditions within the
+                block.
+            task_dur (float): Total task duration in seconds.
+            trial_dur (float): Duration each word is displayed in seconds.
+            iti_dur (float): Inter-trial interval duration in seconds.
+            order (str): How to arrange multiple conditions across trials:
+                'blocked' (default) runs each condition in a contiguous chunk in
+                the given order; 'interleaved' cycles through them trial by trial;
+                'random' assigns a balanced set in random order. Ignored for a
+                single condition.
+            file_name (str): Name of the file to save the task data.
+            stim_file (str): Optional path to a custom word-list CSV. Defaults to
+                the packaged verb_generation.csv.
+
+        Returns:
+            pd.DataFrame: Task information as a DataFrame.
+        """
+        conditions = [condition] if isinstance(condition, str) else list(condition)
+        for c in conditions:
+            if c not in ('read', 'generate'):
+                raise ValueError(f"VerbGeneration: condition must be 'read' or 'generate', got {c!r}")
+
         n_trials = int(np.floor(task_dur / (trial_dur+iti_dur)))
+
+        # Assign a condition to each trial.
+        if len(conditions) == 1:
+            trial_conditions = [conditions[0]] * n_trials
+        elif order == 'interleaved':
+            trial_conditions = [conditions[i % len(conditions)] for i in range(n_trials)]
+        elif order == 'random':
+            balanced = (conditions * (n_trials // len(conditions) + 1))[:n_trials]
+            trial_conditions = [str(c) for c in np.random.permutation(balanced)]
+        elif order == 'blocked':
+            per = n_trials // len(conditions)
+            trial_conditions = []
+            for i, c in enumerate(conditions):
+                count = per if i < len(conditions) - 1 else n_trials - per * (len(conditions) - 1)
+                trial_conditions += [c] * count
+        else:
+            raise ValueError(f"VerbGeneration: order must be 'blocked', 'interleaved' or 'random', got {order!r}")
+
         trial_info = []
 
         if stim_file:
             stim = pd.read_csv(stim_file)
         else:
-            stim = pd.read_csv(self.stim_dir / 'verb_generation' / 'verb_generation.csv')
+            stim = pd.read_csv(ut.find_stim(self.const, 'verb_generation', 'verb_generation.csv'))
 
         stim = stim.sample(frac=1).reset_index(drop=True)
 
@@ -225,18 +345,12 @@ class VerbGeneration(TaskFile):
             selected_stim = stim.iloc[n]['word']
             trial = {}
             trial['trial_num'] = n
-
-            # Determine if this is a read or generate trial
-            if n < n_trials/2:
-                trial['trial_type'] = 'read'
-            else:
-                trial['trial_type'] = 'generate'
+            trial['condition'] = trial_conditions[n]
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
             trial['start_time'] = t
             trial['end_time'] = t + trial_dur + iti_dur
             trial['stim'] = selected_stim
-            trial['display_trial_feedback'] = False
             trial_info.append(trial)
 
             # Update for next trial:
@@ -259,6 +373,18 @@ class TongueMovement(TaskFile):
                         trial_dur = 1,
                         iti_dur   = 0,
                         file_name = None):
+        """
+        Create a tongue-movement task file.
+
+        Args:
+            task_dur (float): Total task duration in seconds.
+            trial_dur (float): Duration of each tongue-movement cycle in seconds.
+            iti_dur (float): Inter-trial interval duration in seconds.
+            file_name (str): Name of the file to save the task data.
+
+        Returns:
+            pd.DataFrame: Task information as a DataFrame.
+        """
         n_trials = int(np.floor(task_dur / (trial_dur+iti_dur)))
         trial_info = []
 
@@ -269,7 +395,6 @@ class TongueMovement(TaskFile):
             trial['trial_num'] = n
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
-            trial['display_trial_feedback'] = False
             # Alternate between 'right' and 'left' for each trial
             trial['trial_type'] = 'right' if n % 2 == 0 else 'left'
             trial['start_time'] = t
@@ -278,6 +403,66 @@ class TongueMovement(TaskFile):
 
             # Update for next trial:
             t = trial['end_time']
+
+        trial_info = pd.DataFrame(trial_info)
+        if file_name is not None:
+            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
+        return trial_info
+
+class MotorLocalizer(TaskFile):
+    def __init__(self, const):
+        super().__init__(const)
+        self.name = 'motor_localizer'
+
+    def make_task_file(self,
+                        task_dur=30,
+                        trial_dur=1,
+                        condition=['hand', 'foot', 'tongue'],
+                        file_name=None):
+        """
+        Create a motor-localizer task file. The block is split into one equal
+        segment per condition (segment_dur = task_dur / len(condition), e.g.
+        10 s each for three conditions in a 30 s block) and the condition order
+        is RANDOMISED for the block. Within a condition's segment the circle
+        toggles present (trial_type=1) / absent (trial_type=0) every trial_dur
+        seconds, which paces the movement.
+
+        What circle-present vs circle-absent means (e.g. move right vs move
+        left, or move vs hold) is decided per experiment and explained to the
+        participant in training -- it is deliberately NOT encoded here. This is
+        only the default layout; the runtime renders whatever the file
+        specifies, so a hand-written file can use any condition order, segment
+        length or on/off pattern.
+
+        Args:
+            task_dur (float): Total block duration in seconds.
+            trial_dur (float): Circle on/off toggle interval within a segment (seconds).
+            condition (str or list): Condition label(s), e.g. body parts; each gets an equal, randomly ordered share of the block.
+            file_name (str): Name of the file to save the task data.
+
+        Returns:
+            pd.DataFrame: Task information as a DataFrame.
+        """
+        order = [condition] if isinstance(condition, str) else list(condition)
+        random.shuffle(order)                            # random condition order for this block
+        segment_dur = task_dur / len(order)              # equal time per condition
+        n_phases = int(round(segment_dur / trial_dur))   # circle toggles within each segment
+
+        trial_info = []
+        t = 0
+        n = 0
+        for cond in order:
+            for p in range(n_phases):
+                trial = {}
+                trial['trial_num'] = n
+                trial['condition'] = cond
+                trial['trial_type'] = 1 - (p % 2)        # 1 = circle present, 0 = circle absent
+                trial['trial_dur'] = trial_dur
+                trial['start_time'] = t
+                trial['end_time'] = t + trial_dur
+                trial_info.append(trial)
+                t = trial['end_time']
+                n += 1
 
         trial_info = pd.DataFrame(trial_info)
         if file_name is not None:
@@ -295,8 +480,34 @@ class AuditoryNarrative(TaskFile):
                        iti_dur=0,
                        file_name=None,
                        run_number=None):
+        """
+        Create an auditory-narrative task file. Each run plays a distinct
+        narrative clip (narrative_NN.wav) selected by run_number.
+
+        Args:
+            task_dur (float): Total task duration in seconds.
+            trial_dur (float): Duration of each audio clip in seconds.
+            iti_dur (float): Inter-trial interval duration in seconds.
+            file_name (str): Name of the file to save the task data.
+            run_number (int): Run number, used to select which audio clip to play.
+
+        Returns:
+            pd.DataFrame: Task information as a DataFrame.
+
+        Raises:
+            ValueError: If run_number is None or exceeds the number of available
+                narrative clips.
+        """
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
+
+        # Each run uses a distinct narrative (narrative_NN.wav) - novelty matters error if no enough files
+        available = sorted(ut.find_stim_dir(self.const, self.name).glob('narrative_[0-9][0-9].wav'))
+        if run_number is None or run_number > len(available):
+            raise ValueError(
+                f"AuditoryNarrative: only {len(available)} narratives available; "
+                f"cannot generate run {run_number}. Add more narrative_NN.wav files "
+                f"or reduce the number of runs.")
 
         t = 0
 
@@ -305,7 +516,6 @@ class AuditoryNarrative(TaskFile):
             trial['trial_num'] = n
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
-            trial['display_trial_feedback'] = False
             trial['stim'] = f'narrative_{run_number:02d}.wav'
             trial['start_time'] = t
             trial['end_time'] = t + trial_dur + iti_dur
@@ -336,7 +546,20 @@ class SpatialNavigation(TaskFile):
                        iti_dur=0,
                        file_name=None,
                        run_number=None):
+        """
+        Create a spatial-navigation task file (imagined navigation between two
+        remembered locations).
 
+        Args:
+            task_dur (float): Total task duration in seconds.
+            trial_dur (float): Duration of the imagination period in seconds.
+            iti_dur (float): Inter-trial interval duration in seconds.
+            file_name (str): Name of the file to save the task data.
+            run_number (int): Run number, used to select which location pair to use.
+
+        Returns:
+            pd.DataFrame: Task information as a DataFrame.
+        """
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
 
@@ -344,11 +567,11 @@ class SpatialNavigation(TaskFile):
 
         for n in range(n_trials):
             trial = {}
-            loc1, loc2 = self.location_pairs[run_number - 1]
+            #loc1, loc2 = self.location_pairs[run_number - 1]
+            loc1, loc2 = self.location_pairs[(run_number - 1) % len(self.location_pairs)]
             trial['trial_num'] = n
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
-            trial['display_trial_feedback'] = False
             trial['start_time'] = t
             trial['end_time'] = t + trial_dur + iti_dur
             trial['location_1'] = loc1
@@ -379,10 +602,28 @@ class TheoryOfMind(TaskFile):
                         text_height=1.25,
                         file_name=None,
                         stim_file=None,
-                        condition=None,
-                        stimulus_seed=None,
-                        exclude_stimuli=None,
-                        stim=None):
+                        condition=None):
+        """
+        Create a theory-of-mind task file (story followed by a true/false statement).
+
+        Args:
+            hand (str): Hand used for response ('right' or 'left').
+            responses (list): Response keys for [True, False].
+            run_number (int): Run number, used to select stimuli for that run.
+            task_dur (float): Total task duration in seconds.
+            trial_dur (float): Total duration of each trial in seconds.
+            iti_dur (float): Inter-trial interval duration in seconds.
+            story_dur (float): Duration the story is displayed in seconds.
+            question_dur (float): Duration the question is displayed in seconds.
+            text_height (float): Height of the story/question text in degrees of visual angle.
+            file_name (str): Name of the file to save the task data.
+            stim_file (str): Optional path to a custom stimulus CSV.
+            condition (str): If set, only trials of this condition are included
+                ('belief' or 'photo').
+
+        Returns:
+            pd.DataFrame: Task information as a DataFrame.
+        """
         # Count number of trials based on timing; may be overridden below when an
         # explicit stimulus list is provided (so distribution, not timing, sets
         # the exact trial count).
@@ -393,7 +634,7 @@ class TheoryOfMind(TaskFile):
         if stim_file:
             stim = pd.read_csv(stim_file)
         else:
-            stim = pd.read_csv(self.stim_dir / 'theory_of_mind' / 'theory_of_mind.csv')
+            stim = pd.read_csv(ut.find_stim(self.const, 'theory_of_mind', 'theory_of_mind.csv'))
 
         if condition:
             stim = stim[stim['condition'] == condition]
@@ -425,7 +666,6 @@ class TheoryOfMind(TaskFile):
             trial['story'] = stim['story'][n]
             trial['question'] = stim['question'][n]
             trial['condition'] = stim['condition'][n]
-            trial['answer'] = stim['answer'][n]
             trial['story_dur'] = story_dur
             trial['question_dur'] = question_dur
             trial['text_height'] = text_height
@@ -442,69 +682,59 @@ class TheoryOfMind(TaskFile):
             trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
         return trial_info
 
-class DegradedPassage(TaskFile):
+class PassageListening(TaskFile):
     def __init__(self, const):
         super().__init__(const)
-        self.name = 'degraded_passage'
+        self.name = 'passage_listening'
 
     def make_task_file(self,
-                        run_number = None,
-                        task_dur=30,
-                        trial_dur=14.5,
-                        iti_dur=0.5,
-                        file_name=None):
+                       run_number,
+                       condition='intact',
+                       task_dur=30,
+                       trial_dur=14.5,
+                       iti_dur=0.5,
+                       file_name=None,
+                       stim_file=None,):
+        """
+        Create a passage-listening task file (intact vs degraded speech).
+
+        Args:
+            run_number (int): Run number, used to select which passages to play.
+            condition (str): Which condition to include ('intact' or 'degraded').
+            task_dur (float): Total task duration in seconds.
+            trial_dur (float): Duration of each passage in seconds.
+            iti_dur (float): Inter-trial interval duration in seconds.
+            file_name (str): Name of the file to save the task data.
+            stim_file (str): Optional path to a custom stimulus CSV.
+
+        Returns:
+            pd.DataFrame: Task information as a DataFrame.
+        """
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
+
+        # Load the audio/condition table and keep only the requested condition
+        stim = pd.read_csv(ut.find_stim(self.const, self.name, stim_file or f'{self.name}.csv'))
+        valid = sorted (stim['condition'].unique()) # check if the condition is there
+        if condition not in valid:
+            raise ValueError(f"PassageListening: unknown condition {condition!r} (expected one of {valid})")
+        stim = stim[stim['condition'] == condition].reset_index(drop=True)
+        # Wrap around the available passages if more runs are requested than there are.
+        total = len(stim)
+        if (run_number - 1) * n_trials >= total:
+            print(f"Warning: PassageListening only has {total} '{condition}' passages; "
+                  f"run {run_number} wraps around and repeats stimuli.")
+        idx = [((run_number - 1) * n_trials + k) % total for k in range(n_trials)]
+        stim = stim.iloc[idx].reset_index(drop=True)
+
         trial_info = []
-
         t = 0
-
-        for n in range(n_trials):
+        for n in range(len(stim)):
             trial = {}
             trial['trial_num'] = n
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
-            trial['display_trial_feedback'] = False
-            # Select the appropriate audio file
-            audio_file_num = (run_number - 1) * n_trials + n + 1
-            trial['stim'] = f'degraded_passage_{audio_file_num}.wav'
-            trial['start_time'] = t
-            trial['end_time'] = t + trial_dur + iti_dur
-            trial_info.append(trial)
-
-            # Update for next trial:
-            t = trial['end_time']
-
-        trial_info = pd.DataFrame(trial_info)
-        if file_name is not None:
-            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
-
-        return trial_info
-
-class IntactPassage(TaskFile):
-    def __init__(self, const):
-        super().__init__(const)
-        self.name = 'intact_passage'
-
-    def make_task_file(self,
-                        run_number,
-                        task_dur=30,
-                        trial_dur=14.5,
-                        iti_dur=0.5,
-                        file_name=None):
-        n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
-        trial_info = []
-
-        t = 0
-
-        for n in range(n_trials):
-            trial = {}
-            trial['trial_num'] = n
-            trial['trial_dur'] = trial_dur
-            trial['iti_dur'] = iti_dur
-            trial['display_trial_feedback'] = False
-            # Select the appropriate audio file
-            audio_file_num = (run_number - 1) * n_trials + n + 1
-            trial['stim'] = f'intact_passage_{audio_file_num}.wav'
+            trial['condition'] = stim['condition'][n]
+            trial['stim'] = stim['audio'][n]
             trial['start_time'] = t
             trial['end_time'] = t + trial_dur + iti_dur
             trial_info.append(trial)
@@ -532,21 +762,30 @@ class ActionObservation(TaskFile):
         #             ]
 
         # good knot vids
-        # self.knot_names = ['Adage',
-        #                 'Brigand', 'Brocade', 'Casement',  'Cornice',\
-        #                 'Flora', 'Frontage', 'Gadfly', 'Garret', \
-        #                 'Mutton','Placard', 'Purser']
+        self.knot_names = ['Adage',
+                        'Brigand', 'Brocade', 'Casement',  'Cornice',\
+                        'Flora', 'Frontage', 'Gadfly', 'Garret', \
+                        'Mutton','Placard', 'Purser']
 
     def make_task_file(self,
                         run_number = None,
                         task_dur=30,
                         trial_dur=14,
                         iti_dur=1,
-                        file_name=None,
-                        knot_names = ['Adage',
-                        'Brigand', 'Brocade', 'Casement',  'Cornice',\
-                        'Flora', 'Frontage', 'Gadfly', 'Garret', \
-                        'Mutton','Placard', 'Purser']):
+                        file_name=None):
+        """
+        Create an action-observation task file (knot-tying videos).
+
+        Args:
+            run_number (int): Run number, used to select which knot stimulus to show.
+            task_dur (float): Total task duration in seconds.
+            trial_dur (float): Duration of each video trial in seconds.
+            iti_dur (float): Inter-trial interval duration in seconds.
+            file_name (str): Name of the file to save the task data.
+
+        Returns:
+            pd.DataFrame: Task information as a DataFrame.
+        """
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
 
@@ -555,15 +794,18 @@ class ActionObservation(TaskFile):
         for n in range(n_trials):
             trial = {}
             trial['trial_num'] = n
-            trial['hand'] = None
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
-            trial['display_trial_feedback'] = False
-            knot_index = (run_number - 1)
+            knot_index = (run_number - 1) % len(self.knot_names)
+            # 'condition' is a real per-trial column, so a hand-written task file
+            # can order the conditions however it likes. The make_task_file default
+            # is the action clip first, then control.
             if n == 0:
-                trial['stim'] = f'knotAction{knot_names[knot_index]}.mov'
+                trial['condition'] = 'action'
+                trial['stim'] = f'knotAction{self.knot_names[knot_index]}.mov'
             else:
-                trial['stim'] = f'knotControl{knot_names[knot_index]}.mov'
+                trial['condition'] = 'control'
+                trial['stim'] = f'knotControl{self.knot_names[knot_index]}.mov'
             trial['start_time'] = t
             trial['end_time'] = t + trial_dur + iti_dur
             trial_info.append(trial)
@@ -758,6 +1000,7 @@ class DemandGrid(TaskFile):
                    question_dur=3,
                    sequence_dur=4,
                    iti_dur=0.5,
+                   condition=None,
                    file_name=None):
         """
         Create a task file with the specified parameters.
@@ -815,6 +1058,10 @@ class DemandGrid(TaskFile):
                 'start_time': current_time,
                 'end_time': current_time + trial_dur + iti_dur
             }
+            # Optional difficulty label (e.g. 'easy'/'hard' for the MD localizer),
+            # written only when provided so existing task files are unchanged.
+            if condition is not None:
+                trial['condition'] = condition
             trial_info.append(trial)
 
             # Update for the next trial:
@@ -826,25 +1073,49 @@ class DemandGrid(TaskFile):
 
         return trial_info
 
-class SentenceReading(TaskFile):
+class Reading(TaskFile):
     def __init__(self, const):
         super().__init__(const)
-        self.name = 'sentence_reading'
+        self.name = 'reading'
 
     def make_task_file(self,
                         run_number = None,
+                        condition = 'sentences',   # 'sentence' or 'nonwords'
                         task_dur=30,
                         trial_dur=5.8,
                         iti_dur=0.2,
                         file_name=None,
                         stim_file=None):
+        """
+        Create a reading task file (sentences or nonwords, shown word by word).
+
+        Args:
+            run_number (int): Run number, used to select which sentences to show.
+            condition (str): 'sentences' or 'nonwords'.
+            task_dur (float): Total task duration in seconds.
+            trial_dur (float): Duration of each sentence presentation in seconds.
+            iti_dur (float): Inter-trial interval duration in seconds.
+            file_name (str): Name of the file to save the task data.
+            stim_file (str): Optional path to a custom stimulus CSV.
+
+        Returns:
+            pd.DataFrame: Task information as a DataFrame.
+        """
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
 
+        # Select the stimulus list for the requested condition (sentences vs nonwords).
         if stim_file:
             stim = pd.read_csv(stim_file)
         else:
-            stim = pd.read_csv(self.stim_dir / 'sentence_reading' / 'sentences_shuffled.csv')
+            if condition == 'sentences':
+                csv = 'sentences_shuffled.csv'
+
+            elif condition == 'nonwords':
+                csv = 'nonwords_shuffled.csv'
+            else:
+                raise ValueError( F" task Reading: unknown condition {condition!r} (expected 'sentences' or 'nonwords')")
+            stim = pd.read_csv(ut.find_stim(self.const, self.name, csv))
 
         t = 0
 
@@ -853,51 +1124,7 @@ class SentenceReading(TaskFile):
             trial['trial_num'] = n
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
-            trial['display_trial_feedback'] = False
-            sentence_index = (run_number - 1) * n_trials + n
-            trial['stim'] = stim['sentence'][sentence_index]
-            trial['start_time'] = t
-            trial['end_time'] = t + trial_dur + iti_dur
-            trial_info.append(trial)
-
-            # Update for next trial:
-            t = trial['end_time']
-
-        trial_info = pd.DataFrame(trial_info)
-        if file_name is not None:
-            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
-
-        return trial_info
-
-class NonwordReading(TaskFile):
-    def __init__(self, const):
-        super().__init__(const)
-        self.name = 'nonword_reading'
-
-    def make_task_file(self,
-                        run_number = None,
-                        task_dur=30,
-                        trial_dur=5.8,
-                        iti_dur=0.2,
-                        file_name=None,
-                        stim_file=None):
-
-        n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
-        trial_info = []
-
-        if stim_file:
-            stim = pd.read_csv(stim_file)
-        else:
-            stim = pd.read_csv(self.stim_dir / 'nonword_reading' / 'nonwords_shuffled.csv')
-
-        t = 0
-
-        for n in range(n_trials):
-            trial = {}
-            trial['trial_num'] = n
-            trial['trial_dur'] = trial_dur
-            trial['iti_dur'] = iti_dur
-            trial['display_trial_feedback'] = False
+            trial['condition'] = condition
             sentence_index = (run_number - 1) * n_trials + n
             trial['stim'] = stim['sentence'][sentence_index]
             trial['start_time'] = t
@@ -926,6 +1153,20 @@ class OddBall(TaskFile):
                     trial_dur=0.15,
                     iti_dur=0.85,
                     file_name=None):
+        """
+        Create an oddball-detection task file (respond only to a red 'K').
+
+        Args:
+            hand (str): Hand used for response ('right' or 'left').
+            responses (list): Response keys.
+            task_dur (float): Total task duration in seconds.
+            trial_dur (float): Duration the stimulus is displayed in seconds.
+            iti_dur (float): Inter-trial interval duration in seconds.
+            file_name (str): Name of the file to save the task data.
+
+        Returns:
+            pd.DataFrame: Task information as a DataFrame.
+        """
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
 
@@ -939,12 +1180,10 @@ class OddBall(TaskFile):
         for n in range(len(stimuli)):
             trial = {}
             trial['key_one'] = responses[0]
-            trial['key_two'] = responses[1]
             trial['trial_num'] = n
             trial['hand'] = hand
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
-            trial['display_trial_feedback'] = False
             trial['trial_type'] = 1 if stimuli[n] == 'red_K' else 0
             trial['stim'] = stimuli[n]
             trial['start_time'] = t
@@ -964,60 +1203,50 @@ class FingerSequence(TaskFile):
     def __init__(self, const):
         super().__init__(const)
         self.name = 'finger_sequence'
-        self.matching_stimuli = False
+        self.matching_stimuli = False # sequence of numbers are different for easy and hard sequence condition
 
-    def generate_sequence(self, condition='complex'):
-        if condition == 'repetition':
-            digit = random.choice([1, 2, 3, 4])
-            sequence = [digit] * 6
-        elif condition == 'alternating':
-            digits = random.sample([1, 2, 3, 4], 2)
-            sequence = [digits[i % 2] for i in range(6)]
-        else:
-            sequence = [random.choice([1, 2, 3, 4])]
-            while len(sequence) < 6:
-                next_digit = random.choice([d for d in [1, 2, 3, 4] if d != sequence[-1]])
-                sequence.append(next_digit)
+    def generate_sequence(self):
+        sequence = [random.choice([1, 2, 3, 4])]
+        while len(sequence) < 6:
+            next_digit = random.choice([d for d in [1, 2, 3, 4] if d != sequence[-1]])
+            sequence.append(next_digit)
         return ' '.join(map(str, sequence))
 
     def make_task_file(self,
                         hand = 'bimanual',
-                        responses = [1,2,3,4],
                         task_dur=30,
                         trial_dur=3.25,
                         iti_dur=0.5,
-                        conditions=None,
                         file_name=None):
-        if conditions is None:
-            conditions = ['complex']
+        """
+        Create a finger-sequence task file (press a 6-digit sequence in order).
+        Each digit (1-4) is the finger/key to press; scoring compares the pressed
+        key number directly to the sequence digit.
 
+        Args:
+            hand (str): Hand(s) used for response ('bimanual', 'right', or 'left').
+            task_dur (float): Total task duration in seconds.
+            trial_dur (float): Duration of each trial in seconds.
+            iti_dur (float): Inter-trial interval duration in seconds.
+            file_name (str): Name of the file to save the task data.
+
+        Returns:
+            pd.DataFrame: Task information as a DataFrame.
+        """
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
-        # Distribute trials evenly across conditions
-        trials_per_condition = n_trials // len(conditions)
-        condition_list = []
-        for cond in conditions:
-            condition_list.extend([cond] * trials_per_condition)
-        # Assign any remainder trials round-robin
-        for i in range(n_trials - len(condition_list)):
-            condition_list.append(conditions[i % len(conditions)])
-        random.shuffle(condition_list)
-
         trial_info = []
+
         t = 0
 
         for n in range(n_trials):
             trial = {}
-            trial['key_one'] = responses[0]
-            trial['key_two'] = responses[1]
-            trial['key_three'] = responses[2]
-            trial['key_four'] = responses[3]
             trial['trial_num'] = n
             trial['hand'] = hand
-            trial['condition'] = condition_list[n]
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
             trial['display_trial_feedback'] = True
-            trial['stim'] = self.generate_sequence(condition_list[n])
+            # choose random sequence
+            trial['stim'] = self.generate_sequence()
             trial['start_time'] = t
             trial['end_time'] = t + trial_dur + iti_dur
             trial_info.append(trial)
@@ -1033,34 +1262,41 @@ class FingerSequence(TaskFile):
 class FlexionExtension(TaskFile):
     def __init__(self, const):
         super().__init__(const)
-        self.name = 'flexion_extension'
+        # Must match the 'name' column in task_table.tsv: the runtime reads the
+        # generated file from task_dir/<name>/, i.e. task_dir/toe_movement/.
+        self.name = 'toe_movement'
 
     def make_task_file(self,
-                        task_dur =  30,
-                        trial_dur = 30,
-                        iti_dur   = 0,
+                        task_dur = 30,
                         stim_dur = 2,
                         file_name = None):
-        n_trials = int(np.floor(task_dur / (trial_dur+iti_dur)))
+        """
+        Create a flexion-extension (toe movement) task file. The block is paced
+        by a cue that alternates between 'flexion' and 'extension' every stim_dur
+        seconds, written as one row per cue. The runtime just shows each cue for
+        its duration.
+
+        Args:
+            task_dur (float): Total duration of the block in seconds.
+            stim_dur (float): Duration each cue ('flexion'/'extension') is shown.
+            file_name (str): Name of the file to save the task data.
+
+        Returns:
+            pd.DataFrame: Task information as a DataFrame.
+        """
+        cues = ['flexion', 'extension']
+        n_phases = int(np.floor(task_dur / stim_dur))
         trial_info = []
-
         t = 0
-
-        for n in range(n_trials):
-            trial = {}
-            trial['trial_num'] = n
-            trial['trial_dur'] = trial_dur
-            trial['iti_dur'] = iti_dur
-            trial['stim'] = "flexion extension"
-            trial['stim_dur'] = stim_dur
-            trial['display_trial_feedback'] = False
-            trial['trial_type'] = 'None'  # as there are no true or false responses
-            trial['start_time'] = t
-            trial['end_time'] = t + trial_dur + iti_dur
-            trial_info.append(trial)
-
-            # Update for next trial:
-            t = trial['end_time']
+        for n in range(n_phases):
+            trial_info.append({
+                'trial_num': n,
+                'stim': cues[n % 2],
+                'trial_dur': stim_dur,
+                'start_time': t,
+                'end_time': t + stim_dur,
+            })
+            t += stim_dur
 
         trial_info = pd.DataFrame(trial_info)
         if file_name is not None:
@@ -1080,9 +1316,25 @@ class SemanticPrediction(TaskFile):
                         sentence_dur=2,
                         file_name=None,
                         stim_file=None,
-                        stimulus_seed=None,
-                        exclude_stimuli=None,
                         stim=None):
+        """
+        Create a semantic-prediction task file (judge whether the final word
+        makes the sentence meaningful).
+
+        Args:
+            hand (str): Hand used for response ('right' or 'left').
+            responses (list): Response keys for [meaningful, meaningless].
+            run_number (int): Run number, used to select which sentences to present.
+            task_dur (float): Total task duration in seconds.
+            trial_dur (float): Total duration budgeted for each trial in seconds.
+            sentence_dur (float): Response window for the final word, in seconds.
+            file_name (str): Name of the file to save the task data.
+            stim_file (str): Optional path to a custom stimulus CSV.
+            stim (pd.DataFrame): Optional pre-loaded stimulus table.
+
+        Returns:
+            pd.DataFrame: Task information as a DataFrame.
+        """
         # count number of trials
         n_trials = int(np.floor(task_dur / (trial_dur)))
         trial_info = []
@@ -1091,7 +1343,7 @@ class SemanticPrediction(TaskFile):
         if stim_file:
             stim = pd.read_csv(stim_file)
         else:
-            stim = pd.read_csv(self.stim_dir / 'semantic_prediction' / 'semantic_prediction.csv')
+            stim = pd.read_csv(ut.find_stim(self.const, 'semantic_prediction', 'semantic_prediction.csv'))
 
         # Ignore stim_list and stimulus_seed: selection is driven entirely by
         # the provided stim_file (if any) or by run_number-based slicing.
@@ -1139,6 +1391,21 @@ class VisualSearch(TaskFile):
                         iti_dur   = 0.5,
                         easy_prob=0.5,
                         file_name = None ):
+        """
+        Create a visual-search task file (find a canonically-oriented 'L').
+
+        Args:
+            hand (str): Hand used for response ('right' or 'left').
+            responses (list): Response keys for [target present, target absent].
+            task_dur (float): Total task duration in seconds.
+            trial_dur (float): Duration of each trial in seconds.
+            iti_dur (float): Inter-trial interval duration in seconds.
+            easy_prob (float): Probability of an easy trial (4 stimuli vs. 8).
+            file_name (str): Name of the file to save the task data.
+
+        Returns:
+            pd.DataFrame: Task information as a DataFrame.
+        """
         n_trials = int(np.floor(task_dur / (trial_dur+iti_dur)))
         trial_info = []
         t = 0
@@ -1153,15 +1420,10 @@ class VisualSearch(TaskFile):
             trial['iti_dur'] = iti_dur
             trial['display_trial_feedback'] = True
             trial['trial_type'] = random.choice([0,1])
-            trial['num_stimuli'] = '4' if random.random() < easy_prob else '8'  # Randomly select difficulty
-            trial['display_trial_feedback'] = True
-            trial['feedback_type'] = 'acc'
+            # Difficulty is the condition: the number of search items (set size).
+            trial['condition'] = '4-items' if random.random() < easy_prob else '8-items'
             trial['start_time'] = t
             trial['end_time'] = t + trial_dur + iti_dur
-
-             # Determine the number of stimuli to display based on trial difficulty
-            num_stimuli = 4 if trial['num_stimuli'] == '4' else 8
-
             trial_info.append(trial)
 
             # Update for next trial:
@@ -1189,23 +1451,46 @@ class RMET(TaskFile):
                         iti_dur=1.5,
                         option_text_height=1.2,
                         option_position_scale=1.0,
+                        picture_scale=0.7,
                         show_last_seconds=0,
                         file_name=None,
                         stim_file = None,
                         condition=None,
                         half=None,
-                        stimulus_seed=None,
-                        exclude_stimuli=None,
                         stim=None):
+        """
+        Create an RMET task file (Reading the Mind in the Eyes; emotion or age).
+
+        Args:
+            hand (str): Hand used for response ('right' or 'left').
+            responses (list): Response keys mapped to the four options.
+            run_number (int): Run number, used to select which stimuli to present.
+            task_dur (float): Total task duration in seconds.
+            trial_dur (float): Duration each stimulus is displayed in seconds.
+            iti_dur (float): Inter-trial interval duration in seconds.
+            option_text_height (float): Height of the answer-option text in degrees of visual angle.
+            option_position_scale (float): Spatial scaling for option positions (<1 brings them closer).
+            picture_scale (float): Scaling of the eye-region image (>1 enlarges).
+            show_last_seconds (float): If >0, show options only for the final N seconds of the trial.
+            file_name (str): Name of the file to save the task data.
+            stim_file (str): Optional path to a custom stimulus CSV.
+            condition (str): If set, only trials of this condition are included
+                ('emotion' or 'age').
+            half (str): Optional split of the stimulus set into halves.
+            stim (pd.DataFrame): Optional pre-loaded stimulus table.
+
+        Returns:
+            pd.DataFrame: Task information as a DataFrame.
+        """
         # count number of trials
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
         t = 0
 
         if stim_file:
-            stim = pd.read_csv(self.stim_dir / self.name / stim_file)
+            stim = pd.read_csv(ut.find_stim(self.const, self.name, stim_file))
         else:
-            stim = pd.read_csv(self.stim_dir / self.name / f'{self.name}.csv')
+            stim = pd.read_csv(ut.find_stim(self.const, self.name, f'{self.name}.csv'))
 
         if condition:
             stim = stim[stim['condition'] == condition]
@@ -1249,6 +1534,7 @@ class RMET(TaskFile):
             trial['iti_dur'] = iti_dur
             trial['option_text_height'] = option_text_height
             trial['option_position_scale'] = option_position_scale
+            trial['picture_scale'] = picture_scale
             trial['stim'] = stim['picture'][n]
             trial['options'] = stim['options'][n]
             trial['condition'] = stim['condition'][n]
@@ -1256,239 +1542,6 @@ class RMET(TaskFile):
             trial['display_trial_feedback'] = True
             if show_last_seconds:
                 trial['show_last_seconds'] = show_last_seconds
-            trial['start_time'] = t
-            trial['end_time'] = t + trial_dur + iti_dur
-            trial_info.append(trial)
-
-            # Update for next trial:
-            t = trial['end_time']
-
-        trial_info = pd.DataFrame(trial_info)
-        if file_name is not None:
-            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
-        return trial_info
-
-
-class PictureSequence(TaskFile):
-    def __init__(self, const):
-        super().__init__(const)
-        self.name = 'picture_sequence'
-        self.matching_stimuli = False # sequence of pictures are different for different conditions
-
-    def generate_sequence(self):
-        sequence = random.sample([1, 2, 3, 4], 4)
-        return ' '.join(map(str, sequence))
-
-    def make_task_file(self,
-                        hand = 'right',
-                        responses = [1,2,3,4], # 1 = Key_one, 2 = Key_two, 3 = Key_three, 4 = Key_four
-                        run_number=None,
-                        task_dur=30,
-                        trial_dur=14,
-                        iti_dur=1,
-                        file_name=None,
-                        stim_file = None,
-                        condition=None):
-        n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
-        trial_info = []
-        t = 0
-
-        if stim_file:
-            stim = pd.read_csv(self.stim_dir / self.name / stim_file)
-        else:
-            stim = pd.read_csv(self.stim_dir / self.name / f'{self.name}.csv')
-
-
-        if condition:
-            stim = stim[stim['condition'] == condition]
-        else:
-            stim = stim.loc[
-                ~stim['condition'].str.contains('practice', na=False)
-                & (stim['condition'].astype(str).str.lower() != 'exclude')
-            ]
-
-        start_row = (run_number - 1) * n_trials
-        end_row = run_number * n_trials - 1
-        stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
-
-        for n in range(n_trials):
-            trial = {}
-            trial['key_one'] = responses[0]
-            trial['key_two'] = responses[1]
-            trial['key_three'] = responses[2]
-            trial['key_four'] = responses[3]
-            trial['trial_num'] = n
-            trial['hand'] = hand
-            trial['trial_dur'] = trial_dur
-            trial['iti_dur'] = iti_dur
-            trial['display_trial_feedback'] = True
-            trial['condition'] = stim['condition'][n]
-            trial['stim'] = stim['picture'][n]
-            # choose random sequence
-            trial['sequence'] = self.generate_sequence()
-            trial['start_time'] = t
-            trial['end_time'] = t + trial_dur + iti_dur
-            trial_info.append(trial)
-            t = trial['end_time']
-
-        trial_info = pd.DataFrame(trial_info)
-        if file_name is not None:
-            ut.dircheck(self.task_dir / self.name)
-            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
-
-        return trial_info
-
-class StorySequence(TaskFile):
-    def __init__(self, const):
-        super().__init__(const)
-        self.name = 'story_sequence'
-        self.matching_stimuli = False # sequence of sentences are different for different conditions
-
-    def generate_sequence(self):
-        sequence = random.sample([1, 2, 3, 4], 4)
-        return ' '.join(map(str, sequence))
-
-    def make_task_file(self,
-                        hand = 'right',
-                        responses = [1,2,3,4], # 1 = Key_one, 2 = Key_two, 3 = Key_three, 4 = Key_four
-                        run_number=None,
-                        task_dur=30,
-                        trial_dur=14,
-                        iti_dur=1,
-                        file_name=None,
-                        stim_file = None,
-                        condition=None):
-        n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
-        trial_info = []
-        t = 0
-
-        if stim_file:
-            stim = pd.read_csv(self.stim_dir / self.name / stim_file)
-        else:
-            stim = pd.read_csv(self.stim_dir / self.name / f'{self.name}.csv')
-
-
-        if condition:
-            stim = stim[stim['condition'] == condition]
-        else:
-            stim = stim.loc[
-                ~stim['condition'].str.contains('practice', na=False)
-                & (stim['condition'].astype(str).str.lower() != 'exclude')
-            ]
-
-        start_row = (run_number - 1) * n_trials
-        end_row = run_number * n_trials - 1
-        stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
-
-        for n in range(n_trials):
-            trial = {}
-            trial['key_one'] = responses[0]
-            trial['key_two'] = responses[1]
-            trial['key_three'] = responses[2]
-            trial['key_four'] = responses[3]
-            trial['trial_num'] = n
-            trial['hand'] = hand
-            trial['trial_dur'] = trial_dur
-            trial['iti_dur'] = iti_dur
-            trial['display_trial_feedback'] = True
-            trial['condition'] = stim['condition'][n]
-            trial['stim1'] = stim['Sentence1'][n]
-            trial['stim2'] = stim['Sentence2'][n]
-            trial['stim3'] = stim['Sentence3'][n]
-            trial['stim4'] = stim['Sentence4'][n]
-            # choose random sequence
-            trial['sequence'] = self.generate_sequence()
-            trial['start_time'] = t
-            trial['end_time'] = t + trial_dur + iti_dur
-            trial_info.append(trial)
-            t = trial['end_time']
-
-        trial_info = pd.DataFrame(trial_info)
-        if file_name is not None:
-            ut.dircheck(self.task_dir / self.name)
-            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
-
-        return trial_info
-
-class ActionPrediction(TaskFile):
-    def __init__(self, const):
-        super().__init__(const)
-        self.name = 'action_prediction'
-        self.matching_stimuli = False # sequence of pictures are different for different conditions
-
-    def make_task_file(self, hand='right',
-                        responses = [1,2],
-                        run_number=None,
-                        task_dur=30,
-                        trial_dur=5,
-                        iti_dur=1,
-                        question_dur=4,
-                        file_name=None,
-                        stim_file = None,
-                        condition=None,
-                        stimulus_seed=None,
-                        exclude_stimuli=None,
-                        stim=None):
-        """
-        stim (list or None): If provided, use only these video names (in order) instead of
-            stimulus_seed or run_number sampling. Overrides seeding and row slicing.
-        """
-        stim_list = stim
-        # count number of trials
-        n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
-        trial_info = []
-        t = 0
-
-        if stim_file:
-            stim = pd.read_csv(self.stim_dir / self.name / stim_file, sep='\t')
-        else:
-            stim = pd.read_csv(self.stim_dir / self.name / f'{self.name}.csv', sep='\t')
-
-        if condition:
-            stim = stim[stim['condition'] == condition]
-        else:
-            stim = stim.loc[
-                ~stim['condition'].str.contains('practice', na=False)
-                & (stim['condition'].astype(str).str.lower() != 'exclude')
-            ]
-
-        if stim_list is not None and len(stim_list) > 0:
-            stim = stim[stim['video'].isin(stim_list)]
-            result = []
-            for s in stim_list:
-                match = stim[stim['video'] == s]
-                if len(match) > 0:
-                    result.append(match.iloc[:1])
-            stim = pd.concat(result, ignore_index=True) if result else stim.iloc[0:0]
-        elif condition is None:
-            if stimulus_seed is not None or run_number is not None:
-                if exclude_stimuli is not None:
-                    stim = stim[~stim['video'].isin(exclude_stimuli)]
-                seed = stimulus_seed if stimulus_seed is not None else run_number
-                stim = stim.sample(n=min(n_trials, len(stim)), random_state=seed).reset_index(drop=True)
-            else:
-                stim = stim.iloc[:n_trials].reset_index(drop=True)
-        else:
-            start_row = (run_number - 1) * n_trials if run_number is not None else 0
-            end_row = start_row + n_trials - 1
-            stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
-
-        n_actual = min(n_trials, len(stim))
-        for n in range(n_actual):
-            trial = {}
-            trial['key_one'] = responses[0]
-            trial['key_two'] = responses[1]
-            trial['trial_num'] = n
-            trial['hand'] = hand
-            trial['trial_dur'] = trial_dur
-            trial['iti_dur'] = iti_dur
-            trial['stim'] = stim['video'][n]
-            trial['question'] = stim['question'][n]
-            trial['options'] = stim['options'][n]
-            trial['answer'] = stim['answer'][n]
-            trial['condition'] = stim['condition'][n]
-            trial['question_dur'] = question_dur
-            trial['display_trial_feedback'] = True
             trial['start_time'] = t
             trial['end_time'] = t + trial_dur + iti_dur
             trial_info.append(trial)
@@ -1515,83 +1568,34 @@ class Movie(TaskFile):
                        iti_dur=0,
                        file_name=None,
                        stim_file=None,
-                       condition=None):
-
-        n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
-        trial_info = []
-
-        t = 0
-
-        if stim_file:
-            stim = pd.read_csv(self.stim_dir / self.name / stim_file)
-        else:
-            stim = pd.read_csv(self.stim_dir / self.name / f'{self.name}.csv')
-
-        if condition:
-            stim = stim[stim['condition'] == condition]
-        else:
-            stim = stim.loc[
-                ~stim['condition'].str.contains('practice', na=False)
-                & (stim['condition'].astype(str).str.lower() != 'exclude')
-            ]
-
-        start_row = (run_number - 1) * n_trials
-        end_row = run_number * n_trials - 1
-        stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
-
-        # Display a warning for romance clip 09 and up: The clips are repeated clips 1-8
-        if run_number >= 9:
-            Warning('Romance condition clips 9-10 are duplicates. They are the same as clips 1-8')
-
-        for n in range(n_trials):
-            trial = {}
-            trial['trial_num'] = n
-            trial['trial_dur'] = trial_dur
-            trial['iti_dur'] = iti_dur
-            trial['display_trial_feedback'] = False
-            trial['stim'] = stim['video'][n]
-            trial['condition'] = stim['condition'][n]
-            trial['start_time'] = t
-            trial['end_time'] = t + trial_dur + iti_dur
-            trial_info.append(trial)
-            t = trial['end_time']
-
-        trial_info = pd.DataFrame(trial_info)
-        if file_name is not None:
-            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
-
-        return trial_info
-
-
-class StrangeStories(TaskFile):
-    def __init__(self, const):
-        super().__init__(const)
-        self.name = 'strange_stories'
-        self.matching_stimuli = True
-        self.half_assigned = True
-
-    def make_task_file(self,
-                       hand='right',
-                       responses = [1,2,3],
-                       run_number = None,
-                       task_dur=30,
-                       trial_dur=30,
-                       iti_dur=0,
-                       answer_dur=5,
-                       file_name=None,
-                       stim_file=None,
                        condition=None,
-                       half=None):
+                       media_scale=0.4):
+        """
+        Create a movie-watching task file (passive viewing of a 30s clip).
 
+        Args:
+            run_number (int): Run number, used to select which clip to show.
+            task_dur (float): Total task duration in seconds.
+            trial_dur (float): Duration of each clip in seconds.
+            iti_dur (float): Inter-trial interval duration in seconds.
+            file_name (str): Name of the file to save the task data.
+            stim_file (str): Optional path to a custom stimulus CSV.
+            condition (str): Which clips to use ('romance', 'nature', "animation" or
+                'landscape'). If None, all non-practice clips are used.
+            media_scale (float): Clip width as a fraction of the window width.
+
+        Returns:
+            pd.DataFrame: Task information as a DataFrame.
+        """
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
 
         t = 0
 
         if stim_file:
-            stim = pd.read_csv(self.stim_dir / self.name / stim_file)
+            stim = pd.read_csv(ut.find_stim(self.const, self.name, stim_file))
         else:
-            stim = pd.read_csv(self.stim_dir / self.name / f'{self.name}.csv')
+            stim = pd.read_csv(ut.find_stim(self.const, self.name, f'{self.name}.csv'))
 
         if condition:
             stim = stim[stim['condition'] == condition]
@@ -1601,29 +1605,24 @@ class StrangeStories(TaskFile):
                 & (stim['condition'].astype(str).str.lower() != 'exclude')
             ]
 
-        if half: # Selects different stimuli for the social and control condition, to enable showing each video only once for each participant (assign half the subjects one type of video as social and the other the other half of the videos as social)
-            stim = stim[stim['half'] == half]
-
-        start_row = (run_number - 1) * n_trials
-        end_row = run_number * n_trials - 1
-        stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
+        # Wrap around the available clips if more runs are requested than there are
+        # stimuli (e.g. landscape has only 10 clips).
+        total = len(stim)
+        if (run_number - 1) * n_trials >= total:
+            cond_label = condition if condition else 'selected'
+            print(f"Warning: Movie only has {total} '{cond_label}' clips; "
+                  f"run {run_number} wraps around and repeats clips.")
+        idx = [((run_number - 1) * n_trials + k) % total for k in range(n_trials)]
+        stim = stim.iloc[idx].reset_index(drop=True)
 
         for n in range(n_trials):
             trial = {}
             trial['trial_num'] = n
-            trial['key_one'] = responses[0]
-            trial['key_two'] = responses[1]
-            trial['key_three'] = responses[2]
-            trial['hand'] = hand
             trial['trial_dur'] = trial_dur
             trial['iti_dur'] = iti_dur
-            trial['display_trial_feedback'] = False
             trial['stim'] = stim['video'][n]
-            trial['video_dur'] = stim['duration'][n]
-            trial['answer_dur'] = answer_dur
-            trial['question'] = stim['question'][n]
-            trial['options'] = stim['options'][n]
             trial['condition'] = stim['condition'][n]
+            trial['media_scale'] = media_scale
             trial['start_time'] = t
             trial['end_time'] = t + trial_dur + iti_dur
             trial_info.append(trial)
@@ -1634,7 +1633,6 @@ class StrangeStories(TaskFile):
             trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
 
         return trial_info
-
 
 class FauxPas(TaskFile):
     def __init__(self, const):
@@ -1669,7 +1667,7 @@ class FauxPas(TaskFile):
         if stim_file:
             stim = pd.read_csv(stim_file)
         else:
-            stim = pd.read_csv(self.stim_dir / self.name / f'{self.name}.csv')
+            stim = pd.read_csv(ut.find_stim(self.const, self.name, f'{self.name}.csv'))
 
         if condition:
             stim = stim[stim['condition'] == condition]
@@ -1739,221 +1737,6 @@ class FauxPas(TaskFile):
             trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
         return trial_info
 
-
-
-class FrithHappe(TaskFile):
-    def __init__(self, const):
-        super().__init__(const)
-        self.name = 'frith_happe'
-        self.matching_stimuli = False
-
-    def make_task_file(self,
-                       hand='right',
-                       responses = [1,2,3],
-                       run_number = None,
-                       task_dur=30,
-                       trial_dur=28,
-                       iti_dur=2,
-                       question_dur=6,
-                       file_name=None,
-                       stim_file=None,
-                       condition=None):
-
-        n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
-        trial_info = []
-
-        t = 0
-
-        if stim_file:
-            stim = pd.read_csv(self.stim_dir / self.name / stim_file)
-        else:
-            stim = pd.read_csv(self.stim_dir / self.name / f'{self.name}.csv')
-
-        if condition:
-            stim = stim[stim['condition'] == condition]
-        else:
-            stim = stim.loc[
-                ~stim['condition'].str.contains('practice', na=False)
-                & (stim['condition'].astype(str).str.lower() != 'exclude')
-            ]
-
-        start_row = (run_number - 1) * n_trials
-        end_row = run_number * n_trials - 1
-        stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
-
-        for n in range(n_trials):
-            trial = {}
-            trial['trial_num'] = n
-            trial['key_one'] = responses[0]
-            trial['key_two'] = responses[1]
-            trial['key_three'] = responses[2]
-            if 'tom' in str(stim['condition'][n]):
-                trial['trial_type'] = 2
-            elif 'gd' in str(stim['condition'][n]):
-                trial['trial_type'] = 3
-            else:
-                trial['trial_type'] = 1
-            trial['hand'] = hand
-            trial['trial_dur'] = trial_dur
-            trial['iti_dur'] = iti_dur
-            trial['display_trial_feedback'] = True
-            trial['stim'] = stim['video'][n]
-            trial['video_dur'] = stim['duration'][n]
-            trial['question_dur'] = question_dur
-            trial['condition'] = stim['condition'][n]
-            trial['start_time'] = t
-            trial['end_time'] = t + trial_dur + iti_dur
-            trial_info.append(trial)
-            t = trial['end_time']
-
-        trial_info = pd.DataFrame(trial_info)
-        if file_name is not None:
-            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
-
-        return trial_info
-
-
-
-class Liking(TaskFile):
-    def __init__(self, const):
-        super().__init__(const)
-        self.name = 'liking'
-        self.matching_stimuli = False
-
-    def map_to_4point_scale(self, rating):
-        """
-        Map the liking rating from a 1-to-5 scale to the closest value on a 4-point scale
-        (to be used in the scanner with the 4-button box).
-
-        Parameters:
-            rating (float): The rating on a 1-to-5 scale (can include decimals, since it's an average across online raters).
-        Returns:
-            int: The closest value on the 4-point scale (1, 2, 3, or 4).
-
-        # Example usage:
-        rating = 3.7
-        closest_value = map_to_4point_scale(rating)
-        print(f"The 1-to-5 rating {rating} maps closest to {closest_value} on the 4-point scale.")
-        """
-        if np.any((rating < 1) | (rating > 5)):
-            raise ValueError("Rating must be between 1 and 5, inclusive.")
-
-        # Normalize the rating to a 0-to-1 range
-        normalized = (rating - 1) / 4
-        # Map to the 4-point scale
-        mapped_value = 1 + normalized * 3
-        # Round to the nearest integer
-        return round(mapped_value)
-
-
-    def make_task_file(self,
-                       hand='right',
-                       responses = [1,2],
-                       run_number = None,
-                       task_dur=30,
-                       trial_dur=28,
-                       iti_dur=1,
-                       question_dur=3,
-                       file_name=None,
-                       stim_file=None,
-                       condition=None):
-
-        n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
-        trial_info = []
-
-        t = 0
-
-        if stim_file:
-            stim = pd.read_csv(self.stim_dir / self.name / stim_file)
-        else:
-            stim = pd.read_csv(self.stim_dir / self.name / f'{self.name}.csv')
-
-        if condition:
-            stim = stim[stim['condition'] == condition]
-            # Randomize order with seed
-            stim = stim.sample(frac=1, random_state=84).reset_index(drop=True)
-        else:
-            stim = stim.loc[
-                ~stim['condition'].str.contains('practice', na=False)
-                & (stim['condition'].astype(str).str.lower() != 'exclude')
-            ]
-
-        start_row = (run_number - 1) * n_trials
-        end_row = run_number * n_trials - 1
-        stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
-
-        for n in range(n_trials):
-            trial = {}
-            trial['trial_num'] = n
-            trial['key_one'] = responses[0]
-            trial['key_two'] = responses[1]
-            trial['rating'] = int(stim['liking_effective'][n])
-            trial['answer'] = stim['answer'][n]
-            trial['hand'] = hand
-            trial['trial_dur'] = trial_dur
-            trial['iti_dur'] = iti_dur
-            trial['display_trial_feedback'] = True
-            trial['stim'] = stim['video'][n]
-            trial['video_dur'] = stim['duration'][n]
-            trial['question_dur'] = question_dur
-            trial['condition'] = stim['condition'][n]
-            trial['start_time'] = t
-            trial['end_time'] = t + trial_dur + iti_dur
-            trial_info.append(trial)
-            t = trial['end_time']
-
-        trial_info = pd.DataFrame(trial_info)
-        if file_name is not None:
-            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
-
-        return trial_info
-
-class Pong(TaskFile):
-    def __init__(self, const):
-        super().__init__(const)
-        self.name = 'pong'
-        self.trajectories =  [
-    (0.3, -0.15), (-0.3, -0.15), (0.1, -0.15), (-0.1, -0.15),
-    (0.4, -0.15), (-0.4, -0.15), (0.6, -0.15), (-0.6, -0.15)
-        ]
-
-    def make_task_file(self,
-                        hand = 'bimanual',
-                        responses = [3,4], #3 = Key_three, 4 = Key_four
-                        task_dur=30,
-                        trial_dur=3.25,
-                        iti_dur=0.5,
-                        file_name=None,
-                        run_number=None):
-        n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
-        trial_info = []
-
-        t = 0
-
-        for n in range(n_trials):
-            trial = {}
-            trial['key_left'] = responses[0]
-            trial['key_right'] = responses[1]
-            trial['trial_num'] = n
-            trial['hand'] = hand
-            trial['trial_dur'] = trial_dur
-            trial['iti_dur'] = iti_dur
-            trial['display_trial_feedback'] = True
-            # choose random sequence
-            trial['stim'] = random.choice(self.trajectories)
-            trial['start_time'] = t
-            trial['end_time'] = t + trial_dur + iti_dur
-            trial_info.append(trial)
-            t = trial['end_time']
-
-        trial_info = pd.DataFrame(trial_info)
-        if file_name is not None:
-            ut.dircheck(self.task_dir / self.name)
-            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
-
-        return trial_info
-
-
 class Affective(TaskFile):
     def __init__(self, const):
         super().__init__(const)
@@ -1964,10 +1747,22 @@ class Affective(TaskFile):
                        trial_dur=1.6,
                        iti_dur=0.4,
                        file_name=None,
-                       run_number=None,
-                       hand='left',
-                       responses=[3, 4]):
+                       hand='right',
+                       responses=[1,2]):
+        """
+        Create an affective-picture task file (judge pleasant vs unpleasant).
 
+        Args:
+            task_dur (float): Total task duration in seconds.
+            trial_dur (float): Duration each image is displayed in seconds.
+            iti_dur (float): Inter-trial interval duration in seconds.
+            file_name (str): Name of the file to save the task data.
+            hand (str): Hand used for response ('right' or 'left').
+            responses (list): Response keys for [unpleasant, pleasant].
+
+        Returns:
+            pd.DataFrame: Task information as a DataFrame.
+        """
         # check how many trials to include
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         n_pleasant = n_trials // 2
@@ -2017,7 +1812,6 @@ class SerialReactionTime(TaskFile):
 
       def make_task_file(self,
                          hand='bimanual',
-                         responses=[1, 2, 3, 4],
                          task_dur=30,
                          initial_wait=1.0,
                          trial_dur=0.5,
@@ -2033,15 +1827,10 @@ class SerialReactionTime(TaskFile):
 
           for n in range(n_trials):
               trial = {}
-              trial['key_one'] = responses[0]
-              trial['key_two'] = responses[1]
-              trial['key_three'] = responses[2]
-              trial['key_four'] = responses[3]
-              trial['trial_num'] = n + 1
+              trial['trial_num'] = n
               trial['hand'] = hand
               trial['trial_dur'] = trial_dur
               trial['iti_dur'] = iti_dur
-              trial['display_trial_feedback'] = False
 
             # Ensure the same stimulus doesn't appear on consecutive trials
               stim = prev_stim
@@ -2080,6 +1869,11 @@ class FingerRhythmic(TaskFile):
 
         # count number of trials
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
+        if n_trials < 1:
+            raise ValueError(
+                f"FingerRhythmic: task_dur ({task_dur}s) is shorter than one trial "
+                f"(trial_dur+iti_dur = {trial_dur + iti_dur}s), so no trials would be generated. "
+                f"Give this task a longer block (the default task_dur=70s fits two 35s trials).")
         trial_info = []
         t = 0
 
@@ -2124,7 +1918,8 @@ class TimePerception(TaskFile):
     def make_task_file(self,
                        modality='time',          # 'time' or 'volume'
                        responses=[1, 2],         # code 1 = left option, 2 = right option
-                       n_trials= 30,              # must be even
+                       task_dur=30,               # total block duration in seconds
+                       n_trials=None,             # if None, derived from task_dur; forced even
                        trial_dur=4,            # tone + question window duration
                        iti_dur=1.0,
                        question_dur=2.0,
@@ -2132,6 +1927,32 @@ class TimePerception(TaskFile):
                        run_number=None,
                        file_name=None,
                        **unused):
+        """
+        Create a time/volume-perception task file (2AFC discrimination).
+
+        Args:
+            modality (str): Dimension judged: 'time' (shorter/longer) or 'volume' (quieter/louder).
+            responses (list): Response keys for [left option, right option].
+            task_dur (float): Total block duration in seconds. Used to derive n_trials when n_trials is None.
+            n_trials (int): Number of trials. If None, computed from task_dur as
+                floor(task_dur / (trial_dur + iti_dur)); rounded down to an even number
+                so the two response sides stay balanced.
+            trial_dur (float): Tone + question window duration per trial in seconds.
+            iti_dur (float): Inter-trial interval duration in seconds.
+            question_dur (float): Response window after the tones in seconds.
+            display_feedback (bool): Whether to show green/red trial feedback.
+            run_number (int): Run number; seeds the side-order shuffle.
+            file_name (str): Name of the file to save the task data.
+
+        Returns:
+            pd.DataFrame: Task information as a DataFrame.
+        """
+        # Derive the trial count from the block duration when not given explicitly,
+        # so the block fits task_dur like every other task. Force an even count so
+        # the two response sides are balanced.
+        if n_trials is None:
+            n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
+        n_trials -= n_trials % 2
 
         # sides per modality
         if modality == 'time':
@@ -2194,9 +2015,9 @@ class SensMotControl(TaskFile):
         t = 0
 
         if stim_file:
-            stim = pd.read_csv(self.stim_dir / self.name / stim_file, sep='\t')
+            stim = pd.read_csv(ut.find_stim(self.const, self.name, stim_file), sep='\t')
         else:
-            stim = pd.read_csv(self.stim_dir / self.name / f'{self.name}_block1.csv', sep='\t')
+            stim = pd.read_csv(ut.find_stim(self.const, self.name, f'{self.name}_block1.csv'), sep='\t')
 
         if condition:
             stim = stim[stim['condition'] == condition]
@@ -2236,77 +2057,5 @@ class SensMotControl(TaskFile):
         return trial_info
 
 
-class SemanticSwitching(TaskFile):
-    def __init__(self, const):
-        super().__init__(const)
-        self.name = 'semantic_switching'
 
-    def make_task_file(self, hand='right',
-                       responses = [1,2], # 1 = True, 2 = False
-                       run_number=None,
-                       task_dur=30,
-                        trial_dur=15,
-                        sentence_dur=2,
-                        file_name=None,
-                        stim_file=None,
-                        stimulus_seed=None,
-                        exclude_stimuli=None,
-                        stim=None):
-        """
-        stim (list or None): If provided, use only these sentence strings (in order) instead of
-            stimulus_seed or run_number sampling. Overrides seeding and row slicing.
-        """
-        stim_list = stim
-        # count number of trials
-        n_trials = int(np.floor(task_dur / (trial_dur)))
-        trial_info = []
-        t = 0
 
-        if stim_file:
-            stim = pd.read_csv(stim_file)
-        else:
-            stim = pd.read_csv(self.stim_dir / 'semantic_switching' / 'semantic_switching_new.csv')
-
-        if stim_list is not None and len(stim_list) > 0:
-            stim = stim[stim['sentence'].isin(stim_list)]
-            result = []
-            for s in stim_list:
-                match = stim[stim['sentence'] == s]
-                if len(match) > 0:
-                    result.append(match.iloc[:1])
-            stim = pd.concat(result, ignore_index=True) if result else stim.iloc[0:0]
-        elif stimulus_seed is not None:
-            if exclude_stimuli is not None:
-                stim = stim[~stim['sentence'].isin(exclude_stimuli)]
-            stim = stim.sample(n=min(n_trials, len(stim)), random_state=stimulus_seed).reset_index(drop=True)
-        else:
-            start_row = (run_number - 1) * n_trials
-            end_row = run_number * n_trials - 1
-            stim = stim.iloc[start_row:end_row + 1].reset_index(drop=True)
-
-        n_actual = min(n_trials, len(stim))
-        for n in range(n_actual):
-            trial = {}
-            trial['key_true'] = responses[0]
-            trial['key_false'] = responses[1]
-            trial['trial_num'] = n
-            trial['hand'] = hand
-            trial['trial_dur'] = trial_dur
-            trial['sentence_dur'] = sentence_dur
-            trial['sentence'] = stim['Sentence'].iloc[n]
-            trial['condition'] = stim['Condition'].iloc[n]
-            trial['trial_type'] = 1 if stim['Meaningful'].iloc[n] else 0 # 0 = meaningless, 1 = meaningful
-            trial['last_word'] = stim['LastWord'].iloc[n]
-            trial['display_trial_feedback'] = True
-            trial['start_time'] = t
-            trial['end_time'] = t + trial_dur
-
-            trial_info.append(trial)
-
-            # Update for next trial:
-            t = trial['end_time']
-
-        trial_info = pd.DataFrame(trial_info)
-        if file_name is not None:
-            trial_info.to_csv(self.task_dir / self.name / file_name, sep='\t', index=False)
-        return trial_info
