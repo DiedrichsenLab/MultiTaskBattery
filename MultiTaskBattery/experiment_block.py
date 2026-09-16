@@ -108,7 +108,7 @@ class Experiment:
 
         # 2. Initialize the all tasks that we need
         self.task_obj_list = [] # a list containing task objects in the run
-        task_table = ut.get_task_table(self.const.exp_dir) # Get the task table for the experiment, which is a combination of the general task table and the experiment-specific task table (if it exists)
+        task_table = ut.get_task_table(self.const.exp_dir, getattr(self.const, 'task_tables', None)) # Get the task table for the experiment, which is a combination of the general task table and the experiment-specific task table (if it exists)
         for t_num, task_info in self.run_info.iterrows():
             # create a task object for the current task, reads the trial file, and append it to the list
             t = task_table[task_table['name']== task_info.task_name]
