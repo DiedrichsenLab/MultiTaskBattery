@@ -100,6 +100,12 @@ The local table is merged with the shared one automatically when
 ``make_files.py`` passes ``exp_dir=const.exp_dir`` to ``tf.make_run_file``
 and ``tf.get_task_class`` (the example ``make_files.py`` already does this).
 
+If your tasks live in a shared library outside the experiment folder, the
+library can ship its own ``task_table.tsv`` and you point at it from
+``constants.py`` instead of copying the rows into each experiment::
+
+    task_tables = [my_task_library.TASK_TABLE]
+
 3. Register your module in constants.py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Import your local module and add it to ``task_modules``:
