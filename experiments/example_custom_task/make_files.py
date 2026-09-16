@@ -56,7 +56,8 @@ for r in range(1, num_runs + 1):
 
     # Pass exp_dir so any local task_table.tsv (for custom tasks) is merged
     # with the framework's table.
-    T = tf.make_run_file(tasks, tfiles, exp_dir=const.exp_dir)
+    T = tf.make_run_file(tasks, tfiles, exp_dir=const.exp_dir,
+                         task_tables=getattr(const, 'task_tables', None))
     T.to_csv(const.run_dir / f'run_{r:02d}.tsv', sep='\t', index=False)
 
     # Generate a task file for each block that specifies the trial information
@@ -65,7 +66,8 @@ for r in range(1, num_runs + 1):
 
         # Resolve the TaskFile generator: a custom '<Class>File' in
         # const.task_modules if present, otherwise the built-in one.
-        cl = tf.get_task_class(task, exp_dir=const.exp_dir)
+        cl = tf.get_task_class(task, exp_dir=const.exp_dir,
+                               task_tables=getattr(const, 'task_tables', None))
         myTask = ut.get_task_file_class(const, cl)(const)
 
         # Start from the block's task_dur, add its kwargs, and pass run_number
