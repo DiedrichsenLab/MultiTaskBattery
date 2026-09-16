@@ -7,7 +7,7 @@ class Screen:
     def __init__(self, const):
         """    A class to create a screen for the experiment
 
-               Args: 
+               Args:
                     const (module):
                         local constants.py module (see example_experiment/constants.py) as example
                 Returns:
@@ -18,8 +18,9 @@ class Screen:
         self.units    = 'deg'
         self.color    = '#808080'
         self.size     = const['size'] #[800, 800] #[1440, 900]
-        self.distance = 57.0
-        self.width    = 30.0
+        # physical width of the screen and eye-to-screen distance (cm); used to convert deg / cm to pixels
+        self.distance = const.get('distance', 57.0)
+        self.width    = const.get('width', 30.0)
         self.allowGUI = True
         self.screen_number = const['number']
         self.monitor  = monitors.Monitor(
@@ -39,7 +40,21 @@ class Screen:
                              units = self.units,
                              color = self.color,
                              allowGUI = self.allowGUI, allowStencil=True)
-        
+
+        # Photodiode / MEG-timing marker: a small square in a screen corner that
+        # is flashed white on a stimulus-onset flip (see self.flip()). A photodiode
+        # taped over this corner records the true onset directly into the MEG/EEG
+        # recording. Position/size are in 'norm' units (bottom-right by default)
+        # and can be overridden with 'photodiode_pos'/'photodiode_size' in the
+        # screen constants. The square is only drawn when flip(marker=True) is
+        # called, so it is invisible/inert unless a task opts in.
+        pd_pos  = const.get('photodiode_pos', (0.9, -0.9)) if hasattr(const, 'get') else (0.9, -0.9)
+        pd_size = const.get('photodiode_size', 0.2) if hasattr(const, 'get') else 0.2
+        self.pd_square = visual.Rect(self.window, width=pd_size, height=pd_size,
+                                     units='norm', pos=pd_pos,
+                                     fillColor='white', lineColor=None, autoLog=False)
+        self.last_flip_time = None
+
     def check_monitors(self):
 
         display = get_display()
@@ -95,13 +110,14 @@ class Screen:
                 Returns:
                     None
         """
-        # Draw the check mark
+        # Draw the check mark as a filled outline (two thick lines leave a notch
+        # where they meet), in height units so it keeps its shape on any screen
         check = visual.ShapeStim(self.window,
-            vertices=((-0.04,0), (0, -0.06), (0.04, 0.06)),
-            lineWidth=20,
-            closeShape=False,
-            lineColor=color,
-            units='norm'
+            vertices=((-0.030, 0.012), (-0.011, -0.009), (0.034, 0.045),
+                      (0.051, 0.031), (-0.010, -0.042), (-0.046, -0.003)),
+            fillColor=color,
+            lineColor=None,
+            units='height'
         )
         check.draw()
 
@@ -142,3 +158,34 @@ class Screen:
         # Flip the screen only if flip is True
         if flip:
             self.window.flip()
+
+    def flip(self, marker=False, clock=None):
+        """Flip the window, optionally leaving a photodiode / MEG-timing marker.
+
+        Behaves like ``self.window.flip()`` but adds two things needed for
+        MEG/EEG (or any hardware) timing:
+
+        * ``marker=True`` draws the photodiode square (``self.pd_square``) white
+          in a screen corner *on this flip*. A photodiode taped over that corner
+          then records the true stimulus onset directly into the MEG/EEG file.
+        * ``clock`` (e.g. ``ttl_clock.clock``) is used to timestamp the flip via
+          ``callOnFlip``; the time is stored and returned so the caller can log
+          it (the ``flip_time`` column) for alignment with the recording.
+
+        Args:
+            marker (bool): if True, flash the photodiode square on this flip.
+            clock (psychopy.core.Clock or None): clock to timestamp the flip on.
+        Returns:
+            float or None: time of the flip on ``clock`` (None if no clock given).
+        """
+        if marker:
+            self.pd_square.draw()
+        self.last_flip_time = None
+        if clock is not None:
+            self.window.callOnFlip(self.store_flip_time, clock)
+        self.window.flip()
+        return self.last_flip_time
+
+    def store_flip_time(self, clock):
+        """callOnFlip callback: capture the flip time right after the buffer swap."""
+        self.last_flip_time = clock.getTime()

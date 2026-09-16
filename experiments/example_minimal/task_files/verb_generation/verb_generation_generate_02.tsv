@@ -1,0 +1,13 @@
+trial_num	condition	trial_dur	iti_dur	start_time	end_time	stim
+0	generate	2	0.5	0.0	2.5	lemonade   
+1	generate	2	0.5	2.5	5.0	cow         
+2	generate	2	0.5	5.0	7.5	shampoo     
+3	generate	2	0.5	7.5	10.0	house       
+4	generate	2	0.5	10.0	12.5	tomato      
+5	generate	2	0.5	12.5	15.0	shark       
+6	generate	2	0.5	15.0	17.5	balloon     
+7	generate	2	0.5	17.5	20.0	wheel       
+8	generate	2	0.5	20.0	22.5	harp        
+9	generate	2	0.5	22.5	25.0	violin      
+10	generate	2	0.5	25.0	27.5	lion        
+11	generate	2	0.5	27.5	30.0	velvet     

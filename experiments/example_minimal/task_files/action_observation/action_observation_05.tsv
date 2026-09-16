@@ -1,0 +1,3 @@
+trial_num	trial_dur	iti_dur	condition	stim	start_time	end_time
+0	14	1	action	knotActionCornice.mov	0	15
+1	14	1	control	knotControlCornice.mov	15	30

@@ -20,11 +20,11 @@ sys.path.insert(0, os.path.abspath('extension'))
 # -- Project information -----------------------------------------------------
 
 project = 'MultiTaskBattery'
-copyright = '2023, Diedrichsenlab'
+copyright = '2023-2026, Diedrichsenlab'
 author = 'Diedrichsenlab'
 
 # The full version, including alpha/beta/rc tags
-release = 'v.0.9.0'
+release = 'v1.1.0'
 
 
 # -- General configuration ---------------------------------------------------

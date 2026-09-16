@@ -11,6 +11,7 @@ The download fetches two files:
 
 - **Data file** (.dscalar.nii): Group-averaged fMRI activity patterns in CIFTI format (cortex in fs32k space, subcortical structures in MNI152NLin6Asym space)
 - **Info file** (.tsv): Metadata for each row in the data file, including:
+
   - ``task_code``: unique task code
   - ``cond_code``: condition code (some tasks have multiple conditions)
   - ``full_code``: task_code + cond_code (used to identify conditions)

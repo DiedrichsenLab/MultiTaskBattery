@@ -1,0 +1,13 @@
+trial_num	condition	trial_dur	iti_dur	start_time	end_time	stim
+0	generate	2	0.5	0.0	2.5	pear        
+1	generate	2	0.5	2.5	5.0	donkey      
+2	generate	2	0.5	5.0	7.5	saw         
+3	generate	2	0.5	7.5	10.0	pants       
+4	generate	2	0.5	10.0	12.5	lamp        
+5	generate	2	0.5	12.5	15.0	nut         
+6	generate	2	0.5	15.0	17.5	jacket      
+7	generate	2	0.5	17.5	20.0	telephone   
+8	generate	2	0.5	20.0	22.5	wineglass   
+9	generate	2	0.5	22.5	25.0	coat        
+10	generate	2	0.5	25.0	27.5	eye         
+11	generate	2	0.5	27.5	30.0	owl         

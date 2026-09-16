@@ -1,64 +1,210 @@
 Implementing new tasks
 ======================
 
-Follow these steps to add a new task to the battery.
+There are two scenarios for adding a task to MultiTaskBattery:
 
-1. Register the task
---------------------
-Add a row to ``MultiTaskBattery/task_table.tsv`` with:
+1. **Adding a task locally to your experiment.** The task lives only in
+   your experiment folder and is registered via ``task_modules`` in your
+   ``constants.py``. The shared package is unchanged. This is the right
+   path for almost everyone — see ``experiments/example_custom_task`` for
+   a working reference.
 
-- ``name``: task name using snake_case (e.g. ``serial_reaction_time``)
-- ``task_class``: Python class name (e.g. ``SerialReactionTime``)
-- ``descriptive_name``: short label for the GUI
-- ``code``: unique short code (e.g. ``srt``)
+2. **Contributing a task to the shared library.** The task is added to
+   ``MultiTaskBattery/task_blocks.py``, ``task_file.py``, and
+   ``task_table.tsv``, documented in ``task_details.json``, and
+   submitted via pull request. Use this path only when you want others
+   outside your project to use the task too.
 
-2. Implement the task class
----------------------------
-Add a new class to ``MultiTaskBattery/task_blocks.py`` that inherits from ``Task``. You need to implement:
-
-- ``init_task()``: Read trial info from the task file. Load any stimuli needed.
-- ``display_instructions()``: Show task-specific instructions. Override only if the default instructions don't apply.
-- ``run_trial(trial)``: Run a single trial. Display stimuli, collect responses, return the trial data.
-
-Useful methods from the ``Task`` parent class:
-
-- ``wait_response()``: Wait for a button press and return the response.
-- ``display_trial_feedback()``: Show green/red fixation cross for correct/incorrect.
-- ``screen_quit()``: Check for escape key to quit the experiment.
-
-3. Implement the task file class
----------------------------------
-Add a new class to ``MultiTaskBattery/task_file.py`` that inherits from ``TaskFile``. You need to implement:
-
-- ``__init__()``: Call ``super().__init__(const)`` and set ``self.name`` to your task name (must match the ``name`` in ``task_table.tsv``).
-- ``make_task_file()``: Generate trial-level ``.tsv`` files with columns like ``stim``, ``trial_dur``, ``iti_dur``, ``start_time``, ``end_time``, etc.
-
-If your task generates random stimuli (no fixed stimulus file), add it to the ``tasks_without_run_number`` list in ``MultiTaskBattery/utils.py``.
-
-4. Add stimuli (if needed)
---------------------------
-If your task uses stimulus files (images, audio, video), add them to ``stimuli/<task_name>/``.
-
-5. Add a documentation image
+Adding a task locally to your experiment
 ----------------------------------------
-Drop a screenshot of your task as ``docs/images/<task_name>.png``. It will automatically appear on the task descriptions page. For multiple images use ``<task_name>_2.png``, ``<task_name>_3.png``, etc.
 
-6. Add task details
---------------------
-Add an entry for your task in ``MultiTaskBattery/task_details.json``. The key must match the task ``name`` from ``task_table.tsv``. Each entry should include:
+Recommended layout: both the runtime ``Task`` class and the file-generator
+``TaskFile`` class for one task live in a single module in your experiment
+folder.
+
+1. Create a local module
+^^^^^^^^^^^^^^^^^^^^^^^^
+Add a new ``.py`` file (e.g. ``my_tasks.py``) in your experiment folder
+that defines both classes:
+
+.. code-block:: python
+
+    from MultiTaskBattery.task_blocks import Task
+    from MultiTaskBattery.task_file import TaskFile
+    from psychopy import visual, event
+    import pandas as pd
+    import numpy as np
+
+    class MyTask(Task):
+        def __init__(self, info, screen, ttl_clock, const, subj_id):
+            super().__init__(info, screen, ttl_clock, const, subj_id)
+            self.feedback_type = 'acc+rt'   # or 'none', 'acc', 'rt'
+
+        def init_task(self):
+            ...  # read trial info, load stimuli
+
+        def display_instructions(self):
+            ...  # task-specific instructions
+
+        def run_trial(self, trial):
+            ...  # display stimulus, collect response, return trial
+
+    class MyTaskFile(TaskFile):
+        def __init__(self, const):
+            super().__init__(const)
+            self.name = 'my_task'  # must match the row in task_table.tsv
+
+        def make_task_file(self, ..., file_name=None):
+            # Every row MUST include trial_num, start_time, end_time and
+            # trial_dur — Task.run() waits on trial.start_time for all tasks.
+            ...  # generate trial-level rows, write tsv
+
+Methods to implement on the ``Task`` subclass:
+
+- ``init_task()``: Read the task's trial-info TSV into ``self.trial_info``.
+  Load any stimuli into memory.
+- ``display_instructions()``: Show task-specific instructions on the screen.
+- ``run_trial(trial)``: Run a single trial — display stimuli, collect responses,
+  return the trial row with any added columns.
+
+Useful methods inherited from the ``Task`` parent:
+
+- ``wait_response(start_time, max_wait_time)``: Wait for a button press
+  and return ``(key, rt)``.
+- ``display_trial_feedback(give_feedback, correct)``: Show a green check or
+  red cross based on correctness.
+- ``screen_quit()``: Check for the escape key to quit the experiment.
+
+``feedback_type`` selects the end-of-run scoreboard (``'none'``, ``'acc'``,
+``'rt'``, or ``'acc+rt'``) and is load-bearing: if it contains ``'acc'``,
+``run_trial`` **must** set ``trial['correct']`` on the returned row; if it
+contains ``'rt'``, it **must** set ``trial['rt']``. ``Task.run()`` averages
+those columns at the end of the block, so a missing one raises ``KeyError`` on
+every run. The skeleton above uses ``'acc+rt'``, which requires **both**.
+
+If your task generates random stimuli (no fixed stimulus file per run),
+omit ``run_number`` from the ``make_task_file`` signature — ``make_files.py``
+inspects the signature to decide whether to pass it.
+
+2. Add a row to a local task_table.tsv
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Create a ``task_table.tsv`` file in your experiment folder with a single
+tab-separated row for your task (same columns as the shared table):
+
+.. code-block:: text
+
+    name	task_class	descriptive_name	code
+    my_task	MyTask	my_task	mytsk
+
+The local table is merged with the shared one automatically when
+``make_files.py`` passes ``exp_dir=const.exp_dir`` to ``tf.make_run_file``
+and ``tf.get_task_class`` (the example ``make_files.py`` already does this).
+
+3. Register your module in constants.py
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Import your local module and add it to ``task_modules``:
+
+.. code-block:: python
+
+    import my_tasks
+    task_modules = [my_tasks]
+
+At runtime, ``ut.get_task_class`` walks ``task_modules`` first and falls
+back to the shared package. At file-generation time,
+``ut.get_task_file_class`` does the same — and appends ``'File'``
+automatically when searching local modules — so ``make_files.py`` needs
+zero changes for new tasks.
+
+4. Add stimuli (if your task uses them)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Stimulus files (images, audio, video) live in a per-task subfolder
+``<root>/<task_name>/`` (the ``<task_name>`` matches the ``name`` column in
+``task_table.tsv``). If your task generates stimuli procedurally, skip this
+step.
+
+Stimuli are resolved with the **same local-first, package-fallback logic as
+task classes**. Both at runtime and during file generation, each stimulus is
+looked up as ``<root>/<task_name>/<file>`` across a search path of roots, in
+order, and the first existing file wins. The search path is:
+
+1. the root(s) in ``const.stim_dirs`` (a list) if you define it, otherwise the
+   single ``const.stim_dir``; then
+2. the package's own bundled ``stimuli`` folder, always appended as a final
+   fallback.
+
+Because your own roots are searched first, the package fallback can only *add*
+resolvable files — it never overrides yours. This lets a custom task keep its
+stimuli **inside your experiment folder** while the built-in tasks still
+resolve their stimuli from the package. So you have two options:
+
+- **Local (recommended for custom tasks):** add your experiment's stimulus
+  folder to the search path in ``constants.py`` and put files there::
+
+      stim_dirs = [exp_dir / "stimuli", stim_dir]   # local first, package fallback
+
+  then place your files in ``<exp_dir>/stimuli/<task_name>/``.
+
+- **Shared library (when contributing a task):** place files under the
+  package's ``stimuli/<task_name>/`` at the repository root.
+
+If your task reads stimuli, resolve them with the helpers
+``ut.find_stim(const, task_name, *parts)`` (a single file — e.g.
+``ut.find_stim(self.const, self.name, 'clip.mov')``) and
+``ut.find_stim_dir(const, task_name)`` (the task's folder, e.g. for globbing),
+rather than building the path from ``const.stim_dir`` directly, so your task
+picks up the full search path.
+
+5. Test
+^^^^^^^
+Add your task to the ``blocks`` list in your experiment's
+``make_files.py`` (as ``('my_task', {})``, or with kwargs such as
+``('my_task', {'condition': 'A'})``), generate the run and task files,
+and run ``run.py``.
+``experiments/example_custom_task`` is the reference for a working
+custom-task setup.
+
+Contributing a task to the shared library
+-----------------------------------------
+
+If you want your task to be included in MultiTaskBattery so it is
+available to other users, do everything from the local section above,
+*plus* the extra steps below.
+
+1. Move the classes into the shared package
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+In the shared package the runtime and file-generator classes live in
+separate modules and reuse the same bare name (no ``File`` suffix):
+
+- Move the ``Task`` subclass into ``MultiTaskBattery/task_blocks.py``.
+- Move the ``TaskFile`` subclass into ``MultiTaskBattery/task_file.py``,
+  dropping the ``File`` suffix from its class name.
+- Move the row from your local ``task_table.tsv`` into
+  ``MultiTaskBattery/task_table.tsv``.
+
+2. Add task details
+^^^^^^^^^^^^^^^^^^^
+Add an entry for your task in ``MultiTaskBattery/task_details.json``.
+The key must match the task ``name`` from ``task_table.tsv``. Each
+entry should include:
 
 - ``short_description``: a brief one-line summary of the task.
 - ``detailed_description``: a longer description of what the task involves.
-- ``recorded_metrics``: what the task records — ``Accuracy + RT``, ``Accuracy``, ``RT``, or ``None``.
+- ``recorded_metrics``: ``Accuracy + RT``, ``Accuracy``, ``RT``, or ``None``.
 - ``conditions``: comma-separated list of conditions (omit if none).
 - ``reference``: academic citation (omit if none).
-- ``task_file_parameters``: documents the parameters of ``make_task_file``.
+- ``task_file_columns``: documents the columns of the generated task file —
+  each with a ``type`` and a ``description``. List **every** column the file
+  contains: the shared ones (``trial_num``, ``trial_dur``, ``stim``, etc.) and
+  any task-specific ones. For ``condition`` and ``trial_type`` columns, spell
+  out what the values mean (e.g. ``0 = left, 1 = right``).
 
 Tips for the detailed description:
 
 - Describe what the participant sees and does on each trial.
-- Mention the expected mental processes or brain regions that this task is designed to activate (e.g., "targets the language network").
-- If your task has conditions, describe what each condition involves and how it differs from the others.
+- Mention the expected mental processes or brain regions that the task
+  is designed to activate (e.g., "targets the language network").
+- If your task has conditions, describe what each involves and how
+  they differ.
 
 For example, the ``demand_grid`` entry:
 
@@ -70,27 +216,41 @@ For example, the ``demand_grid`` entry:
             "detailed_description": "Participants see a sequence of boxes lighting up on a grid...",
             "recorded_metrics": "Accuracy + RT",
             "reference": "Fedorenko et al. (2013)...",
-            "task_file_parameters": {
+            "task_file_columns": {
+                "trial_type": {
+                    "type": "int",
+                    "description": "Numeric code for the correct side (0 = left, 1 = right)."
+                },
                 "grid_size": {
                     "type": "tuple",
-                    "default": "(3, 4)",
-                    "description": "Size of the grid (rows, cols)."
+                    "description": "Grid dimensions as (rows, cols)."
                 }
             }
         }
     }
 
-All fields appear on the :ref:`task descriptions <task_descriptions>` page, with the parameters shown in a collapsible table.
+All fields appear on the :ref:`task descriptions <task_descriptions>`
+page, with the columns shown in a collapsible **Task file columns** table.
 
-7. Test
--------
-Add your task to an experiment's ``make_files.py``, generate the files, and run it to verify everything works.
+Document the ``make_task_file`` **parameters** separately, by writing a
+Google-style docstring (with ``Args:`` and ``Returns:`` sections) on the
+method. Those render on the :doc:`Task_file module reference
+<reference_task_file>` page. In other words: ``make_task_file`` *parameters*
+are documented in the API reference (via the docstring), while the *columns*
+they produce in the task file are documented in ``task_details.json`` (via
+``task_file_columns``).
 
-Submitting your task
---------------------
-To contribute your task back to the repository:
+3. Add a documentation image
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Drop a screenshot of your task as ``docs/images/<task_name>.png``. It
+will automatically appear on the task descriptions page. For multiple
+images use ``<task_name>_2.png``, ``<task_name>_3.png``, etc. You can
+also add a short demo video as ``docs/images/<task_name>.mp4`` (and
+``<task_name>_2.mp4``, ...) to render an inline video player.
 
-1. Fork the repository on GitHub
-2. Create a branch for your task (e.g. ``add-my-new-task``)
-3. Make your changes (steps 1-6 above)
-4. Push and open a pull request against ``main``
+4. Open a pull request
+^^^^^^^^^^^^^^^^^^^^^^
+1. Fork the repository on GitHub.
+2. Create a branch for your task (e.g. ``add-my-new-task``).
+3. Make your changes (steps 1-3 above).
+4. Push and open a pull request against ``main``.

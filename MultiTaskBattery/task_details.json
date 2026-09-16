@@ -1,774 +1,883 @@
 {
     "movie": {
-        "detailed_description": "Participants passively watch 30-second video clips without audio or subtitles. Conditions include romance clips from Pixar's Up, nature clips, and landscape clips. Each run presents one clip from the selected condition. The Movie clips are usually shown in sequence across runs, so participant can follow a consistent narrative across runs. The task requires no motor response and is designed to engage visual processing and social/emotional processes depending on the condition.",
-        "task_file_parameters": {
-            "run_number": {
+        "short_description": "Participants passively watch a 30-second movie clip (nature, animated romance, or landscape scenery) without audio or subtitles.",
+        "detailed_description": "Participants passively watch a single 30-second video clip per block, presented without audio or subtitles, and are instructed to keep their head still and attend to the screen; no response is required. Three clip conditions are available: 'nature' — a nature documentary clip (kickboxing kangaroos, from 'Planet Earth II: Islands'); 'romance' — an emotional love story between two characters from the Pixar movie 'Up'; and 'landscape' — an aesthetically-pleasing clip depicting diverse scenery (sourced from Vimeo). The clips of a given condition are presented in order across runs so they unfold as a continuous sequence over the session. Movie watching is a naturalistic-viewing task that engages visual and dynamic-scene processing, with the romance condition additionally recruiting social and emotional processing.",
+        "reference": [
+            "Nguyen, V. T., Sonkusare, S., Stadler, J., Hu, X., Breakspear, M., & Guo, C. C. (2017). Distinct cerebellar contributions to cognitive-perceptual dynamics during natural viewing. Cerebral Cortex, 27(12), 5652-5662.",
+            "King, M., Hernandez-Castillo, C. R., Poldrack, R. A., Ivry, R. B., & Diedrichsen, J. (2019). Functional boundaries in the human cerebellum revealed by a multi-domain task battery. Nature neuroscience, 22(8), 1371-1378."
+        ],
+        "task_file_columns": {
+            "trial_num": {
                 "type": "int",
-                "default": "None",
-                "description": "Run number, used to select which clip to show from the stimulus list."
-            },
-            "task_dur": {
-                "type": "float",
-                "default": "30",
-                "description": "Total task duration in seconds."
+                "description": "Trial number (0-indexed)."
             },
             "trial_dur": {
                 "type": "float",
-                "default": "30",
-                "description": "Duration of each trial (clip) in seconds."
+                "description": "Duration of the trial (in seconds)."
             },
             "iti_dur": {
                 "type": "float",
-                "default": "0",
-                "description": "Inter-trial interval duration in seconds."
+                "description": "Inter-trial interval after the trial (in seconds)."
+            },
+            "stim": {
+                "type": "str",
+                "description": "Movie clip filename played this trial."
             },
             "condition": {
                 "type": "str",
-                "default": "None",
-                "description": "Which condition to use: 'romance', 'nature', or 'landscape'. If None, all non-practice clips are used."
+                "description": "Clip category: 'romance', 'nature', or 'landscape'."
+            },
+            "media_scale": {
+                "type": "float",
+                "description": "Clip width as a fraction of the window width (controls on-screen video size)."
+            },
+            "start_time": {
+                "type": "float",
+                "description": "Trial start, relative to the block start (in seconds)."
+            },
+            "end_time": {
+                "type": "float",
+                "description": "Trial end, relative to the block start (in seconds)."
             }
         },
-        "short_description": "30s clips of planet earth documentary or of a pixar movie, no audio no subtitles",
-        "reference": "Planet Earth and Pixar UP\" movie as used in King, M. et al. (2019) ‘Functional boundaries in the human cerebellum revealed by a multi-domain task battery’, Nature Neuroscience, 22(8), pp. 1371–1378. Available at: https://doi.org/10.1038/s41593-019-0436-x.",
-        "conditions": "romance,landscape,nature",
+        "conditions": "romance,nature,landscape",
         "recorded_metrics": "None"
     },
     "oddball": {
-        "detailed_description": "A rapid visual oddball detection task. On each trial a letter ('K' or 'O') is briefly shown in either black or red. Participants must press a button when they see a red 'K' (the target) and withhold responses to all other stimuli. The task is designed to engage attention and executive control .",
-        "task_file_parameters": {
+        "short_description": "Participants see a black or red 'K' or 'O' on screen and press a button only when a red 'K' appears.",
+        "recorded_metrics": "Accuracy + RT",
+        "detailed_description": "Participants see a single letter ('K' or 'O') briefly shown in either black or red on each trial. They press a button when they see a red 'K' (the infrequent target) and withhold responses to all other stimuli. The red 'K' appears on 10% of the trials, with the remaining trials split between black 'K' (40%), black 'O' (40%), and red 'O' (10%) non-targets. This task explores detection of transient responses to salient, visual oddball targets that are uncommon relative to irrelevant nontargets and distracting nontargets. The goal of the task is to activate the SAL/PMN and CG-OP networks.",
+        "task_file_columns": {
+            "key_one": {
+                "type": "int",
+                "description": "Response key to press when a red 'K' target appears."
+            },
+            "trial_num": {
+                "type": "int",
+                "description": "Trial number (0-indexed)."
+            },
             "hand": {
                 "type": "str",
-                "default": "right",
-                "description": "Hand used for response ('right' or 'left')."
-            },
-            "responses": {
-                "type": "list",
-                "default": "[1, 2]",
-                "description": "Response keys."
-            },
-            "task_dur": {
-                "type": "float",
-                "default": "30",
-                "description": "Total task duration in seconds."
+                "description": "Which hand responds ('left', 'right', or 'bimanual')."
             },
             "trial_dur": {
                 "type": "float",
-                "default": "0.15",
-                "description": "Duration the stimulus is displayed in seconds."
+                "description": "Duration of the trial (in seconds)."
             },
             "iti_dur": {
                 "type": "float",
-                "default": "0.85",
-                "description": "Inter-trial interval duration in seconds."
+                "description": "Inter-trial interval after the trial (in seconds)."
+            },
+            "trial_type": {
+                "type": "int",
+                "description": "Whether this is the target: 1 = red 'K' (target), 0 = non-target."
+            },
+            "stim": {
+                "type": "str",
+                "description": "Stimulus shown: 'black_K', 'black_O', 'red_O', or 'red_K'."
+            },
+            "start_time": {
+                "type": "float",
+                "description": "Trial start, relative to the block start (in seconds)."
+            },
+            "end_time": {
+                "type": "float",
+                "description": "Trial end, relative to the block start (in seconds)."
             }
         },
-        "short_description": "Black or red \"K\" or \"O\" is shown on the screen. Press a button when red \"K\" is shown",
-        "reference": "Du, J., DiNicola, L. M., Angeli, P. A., Saadon-Grosman, N., Sun, W., Kaiser, S., ... & Buckner, R. L. (2024). Organization of the human cerebral cortex estimated within individuals: networks, global topography, and function. Journal of neurophysiology, 131(6), 1014-1082.",
-        "recorded_metrics": "Accuracy + RT"
+        "reference": "Du, J., DiNicola, L. M., Angeli, P. A., Saadon-Grosman, N., Sun, W., Kaiser, S., ... & Buckner, R. L. (2024). Organization of the human cerebral cortex estimated within individuals: networks, global topography, and function. Journal of neurophysiology, 131(6), 1014-1082."
     },
     "demand_grid": {
-        "detailed_description": "On each trial, a sequence of steps is shown, where each step lights up a set of boxes in a grid. participants need to mentally add these steps together to build up a representation of the final pattern. After the sequence, two grids are displayed side by side: one showing the integrated pattern and one with a modified step. The participant presses left or right to indicate which grid matches the original sequence. The task is designed to tap spatial working memory and engage domain-general processing. The size of the grid, the number of steps and the number of boxes per step can be manipulated to adjust task difficulty and working memory load.",
-        "task_file_parameters": {
+        "short_description": "Participants see a sequence of steps that each light up boxes in a grid, mentally combine them into a single pattern, then choose which of two grids matches the full sequence.",
+        "detailed_description": "A spatial working memory task.  A grid is presented (typically 3x4) and at each step (typically 3) a number of boxes (typically 2) light up for 1.3 s.  Participants need to mentally integrate the steps to build the overall pattern. After the sequence, two grids appear side by side, one showing the correct pattern and the other with one of the steps modified. Participants need to make a button press (within 3s) to choose the correct options. Grid size, number of steps, and boxes lit per step are adjustable to vary working memory load. Contrasting harder against easier trials localizes the domain-general Multiple Demand (MD) network in frontal and parietal cortex. The easier>harder or easier>fixation contrasts can be used to localize the Default Mode Network (DMN). After each response, the participant receives trial-specific feedback: a green check mark for a correct answer and a red cross for an incorrect one.",
+        "reference": "Fedorenko, E., Duncan, J., & Kanwisher, N. (2013). Broad domain generality in focal regions of frontal and parietal cortex. Proceedings of the National Academy of Sciences of the United States of America, 110(41), 16616-16621.",
+        "recorded_metrics": "Accuracy + RT",
+        "task_file_columns": {
+            "key_left": {
+                "type": "int",
+                "description": "Response key for choosing the left grid."
+            },
+            "key_right": {
+                "type": "int",
+                "description": "Response key for choosing the right grid."
+            },
+            "correct_side": {
+                "type": "str",
+                "description": "Which side shows the correct grid ('left' or 'right')."
+            },
+            "trial_type": {
+                "type": "int",
+                "description": "Numeric code for the correct side (0 = left, 1 = right)."
+            },
+            "trial_num": {
+                "type": "int",
+                "description": "Trial number (0-indexed)."
+            },
             "hand": {
                 "type": "str",
-                "default": "right",
-                "description": "Hand used for response ('right' or 'left')."
-            },
-            "responses": {
-                "type": "list",
-                "default": "[1, 2]",
-                "description": "Response keys for left and right choices."
+                "description": "Which hand responds ('left', 'right', or 'bimanual')."
             },
             "grid_size": {
                 "type": "tuple",
-                "default": "(3, 4)",
-                "description": "Size of the grid (rows, cols)."
+                "description": "Grid dimensions as (rows, cols)."
             },
             "num_steps": {
                 "type": "int",
-                "default": "3",
-                "description": "Number of steps in the sequence shown to the participant."
+                "description": "Number of steps in the sequence."
             },
-            "num_boxes_lit": {
-                "type": "int",
-                "default": "2",
-                "description": "Number of boxes lit up per step."
+            "original_sequence": {
+                "type": "list",
+                "description": "Flattened list of all lit cells across the sequence (the correct pattern)."
             },
-            "task_dur": {
-                "type": "float",
-                "default": "30",
-                "description": "Total task duration in seconds."
+            "modified_sequence": {
+                "type": "list",
+                "description": "Flattened list of lit cells for the incorrect (modified) grid."
+            },
+            "original_step_1": {
+                "type": "list",
+                "description": "Cells lit during step 1."
+            },
+            "original_step_2": {
+                "type": "list",
+                "description": "Cells lit during step 2."
+            },
+            "original_step_3": {
+                "type": "list",
+                "description": "Cells lit during step 3."
+            },
+            "display_trial_feedback": {
+                "type": "bool",
+                "description": "Whether to show green/red feedback after the trial."
             },
             "trial_dur": {
                 "type": "float",
-                "default": "7",
-                "description": "Duration of each trial in seconds."
-            },
-            "question_dur": {
-                "type": "float",
-                "default": "3",
-                "description": "Duration of the question phase where the two options are shown."
+                "description": "Duration of the trial (in seconds)."
             },
             "sequence_dur": {
                 "type": "float",
-                "default": "4",
-                "description": "Duration of the sequence presentation phase."
-            },
-            "iti_dur": {
-                "type": "float",
-                "default": "0.5",
-                "description": "Inter-trial interval duration in seconds."
-            }
-        },
-        "short_description": "2AFC, a set of grids is shown one by one on the screen with certain boxes colored blue. After the sequnece, two options are given for the combination of blue boxes across shown grids",
-        "reference": "Fedorenko, E., Duncan, J., & Kanwisher, N. (2013). Broad domain generality in focal regions of frontal and parietal cortex. Proceedings of the National Academy of Sciences of the United States of America, 110(41), 16616�16621.",
-        "recorded_metrics": "Accuracy + RT"
-    },
-    "action_observation": {
-        "detailed_description": "Participants watch videos of knots being tied (action condition) and 360-degree views of completed knots (knot condition). The first trial in a block shows the knot-tying action, and subsequent trials show the static knot view. No motor response is required. The task is designed to engage action observation.",
-        "reference": "Cross, E. S., Cohen, N. R., Hamilton, A. F. de C., Ramsey, R., Wolford, G., & Grafton, S. T. (2012). Physical experience leads to enhanced object perception in parietal cortex: Insights from knot tying. Neuropsychologia, 50(14), 3207–3217.",
-        "task_file_parameters": {
-            "run_number": {
-                "type": "int",
-                "default": "None",
-                "description": "Run number, used to select which knot stimulus to show."
-            },
-            "task_dur": {
-                "type": "float",
-                "default": "30",
-                "description": "Total task duration in seconds."
-            },
-            "trial_dur": {
-                "type": "float",
-                "default": "14",
-                "description": "Duration of each video trial in seconds."
-            },
-            "iti_dur": {
-                "type": "float",
-                "default": "1",
-                "description": "Inter-trial interval duration in seconds."
-            }
-        },
-        "short_description": "Watch a video where the first half a knot is tied, second half a 360 view of the knot is shown.",
-        "conditions": "action, knot",
-        "recorded_metrics": "None"
-    },
-    "visual_search": {
-        "detailed_description": "Participants view a display of geometric shapes at different rotations (90, 180, 270, 360 degrees) and must determine whether the target shape (at 90 degrees) is present. On easy trials 4 shapes are shown, on hard trials 8 shapes are shown. Participants press one button if the target is present and another if it is absent. The task is designed to engage selective visual attention and eye-movement control.",
-        "task_file_parameters": {
-            "hand": {
-                "type": "str",
-                "default": "right",
-                "description": "Hand used for response ('right' or 'left')."
-            },
-            "responses": {
-                "type": "list",
-                "default": "[1, 2]",
-                "description": "Response keys for target present and absent."
-            },
-            "task_dur": {
-                "type": "float",
-                "default": "30",
-                "description": "Total task duration in seconds."
-            },
-            "trial_dur": {
-                "type": "float",
-                "default": "2",
-                "description": "Duration of each trial in seconds."
-            },
-            "iti_dur": {
-                "type": "float",
-                "default": "0.5",
-                "description": "Inter-trial interval duration in seconds."
-            },
-            "easy_prob": {
-                "type": "float",
-                "default": "0.5",
-                "description": "Probability of an easy trial (4 stimuli vs. 8)."
-            }
-        },
-        "short_description": "Geometric shapes presented on screen, participants must identify if 'L' is present.",
-        "recorded_metrics": "Accuracy + RT"
-    },
-    "serial_reaction_time": {
-        "detailed_description": "Four boxes are displayed in a row. On each trial one box lights up green and the participant presses the corresponding button as fast as possible. Stimuli are randomized with the constraint that the same box never lights up on consecutive trials. The task measures basic visuomotor response speed.",
-        "task_file_parameters": {
-            "hand": {
-                "type": "str",
-                "default": "bimanual",
-                "description": "Hand used for response."
-            },
-            "responses": {
-                "type": "list",
-                "default": "[1, 2, 3, 4]",
-                "description": "Response keys mapped to each box position."
-            },
-            "task_dur": {
-                "type": "float",
-                "default": "30",
-                "description": "Total task duration in seconds."
-            },
-            "initial_wait": {
-                "type": "float",
-                "default": "1.0",
-                "description": "Wait time in seconds before the first stimulus, showing empty boxes."
-            },
-            "trial_dur": {
-                "type": "float",
-                "default": "0.5",
-                "description": "Duration the green box is displayed in seconds."
-            },
-            "iti_dur": {
-                "type": "float",
-                "default": "1.0",
-                "description": "Inter-trial interval duration in seconds."
-            }
-        },
-        "short_description": "Single boxes light up one at a time in a row of four. Press corrosponding button as fast as possible.",
-        "recorded_metrics": "RT"
-    },
-    "verb_generation": {
-        "detailed_description": "Words are presented one at a time. In the first half of trials (read condition), participants silently read each word. In the second half (generate condition), a 'GENERATE' cue appears and participants covertly generate a verb associated with each presented word. The task is designed to engage the language prcoessing.",
-        "task_file_parameters": {
-            "task_dur": {
-                "type": "float",
-                "default": "30",
-                "description": "Total task duration in seconds."
-            },
-            "trial_dur": {
-                "type": "float",
-                "default": "2",
-                "description": "Duration each word is displayed in seconds."
-            },
-            "iti_dur": {
-                "type": "float",
-                "default": "0.5",
-                "description": "Inter-trial interval duration in seconds."
-            }
-        },
-        "short_description": "Words presented, participants read the words. At halfpoint, \"GENERATE\" is shown, participants need to covertly generate verbs associated with words",
-        "conditions": "generate, read",
-        "recorded_metrics": "None"
-    },
-    "rest": {
-        "detailed_description": "Participants lie still and fixate on a central crosshair. No stimuli are presented and no response is required. For most fMRI experiments, rest is used as the baseline condition, and it is recommended to include it into every task battery to allow for alignment with other datasets.",
-        "task_file_parameters": {
-            "task_dur": {
-                "type": "float",
-                "default": "30",
-                "description": "Total rest duration in seconds."
-            }
-        },
-        "short_description": "Lie in scanner with a fixation cross.",
-        "recorded_metrics": "None"
-    },
-    "theory_of_mind": {
-        "short_description": "Short story presented with a question at the end, participants must answer the question.",
-        "reference": "Saxe, R. and Kanwisher, N. (2003) ‘People thinking about thinking people: The role of the temporo-parietal junction in “theory of mind”’, NeuroImage, 19(4), pp. 1835–1842. Available at: https://doi.org/10.1016/S1053-8119(03)00230-1.",
-        "conditions": "belief,photo",
-        "recorded_metrics": "Accuracy + RT",
-        "detailed_description": "Participants read a short story followed by a true/false question. In the belief condition, stories involve understanding another person's mental state (false beliefs, intentions). In the photo condition, stories involve factual reasoning about outdated photographs. The task is designed to engage mentalizing processes and social cognition.",
-        "task_file_parameters": {
-            "hand": {
-                "type": "str",
-                "default": "right",
-                "description": "Hand used for response."
-            },
-            "responses": {
-                "type": "list",
-                "default": "[1, 2]",
-                "description": "Response keys for True and False."
-            },
-            "run_number": {
-                "type": "int",
-                "default": "None",
-                "description": "Run number, used to select stimuli."
-            },
-            "task_dur": {
-                "type": "float",
-                "default": "30",
-                "description": "Total task duration in seconds."
-            },
-            "trial_dur": {
-                "type": "float",
-                "default": "14",
-                "description": "Duration of each trial in seconds."
-            },
-            "story_dur": {
-                "type": "float",
-                "default": "10",
-                "description": "Duration the story is displayed in seconds."
+                "description": "Duration of the sequence-presentation phase (in seconds)."
             },
             "question_dur": {
                 "type": "float",
-                "default": "4",
-                "description": "Duration the question is displayed in seconds."
+                "description": "Duration of the two-grid choice phase (in seconds)."
             },
             "iti_dur": {
                 "type": "float",
-                "default": "1",
-                "description": "Inter-trial interval duration in seconds."
+                "description": "Inter-trial interval after the trial (in seconds)."
+            },
+            "start_time": {
+                "type": "float",
+                "description": "Trial start, relative to the block start (in seconds)."
+            },
+            "end_time": {
+                "type": "float",
+                "description": "Trial end, relative to the block start (in seconds)."
+            }
+        },
+        "conditions": "Configurable (not predefined): vary the working-memory load through several parameters — grid size (grid_size) / number of steps (num_steps) / boxes lit per step (num_boxes_lit)."
+    },
+    "action_observation": {
+        "short_description": "Participants watch a video of a  knot being tied, followed by a rotating 360 view of the knot. A made-up name of the knot is displayed.",
+        "detailed_description": "Participants watch videos of a knot being tied then immediately a 360-degree view of the completed knot. Each video/trial is 14s long. The first trial in a block shows the knot-tying action, and subsequent trial shows the static knot view. No motor response during scanning is required, but participants are instructed to learn the knot so they could reproduce it after the scan. The task is designed to engage action observation.",
+        "reference": "Cross, E. S., Cohen, N. R., Hamilton, A. F. de C., Ramsey, R., Wolford, G., & Grafton, S. T. (2012). Physical experience leads to enhanced object perception in parietal cortex: Insights from knot tying. Neuropsychologia, 50(14), 3207-3217.",
+        "task_file_columns": {
+            "trial_num": {
+                "type": "int",
+                "description": "Trial number (0-indexed)."
+            },
+            "trial_dur": {
+                "type": "float",
+                "description": "Duration of the trial (in seconds)."
+            },
+            "iti_dur": {
+                "type": "float",
+                "description": "Inter-trial interval after the trial (in seconds)."
             },
             "condition": {
                 "type": "str",
-                "default": "None",
-                "description": "Which condition to use: belief or photo."
+                "description": "'action' (watching the knot being tied) or 'control' (a rotating 360-degree view of the completed knot)."
+            },
+            "stim": {
+                "type": "str",
+                "description": "Knot video filename — 'knotAction<Name>.mov' on the first trial (tying), 'knotControl<Name>.mov' afterwards (360 deg view)."
+            },
+            "start_time": {
+                "type": "float",
+                "description": "Trial start, relative to the block start (in seconds)."
+            },
+            "end_time": {
+                "type": "float",
+                "description": "Trial end, relative to the block start (in seconds)."
+            }
+        },
+        "conditions": "action, control",
+        "recorded_metrics": "None"
+    },
+    "visual_search": {
+        "short_description": "A set of letter Ls with different orientations are presented each trial, participants must identify if 'L' is present or not.",
+        "reference": "Duncan, J., & Humphreys, G. W. (1989). Visual search and stimulus similarity. Psychological review, 96(3), 433.",
+        "detailed_description": "Participants view a display of geometric shapes at different rotations (90, 180, 270, 360 degrees) and must determine whether a L is present in the canonical orientation. The number of shapes is flexible, on easy trials 4 shapes are shown, on hard trials 8 shapes are shown. Participants press one button if the target is present and another if it is absent. The task requires a serial search of the display as indicated by RTs increasing linearly in the array size. The task requires shifts of visual attention and elicits eye-movement related activity.",
+        "task_file_columns": {
+            "key_true": {
+                "type": "int",
+                "description": "Response key for 'target present'."
+            },
+            "key_false": {
+                "type": "int",
+                "description": "Response key for 'target absent'."
+            },
+            "trial_num": {
+                "type": "int",
+                "description": "Trial number (0-indexed)."
+            },
+            "hand": {
+                "type": "str",
+                "description": "Which hand responds ('left', 'right', or 'bimanual')."
+            },
+            "trial_dur": {
+                "type": "float",
+                "description": "Duration of the trial (in seconds)."
+            },
+            "iti_dur": {
+                "type": "float",
+                "description": "Inter-trial interval after the trial (in seconds)."
+            },
+            "display_trial_feedback": {
+                "type": "bool",
+                "description": "Whether to show green/red feedback after the trial."
+            },
+            "trial_type": {
+                "type": "int",
+                "description": "Whether the target 'L' is present (1) or absent (0)."
+            },
+            "condition": {
+                "type": "str",
+                "description": "Difficulty as the number of search items / set size, e.g. '4-items' (easy) or '8-items' (hard)."
+            },
+            "start_time": {
+                "type": "float",
+                "description": "Trial start, relative to the block start (in seconds)."
+            },
+            "end_time": {
+                "type": "float",
+                "description": "Trial end, relative to the block start (in seconds)."
+            }
+        },
+        "conditions": "Configurable difficulty via set size (e.g. 4-items / 8-items).",
+        "recorded_metrics": "Accuracy + RT"
+    },
+    "serial_reaction_time": {
+        "short_description": "Participants need to make one of 4 button presses at time, cued by a spatial location of a box",
+        "detailed_description": "Four boxes are displayed in a row. On each trial one box lights up green (for 0.5s every 1,5s) and the participant presses the corresponding button as fast as possible. Stimuli are randomized, such that there is no implicit sequence learning. The only constraint is that the same box never lights up on consecutive trials. The task measures basic visuomotor response speed. By default, the 4 buttons are pressed with index and middle finger of the left and right hand.",
+        "reference": "Nissen, M. J., & Bullemer, P. (1987). Attentional requirements of learning: Evidence from performance measures. Cognitive psychology, 19(1), 1-32.",
+        "task_file_columns": {
+            "trial_num": {
+                "type": "int",
+                "description": "Trial number (0-indexed)."
+            },
+            "hand": {
+                "type": "str",
+                "description": "Which hand responds ('left', 'right', or 'bimanual')."
+            },
+            "trial_dur": {
+                "type": "float",
+                "description": "Duration of the trial (in seconds)."
+            },
+            "iti_dur": {
+                "type": "float",
+                "description": "Inter-trial interval after the trial (in seconds)."
+            },
+            "stim": {
+                "type": "int",
+                "description": "Which box lights up this trial (1-4)."
+            },
+            "start_time": {
+                "type": "float",
+                "description": "Trial start, relative to the block start (in seconds)."
+            },
+            "end_time": {
+                "type": "float",
+                "description": "Trial end, relative to the block start (in seconds)."
+            }
+        },
+        "recorded_metrics": "RT"
+    },
+    "verb_generation": {
+        "short_description": "Participants see words one at a time and, either silently read each word (read condition) or covertly generate a verb associated with it (generate condition).",
+        "detailed_description": "Participants see words presented one at a time. In the 'read' condition they silently read each word as it appears. In the 'generate' condition they covertly think of a verb associated with each word. A persistent colour-coded label at the top of the screen indicates the current condition ('READ' in red or 'GENERATE' in green) and stays on throughout. No button response is required. The generate>read contrast is designed to engage language and semantic-retrieval processing.",
+        "task_file_columns": {
+            "trial_num": {
+                "type": "int",
+                "description": "Trial number (0-indexed)."
+            },
+            "condition": {
+                "type": "str",
+                "description": "'read' (silently read each word) or 'generate' (covertly generate a verb)."
+            },
+            "trial_dur": {
+                "type": "float",
+                "description": "Duration of the trial (in seconds)."
+            },
+            "iti_dur": {
+                "type": "float",
+                "description": "Inter-trial interval after the trial (in seconds)."
+            },
+            "start_time": {
+                "type": "float",
+                "description": "Trial start, relative to the block start (in seconds)."
+            },
+            "end_time": {
+                "type": "float",
+                "description": "Trial end, relative to the block start (in seconds)."
+            },
+            "stim": {
+                "type": "str",
+                "description": "The word shown this trial."
+            }
+        },
+        "conditions": "read, generate",
+        "reference": "Adapted by changing into covert rather than overt reading/generation from Raichle, M. E., Fiez, J. A., Videen, T. O., MacLeod, A. M. K., Pardo, J. V., Fox, P. T., & Petersen, S. E. (1994). Practice-related changes in human brain functional anatomy during nonmotor learning. Cerebral cortex, 4(1), 8-26.",
+        "recorded_metrics": "None"
+    },
+    "rest": {
+        "short_description": "Participants are instructed to fixate on a central crosshair.",
+        "detailed_description": "Participants lie still and fixate on a central crosshair. No stimuli are presented and no response is required. For most fMRI experiments, rest is used as the baseline condition, and it is therefore recommended to include it into every task battery to allow for alignment with other datasets. However, rest does not minimize brain activity. Some region (the default mode network) are quite activated during rest.",
+        "reference": "Gusnard, D.A., Raichle, M.E., and Raichle, M.E. (2001). Searching for a baseline: functional imaging and the resting human brain. Nat. Rev. Neurosci. 2, 685-694.",
+        "task_file_columns": {
+            "trial_num": {
+                "type": "int",
+                "description": "Trial number (0-indexed)."
+            },
+            "trial_dur": {
+                "type": "float",
+                "description": "Duration of the trial (in seconds)."
+            },
+            "start_time": {
+                "type": "float",
+                "description": "Trial start, relative to the block start (in seconds)."
+            },
+            "end_time": {
+                "type": "float",
+                "description": "Trial end, relative to the block start (in seconds)."
+            }
+        },
+        "recorded_metrics": "None"
+    },
+    "theory_of_mind": {
+        "short_description": "Participants read a short story, followed by a statement they must judge as true or false.",
+        "reference": "Dodell-Feder, D., Koster-Hale, J., Bedny, M., & Saxe, R. (2011). fMRI item analysis in a theory of mind task. NeuroImage, 55(2), 705-712. Saxe, R. and Kanwisher, N. (2003) People thinking about thinking people: The role of the temporo-parietal junction in “theory of mind”, NeuroImage, 19(4), pp. 1835-1842.",
+        "conditions": "belief, photo",
+        "recorded_metrics": "Accuracy + RT",
+        "detailed_description": "Participants read short stories. Each story is followed by a statement and a true/false judgment. In the belief condition, stories require inferring what another person believes, even if this belief does not match the state of the world (false belief); in the photo condition, stories require reasoning about outdated content of a physical or external representation such as a photograph, a map or a book, whose information no longer accurate. Both conditions are matched in structure (each involves holding a mental representation that conflicts with the current reality). Only the belief condition involves another person's mind. Participants press a button to indicate whether the statement about the story is true or false. Task is designed to engage mentalizing (theory of mind): reasoning about other people's mental states. After each response, the participant receives trial-specific feedback: a green check mark for a correct answer and a red cross for an incorrect one.",
+        "task_file_columns": {
+            "key_true": {
+                "type": "int",
+                "description": "Response key for a 'True' judgment."
+            },
+            "key_false": {
+                "type": "int",
+                "description": "Response key for a 'False' judgment."
+            },
+            "trial_type": {
+                "type": "int",
+                "description": "Numeric code for the correct answer: 1 = True, 0 = False."
+            },
+            "trial_num": {
+                "type": "int",
+                "description": "Trial number (0-indexed)."
+            },
+            "hand": {
+                "type": "str",
+                "description": "Which hand responds ('left', 'right', or 'bimanual')."
+            },
+            "trial_dur": {
+                "type": "float",
+                "description": "Duration of the trial (in seconds)."
+            },
+            "iti_dur": {
+                "type": "float",
+                "description": "Inter-trial interval after the trial (in seconds)."
+            },
+            "story": {
+                "type": "str",
+                "description": "The short story text shown in the first phase."
+            },
+            "question": {
+                "type": "str",
+                "description": "The true/false statement shown after the story."
+            },
+            "condition": {
+                "type": "str",
+                "description": "'belief' (infer a false belief) or 'photo' (reason about an outdated representation)."
+            },
+            "story_dur": {
+                "type": "float",
+                "description": "How long the story is displayed (in seconds)."
+            },
+            "question_dur": {
+                "type": "float",
+                "description": "How long the question is displayed (in seconds)."
             },
             "text_height": {
                 "type": "float",
-                "default": "1.25",
-                "description": "Height of the story and question text in degrees of visual angle."
+                "description": "Height of the story/question text (degrees of visual angle)."
+            },
+            "display_trial_feedback": {
+                "type": "bool",
+                "description": "Whether to show green/red feedback after the trial."
+            },
+            "start_time": {
+                "type": "float",
+                "description": "Trial start, relative to the block start (in seconds)."
+            },
+            "end_time": {
+                "type": "float",
+                "description": "Trial end, relative to the block start (in seconds)."
             }
         }
     },
     "n_back": {
-        "short_description": "2AFC, is the current stimulus the same as the one presented n ago",
+        "short_description": "Participants see a stream of images one at a time and press a button on each to indicate whether it matches the image shown n items earlier.",
         "recorded_metrics": "Accuracy + RT",
-        "detailed_description": "A 2-back working memory task. Participants view a sequence of images and must indicate whether the current image matches the one shown two items ago. The task engages working memory networks.",
-        "task_file_parameters": {
+        "reference": [
+            "Ragland, J. D., Turetsky, B. I., Gur, R. C., Gunning-Dixon, F., Turner, T., Schroeder, L., ... & Gur, R. E. (2002). Working memory for complex figures: an fMRI comparison of letter and fractal n-back tasks. Neuropsychology, 16(3), 370.",
+            "King, M., Hernandez-Castillo, C. R., Poldrack, R. A., Ivry, R. B., & Diedrichsen, J. (2019). Functional boundaries in the human cerebellum revealed by a multi-domain task battery. Nature neuroscience, 22(8), 1371-1378."
+        ],
+        "detailed_description": "Participants see a continuous stream of images presented one at a time, drawn from a small set of pictures. On every image they make a two-alternative button press indicating whether the current image is the same as the one shown n items earlier or not. The sequence is generated so that about half of the trials are n-back matches. Non-match trials never repeat any of the just presented images, so a match always requires holding the n-back item in mind rather than just detecting a repeat. The memory load is configurable, so the same task can run as a 1-back, 2-back, 3-back, and so on. This continuous n-back paradigm engages working memory and the domain-general multiple-demand / frontoparietal control network. After each response, the participant receives trial-specific feedback: a green check mark for a correct answer and a red cross for an incorrect one.",
+        "task_file_columns": {
+            "trial_num": {
+                "type": "int",
+                "description": "Trial number (0-indexed)."
+            },
             "hand": {
                 "type": "str",
-                "default": "right",
-                "description": "Hand used for response."
-            },
-            "responses": {
-                "type": "list",
-                "default": "[1, 2]",
-                "description": "Response keys for match and no-match."
-            },
-            "task_dur": {
-                "type": "float",
-                "default": "30",
-                "description": "Total task duration in seconds."
+                "description": "Which hand responds ('left', 'right', or 'bimanual')."
             },
             "trial_dur": {
                 "type": "float",
-                "default": "2",
-                "description": "Duration each stimulus is displayed in seconds."
+                "description": "Duration of the trial (in seconds)."
             },
             "iti_dur": {
                 "type": "float",
-                "default": "0.5",
-                "description": "Inter-trial interval duration in seconds."
+                "description": "Inter-trial interval after the trial (in seconds)."
             },
             "picture_scale": {
                 "type": "float",
-                "default": "1.0",
-                "description": "Scaling factor for stimulus images. Values > 1 enlarge the pictures."
+                "description": "Scaling factor applied to the stimulus image (>1 enlarges)."
+            },
+            "condition": {
+                "type": "str",
+                "description": "The n-back level as an 'N-back' label (e.g. '2-back' = a match refers to the item 2 back). This is the modeling-level condition and the only place the n-back level is stored."
+            },
+            "display_trial_feedback": {
+                "type": "bool",
+                "description": "Whether to show green/red feedback after the trial."
+            },
+            "key_match": {
+                "type": "int",
+                "description": "Response key for a 'match' judgment."
+            },
+            "key_nomatch": {
+                "type": "int",
+                "description": "Response key for a 'no-match' judgment."
+            },
+            "trial_type": {
+                "type": "int",
+                "description": "Whether the current image matches the one n items back: 1 = match, 0 = no-match."
             },
             "stim": {
-                "type": "list",
-                "default": "['9.jpg', '11.jpg', '18.jpg', '28.jpg']",
-                "description": "List of stimulus image filenames to draw from."
+                "type": "str",
+                "description": "Image filename shown this trial."
+            },
+            "start_time": {
+                "type": "float",
+                "description": "Trial start, relative to the block start (in seconds)."
+            },
+            "end_time": {
+                "type": "float",
+                "description": "Trial end, relative to the block start (in seconds)."
             }
-        }
+        },
+        "conditions": "Configurable (not predefined): set the memory load via the n-back level (e.g. 1-back / 2-back / 3-back)."
     },
     "tongue_movement": {
-        "short_description": "Move tongue from right to left, touching upper premolar teeth guided by a flashing black circle around a fixation crosshair. Black circle means right, no circle means left, 1s periods.",
-        "reference": "A Third Somatomotor Representation in the Human Cerebellum (Bucknet et al., 2022)",
+        "short_description": "Participants move their tongue right to left against the upper premolar teeth, paced by a flashing circle around a fixation cross.",
+        "detailed_description": "Participants move their tongue from right to left, touching their upper premolar teeth on each side. A flashing black circle around a fixation crosshair guides the rhythm at 1-second periods: a black circle cues a movement to the right, no circle cues a movement to the left. The task targets tongue-related somatomotor activation.",
+        "reference": "A Third Somatomotor Representation in the Human Cerebellum (Saadon-Grosmanet al., 2022)",
         "recorded_metrics": "None",
-        "detailed_description": "Participants move their tongue from right to left, touching their upper premolar teeth on each side. A flashing black circle around a fixation crosshair guides the rhythm (1-second periods). The task is designed to activate somatomotor tongue representations.",
-        "task_file_parameters": {
-            "task_dur": {
-                "type": "float",
-                "default": "30",
-                "description": "Total task duration in seconds."
+        "task_file_columns": {
+            "trial_num": {
+                "type": "int",
+                "description": "Trial number (0-indexed)."
             },
             "trial_dur": {
                 "type": "float",
-                "default": "1",
-                "description": "Duration of each tongue movement cycle in seconds."
+                "description": "Duration of the trial (in seconds)."
             },
             "iti_dur": {
                 "type": "float",
-                "default": "0",
-                "description": "Inter-trial interval duration in seconds."
+                "description": "Inter-trial interval after the trial (in seconds)."
+            },
+            "trial_type": {
+                "type": "str",
+                "description": "Cued movement direction: 'right' or 'left'."
+            },
+            "start_time": {
+                "type": "float",
+                "description": "Trial start, relative to the block start (in seconds)."
+            },
+            "end_time": {
+                "type": "float",
+                "description": "Trial end, relative to the block start (in seconds)."
             }
         }
     },
     "auditory_narrative": {
-        "short_description": "30 second snippets of a moth radiohour story (wheretheressmoke)",
+        "short_description": "Participants listen to 30-second audio snippets from The Moth Radio Hour story 'Where There's Smoke'.",
+        "detailed_description": "The audio clips are presented sequentially across runs so the participant follows the narrative. The task is designed to engage auditory cortex, the language network and higher-level narrative comprehension.",
+        "reference": "Tang, J., LeBel, A., Jain, S., & Huth, A. G. (2023). Semantic reconstruction of continuous language from non-invasive brain recordings. Nature Neuroscience, 26(5), 858-866.",
         "recorded_metrics": "None",
-        "detailed_description": "Participants listen to 30-second audio snippets from The Moth Radio Hour story 'Where There's Smoke'. The clips are presented sequentially across runs so the participant follows the narrative. The task is designed to engage auditory cortex and the language network.",
-        "task_file_parameters": {
-            "run_number": {
+        "task_file_columns": {
+            "trial_num": {
                 "type": "int",
-                "default": "None",
-                "description": "Run number, used to select which audio clip to play."
-            },
-            "task_dur": {
-                "type": "float",
-                "default": "30",
-                "description": "Total task duration in seconds."
+                "description": "Trial number (0-indexed)."
             },
             "trial_dur": {
                 "type": "float",
-                "default": "30",
-                "description": "Duration of each audio clip in seconds."
+                "description": "Duration of the trial (in seconds)."
             },
             "iti_dur": {
                 "type": "float",
-                "default": "0",
-                "description": "Inter-trial interval duration in seconds."
+                "description": "Inter-trial interval after the trial (in seconds)."
+            },
+            "stim": {
+                "type": "str",
+                "description": "Audio filename ('narrative_NN.wav') played this trial."
+            },
+            "start_time": {
+                "type": "float",
+                "description": "Trial start, relative to the block start (in seconds)."
+            },
+            "end_time": {
+                "type": "float",
+                "description": "Trial end, relative to the block start (in seconds)."
             }
         }
     },
     "spatial_navigation": {
-        "short_description": "Imagining walking room to room in childhood home.",
+        "short_description": "Imagined navigation through a remembered environment.",
+        "detailed_description": "Participants are instructed to imagine walking from one room to another room in their childhood home. No visual stimuli are presented beyond the instruction. The task is designed to engage spatial memory and mental navigation.",
         "recorded_metrics": "None",
-        "detailed_description": "Participants imagine walking from room to room in their childhood home. No visual stimuli are presented beyond the instruction. The task is designed to engage spatial memory and mental navigation.",
-        "task_file_parameters": {
-            "task_dur": {
-                "type": "float",
-                "default": "30",
-                "description": "Total task duration in seconds."
-            },
-            "trial_dur": {
-                "type": "float",
-                "default": "30",
-                "description": "Duration of the imagination period in seconds."
-            },
-            "iti_dur": {
-                "type": "float",
-                "default": "0",
-                "description": "Inter-trial interval duration in seconds."
-            }
-        }
-    },
-    "degraded_passage": {
-        "short_description": "Listen to muffled passages.",
-        "reference": "Scott, T. L., Gallee, J., & Fedorenko, E. (2017). A new fun and robust version of an fMRI localizer for the frontotemporal language system. Cognitive Neuroscience, 8(3), 167�176.",
-        "recorded_metrics": "None",
-        "detailed_description": "Participants listen to acoustically degraded (muffled) speech passages. The degradation makes the passages unintelligible, serving as a control for the intact passage condition. The task is designed to engage auditory processing regions without engaging higher-level language comprehension.",
-        "task_file_parameters": {
-            "run_number": {
+        "reference": "Boly, M., Coleman, M. R., Davis, M. H., Hampshire, A., Bor, D., Moonen, G., ... & Owen, A. M. (2007). When thoughts become action: an fMRI paradigm to study volitional brain activity in non-communicative brain injured patients. Neuroimage, 36(3), 979-992.",
+        "task_file_columns": {
+            "trial_num": {
                 "type": "int",
-                "default": "None",
-                "description": "Run number, used to select which passage to play."
-            },
-            "task_dur": {
-                "type": "float",
-                "default": "30",
-                "description": "Total task duration in seconds."
+                "description": "Trial number (0-indexed)."
             },
             "trial_dur": {
                 "type": "float",
-                "default": "14.5",
-                "description": "Duration of each passage in seconds."
+                "description": "Duration of the trial (in seconds)."
             },
             "iti_dur": {
                 "type": "float",
-                "default": "0.5",
-                "description": "Inter-trial interval duration in seconds."
+                "description": "Inter-trial interval after the trial (in seconds)."
+            },
+            "start_time": {
+                "type": "float",
+                "description": "Trial start, relative to the block start (in seconds)."
+            },
+            "end_time": {
+                "type": "float",
+                "description": "Trial end, relative to the block start (in seconds)."
+            },
+            "location_1": {
+                "type": "str",
+                "description": "Start location of the imagined route."
+            },
+            "location_2": {
+                "type": "str",
+                "description": "Destination location of the imagined route."
             }
         }
     },
-    "intact_passage": {
-        "short_description": "Listen to normal sentences.",
-        "reference": "Scott, T. L., Gallee, J., & Fedorenko, E. (2017). A new fun and robust version of an fMRI localizer for the frontotemporal language system. Cognitive Neuroscience, 8(3), 167�176.",
+    "passage_listening": {
+        "short_description": "Participants listen to intact or acoustically degraded (muffled) speech passages",
+        "detailed_description": "Participants listen to excerpts from speeches and talks from several sources (e.g., The moth podcast, Ted talks, celebrity interviews). In the intact condition the audio is intelligible. In the degraded condition the same type of audio is acoustically degraded so it is matched in lower level acoustic properties but the content can no longer be understood. Participants are instructed to only listen attentively; no response is required. The intact>degraded contrast localizes high-level language processing brain regions. ",
+        "conditions": "intact, degraded",
+        "reference": "Scott, T. L., Gallee, J., & Fedorenko, E. (2017). A new fun and robust version of an fMRI localizer for the frontotemporal language system. Cognitive Neuroscience, 8(3), 167-176.",
         "recorded_metrics": "None",
-        "detailed_description": "Participants listen to normal, intelligible speech passages. Paired with the degraded passage condition, this allows isolation of higher-level language comprehension from basic auditory processing.",
-        "task_file_parameters": {
-            "run_number": {
+        "task_file_columns": {
+            "trial_num": {
                 "type": "int",
-                "default": "None",
-                "description": "Run number, used to select which passage to play."
-            },
-            "task_dur": {
-                "type": "float",
-                "default": "30",
-                "description": "Total task duration in seconds."
+                "description": "Trial number (0-indexed)."
             },
             "trial_dur": {
                 "type": "float",
-                "default": "14.5",
-                "description": "Duration of each passage in seconds."
+                "description": "Duration of the trial (in seconds)."
             },
             "iti_dur": {
                 "type": "float",
-                "default": "0.5",
-                "description": "Inter-trial interval duration in seconds."
+                "description": "Inter-trial interval after the trial (in seconds)."
+            },
+            "condition": {
+                "type": "str",
+                "description": "Speech condition: 'intact' (intelligible) or 'degraded' (acoustically degraded)."
+            },
+            "stim": {
+                "type": "str",
+                "description": "Audio filename played this trial."
+            },
+            "start_time": {
+                "type": "float",
+                "description": "Trial start, relative to the block start (in seconds)."
+            },
+            "end_time": {
+                "type": "float",
+                "description": "Trial end, relative to the block start (in seconds)."
             }
         }
     },
-    "sentence_reading": {
-        "short_description": "Read sentences, words presented sequentially one at a time. Press a button at the end of each sentence.",
+    "reading": {
+        "short_description": "Participants read sentences or nonword sequences.",
+        "detailed_description": "One word or non-word is shown at a time. Participants are instructed to read silently as they would when reading a book. In the standard version of the task, each sentence has 12 words / nonwords, and each word is presented for 450ms. At the end of each sentence/nonword sequence, participants see a picture of a finger pressing a button; whenever they see that picture they need to make a button press within 400ms (to help them stay alert during throughout the task.  The sentences>nonwords contrast can be used to localize high-level language processing brain regions,  i.e., regions that support lexico-semantic and combinatorial (syntactic and semantic) processes. ",
         "reference": "Fedorenko, E., Hsieh, P.-J., Nieto-Castanon, A., Whitfield-Gabrieli, S., & Kanwisher, N. (2010). New method for fMRI investigations of language: defining ROIs functionally in individual subjects. Journal of Neurophysiology, 104(2), 1177-1194.",
+        "conditions": "sentences, nonwords",
         "recorded_metrics": "RT",
-        "detailed_description": "Words from English sentences are presented one at a time. Participants read each word silently and press a button when a hand-press image appears at the end of the sentence. Paired with nonword reading, this isolates sentence-level language processing.",
-        "task_file_parameters": {
-            "run_number": {
+        "task_file_columns": {
+            "trial_num": {
                 "type": "int",
-                "default": "None",
-                "description": "Run number, used to select which sentences to show."
-            },
-            "task_dur": {
-                "type": "float",
-                "default": "30",
-                "description": "Total task duration in seconds."
+                "description": "Trial number (0-indexed)."
             },
             "trial_dur": {
                 "type": "float",
-                "default": "5.8",
-                "description": "Duration of each sentence presentation in seconds."
+                "description": "Duration of the trial (in seconds)."
             },
             "iti_dur": {
                 "type": "float",
-                "default": "0.2",
-                "description": "Inter-trial interval duration in seconds."
-            }
-        }
-    },
-    "nonword_reading": {
-        "short_description": "Read nonwords, nonwords presented sequentially one at a time. Press a button at the end of each list of nonwords.",
-        "reference": "Fedorenko, E., Hsieh, P.-J., Nieto-Castanon, A., Whitfield-Gabrieli, S., & Kanwisher, N. (2010). New method for fMRI investigations of language: defining ROIs functionally in individual subjects. Journal of Neurophysiology, 104(2), 1177�1194.",
-        "recorded_metrics": "RT",
-        "detailed_description": "Pronounceable nonwords are presented one at a time. Participants read each nonword silently and press a button when a hand-press image appears at the end of the list. Serves as a control for sentence reading, isolating low-level visual and phonological processing from sentence-level comprehension.",
-        "task_file_parameters": {
-            "run_number": {
-                "type": "int",
-                "default": "None",
-                "description": "Run number, used to select which nonwords to show."
+                "description": "Inter-trial interval after the trial (in seconds)."
             },
-            "task_dur": {
-                "type": "float",
-                "default": "30",
-                "description": "Total task duration in seconds."
+            "condition": {
+                "type": "str",
+                "description": "'sentences' or 'nonwords'."
             },
-            "trial_dur": {
-                "type": "float",
-                "default": "5.8",
-                "description": "Duration of each nonword list presentation in seconds."
+            "stim": {
+                "type": "str",
+                "description": "The sentence or nonword string shown (presented one word at a time)."
             },
-            "iti_dur": {
+            "start_time": {
                 "type": "float",
-                "default": "0.2",
-                "description": "Inter-trial interval duration in seconds."
+                "description": "Trial start, relative to the block start (in seconds)."
+            },
+            "end_time": {
+                "type": "float",
+                "description": "Trial end, relative to the block start (in seconds)."
             }
         }
     },
     "finger_sequence": {
-        "short_description": "Press a sequence of buttons.",
+        "short_description": "Discrete sequence production task.",
+        "detailed_description": "In each trial, a sequence of 6 digits (1-4) is displayed. Participants are instructed to press the corresponding buttons in order as quickly and accurately as possible, starting immediately after presentation. For each correct press, the corresponding digit turns green, for each incorrect press, red. In the standard version, each trial has a length of 3.25s with an ITI of 0.5s. Recorded accuracy is the average press accuracy, and reaction time is the average inter-press-interval. No consecutive repeats appear in the sequence.",
         "recorded_metrics": "Accuracy + RT",
-        "conditions": "complex, repetition, alternating",
-        "detailed_description": "A sequence of 6 digits (1-4) is displayed and participants press the corresponding buttons in order as quickly and accurately as possible. In the complex condition, digits are pseudo-randomly chosen with no consecutive repeats. In the repetition condition, a single digit is repeated six times. In the alternating condition, two digits alternate.",
-        "task_file_parameters": {
+        "reference": "Wiestler, T., & Diedrichsen, J. (2013). Skill learning strengthens cortical representations of motor sequences. eLife.",
+        "task_file_columns": {
+            "trial_num": {
+                "type": "int",
+                "description": "Trial number (0-indexed)."
+            },
             "hand": {
                 "type": "str",
-                "default": "bimanual",
-                "description": "Hand used for response."
-            },
-            "responses": {
-                "type": "list",
-                "default": "[1, 2, 3, 4]",
-                "description": "Response keys mapped to each finger."
-            },
-            "task_dur": {
-                "type": "float",
-                "default": "30",
-                "description": "Total task duration in seconds."
+                "description": "Which hand responds ('left', 'right', or 'bimanual')."
             },
             "trial_dur": {
                 "type": "float",
-                "default": "3.25",
-                "description": "Duration of each trial in seconds."
+                "description": "Duration of the trial (in seconds)."
             },
             "iti_dur": {
                 "type": "float",
-                "default": "0.5",
-                "description": "Inter-trial interval duration in seconds."
+                "description": "Inter-trial interval after the trial (in seconds)."
             },
-            "conditions": {
-                "type": "list",
-                "default": "['complex']",
-                "description": "Sequence complexity conditions to include. Options: 'complex' (pseudo-random, no consecutive repeats), 'repetition' (single digit repeated), 'alternating' (two digits alternating)."
+            "display_trial_feedback": {
+                "type": "bool",
+                "description": "Whether to show green/red feedback after the trial."
+            },
+            "stim": {
+                "type": "str",
+                "description": "The 6-digit sequence to tap, space-separated (e.g. '1 3 2 4 1 3')."
+            },
+            "start_time": {
+                "type": "float",
+                "description": "Trial start, relative to the block start (in seconds)."
+            },
+            "end_time": {
+                "type": "float",
+                "description": "Trial end, relative to the block start (in seconds)."
             }
         }
     },
-    "flexion_extension": {
-        "short_description": "Alternating periods of flexing/extending toes.",
+    "toe_movement": {
+        "short_description": "Toe movements. Alternating periods of flexing/extending toes.",
         "recorded_metrics": "None",
-        "detailed_description": "Participants alternate between flexing and extending their toes, guided by visual cues.",
-        "task_file_parameters": {
-            "task_dur": {
-                "type": "float",
-                "default": "30",
-                "description": "Total task duration in seconds."
+        "detailed_description": "Participants repeatedly flex and extend the toes of both feet, paced by a visual cue at the center of the screen that alternates between the words 'flexion' and 'extension' every couple of seconds. Each cue is shown for a fixed duration and the participant performs the indicated movement for as long as it is displayed; no button response is collected and no feedback is given. The block simply alternates between the two movements for its entire duration. The task is used to drive the foot/toe somatomotor representation and to help map the somatomotor territory of the cerebellum and cortex.",
+        "reference": "Saadon-Grosman, N., Angeli, P. A., DiNicola, L. M., & Buckner, R. L. (2022). A third somatomotor representation in the human cerebellum. Journal of Neurophysiology, 128(4), 1051-1073.",
+        "task_file_columns": {
+            "trial_num": {
+                "type": "int",
+                "description": "Cue index within the block (0-indexed); one row per cue."
+            },
+            "stim": {
+                "type": "str",
+                "description": "The cue shown this row: 'flexion' or 'extension'. Rows alternate between the two across the block."
             },
             "trial_dur": {
                 "type": "float",
-                "default": "30",
-                "description": "Duration of the flexion/extension period in seconds."
+                "description": "How long this cue is shown, in seconds (e.g. 2)."
             },
-            "stim_dur": {
+            "start_time": {
                 "type": "float",
-                "default": "2",
-                "description": "Duration of each flex/extend cue in seconds."
+                "description": "Cue onset, relative to the block start (in seconds)."
             },
-            "iti_dur": {
+            "end_time": {
                 "type": "float",
-                "default": "0",
-                "description": "Inter-trial interval duration in seconds."
+                "description": "Cue offset, relative to the block start (in seconds)."
             }
         }
     },
     "semantic_prediction": {
-        "short_description": "Sentence presented, participants decide if last word makes sense.",
+        "short_description": "Participants read a sentence presented one word at a time, then decide whether the final word makes the sentence meaningful or meaningless.",
+        "detailed_description": "Participants read a sentence presented one word at a time. Each word is presented for 0.8 seconds. After the sentence, a brief fixation cross is shown and then the final, critical word appears; participants make a two-alternative button press to indicate whether that word makes the sentence meaningful (a sensible completion) or meaningless. About half of the trials end with the sentence's plausible word and half with an implausible word, so participants must use the accumulating sentence context to predict and evaluate the ending. The task engages language comprehension and semantic processing. After each response, the participant receives trial-specific feedback: a green check mark for a correct answer and a red cross for an incorrect one.",
         "recorded_metrics": "Accuracy + RT",
-        "detailed_description": "On each trial a sentence stem is displayed and participants must decide whether the final word makes the sentence meaningful or meaningless. The task engages language comprehension and semantic processing regions.",
-        "task_file_parameters": {
+        "reference": "Moberget, T., Gullesen, E. H., Andersson, S., Ivry, R. B., & Endestad, T. (2014). Generalized role for the cerebellum in encoding internal models: Evidence from semantic processing. The Journal of Neuroscience, 34(8), 2871-2878.",
+        "task_file_columns": {
+            "key_true": {
+                "type": "int",
+                "description": "Response key for 'meaningful'."
+            },
+            "key_false": {
+                "type": "int",
+                "description": "Response key for 'meaningless'."
+            },
+            "trial_num": {
+                "type": "int",
+                "description": "Trial number (0-indexed)."
+            },
             "hand": {
                 "type": "str",
-                "default": "right",
-                "description": "Hand used for response ('right' or 'left')."
-            },
-            "responses": {
-                "type": "list",
-                "default": "[1, 2]",
-                "description": "Response keys: 1 = meaningful, 2 = meaningless."
-            },
-            "run_number": {
-                "type": "int",
-                "default": "None",
-                "description": "Run number, used to select which sentences to present."
-            },
-            "task_dur": {
-                "type": "float",
-                "default": "30",
-                "description": "Total task duration in seconds."
+                "description": "Which hand responds ('left', 'right', or 'bimanual')."
             },
             "trial_dur": {
                 "type": "float",
-                "default": "15",
-                "description": "Duration of each trial in seconds."
+                "description": "Duration of the trial (in seconds)."
             },
             "sentence_dur": {
                 "type": "float",
-                "default": "2",
-                "description": "Duration the sentence stem is displayed before the final word appears, in seconds."
+                "description": "Response window for the final word (in seconds)."
+            },
+            "sentence": {
+                "type": "str",
+                "description": "The lead-in sentence (without the final word), with words separated by '|'; the runtime splits on '|' and shows one word at a time (e.g. 'A|Dalmatian|dog|is|recognized|by|its|black|and|white')."
+            },
+            "trial_type": {
+                "type": "int",
+                "description": "Whether the final word makes the sentence meaningful (1) or meaningless (0)."
+            },
+            "last_word": {
+                "type": "str",
+                "description": "The final (critical) word shown after the sentence."
+            },
+            "display_trial_feedback": {
+                "type": "bool",
+                "description": "Whether to show green/red feedback after the trial."
+            },
+            "start_time": {
+                "type": "float",
+                "description": "Trial start, relative to the block start (in seconds)."
+            },
+            "end_time": {
+                "type": "float",
+                "description": "Trial end, relative to the block start (in seconds)."
             }
         }
     },
     "rmet": {
-        "short_description": "Pictures of faces with different emotions presented (eyes only) along with four attribute words, participants must identify which attribute describes person best.",
-        "reference": "Kim, H.A. et al. (2024) ‘Multiracial Reading the Mind in the Eyes Test (MRMET): An inclusive version of an influential measure’, Behavior Research Methods. Revised from Baron-Cohen, Wheelwright, Hill, Raste, & Plumb, 2001",
+        "short_description": "Participants see pictures of faces with different emotions presented (eyes only) along with four options (for either emotion or age), participants must identify which option describes person best.",
+        "detailed_description": "Participants see a photograph of a person's eye region (just the eyes) together with four descriptive words, and press a button to choose the option that best fits the person. In the emotion condition the options are mental-state words and participants infer what the person is thinking or feeling, which engages mentalizing (theory of mind) and social cognition. In the age condition the same eye images are shown but the options are age ranges and participants judge the person's age instead; this is matched in low-level visual demands and face processing but does not require inferring a mental state, so it serves as a control. The emotion>age contrast isolates mental-state inference from basic face perception. After each response, the participant receives trial-specific feedback: a green check mark for a correct answer and a red cross for an incorrect one.",
+        "reference": "Kim, H.A. et al. (2024) 'Multiracial Reading the Mind in the Eyes Test (MRMET): An inclusive version of an influential measure', Behavior Research Methods. Revised from Baron-Cohen, Wheelwright, Hill, Raste, & Plumb, 2001",
         "conditions": "age, emotion",
         "recorded_metrics": "Accuracy + RT",
-        "detailed_description": "The Reading the Mind in the Eyes Test. On each trial a photograph of a person's eye region is shown together with four response options. Participants select which word best describes the mental state shown.",
-        "task_file_parameters": {
+        "task_file_columns": {
+            "key_one": {
+                "type": "int",
+                "description": "Response key for option 1 (button 1)."
+            },
+            "key_two": {
+                "type": "int",
+                "description": "Response key for option 2 (button 2)."
+            },
+            "key_three": {
+                "type": "int",
+                "description": "Response key for option 3 (button 3)."
+            },
+            "key_four": {
+                "type": "int",
+                "description": "Response key for option 4 (button 4)."
+            },
+            "trial_num": {
+                "type": "int",
+                "description": "Trial number (0-indexed)."
+            },
             "hand": {
                 "type": "str",
-                "default": "right",
-                "description": "Hand used for response ('right' or 'left')."
-            },
-            "responses": {
-                "type": "list",
-                "default": "[1, 2, 3, 4]",
-                "description": "Response keys mapped to the four options."
-            },
-            "run_number": {
-                "type": "int",
-                "default": "None",
-                "description": "Run number, used to select which stimuli to present."
-            },
-            "task_dur": {
-                "type": "float",
-                "default": "30",
-                "description": "Total task duration in seconds."
+                "description": "Which hand responds ('left', 'right', or 'bimanual')."
             },
             "trial_dur": {
                 "type": "float",
-                "default": "6",
-                "description": "Duration each stimulus is displayed in seconds."
+                "description": "Duration of the trial (in seconds)."
             },
             "iti_dur": {
                 "type": "float",
-                "default": "1.5",
-                "description": "Inter-trial interval duration in seconds."
+                "description": "Inter-trial interval after the trial (in seconds)."
             },
             "option_text_height": {
                 "type": "float",
-                "default": "1.2",
-                "description": "Height of the answer-option text in degrees of visual angle."
+                "description": "Height of the answer-option text (degrees of visual angle)."
             },
             "option_position_scale": {
                 "type": "float",
-                "default": "1.0",
-                "description": "Spatial scaling factor for option positions. Values < 1 bring options closer together."
+                "description": "Scaling of option positions (<1 brings options closer together)."
+            },
+            "picture_scale": {
+                "type": "float",
+                "description": "Scaling of the eye-region image (>1 enlarges)."
+            },
+            "stim": {
+                "type": "str",
+                "description": "Eye-region image filename shown this trial."
+            },
+            "options": {
+                "type": "str",
+                "description": "The four answer options."
             },
             "condition": {
                 "type": "str",
-                "default": "None",
-                "description": "If set, only trials of this condition are included ('emotion' or 'age')."
+                "description": "'emotion' (infer the mental state) or 'age' (judge the person's age — control)."
+            },
+            "answer": {
+                "type": "str",
+                "description": "The correct option."
+            },
+            "display_trial_feedback": {
+                "type": "bool",
+                "description": "Whether to show green/red feedback after the trial."
+            },
+            "start_time": {
+                "type": "float",
+                "description": "Trial start, relative to the block start (in seconds)."
+            },
+            "end_time": {
+                "type": "float",
+                "description": "Trial end, relative to the block start (in seconds)."
             }
         }
-    },
-    "picture_sequence": {
-        "short_description": "4 cartoon pictures are presented, participants must order them chronologically.",
-        "reference": "Heleven, E., van Dun, K. and Van Overwalle, F. (2019) ‘The posterior Cerebellum is involved in constructing Social Action Sequences: An fMRI Study’, Scientific Reports, 9(1), pp. 1–11. Available at: https://doi.org/10.1038/s41598-019-46962-7.",
-        "conditions": "fbelief,tbelief,control,sscript,mechanical",
-        "recorded_metrics": "Accuracy + RT"
-    },
-    "story_sequence": {
-        "short_description": "4 sentences are presented, participants must order them chronologically.",
-        "reference": "Heleven, E., van Dun, K. and Van Overwalle, F. (2019) ‘The posterior Cerebellum is involved in constructing Social Action Sequences: An fMRI Study’, Scientific Reports, 9(1), pp. 1–11. Available at: https://doi.org/10.1038/s41598-019-46962-7.",
-        "conditions": "fbelief,tbelief,control,sscript,mechanical",
-        "recorded_metrics": "Accuracy + RT"
-    },
-    "action_prediction": {
-        "short_description": "An action video is shown where an actor is either taking a penalty shot or greeting a person, participants must predict if the ball lands left or right or if the person greets with a handshake or hug.",
-        "reference": "King, M. (2022). Investigating cortico-cerebellar contributions to cognition. UC Berkeley. ProQuest ID: King_berkeley_0028E_21350. Merritt ID: ark:/13030/m5wb6kvd. Retrieved from https://escholarship.org/uc/item/61w6t6sk",
-        "conditions": "soccer,greeting",
-        "recorded_metrics": "Accuracy + RT",
-        "detailed_description": "Participants watch short video clips of either soccer kicks or greeting interactions that are occluded partway through. They must predict the outcome. The task engages action-prediction and social-perception regions.",
-        "task_file_parameters": {
-            "hand": {
-                "type": "str",
-                "default": "right",
-                "description": "Hand used for response ('right' or 'left')."
-            },
-            "responses": {
-                "type": "list",
-                "default": "[1, 2]",
-                "description": "Response keys for the two prediction options."
-            },
-            "run_number": {
-                "type": "int",
-                "default": "None",
-                "description": "Run number, used to select which stimuli to present."
-            },
-            "task_dur": {
-                "type": "float",
-                "default": "30",
-                "description": "Total task duration in seconds."
-            },
-            "trial_dur": {
-                "type": "float",
-                "default": "5",
-                "description": "Duration of the video presentation in seconds."
-            },
-            "iti_dur": {
-                "type": "float",
-                "default": "1",
-                "description": "Inter-trial interval duration in seconds."
-            },
-            "question_dur": {
-                "type": "float",
-                "default": "4",
-                "description": "Duration the prediction question is displayed in seconds."
-            },
-            "condition": {
-                "type": "str",
-                "default": "None",
-                "description": "If set, only trials of this condition are included (e.g. 'soccer_easy', 'greeting_hard')."
-            }
-        }
-    },
-    "strange_stories": {
-        "short_description": "Clips of relationship stories, participants are asked to answer questions about the interaction.",
-        "reference": "Murray, K. et al. (2017) ‘A new test of advanced theory of mind: The “Strange Stories Film Task” captures social processing differences in adults with autism spectrum disorders’, Autism Research, 10(6), pp. 1120–1132. Available at: https://doi.org/10.1002/aur.1744.",
-        "conditions": "social,control",
-        "recorded_metrics": "Accuracy + RT"
     },
     "faux_pas": {
         "short_description": "Stories of (potential) faux pas situations, participants must answer questions about the interaction.",
@@ -776,132 +885,273 @@
         "conditions": "social,control",
         "recorded_metrics": "Accuracy + RT",
         "detailed_description": "On each trial a short social scenario is presented followed by a yes/no question about whether anyone said something they should not have said. The task is designed to engage social cognition and mentalizing regions.",
-        "task_file_parameters": {
+        "task_file_columns": {
+            "key_yes": {
+                "type": "int",
+                "description": "Response key for 'Yes' (a faux pas occurred)."
+            },
+            "key_no": {
+                "type": "int",
+                "description": "Response key for 'No'."
+            },
+            "trial_num": {
+                "type": "int",
+                "description": "Trial number (0-indexed)."
+            },
             "hand": {
                 "type": "str",
-                "default": "right",
-                "description": "Hand used for response ('right' or 'left')."
-            },
-            "responses": {
-                "type": "list",
-                "default": "[1, 2]",
-                "description": "Response keys: 1 = Yes, 2 = No."
-            },
-            "run_number": {
-                "type": "int",
-                "default": "None",
-                "description": "Run number, used to select which stories to present."
-            },
-            "task_dur": {
-                "type": "float",
-                "default": "30",
-                "description": "Total task duration in seconds."
+                "description": "Which hand responds ('left', 'right', or 'bimanual')."
             },
             "trial_dur": {
                 "type": "float",
-                "default": "14",
-                "description": "Total duration of each trial in seconds."
+                "description": "Duration of the trial (in seconds)."
             },
             "iti_dur": {
                 "type": "float",
-                "default": "1",
-                "description": "Inter-trial interval duration in seconds."
+                "description": "Inter-trial interval after the trial (in seconds)."
             },
-            "story_dur": {
-                "type": "float",
-                "default": "10",
-                "description": "Duration the story text is displayed in seconds."
+            "story": {
+                "type": "str",
+                "description": "The short social scenario text."
             },
-            "question1_dur": {
-                "type": "float",
-                "default": "4",
-                "description": "Duration the faux-pas detection question is displayed in seconds."
+            "question": {
+                "type": "str",
+                "description": "The yes/no question about the scenario."
             },
-            "text_height": {
-                "type": "float",
-                "default": "1.25",
-                "description": "Height of the story and question text in degrees of visual angle."
+            "options": {
+                "type": "str",
+                "description": "The answer options."
+            },
+            "trial_type": {
+                "type": "int",
+                "description": "Numeric code for the correct answer: 1 = Yes, 2 = No."
             },
             "condition": {
                 "type": "str",
-                "default": "None",
-                "description": "If set, only trials of this condition are included ('social' or 'control')."
+                "description": "'social' (a faux-pas story) or 'control'."
+            },
+            "story_dur": {
+                "type": "float",
+                "description": "How long the story is displayed (in seconds)."
+            },
+            "question_dur": {
+                "type": "float",
+                "description": "How long the question is displayed (in seconds)."
+            },
+            "text_height": {
+                "type": "float",
+                "description": "Height of the story/question text (degrees of visual angle)."
+            },
+            "display_trial_feedback": {
+                "type": "bool",
+                "description": "Whether to show green/red feedback after the trial."
+            },
+            "start_time": {
+                "type": "float",
+                "description": "Trial start, relative to the block start (in seconds)."
+            },
+            "end_time": {
+                "type": "float",
+                "description": "Trial end, relative to the block start (in seconds)."
             }
         }
     },
-    "frith_happe": {
-        "short_description": "Video clips of triangle animations, participants must determine whether interaction was random, goal-directed or a mentalizing interaction.",
-        "reference": "Livingston, L.A. et al. (2021) ‘Further developing the Frith–Happé animations: A quicker, more objective, and web-based test of theory of mind for autistic and neurotypical adults’, Autism Research, 14(9), pp. 1905–1912. Available at: https://doi.org/10.1002/aur.2575..",
-        "conditions": "random,gd,tom",
-        "recorded_metrics": "Accuracy + RT"
-    },
-    "liking": {
-        "short_description": "Video clips of people interacting, participants must determine if the interaction was positive or negative.",
-        "reference": "Heerey, E.A. and Gilder, T.S.E. (2019) ‘The subjective value of a smile alters social behaviour’, PLoS ONE, 14(12), pp. 1–19. Available at: https://doi.org/10.1371/journal.pone.0225284.",
-        "conditions": "like,dislike",
-        "recorded_metrics": "Accuracy + RT"
-    },
-    "pong": {
-        "short_description": "Classic pong game. A ball moves across the screen downwards and the participant uses buttons to move a paddle left or right to catch it.",
-        "recorded_metrics": "Accuracy"
-    },
     "affective": {
-        "short_description": "2 choice is the image pleasant or unpleasant",
-        "recorded_metrics": "Accuracy + RT"
-    },
-    "finger_rhythmic": {
-        "short_description": "Assess the precision of internal timing mechanisms through a rhythmic tapping production task. Participants are instructed to produce a regular series of taps at a prescribed target interval.",
-        "reference": "Ivry, R. B., & Keele, S. W. (1989). Timing Functions of the Cerebellum. Journal of Cognitive Neuroscience, 1(2), 136-152.",
-        "conditions": "self-paced tapping",
-        "detailed_description": "A timing production task in which participants listen to a train of auditory tones and tap along at the same pace. The task engages motor timing and cerebellar regions.",
-        "task_file_parameters": {
+        "short_description": "Participants view a picture (scenes, animals, or foods) and choose whether it is pleasant or unpleasant.",
+        "detailed_description": "Participants view pictures drawn from the International Affective Picture System (IAPS) — depicting scenes, animals, and foods — and indicate via a button press whether each image is pleasant or unpleasant. The task is designed to engage affective/emotional valence processing. After each response, the participant receives trial-specific feedback: a green check mark for a correct answer and a red cross for an incorrect one.",
+        "recorded_metrics": "Accuracy + RT",
+        "reference": [
+            "Lang, P. J., Bradley, M. M., & Cuthbert, B. N. (1997). International affective picture system (IAPS): Technical manual and affective ratings. NIMH Center for the Study of Emotion and Attention, 1(39-58), 3.",
+            "Moulton, E. A., Elman, I., Pendse, G., Schmahmann, J., Becerra, L., & Borsook, D. (2011). Aversion-related circuitry in the cerebellum: responses to noxious heat and unpleasant images. Journal of neuroscience, 31(10), 3795-3804."
+        ],
+        "task_file_columns": {
+            "trial_num": {
+                "type": "int",
+                "description": "Trial number (0-indexed)."
+            },
+            "stim": {
+                "type": "str",
+                "description": "IAPS image filename; valence is encoded in the prefix ('pleasant...' / 'unpleasant...')."
+            },
+            "trial_type": {
+                "type": "int",
+                "description": "Image valence: 1 = unpleasant, 2 = pleasant."
+            },
             "hand": {
                 "type": "str",
-                "default": "right",
-                "description": "Hand used for response ('right' or 'left')."
-            },
-            "responses": {
-                "type": "list",
-                "default": "[1]",
-                "description": "Response key for tapping."
-            },
-            "task_dur": {
-                "type": "float",
-                "default": "70",
-                "description": "Total task duration in seconds."
+                "description": "Which hand responds ('left', 'right', or 'bimanual')."
             },
             "trial_dur": {
                 "type": "float",
-                "default": "35",
-                "description": "Duration of each trial (includes start text, tone train, and buffer) in seconds."
+                "description": "Duration of the trial (in seconds)."
             },
             "iti_dur": {
                 "type": "float",
-                "default": "0",
-                "description": "Inter-trial interval duration in seconds."
+                "description": "Inter-trial interval after the trial (in seconds)."
+            },
+            "key_unpleasant": {
+                "type": "int",
+                "description": "Response key for an 'unpleasant' judgment."
+            },
+            "key_pleasant": {
+                "type": "int",
+                "description": "Response key for a 'pleasant' judgment."
+            },
+            "display_trial_feedback": {
+                "type": "bool",
+                "description": "Whether to show green/red feedback after the trial."
+            },
+            "start_time": {
+                "type": "float",
+                "description": "Trial start, relative to the block start (in seconds)."
+            },
+            "end_time": {
+                "type": "float",
+                "description": "Trial end, relative to the block start (in seconds)."
+            }
+        }
+    },
+    "finger_rhythmic": {
+        "short_description": "Rhythmic tapping production task. Participants are instructed to produce a regular series of taps at a prescribed target interval.",
+        "reference": "Ivry, R. B., & Keele, S. W. (1989). Timing Functions of the Cerebellum. Journal of Cognitive Neuroscience, 1(2), 136-152.",
+        "detailed_description": "A timing production task in which participants listen to a train of auditory tones and tap along at the same pace. The task engages motor timing.",
+        "task_file_columns": {
+            "key_one": {
+                "type": "int",
+                "description": "Response key used to tap."
+            },
+            "trial_num": {
+                "type": "int",
+                "description": "Trial number (0-indexed)."
+            },
+            "hand": {
+                "type": "str",
+                "description": "Which hand responds ('left', 'right', or 'bimanual')."
+            },
+            "trial_dur": {
+                "type": "float",
+                "description": "Duration of the trial (in seconds)."
+            },
+            "iti_dur": {
+                "type": "float",
+                "description": "Inter-trial interval after the trial (in seconds)."
             },
             "ioi": {
-                "type": "float or list",
-                "default": "0.6",
-                "description": "Inter-onset interval(s) in seconds. A single value gives one pace; a list (e.g. [0.3, 0.6, 1.2]) creates trials at different paces, randomly assigned."
+                "type": "float",
+                "description": "Inter-onset interval (pace) for this trial, in seconds."
+            },
+            "stim": {
+                "type": "str",
+                "description": "Always 'generated' — the tone train is synthesized at runtime."
+            },
+            "display_trial_feedback": {
+                "type": "bool",
+                "description": "Whether to show green/red feedback after the trial."
+            },
+            "start_time": {
+                "type": "float",
+                "description": "Trial start, relative to the block start (in seconds)."
+            },
+            "end_time": {
+                "type": "float",
+                "description": "Trial end, relative to the block start (in seconds)."
             }
         }
     },
     "time_perception": {
-        "short_description": "Assess the precision of internal timing mechanisms by measuring participants’ perceptual acuity in discriminating short auditory intervals. Participants are presented with sequences of tones and must decide whether a comparison interval is longer or shorter than a standard reference interval.",
-        "reference": "Ivry, R. B., & Keele, S. W. (1989). Timing Functions of the Cerebellum. Journal of Cognitive Neuroscience, 1(2), 136–152.",
-        "conditions": "time interval",
-        "recorded_metrics": "Accuracy + RT"
+        "short_description": "Assess the precision of internal timing mechanisms by measuring participants' perceptual acuity in discriminating short auditory intervals. Participants are presented with sequences of tones and must decide whether a comparison interval is longer or shorter than a standard reference interval.",
+        "reference": "Ivry, R. B., & Keele, S. W. (1989). Timing Functions of the Cerebellum. Journal of Cognitive Neuroscience, 1(2), 136-152.",
+        "recorded_metrics": "Accuracy + RT",
+        "task_file_columns": {
+            "trial_num": {
+                "type": "int",
+                "description": "Trial number (0-indexed)."
+            },
+            "modality": {
+                "type": "str",
+                "description": "Which dimension is judged ('time' or 'volume')."
+            },
+            "side": {
+                "type": "str",
+                "description": "Correct answer ('shorter'/'longer' for time, 'quieter'/'louder' for volume)."
+            },
+            "key_one": {
+                "type": "int",
+                "description": "Response key for the left option."
+            },
+            "key_two": {
+                "type": "int",
+                "description": "Response key for the right option."
+            },
+            "trial_type": {
+                "type": "int",
+                "description": "Correct-response code: 1 = left option (shorter/quieter), 2 = right option (longer/louder)."
+            },
+            "question_dur": {
+                "type": "float",
+                "description": "Response window after the tones (in seconds)."
+            },
+            "trial_dur": {
+                "type": "float",
+                "description": "Duration of the trial (in seconds)."
+            },
+            "iti_dur": {
+                "type": "float",
+                "description": "Inter-trial interval after the trial (in seconds)."
+            },
+            "display_trial_feedback": {
+                "type": "bool",
+                "description": "Whether to show green/red feedback after the trial."
+            },
+            "comparison_ms": {
+                "type": "float",
+                "description": "Comparison interval used (filled at runtime; NaN in the generated file)."
+            },
+            "comparison_dba": {
+                "type": "float",
+                "description": "Comparison volume used (filled at runtime; NaN in the generated file)."
+            },
+            "start_time": {
+                "type": "float",
+                "description": "Trial start, relative to the block start (in seconds)."
+            },
+            "end_time": {
+                "type": "float",
+                "description": "Trial end, relative to the block start (in seconds)."
+            }
+        }
     },
-    "sensmot_control": {
-        "short_description": "Assess basic sensorimotor control. Measure reaction time and response accuracy to evaluate low-level perceptual and motor processing. Part 1 is a Go/No-Go. Part 2 is a 2AFC",
-        "reference": ": Koechlin, E., & Summerfield, C. (2007). An information theoretical approach to prefrontal executive function. Trends in cognitive sciences, 11(6), 229-235.Koechlin 2007",
-        "conditions": "Go/No-Go 2AFC.",
-        "recorded_metrics": "Accuracy + RT"
-    },
-    "semantic_switching": {
-        "short_description": "sentence presented, participants decide if last word makes sense.",
-        "conditions": "predictable, switched, meaningless",
-        "recorded_metrics": "Accuracy + RT"
+    "motor_localizer": {
+        "short_description": "A general somatomotor localizer. Each block cycles through body-part conditions (e.g. hand, foot, tongue) shown as a label above a fixation cross, while a circle around the fixation appears and disappears to pace the movement.",
+        "detailed_description": "A general motor localizer for mapping somatomotor cortex and cerebellum. The block is divided into equal segments, one per condition (e.g. 10 s each for hand, foot and tongue in a 30 s block), presented in a randomized order. The current condition is shown as a label at the top of the screen (in black) above a central fixation cross, telling the participant which body part to move. Around the fixation a black circle appears (trial_type = 1) and disappears (trial_type = 0) to pace the movement. The mapping from condition to movement (e.g. tongue = left-right, foot = flex/extend) and the meaning of the circle appearing versus disappearing are explained to the participant during training and are deliberately NOT encoded in the task file: the code only reads the condition and trial_type and renders them. No response is collected and no feedback is given. Because several body-part conditions are cued within one block, a single localizer block can target multiple somatomotor representations.",
+        "reference": "Saadon-Grosman, N., Angeli, P. A., DiNicola, L. M., & Buckner, R. L. (2022). A third somatomotor representation in the human cerebellum. Journal of Neurophysiology, 128(4), 1051-1073.",
+        "recorded_metrics": "None",
+        "conditions": "Configurable: the body parts to localize (default hand, foot, tongue). Each condition gets an equal, randomly ordered segment of the block.",
+        "task_file_columns": {
+            "trial_num": {
+                "type": "int",
+                "description": "Row index within the block (0-indexed); one row per circle on/off phase."
+            },
+            "condition": {
+                "type": "str",
+                "description": "The body part to move for this segment (e.g. 'hand', 'foot', 'tongue'), shown as a label at the top of the screen. Conditions are cued one equal-length segment each, in a randomized order."
+            },
+            "trial_type": {
+                "type": "int",
+                "description": "Whether the circle is drawn around the fixation this row: 1 = circle present, 0 = circle absent. What present vs absent means (e.g. move vs hold, or move right vs left) is defined in training, not in the code."
+            },
+            "trial_dur": {
+                "type": "float",
+                "description": "How long this row is shown, in seconds (the circle on/off toggle interval within a segment)."
+            },
+            "start_time": {
+                "type": "float",
+                "description": "Row onset, relative to the block start (in seconds)."
+            },
+            "end_time": {
+                "type": "float",
+                "description": "Row offset, relative to the block start (in seconds)."
+            }
+        }
     }
 }

@@ -6,7 +6,6 @@ import pandas as pd
 import sys
 import numpy as np
 from datetime import datetime
-
 from psychopy import visual, gui, event
 import MultiTaskBattery.utils as ut
 import MultiTaskBattery.task_blocks as tasks
@@ -48,6 +47,7 @@ class Experiment:
         # connect to the eyetracker already
         if self.const.eye_tracker:
             import pylink as pl
+            self.pl = pl  # keep a handle so run() can call pylink (optional import, only when eye_tracker=True)
             # create an Eyelink class
             ## the default ip address is 100.1.1.1.
             ## in the ethernet settings of the laptop,
@@ -108,13 +108,15 @@ class Experiment:
 
         # 2. Initialize the all tasks that we need
         self.task_obj_list = [] # a list containing task objects in the run
+        task_table = ut.get_task_table(self.const.exp_dir) # Get the task table for the experiment, which is a combination of the general task table and the experiment-specific task table (if it exists)
         for t_num, task_info in self.run_info.iterrows():
             # create a task object for the current task, reads the trial file, and append it to the list
-            t = ut.task_table[ut.task_table['name']== task_info.task_name]
+            t = task_table[task_table['name']== task_info.task_name]
             task_info['code'] = t.code
             task_info['descriptive_name'] = t.descriptive_name.iloc[0].capitalize()
             class_name = t.task_class.iloc[0]
-            TaskClass = getattr(tasks, class_name)
+            # Get the task class from the task modules
+            TaskClass = ut.get_task_class(self.const,class_name)
             Task_obj  = TaskClass(task_info,
                                  screen = self.screen,
                                  ttl_clock = self.ttl_clock,
@@ -137,6 +139,7 @@ class Experiment:
         self.ttl_clock.reset()
         self.ttl_clock.wait_for_first_ttl(wait = self.wait_ttl)
         run_data = []
+        run_end_timestamp = None
 
         # Start the eyetracker
         if self.const.eye_tracker:
@@ -146,7 +149,8 @@ class Experiment:
             # clear keys in buffer
             event.clearEvents()
 
-            print(f"Starting task {t_num+1}: {task.name}")
+            # padded, to overwrite the TR counter line (printed with end='\r')
+            print(f"Starting task {t_num+1}: {task.name}".ljust(60))
 
             # Take the task data from the run_info dataframe
             r_data = self.run_info.iloc[t_num].copy()
@@ -156,13 +160,14 @@ class Experiment:
 
             ## sending a message to the edf file specifying task name
             if self.const.eye_tracker:
-                pl.sendMessageToFile(f"task_name: {task.name} start_track: {pl.currentUsec()} real start time {r_data.real_start_time} TR count {self.ttl_clock.ttl_count}")
+                self.pl.sendMessageToFile(f"task_name: {task.name} start_track: {self.pl.currentUsec()} real start time {r_data.real_start_time} TR count {self.ttl_clock.ttl_count}")
 
             # display the instruction text for the task. (instructions are task specific)
-            task.display_instructions()
-
-            # wait for a time period equal to instruction duration
-            self.ttl_clock.wait_until(r_data.start_time + r_data.instruction_dur)
+            if r_data.instruction_dur > 0:
+                task.display_instructions()
+                
+                # wait for a time period equal to instruction duration
+                self.ttl_clock.wait_until(r_data.start_time + r_data.instruction_dur)
 
             # Run the task (which saves its data to the target)
             task.start_time = self.ttl_clock.get_time()
@@ -172,6 +177,11 @@ class Experiment:
             r_data['real_end_time'] = self.ttl_clock.get_time()
             if getattr(self.const, 'record_task_end_timestamp', False):
                 r_data['task_end_timestamp'] = datetime.now().isoformat()
+            # Run-level stamp: a single wall-clock time taken after the last task.
+            # Also written onto the last row so it survives the save_per_task path.
+            if getattr(self.const, 'record_run_end_timestamp', False) and t_num == len(self.task_obj_list) - 1:
+                run_end_timestamp = datetime.now().isoformat()
+                r_data['run_end_timestamp'] = run_end_timestamp
             run_data.append(r_data)
 
             # Optional: persist this task's data immediately so completed tasks survive a mid-run crash
@@ -186,6 +196,8 @@ class Experiment:
             # If last task, wait until the endtime for the last task, which for imaging could be longer than the task duration
             # Note that endtime is not used for any task but the last one 
             if t_num == len(self.task_obj_list)-1:
+                self.ttl_clock.wait_until(self.ttl_clock.get_time() + 1.5)
+                self.screen.fixation_cross()
                 self.ttl_clock.wait_until(r_data.end_time)
 
         # Stop the eyetracker
@@ -197,6 +209,8 @@ class Experiment:
         if not getattr(self.const, 'save_per_task', False):
             # save the run data to the run file
             run_data.insert(0,'run_num',[self.run_number]*len(run_data))
+            if getattr(self.const, 'record_run_end_timestamp', False) and run_end_timestamp is not None:
+                run_data['run_end_timestamp'] = run_end_timestamp
             ut.append_data_to_file(self.run_data_file, run_data )
 
             for task in self.task_obj_list:
@@ -297,11 +311,10 @@ class Experiment:
 
     def stop_eyetracker(self):
         """
-        stop recording
-        close edf file
-        receive edf file?
-            - receiving the edf file takes time and might be problematic during scanning
-            maybe it would be better to take the edf files from eyelink host computer afterwards
+        Stop recording and close the EDF file.
+
+        - Receiving the EDF file takes time and might be problematic during scanning.
+        - It may be better to copy the EDF files from the EyeLink host computer afterwards.
         """
         self.tk.stopRecording()
         self.tk.closeDataFile()
