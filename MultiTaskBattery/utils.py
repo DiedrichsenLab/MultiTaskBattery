@@ -43,6 +43,9 @@ def get_task_table(exp_dir=None, task_tables=None):
     Args:
         exp_dir (str, path, optional):
             path to the experiment directory. If None, returns only the general table.
+        task_tables (list, optional):
+            paths to further task_table.tsv files, e.g. from a task library
+            outside the repository.
     Returns:
         task_table (dataframe):
             dataframe containing the task table
