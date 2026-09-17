@@ -1727,7 +1727,9 @@ class FingerRhythmic(Task):
         last_tone_t = expected[-1]            # relative to t0
         self_taps = [t for t in taps_rel if t > last_tone_t]
         isis = np.diff(self_taps) if len(self_taps) > 1 else np.array([], float)
-        isis = isis[(isis >= 0.300) & (isis <= 0.900)]
+        # Accept a window scaled to the trial's IOI: a fixed 300-900 ms window
+        # discards real taps and keeps implausible ones when ioi is not ~0.6.
+        isis = isis[(isis >= max(0.15, 0.2 * ioi)) & (isis <= 2.0 * ioi)]
 
         trial['iri_ms_mean']         = float(np.mean(isis) * 1000.0) if isis.size else np.nan
         trial['iri_ms_sd']           = float(np.std(isis)  * 1000.0) if isis.size else np.nan
