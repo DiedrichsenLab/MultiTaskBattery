@@ -104,7 +104,7 @@ If your tasks live in a shared library outside the experiment folder, the
 library can ship its own ``task_table.tsv`` and you point at it from
 ``constants.py`` instead of copying the rows into each experiment::
 
-    task_tables = [my_task_library.TASK_TABLE]
+    task_tables = [my_task_library.task_table_path]
 
 3. Register your module in constants.py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
