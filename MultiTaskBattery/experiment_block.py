@@ -245,6 +245,9 @@ class Experiment:
         # Make the score display elements
         elements = []
         for Idx in range(len(scores_flat)):
+            # The task names are the first column. Anchor them on the right so that a
+            # long name grows away from the scores instead of running into them.
+            name_column = Idx % cols == 0
             element = visual.TextStim(win=self.screen.window, 
                         text = str(scores_flat[Idx]), # Variable text
                         font = 'Lucida Console',
@@ -253,6 +256,8 @@ class Experiment:
                         wrapWidth = 100, 
                         color=[-1, -1, -1],
                         ori = 0,
+                        anchorHoriz = 'right' if name_column else 'center',
+                        alignText = 'right' if name_column else 'center',
                         units='deg')
             elements.append(element)
         # Draw the scores
