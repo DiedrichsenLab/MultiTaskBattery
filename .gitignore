@@ -4,6 +4,7 @@ docs/build/*
 venv
 env/
 mtb-env310/
+mtb-env/
 .vscode
 stimuli/.DS_Store
 
