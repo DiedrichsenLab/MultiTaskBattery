@@ -48,6 +48,10 @@ class Task:
         # Set the instruction text height to a value defined in the constants, or use default - useful for smaller screens
         self.const.instruction_text_height = getattr(self.const, 'instruction_text_height', None) or 1
 
+        # Width the instruction text wraps at, in degrees. PsychoPy's own default is
+        # narrow enough to break short lines such as "Left - Press [1]  Right - Press [2]".
+        self.const.instruction_wrap_width = getattr(self.const, 'instruction_wrap_width', None) or 30
+
         # MEG / photodiode timing (opt-in via `photodiode = True` in constants.py).
         # When enabled, the first flip of each trial (the stimulus onset) flashes
         # the photodiode square and its true onset time is logged to `flip_time`.
@@ -99,7 +103,7 @@ class Task:
         self.instruction_text = f"{self.descriptive_name} Task\n\n {true_str} \n {false_str}"
 
         # 3.2 display the instruction text
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1])
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1], wrapWidth=self.const.instruction_wrap_width)
         # instr.size = 0.8
         instr_visual.draw()
         self.flip()
@@ -320,7 +324,7 @@ class NBack(Task):
         str2 = f"if match, press {self.corr_key[1]}"
         str3 = f"if no match, press {self.corr_key[0]}"
         self.instruction_text = f"{self.descriptive_name} Task\n\n {str1} \n {str2} \n {str3}"
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1])
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1], wrapWidth=self.const.instruction_wrap_width)
         instr_visual.draw()
         self.flip()
 
@@ -357,7 +361,7 @@ class Rest(Task):
 
     def display_instructions(self): # overriding the display instruction routine from the parent
         self.instruction_text = 'Rest: Fixate on the cross'
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1])
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1], wrapWidth=self.const.instruction_wrap_width)
         # instr.size = 0.8
         instr_visual.draw()
         self.flip()
@@ -448,7 +452,7 @@ class TongueMovement(Task):
 
     def display_instructions(self):
         self.instruction_text = f"{self.descriptive_name} Task \n\n Move your tongue left to right touching your upper premolar teeth"
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1])
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1], wrapWidth=self.const.instruction_wrap_width)
         instr_visual.draw()
         self.flip()
 
@@ -500,7 +504,7 @@ class MotorLocalizer(Task):
     def display_instructions(self):
         self.instruction_text = f"{self.descriptive_name} Task \n\n Move the indicated body part as instructed"
         instr_visual = visual.TextStim(self.window, text=self.instruction_text,
-                                       height=self.const.instruction_text_height, color=[-1, -1, -1])
+                                       height=self.const.instruction_text_height, color=[-1, -1, -1], wrapWidth=self.const.instruction_wrap_width)
         instr_visual.draw()
         self.flip()
 
@@ -532,7 +536,7 @@ class AuditoryNarrative(Task):
 
     def display_instructions(self):
         self.instruction_text = f'{self.descriptive_name} Task\n\nListen to the narrative attentively.'
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1])
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1], wrapWidth=self.const.instruction_wrap_width)
         instr_visual.draw()
         self.flip()
 
@@ -604,7 +608,7 @@ class TheoryOfMind(Task):
         str2 = f"if true, press {self.corr_key[1]}"
         str3 = f"if false, press {self.corr_key[0]}"
         self.instruction_text = f"\n\n {str1} \n\n {str2} \n {str3}"
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1])
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1], wrapWidth=self.const.instruction_wrap_width)
         instr_visual.draw()
         self.flip()
 
@@ -649,7 +653,7 @@ class PassageListening(Task):
 
     def display_instructions(self):
         self.instruction_text = f'{self.descriptive_name} Task \n\nListen to the audio attentively.'
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1])
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1], wrapWidth=self.const.instruction_wrap_width)
         instr_visual.draw()
         self.flip()
 
@@ -674,7 +678,7 @@ class ActionObservation(Task):
 
     def display_instructions(self): # overriding the display instruction from the parent class
         self.instruction_text = f"{self.descriptive_name} Task \n\n Keep your head still while watching the two clips. \n\n Try and remember the knot shown."
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1])
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1], wrapWidth=self.const.instruction_wrap_width)
         instr_visual.draw()
         self.flip()
 
@@ -728,7 +732,7 @@ class DemandGrid(Task):
         str2 = f"if left, press {self.corr_key[0]}"
         str3 = f"if right, press {self.corr_key[1]}"
         self.instruction_text = f"{self.descriptive_name} Task\n\n {str1} \n {str2} \n {str3}"
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1])
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1], wrapWidth=self.const.instruction_wrap_width)
         instr_visual.draw()
         self.flip()
 
@@ -861,7 +865,7 @@ class Reading(Task):
 
     def display_instructions(self):
         self.instruction_text = f'{self.descriptive_name} Task \n\n Read the shown text and press a button when the image of a hand pressing a button is displayed'
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1])
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1], wrapWidth=self.const.instruction_wrap_width)
         instr_visual.draw()
         self.flip()
 
@@ -918,7 +922,7 @@ class OddBall(Task):
         """
         str1 = f"Press {self.press_key} when you see a red K"
         self.instruction_text = f"{self.descriptive_name} Task\n\n {str1} \n"
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1])
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1], wrapWidth=self.const.instruction_wrap_width)
         instr_visual.draw()
         self.flip()
 
@@ -977,7 +981,7 @@ class FingerSequence(Task):
 
     def display_instructions(self):
         self.instruction_text = f"{self.descriptive_name} Task \n\n Using your four fingers, press the keys in the order shown on the screen\n Use all four fingers for this task"
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1])
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1], wrapWidth=self.const.instruction_wrap_width)
         instr_visual.draw()
         self.flip()
 
@@ -1070,7 +1074,7 @@ class FlexionExtension(Task):
 
     def display_instructions(self):
         self.instruction_text = f"{self.descriptive_name} Task \n\n Flex and extend your right and left toes"
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1])
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1], wrapWidth=self.const.instruction_wrap_width)
         instr_visual.draw()
         self.flip()
 
@@ -1108,7 +1112,7 @@ class SemanticPrediction(Task):
         str2 = f"If it makes sense, press {self.corr_key[1]}"
         str3 = f"if it doesn't make sense, press {self.corr_key[0]}"
         self.instruction_text = f"{self.descriptive_name} Task\n\n {str1} \n {str2} \n {str3}"
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1])
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1], wrapWidth=self.const.instruction_wrap_width)
         instr_visual.draw()
         self.flip()
 
@@ -1240,7 +1244,7 @@ class VisualSearch(Task):
         str2 = f"If 'L' is present, press {self.corr_key[1]}"
         str3 = f"if 'L' is not present, press {self.corr_key[0]}"
         self.instruction_text = f"{self.descriptive_name} Task\n\n {str1} \n {str2} \n {str3}"
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1])
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1], wrapWidth=self.const.instruction_wrap_width)
         instr_visual.draw()
         self.flip()
 
@@ -1660,7 +1664,7 @@ class FingerRhythmic(Task):
         str1 = f"Tap along to the tones using the {self.corr_key[0]} key."
         str2 = f"Keep tapping at the same pace when the tones stop."
         self.instruction_text = f"{self.descriptive_name} Task\n\n {str1} \n {str2}"
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1])
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1], wrapWidth=self.const.instruction_wrap_width)
         instr_visual.draw()
         self.flip()
 
@@ -1669,7 +1673,7 @@ class FingerRhythmic(Task):
 
         event.clearEvents()
         txt = (f"New trial starts now") # this text shows when a new trials starts
-        visual.TextStim(self.window, text=txt,height=self.const.instruction_text_height, color=[-1, -1, -1]).draw()
+        visual.TextStim(self.window, text=txt,height=self.const.instruction_text_height, color=[-1, -1, -1], wrapWidth=self.const.instruction_wrap_width).draw()
         self.flip()
         self.ttl_clock.wait_until(self.ttl_clock.get_time() + 2)
 
@@ -1781,7 +1785,7 @@ class TimePerception(Task):
             str3 = f"Press [{self.corr_key[1]}] if the SECOND interval is louder."
             str4 = "The first pair is always the same."
             self.instruction_text = f"{self.descriptive_name} Task\n\n {str1} \n {str2} \n {str3} \n {str4}"
-        visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1]).draw()
+        visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1], wrapWidth=self.const.instruction_wrap_width).draw()
         self.flip()
 
     def run_trial(self, trial):
