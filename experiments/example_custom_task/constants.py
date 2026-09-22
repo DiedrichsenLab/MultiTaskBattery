@@ -45,4 +45,4 @@ debug = False
 screen = {}
 screen['size'] = [1100, 800]
 screen['fullscr'] = False
-screen['number'] = 1
+screen['number'] = 0
