@@ -12,3 +12,14 @@ stimuli/.DS_Store
 
 CLAUDE.md
 experiments/test/
+
+# Stimuli for tasks that do not live in this repo, but are used in the experiments here.
+# These are not ours to redistribute, and git history is permanent, so an accidental commit could not be undone by deleting it later.
+# Gitignore entries are therefore kept
+stimuli/action_prediction/
+stimuli/frith_happe/
+stimuli/liking/
+stimuli/picture_sequence/
+stimuli/semantic_switching/
+stimuli/story_sequence/
+stimuli/strange_stories/

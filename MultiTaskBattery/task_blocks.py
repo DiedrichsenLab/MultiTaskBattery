@@ -1288,6 +1288,15 @@ class RMET(Task):
         """
         trial_info_file = self.const.task_dir / self.name / self.task_file
         self.trial_info = pd.read_csv(trial_info_file, sep='\t')
+        # Preload every eye picture once and reuse it across trials (mirrors NBack.init_task).
+        # Building an ImageStim inside run_trial allocates a GL texture per trial, which
+        # accumulates over a block.
+        self.stim = []
+        for _, row in self.trial_info.iterrows():
+            picture_path = ut.find_stim(self.const, self.name, 'pictures', row['stim'])
+            picture = visual.ImageStim(self.window, str(picture_path), pos=(0, 0))
+            picture.size = picture.size * (row['picture_scale'] if 'picture_scale' in row else 0.7)
+            self.stim.append(picture)
 
     def display_instructions(self):
         task_name = visual.TextStim(self.window, text=f'{self.descriptive_name.capitalize()}', height=self.const.instruction_text_height, color=[-1, -1, -1], bold=True, pos=(0, 3))
@@ -1311,18 +1320,10 @@ class RMET(Task):
         event.clearEvents()
 
         # --- Eyes ---
-        # Get the file name
-        picture_file_name = trial['stim']
-        # Construct the picture file path
-        picture_path = ut.find_stim(self.const, self.name, 'pictures', picture_file_name)
-        # Convert Pathself object to string for compatibility
-        picture_path_str = str(picture_path)
-        # Create an ImageStim object, explicitly centered so that the four answer
-        # options (placed symmetrically above and below) straddle the image.
-        picture = visual.ImageStim(self.window, str(picture_path_str), pos=(0, 0))
-        # Make the picture smaller
-        picture_scale = trial['picture_scale'] if 'picture_scale' in trial else 0.7
-        picture.size = picture.size * picture_scale
+        # Reuse the ImageStim preloaded in init_task. It is already centered, so the four
+        # answer options (placed symmetrically above and below) straddle the image, and
+        # already scaled by the trial's picture_scale.
+        picture = self.stim[trial['trial_num']]
 
 
 
@@ -1477,7 +1478,7 @@ class FauxPas(Task):
         self.flip()
 
     def run_trial(self, trial):
-        """ Runs a single trial of the Theory of Mind task """
+        """ Runs a single trial of the Faux Pas task """
 
         event.clearEvents()
 
@@ -1730,7 +1731,9 @@ class FingerRhythmic(Task):
         last_tone_t = expected[-1]            # relative to t0
         self_taps = [t for t in taps_rel if t > last_tone_t]
         isis = np.diff(self_taps) if len(self_taps) > 1 else np.array([], float)
-        isis = isis[(isis >= 0.300) & (isis <= 0.900)]
+        # Accept a window scaled to the trial's IOI: a fixed 300-900 ms window
+        # discards real taps and keeps implausible ones when ioi is not ~0.6.
+        isis = isis[(isis >= max(0.15, 0.2 * ioi)) & (isis <= 2.0 * ioi)]
 
         trial['iri_ms_mean']         = float(np.mean(isis) * 1000.0) if isis.size else np.nan
         trial['iri_ms_sd']           = float(np.std(isis)  * 1000.0) if isis.size else np.nan
