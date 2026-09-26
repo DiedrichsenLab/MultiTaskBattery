@@ -787,7 +787,6 @@ class DemandGrid(Task):
 
         step_dur = trial['sequence_dur']/num_steps
         self.grid = self.create_grid(grid_size=grid_size)
-        self.flip()
 
         # Display the sequence in steps
         if 'original_sequence' in trial:
