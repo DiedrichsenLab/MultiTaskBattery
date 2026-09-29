@@ -86,7 +86,8 @@ def make_run_file(task_list,
                   run_time = None,
                   keep_in_middle=None,
                   shuffle=True,
-                  exp_dir=None):
+                  exp_dir=None,
+                  task_tables=None):
     """
     Make a single run file.
 
@@ -106,6 +107,7 @@ def make_run_file(task_list,
         shuffle (bool): If False, the blocks are kept in the order given in
             task_list (for designs that need a fixed block order).
         exp_dir (str, Path): Experiment directory, used to load the task table.
+        task_tables (list): Further task_table.tsv paths (see ut.get_task_table).
 
     Any list passed for instruction_dur/task_dur must have one value per task.
     The per-task durations are stored as columns and travel with their task
@@ -115,7 +117,7 @@ def make_run_file(task_list,
     Returns:
         pd.DataFrame: the run file (one row per block, with start/end times).
     """
-    task_table = ut.get_task_table(exp_dir)
+    task_table = ut.get_task_table(exp_dir, task_tables)
     # Get rows of the task_table corresponding to the task_list
     indx = [np.where(task_table['name']==t)[0][0] for t in task_list]
     n = len(task_list)
@@ -135,15 +137,16 @@ def make_run_file(task_list,
     R = add_start_end_times(R, offset, run_time=run_time)
     return R
 
-def get_task_class(name, exp_dir=None):
+def get_task_class(name, exp_dir=None, task_tables=None):
     """Creates an object of the task class based on the task name
     Args:
         name (str): name of the task
         exp_dir (str, path, optional): path to the experiment directory
+        task_tables (list, optional): further task_table.tsv paths (see ut.get_task_table)
     Returns:
         class_name (str): class name for task
     """
-    task_table = ut.get_task_table(exp_dir)
+    task_table = ut.get_task_table(exp_dir, task_tables)
     index = np.where(task_table['name']==name)[0][0]
     class_name = task_table.iloc[index]['task_class']
     return class_name

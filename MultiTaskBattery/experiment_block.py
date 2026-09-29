@@ -15,14 +15,19 @@ from MultiTaskBattery.screen import Screen
 
 
 class Experiment:
-    def __init__(self, const, subj_id):
+    def __init__(self, const, subj_id, screen=None):
         """    A general class with attributes common to experiments
 
-               Args: 
+               Args:
                     const (module):
                         local constants.py module (see example_experiment/constants.py) as example
                     subj_id (str):
                         id for the subject
+                    screen (Screen, optional):
+                        an existing Screen to reuse. If None (default), a new
+                        Screen/Window is opened. Passing an existing screen lets
+                        successive Experiments (e.g. consecutive phases) share a
+                        single window instead of opening a new one each time.
                 Returns:
                     self (object):
                         an instance of the Experiment class
@@ -35,7 +40,9 @@ class Experiment:
         self.ttl_clock = TTLClock()
         # open screen and display fixation cross
         ### set the resolution of the subject screen here:
-        self.screen = Screen(const.screen)
+        # Reuse an existing screen if one was passed in (so consecutive runs/phases
+        # share a single window); otherwise open a new one.
+        self.screen = screen if screen is not None else Screen(const.screen)
 
         # connect to the eyetracker already
         if self.const.eye_tracker:
@@ -101,7 +108,7 @@ class Experiment:
 
         # 2. Initialize the all tasks that we need
         self.task_obj_list = [] # a list containing task objects in the run
-        task_table = ut.get_task_table(self.const.exp_dir) # Get the task table for the experiment, which is a combination of the general task table and the experiment-specific task table (if it exists)
+        task_table = ut.get_task_table(self.const.exp_dir, getattr(self.const, 'task_tables', None)) # Get the task table for the experiment, which is a combination of the general task table and the experiment-specific task table (if it exists)
         for t_num, task_info in self.run_info.iterrows():
             # create a task object for the current task, reads the trial file, and append it to the list
             t = task_table[task_table['name']== task_info.task_name]
@@ -168,10 +175,23 @@ class Experiment:
 
             # Add the end time of the task
             r_data['real_end_time'] = self.ttl_clock.get_time()
+            if getattr(self.const, 'record_task_end_timestamp', False):
+                r_data['task_end_timestamp'] = datetime.now().isoformat()
+            # Run-level stamp: a single wall-clock time taken after the last task.
+            # Also written onto the last row so it survives the save_per_task path.
             if getattr(self.const, 'record_run_end_timestamp', False) and t_num == len(self.task_obj_list) - 1:
                 run_end_timestamp = datetime.now().isoformat()
+                r_data['run_end_timestamp'] = run_end_timestamp
             run_data.append(r_data)
-            #self.screen.fixation_cross()
+
+            # Optional: persist this task's data immediately so completed tasks survive a mid-run crash
+            if getattr(self.const, 'save_per_task', False):
+                task.save_data(self.subj_id, self.run_number)
+                one_row = pd.DataFrame([r_data])
+                one_row.insert(0, 'run_num', self.run_number)
+                ut.append_data_to_file(self.run_data_file, one_row)
+
+            self.screen.fixation_cross()
 
             # If last task, wait until the endtime for the last task, which for imaging could be longer than the task duration
             # Note that endtime is not used for any task but the last one 
@@ -186,15 +206,15 @@ class Experiment:
             self.tk.receiveDataFile(self.tk_filename, self.tk_filename)
 
         run_data = pd.DataFrame(run_data)
-        # save the run data to the run file
-        run_data.insert(0,'run_num',[self.run_number]*len(run_data))
-        if getattr(self.const, 'record_run_end_timestamp', False) and run_end_timestamp is not None:
-            run_data['run_end_timestamp'] = run_end_timestamp
-        ut.append_data_to_file(self.run_data_file, run_data )
+        if not getattr(self.const, 'save_per_task', False):
+            # save the run data to the run file
+            run_data.insert(0,'run_num',[self.run_number]*len(run_data))
+            if getattr(self.const, 'record_run_end_timestamp', False) and run_end_timestamp is not None:
+                run_data['run_end_timestamp'] = run_end_timestamp
+            ut.append_data_to_file(self.run_data_file, run_data )
 
-
-        for task in self.task_obj_list:
-            task.save_data(self.subj_id, self.run_number)
+            for task in self.task_obj_list:
+                task.save_data(self.subj_id, self.run_number)
 
         # show the scoreboard
         self.display_run_feedback(run_data)

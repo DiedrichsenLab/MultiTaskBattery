@@ -93,6 +93,11 @@ defaults are used.
        classes for this experiment. ``ut.get_task_class`` and
        ``ut.get_task_file_class`` search these modules first, then fall back
        to the shared ``MultiTaskBattery`` package. See :doc:`creating_tasks`.
+   * - ``task_tables``
+     - ``[]``
+     - List of further ``task_table.tsv`` paths, read after the package's table
+       and before the experiment's. Use this when your tasks live in a shared
+       library outside the experiment folder. See :doc:`creating_tasks`.
    * - ``instruction_text_height``
      - ``1``
      - Height (in degrees of visual angle) of the instruction-screen text
