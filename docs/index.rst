@@ -30,7 +30,6 @@ Documentation
    task_descriptions.rst
    MRI_instructions.rst
    eye_tracking.rst
-   meg.rst
    optimal_battery.rst
    reference.rst
 
