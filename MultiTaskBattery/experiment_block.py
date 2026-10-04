@@ -33,6 +33,7 @@ class Experiment:
         self.run_number = 0
         self.const = const
         self.ttl_clock = TTLClock()
+        self.ttl_clock.ttl_button = getattr(const, 'ttl_key', 't')  # key the scanner trigger sends; differs by site
         # open screen and display fixation cross
         ### set the resolution of the subject screen here:
         self.screen = Screen(const.screen)

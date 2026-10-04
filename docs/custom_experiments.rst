@@ -80,6 +80,9 @@ defaults are used.
      - ``None``
      - If set to a key name (e.g. ``'space'``), only that key will dismiss
        the run-feedback scoreboard screen. If ``None``, any key continues.
+   * - ``ttl_key``
+     - ``'t'``
+     - Key the scanner trigger (TTL) arrives as.
    * - ``scoreboard_text_height``
      - ``1.3``
      - Height (in degrees of visual angle) of the text on the run-feedback
