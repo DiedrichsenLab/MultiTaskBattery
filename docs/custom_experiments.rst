@@ -83,6 +83,14 @@ defaults are used.
    * - ``ttl_key``
      - ``'t'``
      - Key the scanner trigger (TTL) arrives as.
+   * - ``quit_key``
+     - ``'escape'``
+     - Key that closes the window and quits the experiment at any point once
+       the experiment window is open (instructions, waiting for the TTL,
+       trials, rest, scoreboard; not the run-info dialog). Blocks that have
+       finished are already saved; the block in progress is lost. Set to
+       ``None`` to disable, or pick a key that does not clash with the
+       response keys or ``ttl_key``.
    * - ``scoreboard_text_height``
      - ``1.3``
      - Height (in degrees of visual angle) of the text on the run-feedback

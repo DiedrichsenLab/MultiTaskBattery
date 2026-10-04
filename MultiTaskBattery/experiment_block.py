@@ -6,7 +6,7 @@ import pandas as pd
 import sys
 import numpy as np
 from datetime import datetime
-from psychopy import visual, gui, event
+from psychopy import visual, gui, event, core
 import MultiTaskBattery.utils as ut
 import MultiTaskBattery.task_blocks as tasks
 from MultiTaskBattery.ttl_clock import TTLClock
@@ -38,6 +38,11 @@ class Experiment:
         ### set the resolution of the subject screen here:
         self.screen = Screen(const.screen)
 
+        # quit key: works at any point of the experiment (checked on every flip / key read); set quit_key = None in constants.py to disable
+        quit_key = getattr(const, 'quit_key', 'escape')
+        if quit_key:
+            event.globalKeys.add(key=quit_key, func=self.quit, name='quit')
+
         # connect to the eyetracker already
         if self.const.eye_tracker:
             import pylink as pl
@@ -48,6 +53,11 @@ class Experiment:
             ## set the ip address of the EyeLink ethernet connection
             ## to 100.1.1.2 and the subnet mask to 255.255.255.0
             self.tk = pl.EyeLink('100.1.1.1')
+
+    def quit(self):
+        """Closes the window and quits the experiment (bound to const.quit_key)."""
+        self.screen.window.close()
+        core.quit()
 
     def confirm_run_info(self):
         """
