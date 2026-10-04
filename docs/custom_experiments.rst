@@ -102,6 +102,10 @@ defaults are used.
      - ``1``
      - Height (in degrees of visual angle) of the instruction-screen text
        shown before each task.  Reduce for smaller screens.
+   * - ``instruction_wrap_width``
+     - ``30``
+     - Width (in degrees of visual angle) at which the instruction-screen text
+       wraps onto a new line.
    * - ``stim_dirs``
      - ``[stim_dir]``
      - List of stimulus root directories, searched in order (local first). The
@@ -113,11 +117,13 @@ defaults are used.
 .. note::
 
    Display parameters are **per-task** and written into the task TSV files via
-   ``make_task_file()`` parameters — including the on-screen size of video and
-   image stimuli (``media_scale`` for video tasks, ``picture_scale`` for image
-   tasks).  See the :ref:`task descriptions <task_descriptions>` page.  The only
+   ``make_task_file()`` parameters — including the on-screen size of stimuli,
+   all in degrees of visual angle: ``text_height`` for task text, ``stim_width``
+   for pictures and videos (``stim_height`` for RMET).  See the
+   :ref:`task descriptions <task_descriptions>` page.  The only
    **experiment-wide** display settings that live in ``constants.py`` are
-   ``instruction_text_height`` and ``scoreboard_text_height``.
+   ``instruction_text_height``, ``instruction_wrap_width`` and
+   ``scoreboard_text_height``.
 
 
 Generating run and task files

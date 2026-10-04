@@ -10,6 +10,7 @@ import random
 from psychopy import prefs
 prefs.hardware['audioLib'] = ['sounddevice']
 from psychopy import visual, sound, core, event
+from psychopy.tools.monitorunittools import deg2pix
 from pyglet.window import key
 import MultiTaskBattery.utils as ut
 from ast import literal_eval
@@ -294,11 +295,10 @@ class NBack(Task):
         trial_info_file = self.const.task_dir / self.name / self.task_file
         self.trial_info = pd.read_csv(trial_info_file, sep='\t')
         self.stim = []
-        picture_scale = self.trial_info['picture_scale'].iloc[0] if 'picture_scale' in self.trial_info.columns else 1.0
+        stim_width = self.trial_info['stim_width'].iloc[0] if 'stim_width' in self.trial_info.columns else 18.4
         for stim in self.trial_info['stim']:
             stim_path = ut.find_stim(self.const, self.name, stim)
-            img = visual.ImageStim(self.window, str(stim_path))
-            img.size = img.size * picture_scale
+            img = visual.ImageStim(self.window, str(stim_path), size=(stim_width, None))  # width in deg
             self.stim.append(img)
         self.corr_key = [self.trial_info['key_nomatch'].iloc[0], self.trial_info['key_match'].iloc[0]]
         self.n_back = self.infer_n_back()
@@ -422,9 +422,9 @@ class VerbGeneration(Task):
             stim.draw()
         self.flip()
 
-    def show_stim(self, noun, condition):
+    def show_stim(self, noun, condition, text_height=2):
         """ Display the condition cue (top) and the word for a fixed time. """
-        stim = visual.TextStim(self.window, text=noun, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height=2)
+        stim = visual.TextStim(self.window, text=noun, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height=text_height)
         self.cue(condition).draw()
         stim.draw()
         self.flip()
@@ -432,7 +432,7 @@ class VerbGeneration(Task):
     def run_trial(self, trial):
         """ Run a single trial of the VerbGeneration task. """
 
-        self.show_stim(trial['noun'], trial['condition'])
+        self.show_stim(trial['noun'], trial['condition'], trial.get('text_height', 2))
 
         # wait for trial duration
         self.ttl_clock.wait_until(self.ttl_clock.get_time() + trial['trial_dur'])
@@ -512,7 +512,7 @@ class MotorLocalizer(Task):
         """ Run a single row of the motor-localizer task. """
         # Condition label (body part) at the top of the screen, in black
         cond_visual = visual.TextStim(self.window, text=str(trial['condition']), pos=(0.0, 6.0),
-                                      color=(-1, -1, -1), units='deg', height=1.5)
+                                      color=(-1, -1, -1), units='deg', height=trial.get('text_height', 1.5))
         cond_visual.draw()
 
         # Central fixation cross (drawn without flipping yet)
@@ -694,7 +694,9 @@ class ActionObservation(Task):
         movie_path_str = str(movie_path)
 
         # Create a MovieStim3 object
-        movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False)
+        # MovieStim sizes are in pixels, so convert the width (deg); height keeps the clip's aspect
+        movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False,
+                                      size=(deg2pix(trial.get('stim_width', 18.4), self.window.monitor), None))
 
         while movie_clip.isFinished == False:
             movie_clip.play()
@@ -741,9 +743,9 @@ class DemandGrid(Task):
         and positions the grid left, right, or center."""
         # Calculate offsets based on the desired position
         if position == 'left':
-            offset_x = -5
+            offset_x = -self.answer_offset
         elif position == 'right':
-            offset_x = 5
+            offset_x = self.answer_offset
         else:  # center
             offset_x = 0
 
@@ -756,8 +758,9 @@ class DemandGrid(Task):
             row = []
             for j in range(grid_size[1]):
                 # Calculate position with the offsets
-                square_x = (j - grid_size[0] / 2 + 0.5) * self.square_size + offset_x
-                square_y = (grid_size[1] / 2 - i - 0.5) * self.square_size + offset_y
+                # i runs over rows (grid_size[0]), j over columns (grid_size[1])
+                square_x = (j - grid_size[1] / 2 + 0.5) * self.square_size + offset_x
+                square_y = (grid_size[0] / 2 - i - 0.5) * self.square_size + offset_y
 
                 # Determine the fill color based on the sequence
                 fill_color = 'blue' if sequence and (i, j) in sequence else 'white'
@@ -786,6 +789,8 @@ class DemandGrid(Task):
             num_steps = 3
 
         step_dur = trial['sequence_dur']/num_steps
+        self.square_size = trial.get('square_size', 1.5)
+        self.answer_offset = trial.get('answer_offset', 5)
         self.grid = self.create_grid(grid_size=grid_size)
 
         # Display the sequence in steps
@@ -877,7 +882,7 @@ class Reading(Task):
 
         #show words seqeuntially each for 450ms
         for word in words:
-            word_stim = visual.TextStim(self.window, text=word, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height=2)
+            word_stim = visual.TextStim(self.window, text=word, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height=trial.get('text_height', 2))
             word_stim.draw()
             self.flip()
             self.ttl_clock.wait_until(self.ttl_clock.get_time() + 0.45)
@@ -885,13 +890,13 @@ class Reading(Task):
         event.clearEvents()
 
         # show press button image
-        button_stim = visual.ImageStim(self.window, image=str(ut.find_stim(self.const, self.name, 'hand_press_transparent.png')))
+        button_stim = visual.ImageStim(self.window, image=str(ut.find_stim(self.const, self.name, 'hand_press_transparent.png')), size=(trial.get('stim_width', 14.4), None))
         button_stim.draw()
         self.flip()
         trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), 0.4)
 
         # show blank_transparent image
-        blank_stim = visual.ImageStim(self.window, image=str(ut.find_stim(self.const, self.name, 'blank_transparent.png')))
+        blank_stim = visual.ImageStim(self.window, image=str(ut.find_stim(self.const, self.name, 'blank_transparent.png')), size=(trial.get('stim_width', 14.4), None))
         blank_stim.draw()
         self.flip()
 
@@ -932,13 +937,13 @@ class OddBall(Task):
 
         # show stem
         if current_trial == 'red_K':
-            word_stim = visual.TextStim(self.window, text='K', pos=(0.0, 0.0), color='red', units='deg', height=1.5)
+            word_stim = visual.TextStim(self.window, text='K', pos=(0.0, 0.0), color='red', units='deg', height=trial.get('text_height', 1.5))
         elif current_trial == 'black_K':
-            word_stim = visual.TextStim(self.window, text='K', pos=(0.0, 0.0), color='black', units='deg', height=1.5)
+            word_stim = visual.TextStim(self.window, text='K', pos=(0.0, 0.0), color='black', units='deg', height=trial.get('text_height', 1.5))
         elif current_trial == 'red_O':
-            word_stim = visual.TextStim(self.window, text='O', pos=(0.0, 0.0), color='red', units='deg', height=1.5)
+            word_stim = visual.TextStim(self.window, text='O', pos=(0.0, 0.0), color='red', units='deg', height=trial.get('text_height', 1.5))
         elif current_trial == 'black_O':
-            word_stim = visual.TextStim(self.window, text='O', pos=(0.0, 0.0), color='black', units='deg', height=1.5)
+            word_stim = visual.TextStim(self.window, text='O', pos=(0.0, 0.0), color='black', units='deg', height=trial.get('text_height', 1.5))
 
         word_stim.draw()
         self.flip()
@@ -1001,7 +1006,7 @@ class FingerSequence(Task):
         # Show the numbers in the sequence next to each other ( using the spacing and start_x calculated above)
         for i, number in enumerate(sequence):
             pos = (start_x + i * spacing, 0.0)  # Horizontal position is adjusted based on index
-            stim = visual.TextStim(self.window, text=number, pos=pos, color='black', units='deg', height=1.5)
+            stim = visual.TextStim(self.window, text=number, pos=pos, color='black', units='deg', height=trial.get('text_height', 1.5))
             stim.draw()
 
         self.flip()
@@ -1036,7 +1041,7 @@ class FingerSequence(Task):
             # Draw all digits with their adjusted colors
             for i, (number, color) in enumerate(zip(sequence, digit_colors)):
                 pos = (start_x + i * spacing, 0.0)
-                stim = visual.TextStim(self.window, text=number, pos=pos, color=color, units='deg', height=1.5)
+                stim = visual.TextStim(self.window, text=number, pos=pos, color=color, units='deg', height=trial.get('text_height', 1.5))
                 stim.draw()
 
             self.flip()
@@ -1080,7 +1085,7 @@ class FlexionExtension(Task):
     def run_trial(self, trial):
         # Show this phase's cue ('flexion' or 'extension') for its duration; no response.
         stim = visual.TextStim(self.window, text=trial['stim'], pos=(0.0, 0.0),
-                               color=(-1, -1, -1), units='deg', height=1.5)
+                               color=(-1, -1, -1), units='deg', height=trial.get('text_height', 1.5))
         stim.draw()
         self.flip()
         self.ttl_clock.wait_until(self.ttl_clock.get_time() + trial['trial_dur'])
@@ -1118,7 +1123,7 @@ class SemanticPrediction(Task):
     def run_trial(self, trial):
         """ Runs a single trial of the semantic prediction task """
 
-        height_word = 2
+        height_word = trial.get('text_height', 2)
 
         event.clearEvents()
 
@@ -1318,10 +1323,8 @@ class RMET(Task):
         picture_path_str = str(picture_path)
         # Create an ImageStim object, explicitly centered so that the four answer
         # options (placed symmetrically above and below) straddle the image.
-        picture = visual.ImageStim(self.window, str(picture_path_str), pos=(0, 0))
-        # Make the picture smaller
-        picture_scale = trial['picture_scale'] if 'picture_scale' in trial else 0.7
-        picture.size = picture.size * picture_scale
+        picture = visual.ImageStim(self.window, str(picture_path_str), pos=(0, 0),
+                                   size=(None, trial.get('stim_height', 6.0)))  # height in deg
 
 
 
@@ -1333,7 +1336,7 @@ class RMET(Task):
         # black option text. The spatial layout and string breakup are preserved:
         # only formatting (height and color) is controlled here.
         answer_stims = []
-        option_height = trial.get('option_text_height', 1.2)
+        option_height = trial.get('text_height', 1.2)
         index_height = option_height * 0.85
         pos_scale = trial.get('option_position_scale', 1.0)
 
@@ -1412,10 +1415,7 @@ class Movie(Task):
         self.flip()
 
     def run_trial(self, trial):
-        window_width, _ = self.window.size
-        movie_scale = trial['media_scale'] if 'media_scale' in trial else 0.4
-        stim_width = int(window_width * movie_scale) # Make the video fraction of the window width
-        stim_height = int(stim_width  * 360 / 640)  # Original size of the video is 640x360
+        stim_width = deg2pix(trial.get('stim_width', 22), self.window.monitor)  # MovieStim sizes are in pixels
 
         # Get the file name
         movie_file_name = trial['stim']
@@ -1427,7 +1427,7 @@ class Movie(Task):
         movie_path_str = str(movie_path)
 
         # Create a MovieStim3 object
-        movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False, size=(stim_width, stim_height), pos=(0, 0), noAudio=True)
+        movie_clip = visual.MovieStim(self.window, movie_path_str, loop=False, size=(stim_width, None), pos=(0, 0), noAudio=True)
 
 
         movie_clip.play()
@@ -1529,9 +1529,10 @@ class Affective(Task):
         self.trial_info = pd.read_csv(trial_info_file, sep='\t')
 
         self.stim = []
+        stim_width = self.trial_info['stim_width'].iloc[0] if 'stim_width' in self.trial_info.columns else 18.4
         for stim_file in self.trial_info['stim']:
             stim_path = ut.find_stim(self.const, self.name, stim_file)
-            self.stim.append(visual.ImageStim(self.window, image=str(stim_path)))
+            self.stim.append(visual.ImageStim(self.window, image=str(stim_path), size=(stim_width, None)))  # width in deg
 
     def display_instructions(self):
         """
