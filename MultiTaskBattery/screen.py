@@ -18,9 +18,16 @@ class Screen:
         self.units    = 'deg'
         self.color    = '#808080'
         self.size     = const['size'] #[800, 800] #[1440, 900]
-        # physical width of the screen and eye-to-screen distance (cm); used to convert deg / cm to pixels
-        self.distance = const.get('distance', 57.0)
-        self.width    = const.get('width', 30.0)
+        # physical width of the screen and eye-to-screen distance (cm); used to convert deg / cm to pixels.
+        # Required: the window works in degrees, so a guessed value would silently change stimulus sizes.
+        missing = [key for key in ('width', 'distance') if const.get(key) is None]
+        if missing:
+            raise ValueError(
+                f"{' and '.join(f'screen[{k!r}]' for k in missing)} missing from constants.py. "
+                "Set screen['width'] to the physical width of the screen image in cm (measure it) "
+                "and screen['distance'] to the eye-to-screen distance in cm.")
+        self.distance = const['distance']
+        self.width    = const['width']
         self.allowGUI = True
         self.screen_number = const['number']
         self.monitor  = monitors.Monitor(

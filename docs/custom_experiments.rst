@@ -59,6 +59,8 @@ Create a file called ``constants.py`` in the project folder. This file contains 
     screen['size'] = [1100, 800]        # screen resolution
     screen['fullscr'] = False           # full screen?
     screen['number'] = 1                # 0 = main display, 1 = secondary display
+    screen['width'] = 53                # physical width of the screen image in cm (measure it)
+    screen['distance'] = 57             # eye-to-screen distance in cm
 
 Optional constants
 ^^^^^^^^^^^^^^^^^^

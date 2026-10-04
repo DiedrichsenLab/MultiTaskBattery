@@ -46,3 +46,5 @@ screen = {}
 screen['size'] = [1100, 800]
 screen['fullscr'] = False
 screen['number'] = 0
+screen['width'] = 53       # physical width of the screen image in cm (measure it)
+screen['distance'] = 57    # eye-to-screen distance in cm

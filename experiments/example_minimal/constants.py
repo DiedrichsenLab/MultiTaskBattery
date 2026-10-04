@@ -40,6 +40,6 @@ screen = {}
 screen['size'] = [1100, 800]        # screen resolution
 screen['fullscr'] = False           # full screen, if false it's in a separate window
 screen['number'] = 0                # 0 = main display, 1 = secondary display
-# optional, for stimuli whose physical size matters (drawn in deg or cm); defaults are 30 and 57
-# screen['width'] = 53              # physical width of the screen image in cm
-# screen['distance'] = 57           # eye-to-screen distance in cm
+# required: stimuli are drawn in degrees, so measure these for your setup
+screen['width'] = 53                # physical width of the screen image in cm
+screen['distance'] = 57             # eye-to-screen distance in cm
