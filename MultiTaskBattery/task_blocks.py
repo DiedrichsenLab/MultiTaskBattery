@@ -1375,6 +1375,7 @@ class Movie(Task):
         self.window.flip()
 
     def run_trial(self, trial):
+        start = self.ttl_clock.get_time()   # trial_dur counts from here, so loading the clip is included
         stim_width = deg2pix(trial.get('stim_width', 22), self.window.monitor)  # MovieStim sizes are in pixels
 
         # Get the file name
@@ -1393,7 +1394,8 @@ class Movie(Task):
         movie_clip.play()
         self.window.flip()
 
-        while movie_clip.isFinished == False:
+        # play until the clip ends or trial_dur is up (so a shorter trial cuts a longer clip)
+        while not movie_clip.isFinished and self.ttl_clock.get_time() - start < trial['trial_dur']:
             movie_clip.play()
             movie_clip.draw()
             self.window.flip()
