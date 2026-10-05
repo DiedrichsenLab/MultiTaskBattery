@@ -82,7 +82,8 @@ defaults are used.
        the run-feedback scoreboard screen. If ``None``, any key continues.
    * - ``ttl_key``
      - ``'t'``
-     - Key the scanner trigger (TTL) arrives as.
+     - Key the scanner trigger (TTL) arrives as, or a list of keys that all
+       count (e.g. ``['t', '5']`` for a trigger box that can send either).
    * - ``quit_key``
      - ``'escape'``
      - Key that closes the window and quits the experiment at any point once
