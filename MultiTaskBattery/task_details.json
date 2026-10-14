@@ -27,9 +27,9 @@
                 "type": "str",
                 "description": "Clip category: 'romance', 'nature', or 'landscape'."
             },
-            "media_scale": {
+            "stim_width": {
                 "type": "float",
-                "description": "Clip width as a fraction of the window width (controls on-screen video size)."
+                "description": "Width of the pictures / clips (degrees of visual angle); height keeps the aspect ratio."
             },
             "start_time": {
                 "type": "float",
@@ -76,6 +76,10 @@
                 "type": "str",
                 "description": "Stimulus shown: 'black_K', 'black_O', 'red_O', or 'red_K'."
             },
+            "text_height": {
+                "type": "float",
+                "description": "Height of the task text (degrees of visual angle)."
+            },
             "start_time": {
                 "type": "float",
                 "description": "Trial start, relative to the block start (in seconds)."
@@ -120,6 +124,14 @@
             "grid_size": {
                 "type": "tuple",
                 "description": "Grid dimensions as (rows, cols)."
+            },
+            "square_size": {
+                "type": "float",
+                "description": "Side of one grid square (degrees of visual angle)."
+            },
+            "answer_offset": {
+                "type": "float",
+                "description": "Horizontal distance of each answer grid's centre from the screen centre (degrees of visual angle)."
             },
             "num_steps": {
                 "type": "int",
@@ -200,6 +212,10 @@
             "stim": {
                 "type": "str",
                 "description": "Knot video filename — 'knotAction<Name>.mov' on the first trial (tying), 'knotControl<Name>.mov' afterwards (360 deg view)."
+            },
+            "stim_width": {
+                "type": "float",
+                "description": "Width of the pictures / clips (degrees of visual angle); height keeps the aspect ratio."
             },
             "start_time": {
                 "type": "float",
@@ -321,6 +337,10 @@
             "iti_dur": {
                 "type": "float",
                 "description": "Inter-trial interval after the trial (in seconds)."
+            },
+            "text_height": {
+                "type": "float",
+                "description": "Height of the task text (degrees of visual angle)."
             },
             "start_time": {
                 "type": "float",
@@ -461,9 +481,9 @@
                 "type": "float",
                 "description": "Inter-trial interval after the trial (in seconds)."
             },
-            "picture_scale": {
+            "stim_width": {
                 "type": "float",
-                "description": "Scaling factor applied to the stimulus image (>1 enlarges)."
+                "description": "Width of the pictures / clips (degrees of visual angle); height keeps the aspect ratio."
             },
             "condition": {
                 "type": "str",
@@ -664,6 +684,14 @@
                 "type": "str",
                 "description": "The sentence or nonword string shown (presented one word at a time)."
             },
+            "text_height": {
+                "type": "float",
+                "description": "Height of the task text (degrees of visual angle)."
+            },
+            "stim_width": {
+                "type": "float",
+                "description": "Width of the pictures / clips (degrees of visual angle); height keeps the aspect ratio."
+            },
             "start_time": {
                 "type": "float",
                 "description": "Trial start, relative to the block start (in seconds)."
@@ -704,6 +732,10 @@
                 "type": "str",
                 "description": "The 6-digit sequence to tap, space-separated (e.g. '1 3 2 4 1 3')."
             },
+            "text_height": {
+                "type": "float",
+                "description": "Height of the task text (degrees of visual angle)."
+            },
             "start_time": {
                 "type": "float",
                 "description": "Trial start, relative to the block start (in seconds)."
@@ -731,6 +763,10 @@
             "trial_dur": {
                 "type": "float",
                 "description": "How long this cue is shown, in seconds (e.g. 2)."
+            },
+            "text_height": {
+                "type": "float",
+                "description": "Height of the task text (degrees of visual angle)."
             },
             "start_time": {
                 "type": "float",
@@ -788,6 +824,10 @@
                 "type": "bool",
                 "description": "Whether to show green/red feedback after the trial."
             },
+            "text_height": {
+                "type": "float",
+                "description": "Height of the task text (degrees of visual angle)."
+            },
             "start_time": {
                 "type": "float",
                 "description": "Trial start, relative to the block start (in seconds)."
@@ -837,17 +877,17 @@
                 "type": "float",
                 "description": "Inter-trial interval after the trial (in seconds)."
             },
-            "option_text_height": {
+            "text_height": {
                 "type": "float",
-                "description": "Height of the answer-option text (degrees of visual angle)."
+                "description": "Height of the task text (degrees of visual angle)."
             },
             "option_position_scale": {
                 "type": "float",
                 "description": "Scaling of option positions (<1 brings options closer together)."
             },
-            "picture_scale": {
+            "stim_height": {
                 "type": "float",
-                "description": "Scaling of the eye-region image (>1 enlarges)."
+                "description": "Height of the pictures (degrees of visual angle); width keeps the aspect ratio."
             },
             "stim": {
                 "type": "str",
@@ -1001,6 +1041,10 @@
                 "type": "bool",
                 "description": "Whether to show green/red feedback after the trial."
             },
+            "stim_width": {
+                "type": "float",
+                "description": "Width of the pictures / clips (degrees of visual angle); height keeps the aspect ratio."
+            },
             "start_time": {
                 "type": "float",
                 "description": "Trial start, relative to the block start (in seconds)."
@@ -1143,6 +1187,10 @@
             "trial_dur": {
                 "type": "float",
                 "description": "How long this row is shown, in seconds (the circle on/off toggle interval within a segment)."
+            },
+            "text_height": {
+                "type": "float",
+                "description": "Height of the task text (degrees of visual angle)."
             },
             "start_time": {
                 "type": "float",

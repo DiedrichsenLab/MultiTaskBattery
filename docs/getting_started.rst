@@ -132,7 +132,7 @@ The `constants.py` file in the `experiments/example_minimal/` folder contains al
   Set `debug` to `True` to enable debugging features.
 
 - **Screen Settings**:
-  The `screen` dictionary allows customization of the screen resolution (`screen['size']`), full-screen mode (`screen['fullscr']`), and display selection (`screen['number']`).
+  The `screen` dictionary allows customization of the screen resolution (`screen['size']`), full-screen mode (`screen['fullscr']`), and display selection (`screen['number']`). `screen['width']` (physical width of the screen image in cm) and `screen['distance']` (eye-to-screen distance in cm) are required: stimuli are drawn in degrees of visual angle, so measure both for each setup. The experiment will not start without them.
 
 
 run.py

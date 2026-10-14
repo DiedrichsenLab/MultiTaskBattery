@@ -62,11 +62,12 @@ class TTLClock:
     def update(self):
         """ updates the ttl count and time of the last ttl pulse
         """
-        # get all the ttl pulses in the buffer
-        keys = event.getKeys([self.ttl_button], timeStamped=self.clock)
+        # get all the ttl pulses in the buffer (ttl_button is one key or a list of keys)
+        ttl_keys = [self.ttl_button] if isinstance(self.ttl_button, str) else list(self.ttl_button)
+        keys = event.getKeys(ttl_keys, timeStamped=self.clock)
 
         # checks if the pressed key is the key used as the ttl pulse
         for k in keys:
             self.ttl_count += 1 # each time a ttl button is pressed, ttl count increases
             self.ttl_time = k[1] # the time when the ttl button has been pressed
-            print(f"TR count: {self.ttl_count} -    TR time: {self.ttl_time}", end = "\r")
+            print(f"TR count: {self.ttl_count} -    TR time: {self.ttl_time} (key '{k[0]}')", end = "\r")

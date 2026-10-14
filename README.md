@@ -40,4 +40,4 @@ Open to issues and pull requests. If you use MTB in your research.
 
 If you use the toolbox please cite the following reference:
 
-Arafat, B., Nettekoven, C., Xiang, J. D., & Diedrichsen, J. (2026). Multi-Task Batteries for Precision Functional Mapping. *bioRxiv*, 2026-03.
+Arafat, B., Nettekoven, C., Xiang, J. D., & Diedrichsen, J. (2026). Multi-Task Batteries for Precision Functional Mapping. *eLife*, 15, RP111868. https://doi.org/10.7554/eLife.111868.1

@@ -59,6 +59,8 @@ Create a file called ``constants.py`` in the project folder. This file contains 
     screen['size'] = [1100, 800]        # screen resolution
     screen['fullscr'] = False           # full screen?
     screen['number'] = 1                # 0 = main display, 1 = secondary display
+    screen['width'] = 53                # physical width of the screen image in cm (measure it)
+    screen['distance'] = 57             # eye-to-screen distance in cm
 
 Optional constants
 ^^^^^^^^^^^^^^^^^^
@@ -78,6 +80,18 @@ defaults are used.
      - ``None``
      - If set to a key name (e.g. ``'space'``), only that key will dismiss
        the run-feedback scoreboard screen. If ``None``, any key continues.
+   * - ``ttl_key``
+     - ``'t'``
+     - Key the scanner trigger (TTL) arrives as, or a list of keys that all
+       count (e.g. ``['t', '5']`` for a trigger box that can send either).
+   * - ``quit_key``
+     - ``'escape'``
+     - Key that closes the window and quits the experiment at any point once
+       the experiment window is open (instructions, waiting for the TTL,
+       trials, rest, scoreboard; not the run-info dialog). Blocks that have
+       finished are already saved; the block in progress is lost. Set to
+       ``None`` to disable, or pick a key that does not clash with the
+       response keys or ``ttl_key``.
    * - ``scoreboard_text_height``
      - ``1.3``
      - Height (in degrees of visual angle) of the text on the run-feedback
@@ -97,6 +111,10 @@ defaults are used.
      - ``1``
      - Height (in degrees of visual angle) of the instruction-screen text
        shown before each task.  Reduce for smaller screens.
+   * - ``instruction_wrap_width``
+     - ``30``
+     - Width (in degrees of visual angle) at which the instruction-screen text
+       wraps onto a new line.
    * - ``stim_dirs``
      - ``[stim_dir]``
      - List of stimulus root directories, searched in order (local first). The
@@ -108,11 +126,13 @@ defaults are used.
 .. note::
 
    Display parameters are **per-task** and written into the task TSV files via
-   ``make_task_file()`` parameters — including the on-screen size of video and
-   image stimuli (``media_scale`` for video tasks, ``picture_scale`` for image
-   tasks).  See the :ref:`task descriptions <task_descriptions>` page.  The only
+   ``make_task_file()`` parameters — including the on-screen size of stimuli,
+   all in degrees of visual angle: ``text_height`` for task text, ``stim_width``
+   for pictures and videos (``stim_height`` for RMET).  See the
+   :ref:`task descriptions <task_descriptions>` page.  The only
    **experiment-wide** display settings that live in ``constants.py`` are
-   ``instruction_text_height`` and ``scoreboard_text_height``.
+   ``instruction_text_height``, ``instruction_wrap_width`` and
+   ``scoreboard_text_height``.
 
 
 Generating run and task files
