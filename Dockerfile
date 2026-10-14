@@ -2,6 +2,10 @@ FROM ubuntu:24.04 AS runtime-base
 
 ARG DEBIAN_FRONTEND=noninteractive
 
+
+# Pre-accept the Microsoft EULA for ttf-mscorefonts-installer
+RUN echo "ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true" | debconf-set-selections
+
 # ── Runtime-only system dependencies    ──────────────────────────────────────
 # (no build tools, no -dev headers – those belong in the builder stage)
 RUN apt-get update \
@@ -14,7 +18,7 @@ RUN apt-get update \
     libportaudio2 \
     libasound2t64 pulseaudio libpulse0 \
     libavcodec60 libpostproc57 libavdevice60 libavfilter9 libavformat60 libsdl2-2.0-0 \
-    ttf-mscorefonts-installer fonts-ubuntu \
+    ttf-mscorefonts-installer fonts-ubuntu fonts-liberation cabextract fontconfig\
     && apt-get autoremove \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
