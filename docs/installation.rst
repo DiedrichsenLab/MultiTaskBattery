@@ -47,28 +47,28 @@ Step 3: Create a Virtual Environment
     python -m venv mtb-env
     source mtb-env/bin/activate    # On Windows: mtb-env\Scripts\activate
 
-Step 4: Install Dependencies
-----------------------------
-Make sure you upgrade pip first, then install the required packages.
+Step 4: Install MultiTaskBattery
+--------------------------------
+Make sure you upgrade pip first, then install the package (this also
+pulls in all dependencies).
 
 ::
 
     pip install --upgrade pip
     python install.py
 
-``install.py`` installs everything from ``requirements.txt``. On Linux it also
-detects your distribution and fetches a prebuilt wxPython wheel (wxPython has no
-Linux wheels on PyPI, so a plain pip install would fail trying to compile it).
-On Windows and macOS it is equivalent to ``pip install -r requirements.txt``,
-which you can still use directly.
+``install.py`` runs ``pip install .``. On Linux it additionally detects your
+distribution and fetches a prebuilt wxPython wheel (wxPython has no Linux
+wheels on PyPI, so a plain pip install would fail trying to compile it).
+On Windows and macOS it is equivalent to ``pip install .``, which you can
+run directly.
 
-Step 5: Add to Python Path
---------------------------
-Add the repository to your Python path so that ``MultiTaskBattery`` can be imported from anywhere. Add the following line to your shell profile (e.g., ``~/.bashrc``, ``~/.zshrc``, or ``~/.bash_profile``)::
+The package is installed into your environment, so ``import MultiTaskBattery``
+works from anywhere — no ``PYTHONPATH`` setup is needed.
 
-    export PYTHONPATH="/path/to/MultiTaskBattery:$PYTHONPATH"
+To develop the package in place (importing the local copy instead), use::
 
-On Windows, add the repository path to the ``PYTHONPATH`` environment variable via System Settings > Environment Variables.
+    pip install -e .
 
-Replace ``/path/to/MultiTaskBattery`` with the actual path to the cloned repository.
+and/or add the repository root to ``PYTHONPATH`` as before.
 

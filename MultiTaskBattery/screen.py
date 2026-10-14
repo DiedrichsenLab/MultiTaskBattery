@@ -1,6 +1,6 @@
 # created 2023: Bassel Arafat, Jorn Diedrichsen, Ince Husain
 from psychopy import visual, monitors
-from pyglet.canvas import get_display
+from pyglet.display import get_display
 
 
 class Screen:
@@ -76,8 +76,8 @@ class Screen:
 
     def fixation_cross(self, color='white', flip=True):
         """    A method to draw a fixation cross on the screen
-        
-               Args: 
+
+               Args:
                     color (str):
                         color of the fixation cross
                     flip (bool):
@@ -94,15 +94,15 @@ class Screen:
             units='norm'
         )
         fixation.draw()
-        
+
         # Flip the screen only if flip is True
         if flip:
             self.window.flip()
 
     def check_mark(self, color='green', flip=True):
         """    A method to draw a check mark on the screen
-        
-               Args: 
+
+               Args:
                     color (str):
                         color of the check mark
                     flip (bool):
@@ -127,8 +127,8 @@ class Screen:
 
     def error_cross(self, color='red', flip=True):
         """    A method to draw an error cross on the screen
-        
-               Args: 
+
+               Args:
                     color (str):
                         color of the error cross
                     flip (bool):
