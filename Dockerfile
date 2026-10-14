@@ -64,3 +64,5 @@ COPY --from=builder /src /src
 COPY --from=builder /root/.local/share/uv /root/.local/share/uv
 
 RUN fc-cache -f -v
+
+ENV PATH=/src/venv/bin:$PATH
