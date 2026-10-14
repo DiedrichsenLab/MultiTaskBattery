@@ -1,3 +1,5 @@
 stimuli
 Dockerfile
 .git
+docs
+.venv

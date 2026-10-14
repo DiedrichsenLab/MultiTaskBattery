@@ -14,7 +14,7 @@ RUN apt-get update \
     libportaudio2 \
     libasound2t64 pulseaudio libpulse0 \
     libavcodec60 libpostproc57 libavdevice60 libavfilter9 libavformat60 libsdl2-2.0-0 \
-    ttf-mscorefonts-installer \
+    ttf-mscorefonts-installer fonts-ubuntu \
     && apt-get autoremove \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
@@ -58,3 +58,5 @@ WORKDIR /src/mtb
 COPY docker/pulse-client.conf /etc/pulse/client.conf
 COPY --from=builder /src /src
 COPY --from=builder /root/.local/share/uv /root/.local/share/uv
+
+RUN fc-cache -f -v
