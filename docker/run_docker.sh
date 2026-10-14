@@ -10,5 +10,5 @@ docker run \
   -e DISPLAY \
   -e XAUTHORITY \
   -e PULSE_SERVER \
-  -it mtb:latest /src/.venv/bin/python \
+  -it docker pull ghcr.io/digital-brain-project/multitaskbattery:latest /src/.venv/bin/python \
   $@
