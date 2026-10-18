@@ -1012,7 +1012,8 @@ class DemandGrid(TaskFile):
                    condition=None,
                    file_name=None,
                    square_size=1.5,
-                   answer_offset=5):
+                   answer_offset=5,
+                   display_feedback=True):
         """
         Create a task file with the specified parameters.
 
@@ -1030,6 +1031,7 @@ class DemandGrid(TaskFile):
             file_name (str): Name of the file to save the task data.
             square_size (float): Side of one grid square in degrees of visual angle.
             answer_offset (float): Horizontal distance of each answer grid's centre from the screen centre, in degrees (increase it with square_size so the grids don't overlap).
+            display_feedback (bool): Show a check mark / cross after each response; if False, a white fixation cross.
 
         Returns:
             pd.DataFrame: Task information as a DataFrame.
@@ -1065,7 +1067,7 @@ class DemandGrid(TaskFile):
                 'original_sequence': list(itertools.chain.from_iterable(original_sequence)),
                 'modified_sequence': list(itertools.chain.from_iterable(modified_sequence))  ,
                 **{f'original_step_{i+1}': step for i, step in enumerate(original_sequence)},  # Unpack original steps (each grid shown in the exp)
-                'display_trial_feedback': True,
+                'display_trial_feedback': display_feedback,
                 'trial_dur': trial_dur,
                 'sequence_dur': sequence_dur,
                 'question_dur': question_dur,
