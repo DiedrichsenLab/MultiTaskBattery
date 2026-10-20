@@ -1,7 +1,6 @@
 # created 2023: Bassel Arafat, Jorn Diedrichsen, Ince Husain
 from psychopy import visual, monitors
-from pyglet.display import get_display
-
+from pyglet.canvas import get_display
 
 class Screen:
     def __init__(self, const):

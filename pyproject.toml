@@ -8,7 +8,7 @@ description = "A flexible Python toolbox for running multi-domain cognitive and 
 readme = "README.md"
 license = {text = "MIT"}
 authors = [{name = "Diedrichsenlab"}]
-requires-python = ">=3.10"
+requires-python = ">=3.10,<3.13"
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Science/Research",
@@ -17,7 +17,7 @@ classifiers = [
     "Topic :: Scientific/Engineering",
 ]
 dependencies = [
-    "psychopy@git+https://github.com/psychopy/psychopy.git",
+    "psychopy==2026.2.4",
     "pandas",
     "numpy>=1.26.4",
     "scipy",
