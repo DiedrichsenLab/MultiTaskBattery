@@ -5,7 +5,7 @@
 On Linux this detects your distribution and points pip at the matching
 prebuilt wxPython wheels (wxPython has none on PyPI for Linux, so a plain
 pip install would try to compile it from source and fail). On Windows and
-macOS it is exactly `pip install -r requirements.txt`.
+macOS it is exactly `pip install .`.
 
 `python install.py --dry-run` shows the command without running it.
 """
@@ -39,13 +39,17 @@ def main():
         if distro is None:
             sys.exit("Could not detect the Linux distribution from /etc/os-release.\n"
                      f"Pick your release at {WHEEL_BASE}/ and run:\n"
-                     "  MTB_WX_DISTRO=<release> pip install -r requirements.txt")
+                     f"  PIP_FIND_LINKS={WHEEL_BASE}/<release> "
+                     "PIP_ONLY_BINARY=wxPython pip install .")
         env["MTB_WX_DISTRO"] = distro
+        # pip picks these up for the `pip install .` below, so wxPython is
+        # pulled from the prebuilt distro wheels and never compiled.
+        env["PIP_FIND_LINKS"] = f"{WHEEL_BASE}/{distro}/"
+        env["PIP_ONLY_BINARY"] = "wxPython"
         print(f"Detected {distro}; using prebuilt wxPython wheels from\n"
               f"  {WHEEL_BASE}/{distro}/\n")
 
-    cmd = [sys.executable, "-m", "pip", "install", "-r",
-           str(Path(__file__).parent / "requirements.txt")]
+    cmd = [sys.executable, "-m", "pip", "install", str(Path(__file__).parent)]
     print("Running:", " ".join(cmd))
     if "--dry-run" in sys.argv:
         return

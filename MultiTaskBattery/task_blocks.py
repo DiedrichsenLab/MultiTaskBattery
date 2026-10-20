@@ -61,8 +61,8 @@ class Task:
 
     def display_instructions(self):
         """
-        Displays the descriptive name of the task. 
-        then instruction to press response key 1 for true and response key 2 for false. 
+        Displays the descriptive name of the task.
+        then instruction to press response key 1 for true and response key 2 for false.
         Tasks with different instructions implement a new version to overwrite this default version
         """
         true_str = f"if True press {self.const.response_keys[1]}"
@@ -75,13 +75,13 @@ class Task:
         # instr.size = 0.8
         instr_visual.draw()
         self.window.flip()
-    
+
     def run(self):
         """Loop over trials in the task object and collects data
         Data will be stored in self.trial_data
 
         Returns:
-            acc (float): Mean accuracy in proportion correct 
+            acc (float): Mean accuracy in proportion correct
             rt (float): Mean reaction time in s
         """
         self.trial_data = [] # an empty list which will be appended with the responses from each trial
@@ -103,38 +103,38 @@ class Task:
         if self.feedback_type[-2:] == 'rt':
             rt = self.trial_data['rt'].mean()
         return acc,rt
-    
+
 
     def show_progress(self, seconds_left, show_last_seconds=5, height=1, width=10, x_pos=-5, y_pos=8):
         """ Displays a progress bar for the Picture Sequence task
-        
+
         Args:
-            seconds_left (float): 
-                The number of seconds remaining in the current trial. 
+            seconds_left (float):
+                The number of seconds remaining in the current trial.
                 If this value is greater than `show_last_seconds`, the progress bar is not shown.
 
-            show_last_seconds (float, optional): 
-                The duration (in seconds) over which to display the progress bar at the end of a trial. 
+            show_last_seconds (float, optional):
+                The duration (in seconds) over which to display the progress bar at the end of a trial.
                 Default is 5 seconds. When `seconds_left` is less than this value, the progress bar appears.
 
-            height (float, optional): 
+            height (float, optional):
                 The vertical size of the progress bar in PsychoPy window units. Default is 1.
 
-            width (float, optional): 
+            width (float, optional):
                 The horizontal size of the progress bar in PsychoPy window units. Default is 10.
 
-            x_pos (float, optional): 
-                The horizontal position of the center of the progress bar in window coordinates. 
+            x_pos (float, optional):
+                The horizontal position of the center of the progress bar in window coordinates.
                 Negative values move it leftward. Default is -5.
 
-            y_pos (float, optional): 
-                The vertical position of the center of the progress bar in window coordinates. 
+            y_pos (float, optional):
+                The vertical position of the center of the progress bar in window coordinates.
                 Positive values move it upward. Default is 8.
         """
         # If we are in the last five seconds of the trial, display the remaining time
         if seconds_left < show_last_seconds:
             progress = visual.Progress(
-                win=self.window, 
+                win=self.window,
                 progress=1-(seconds_left/show_last_seconds),
                 size=(width, height),
                 pos=(x_pos, y_pos),
@@ -189,7 +189,7 @@ class Task:
 
     def display_trial_feedback(self, give_feedback,correct_response):
         """
-        display the feedback for the current trial at the position of  fixation cross. Correct is a green check mark, incorrect a red cross. 
+        display the feedback for the current trial at the position of  fixation cross. Correct is a green check mark, incorrect a red cross.
 
         Args:
             give_feedback (bool):
@@ -226,12 +226,12 @@ class Task:
 
     def get_audio_from_movie(self, movie_path, sample_rate=48000):
         """Seperates the audio from the movie file and returns the audio object (for better memory handling when playing movies with sound)
-        
+
         Args:
             movie_path (str): Path and filename of the Movie file
             sample_rate (int): Sampling rate of movie file, defaults to 48000.
-        Returns: 
-            audio (sound.sound): Sound object 
+        Returns:
+            audio (sound.sound): Sound object
         """
 
         # Gets the movie audio
@@ -425,7 +425,7 @@ class TongueMovement(Task):
         # Check the trial_type and display the corresponding stimulus
         if trial['trial_type'] == 'right':
             # If trial_type is 'right', show the black circle around the fixation cross
-            circle_visual = visual.Circle(self.window, radius=3, edges= 100, lineWidth = 20, fillColor=None, lineColor='black')
+            circle_visual = visual.Circle(self.window, size=6, edges= 100, lineWidth = 20, fillColor=None, lineColor='black')
             circle_visual.draw()
 
         self.window.flip()
@@ -480,7 +480,7 @@ class MotorLocalizer(Task):
 
         # Circle around the fixation only when trial_type == 1
         if int(trial['trial_type']) == 1:
-            circle_visual = visual.Circle(self.window, radius=3, edges=100, lineWidth=20,
+            circle_visual = visual.Circle(self.window, size=6, edges=100, lineWidth=20,
                                           fillColor=None, lineColor='black')
             circle_visual.draw()
 
@@ -1104,7 +1104,7 @@ class SemanticPrediction(Task):
         self.screen.fixation_cross()
         self.ttl_clock.wait_until(self.ttl_clock.get_time() + 0.5)
         event.clearEvents()
-        
+
         # Display last word
         last_word_stim = visual.TextStim(self.window, text=trial['last_word'], pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height= height_word, wrapWidth=30)
         last_word_stim.draw()
@@ -1121,7 +1121,7 @@ class SemanticPrediction(Task):
 
         return trial
 
-    
+
 class VisualSearch(Task):
 
     """
@@ -1609,7 +1609,7 @@ class SerialReactionTime(Task):
 
         trial['responses'] = responses
         return trial
-    
+
 class FingerRhythmic(Task):
     def __init__(self, info, screen, ttl_clock, const, subj_id):
         super().__init__(info, screen, ttl_clock, const, subj_id)
@@ -1943,13 +1943,13 @@ class SensMotControl(Task):
         event.clearEvents()
 
         # --- 1) Fixation circle (1000 ms) ---
-        visual.Circle(self.window, radius=3, edges=128, lineWidth=4, lineColor='black', fillColor=None).draw()
+        visual.Circle(self.window, size=6, edges=128, lineWidth=4, lineColor='black', fillColor=None).draw()
         self.window.flip()
         self.ttl_clock.wait_until(self.ttl_clock.get_time() + 1)
         self.ttl_clock.update()
 
         # --- 2) Colored circle (2000 ms) ---
-        visual.Circle(self.window, radius=3, edges=128,lineWidth=6, fillColor= trial['stim'], lineColor=trial['stim']).draw()
+        visual.Circle(self.window, size=6, edges=128,lineWidth=6, fillColor= trial['stim'], lineColor=trial['stim']).draw()
         self.window.flip()
 
         # collect responses 0: no response 1-4: key pressed
@@ -1969,36 +1969,3 @@ class SensMotControl(Task):
                 self.ttl_clock.update()
 
         return trial
-    
-
-
-
-
-
-
-
-
-
-
-
-        
-
-        
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-
-
-    

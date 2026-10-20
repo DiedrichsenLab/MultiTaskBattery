@@ -18,7 +18,7 @@ class Experiment:
     def __init__(self, const, subj_id):
         """    A general class with attributes common to experiments
 
-               Args: 
+               Args:
                     const (module):
                         local constants.py module (see example_experiment/constants.py) as example
                     subj_id (str):
@@ -129,7 +129,7 @@ class Experiment:
                                  subj_id = self.subj_id)
             Task_obj.init_task()
             self.task_obj_list.append(Task_obj)
-        
+
         # 3. make subject folder in data/raw/<subj_id>
         subj_dir = self.const.data_dir / self.subj_id
         ut.dircheck(subj_dir) # making sure the directory is created!
@@ -170,7 +170,7 @@ class Experiment:
             # display the instruction text for the task. (instructions are task specific)
             if r_data.instruction_dur > 0:
                 task.display_instructions()
-                
+
                 # wait for a time period equal to instruction duration
                 self.ttl_clock.wait_until(r_data.start_time + r_data.instruction_dur)
 
@@ -186,7 +186,7 @@ class Experiment:
             #self.screen.fixation_cross()
 
             # If last task, wait until the endtime for the last task, which for imaging could be longer than the task duration
-            # Note that endtime is not used for any task but the last one 
+            # Note that endtime is not used for any task but the last one
             if t_num == len(self.task_obj_list)-1:
                 self.ttl_clock.wait_until(self.ttl_clock.get_time() + 1.5)
                 self.screen.fixation_cross()
@@ -236,7 +236,7 @@ class Experiment:
                 accuracy = f"{int(acc*100)} %" if not np.isnan(acc) else "-"
                 rt = f"{run_data.rt[r]:.2f} s" if not np.isnan(run_data.rt[r]) else "-"
                 scores.append([task_name, accuracy, rt])
-        
+
         # Display settings
         # Height of the text elements: allow experiment-specific override via
         # const.scoreboard_text_height; fall back to original default (1.3 deg).
@@ -249,7 +249,7 @@ class Experiment:
         scores_flat = [item for sublist in scores for item in sublist]
 
         # Generate position points
-        points = np.array([[(1 + i - (cols + 1) / 2) * gap[0], (1 + j - (rws + 1) / 2) * gap[1]] 
+        points = np.array([[(1 + i - (cols + 1) / 2) * gap[0], (1 + j - (rws + 1) / 2) * gap[1]]
                         for j in range(rws) for i in range(cols)])
         # Reverse the order of the rows (to run from top to bottom)
         points = points.reshape(rws, cols, 2)[::-1].reshape(-1, 2)
@@ -260,12 +260,12 @@ class Experiment:
             # The task names are the first column. Anchor them on the right so that a
             # long name grows away from the scores instead of running into them.
             name_column = Idx % cols == 0
-            element = visual.TextStim(win=self.screen.window, 
+            element = visual.TextStim(win=self.screen.window,
                         text = str(scores_flat[Idx]), # Variable text
-                        font = 'Lucida Console',
+                        font = 'Ubuntu Mono',
                         pos = points[Idx],
-                        height = height, 
-                        wrapWidth = 100, 
+                        height = height,
+                        wrapWidth = 100,
                         color=[-1, -1, -1],
                         ori = 0,
                         anchorHoriz = 'right' if name_column else 'center',
