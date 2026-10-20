@@ -34,8 +34,7 @@ ENV UV_LINK_MODE=copy
 ENV LD_LIBRARY_PATH=/usr/local/lib:/usr/local/lib/x86_64-linux-gnu
 ENV GI_TYPELIB_PATH=/usr/local/lib/x86_64-linux-gnu/girepository-1.0/
 
-RUN uv venv --python 3.14 /src/.venv --system-site-packages
-
+RUN uv venv --python 3.12 --managed-python /src/.venv --system-site-packages
 
 RUN apt-get update \
   && apt-get -y install --no-install-recommends \

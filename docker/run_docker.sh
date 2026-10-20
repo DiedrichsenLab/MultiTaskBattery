@@ -1,5 +1,5 @@
 docker run \
-  -v "./stimuli:/src/.venv/lib/python3.14/site-packages/stimuli" \
+  -v "./stimuli:/src/.venv/lib/python3.12/site-packages/stimuli" \
   --device=/dev/dri \
   --device=/dev/snd \
   -v "/run/user/$(id -u)/pulse:/run/user/$(id -u)/pulse" \
@@ -10,5 +10,5 @@ docker run \
   -e DISPLAY \
   -e XAUTHORITY \
   -e PULSE_SERVER \
-  -it docker pull ghcr.io/digital-brain-project/multitaskbattery:latest /src/.venv/bin/python \
-  $@
+  -it ghcr.io/digital-brain-project/multitaskbattery:latest /src/.venv/bin/python \
+  "$@"

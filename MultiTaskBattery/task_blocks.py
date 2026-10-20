@@ -425,7 +425,7 @@ class TongueMovement(Task):
         # Check the trial_type and display the corresponding stimulus
         if trial['trial_type'] == 'right':
             # If trial_type is 'right', show the black circle around the fixation cross
-            circle_visual = visual.Circle(self.window, size=3, edges=100, lineWidth=20, fillColor=None, lineColor='black')
+            circle_visual = visual.Circle(self.window, size=6, edges= 100, lineWidth = 20, fillColor=None, lineColor='black')
             circle_visual.draw()
 
         self.window.flip()
@@ -480,7 +480,7 @@ class MotorLocalizer(Task):
 
         # Circle around the fixation only when trial_type == 1
         if int(trial['trial_type']) == 1:
-            circle_visual = visual.Circle(self.window, size=3, edges=100, lineWidth=20,
+            circle_visual = visual.Circle(self.window, size=6, edges=100, lineWidth=20,
                                           fillColor=None, lineColor='black')
             circle_visual.draw()
 
@@ -1943,13 +1943,13 @@ class SensMotControl(Task):
         event.clearEvents()
 
         # --- 1) Fixation circle (1000 ms) ---
-        visual.Circle(self.window, size=3, edges=128, lineWidth=4, lineColor='black', fillColor=None).draw()
+        visual.Circle(self.window, size=6, edges=128, lineWidth=4, lineColor='black', fillColor=None).draw()
         self.window.flip()
         self.ttl_clock.wait_until(self.ttl_clock.get_time() + 1)
         self.ttl_clock.update()
 
         # --- 2) Colored circle (2000 ms) ---
-        visual.Circle(self.window, size=3, edges=128,lineWidth=6, fillColor= trial['stim'], lineColor=trial['stim']).draw()
+        visual.Circle(self.window, size=6, edges=128,lineWidth=6, fillColor= trial['stim'], lineColor=trial['stim']).draw()
         self.window.flip()
 
         # collect responses 0: no response 1-4: key pressed
