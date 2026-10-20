@@ -43,6 +43,10 @@ class Experiment:
         # quit key: works at any point of the experiment (checked on every flip / key read); set quit_key = None in constants.py to disable
         quit_key = getattr(const, 'quit_key', 'escape')
         if quit_key:
+            try:
+                event.globalKeys.remove(quit_key)  # set by an earlier Experiment in this session
+            except KeyError:
+                pass
             event.globalKeys.add(key=quit_key, func=self.quit, name='quit')
 
         # connect to the eyetracker already
@@ -184,7 +188,15 @@ class Experiment:
             r_data['real_end_time'] = self.ttl_clock.get_time()
             if getattr(self.const, 'record_run_end_timestamp', False) and t_num == len(self.task_obj_list) - 1:
                 run_end_timestamp = datetime.now().isoformat()
+                r_data['run_end_timestamp'] = run_end_timestamp  # on the last row, so it is saved with save_per_task too
             run_data.append(r_data)
+
+            # Optional: save this block's data right away, so finished blocks survive a crash or quit
+            if getattr(self.const, 'save_per_task', False):
+                task.save_data(self.subj_id, self.run_number)
+                block_row = pd.DataFrame([r_data])
+                block_row.insert(0, 'run_num', self.run_number)
+                ut.append_data_to_file(self.run_data_file, block_row)
             #self.screen.fixation_cross()
 
             # If last task, wait until the endtime for the last task, which for imaging could be longer than the task duration
@@ -200,15 +212,15 @@ class Experiment:
             self.tk.receiveDataFile(self.tk_filename, self.tk_filename)
 
         run_data = pd.DataFrame(run_data)
-        # save the run data to the run file
-        run_data.insert(0,'run_num',[self.run_number]*len(run_data))
-        if getattr(self.const, 'record_run_end_timestamp', False) and run_end_timestamp is not None:
-            run_data['run_end_timestamp'] = run_end_timestamp
-        ut.append_data_to_file(self.run_data_file, run_data )
+        if not getattr(self.const, 'save_per_task', False):
+            # save the run data to the run file
+            run_data.insert(0,'run_num',[self.run_number]*len(run_data))
+            if getattr(self.const, 'record_run_end_timestamp', False) and run_end_timestamp is not None:
+                run_data['run_end_timestamp'] = run_end_timestamp
+            ut.append_data_to_file(self.run_data_file, run_data )
 
-
-        for task in self.task_obj_list:
-            task.save_data(self.subj_id, self.run_number)
+            for task in self.task_obj_list:
+                task.save_data(self.subj_id, self.run_number)
 
         # show the scoreboard
         self.display_run_feedback(run_data)

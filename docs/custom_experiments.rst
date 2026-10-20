@@ -83,8 +83,9 @@ defaults are used.
      - ``'escape'``
      - Key that closes the window and quits the experiment at any point once
        the experiment window is open (instructions, waiting for the TTL,
-       trials, rest, scoreboard; not the run-info dialog). Blocks that have
-       finished are already saved; the block in progress is lost. Set to
+       trials, rest, scoreboard; not the run-info dialog). The run's data is
+       lost unless ``save_per_task`` is ``True``, in which case only the block
+       in progress is lost. Set to
        ``None`` to disable, or pick a key that does not clash with the
        response keys or ``ttl_key``.
    * - ``scoreboard_text_height``
@@ -96,6 +97,12 @@ defaults are used.
      - If ``True``, adds an ISO-format ``run_end_timestamp`` column to the run
        summary when each run completes (captured when the last task ends).
        Useful for post-processing that needs actual run-end wall-clock time.
+   * - ``save_per_task``
+     - ``False``
+     - If ``True``, each block's data is saved as soon as the block ends,
+       instead of all at once at the end of the run, so finished blocks
+       survive a crash or quit. Saving takes a few milliseconds between
+       blocks, which can delay the next block's start slightly.
    * - ``task_modules``
      - ``[]``
      - List of imported Python modules that hold custom Task and TaskFile
