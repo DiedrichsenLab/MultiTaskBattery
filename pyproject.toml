@@ -17,7 +17,8 @@ classifiers = [
     "Topic :: Scientific/Engineering",
 ]
 dependencies = [
-    "psychopy==2026.2.4",
+    # 2026.2.4 + MovieStim.unload fix (psychopy#7805); switch to psychopy==2026.2.5 once released
+    "psychopy @ https://github.com/psychopy/psychopy/archive/ab0a5e8.zip",
     "pandas",
     "numpy>=1.26.4",
     "scipy",
