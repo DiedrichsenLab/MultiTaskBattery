@@ -425,7 +425,7 @@ class TongueMovement(Task):
         # Check the trial_type and display the corresponding stimulus
         if trial['trial_type'] == 'right':
             # If trial_type is 'right', show the black circle around the fixation cross
-            circle_visual = visual.Circle(self.window, ==3, edges= 100, lineWidth = 20, fillColor=None, lineColor='black')
+            circle_visual = visual.Circle(self.window, size=3, edges=100, lineWidth=20, fillColor=None, lineColor='black')
             circle_visual.draw()
 
         self.window.flip()
