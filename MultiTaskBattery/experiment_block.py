@@ -72,7 +72,8 @@ class Experiment:
         """
         if not self.const.debug:
             # Step 1: Create a temporary small window for user feedback
-            self.screen.start_screen()
+            self.screen.start_screen(height=getattr(self.const, 'instruction_text_height', None),
+                                     wrap_width=getattr(self.const, 'instruction_wrap_width', None))
 
             # a dialog box pops up so you can enter info
             #Set up input box

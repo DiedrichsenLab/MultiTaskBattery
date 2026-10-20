@@ -60,10 +60,10 @@ class Screen:
             exit(1)
 
 
-    def start_screen(self, color='white'):
+    def start_screen(self, color='white', height=None, wrap_width=None):
         """    A method to draw a start screen on the screen
         """
-        loading_msg = visual.TextStim(self.window, text="Preparing experiment...", color=color, height=2, wrapWidth=30)
+        loading_msg = visual.TextStim(self.window, text="Preparing experiment...", color=color, height=height or 2, wrapWidth=wrap_width or 30)
         loading_msg.draw()
         self.window.flip()
 
