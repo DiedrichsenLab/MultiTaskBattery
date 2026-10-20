@@ -1,5 +1,4 @@
 docker run \
-  -v "./stimuli:/src/.venv/lib/python3.12/site-packages/stimuli" \
   --device=/dev/dri \
   --device=/dev/snd \
   -v "/run/user/$(id -u)/pulse:/run/user/$(id -u)/pulse" \

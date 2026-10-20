@@ -64,4 +64,6 @@ COPY --from=builder /root/.local/share/uv /root/.local/share/uv
 
 RUN fc-cache -f -v
 
+RUN ln -s /src/mtb/stimuli /src/.venv/lib/python3.12/site-packages/stimuli
+
 ENV PATH=/src/venv/bin:$PATH
