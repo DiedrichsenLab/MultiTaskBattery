@@ -240,7 +240,7 @@ class Experiment:
         # Height of the text elements: allow experiment-specific override via
         # const.scoreboard_text_height; fall back to original default (1.3 deg).
         height = getattr(self.const, 'scoreboard_text_height', None) or 1.3
-        gap = [8,1.6] # Gap between entries for the score column [gap_between_columns, gap_between_rows]
+        gap = [8 * height / 1.3, 1.6 * height / 1.3] # Gap between entries [between_columns, between_rows]; scales with height so the whole board shrinks together
         cols=len(scores[0])
         rws=len(scores)
 
