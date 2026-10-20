@@ -15,7 +15,7 @@ from MultiTaskBattery.screen import Screen
 
 
 class Experiment:
-    def __init__(self, const, subj_id):
+    def __init__(self, const, subj_id, screen=None):
         """    A general class with attributes common to experiments
 
                Args:
@@ -23,6 +23,8 @@ class Experiment:
                         local constants.py module (see example_experiment/constants.py) as example
                     subj_id (str):
                         id for the subject
+                    screen (Screen, optional):
+                        an existing Screen to reuse; if None, a new one is opened
                 Returns:
                     self (object):
                         an instance of the Experiment class
@@ -36,7 +38,7 @@ class Experiment:
         self.ttl_clock.ttl_button = getattr(const, 'ttl_key', 't')  # key the scanner trigger sends; differs by site
         # open screen and display fixation cross
         ### set the resolution of the subject screen here:
-        self.screen = Screen(const.screen)
+        self.screen = screen if screen is not None else Screen(const.screen)
 
         # quit key: works at any point of the experiment (checked on every flip / key read); set quit_key = None in constants.py to disable
         quit_key = getattr(const, 'quit_key', 'escape')
