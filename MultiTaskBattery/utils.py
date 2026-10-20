@@ -37,24 +37,31 @@ def append_data_to_file(filename,data):
         data = pd.concat([old_data,data],axis = 0)
     data.to_csv(filename, sep = '\t', index = False)
 
-def get_task_table(exp_dir=None):
-    """ Reads the task_table.tsv file from the experimental directory
-    and the package direction and concatenates them, avoiding duplicates
+def module_dirs(task_modules):
+    """Folders holding the task modules: a task library keeps its
+    task_table.tsv and stimuli/ next to its code."""
+    return [Path(m.__file__).resolve().parent for m in (task_modules or [])]
+
+def get_task_table(exp_dir=None, task_modules=None):
+    """ Reads the task_table.tsv files and concatenates them, avoiding duplicates.
+    Tables are read in order: next to each task module, then the experiment's,
+    then the package's; for a name in more than one table, the first one wins.
     Args:
         exp_dir (str, path, optional):
-            path to the experiment directory. If None, returns only the general table.
+            path to the experiment directory. If None, its table is not read.
+        task_modules (list, optional):
+            task modules (const.task_modules); a task_table.tsv next to a
+            module is read, e.g. from a task library outside the experiment.
     Returns:
         task_table (dataframe):
             dataframe containing the task table
     """
-    gen_task_table = os.path.dirname(__file__) + '/task_table.tsv'  # where the experiment code is stored
-    task_table = pd.read_csv(gen_task_table, sep = '\t')
+    tables = [d / 'task_table.tsv' for d in module_dirs(task_modules)]
     if exp_dir is not None:
-        exp_task_table = os.path.join(exp_dir, 'task_table.tsv')
-        if os.path.isfile(exp_task_table):
-            exp_task_table = pd.read_csv(exp_task_table, sep = '\t')
-            task_table = pd.concat([task_table, exp_task_table], axis = 0).drop_duplicates(subset='name').reset_index(drop=True)
-    return task_table
+        tables.append(Path(exp_dir) / 'task_table.tsv')
+    tables.append(Path(__file__).parent / 'task_table.tsv')  # package table last, as fallback
+    task_table = pd.concat([pd.read_csv(t, sep='\t') for t in tables if os.path.isfile(t)], axis=0)
+    return task_table.drop_duplicates(subset='name').reset_index(drop=True)
 
 def get_task_class(const, class_name):
     """ Searches for the task class in the list of task modules and returns it
@@ -120,22 +127,21 @@ _PACKAGE_STIM_DIR = Path(__file__).resolve().parents[1] / 'stimuli'
 def stim_roots(const):
     """Return the ordered list of stimulus root directories to search.
 
-    Uses ``const.stim_dirs`` (a list of roots) if it is defined, otherwise falls
-    back to the single ``const.stim_dir``. The package's bundled ``stimuli``
-    folder is always appended as the final fallback (deduplicated), so built-in
-    tasks still resolve even when the primary root points at an experiment-local
-    folder.
+    Searches the ``stimuli`` folder next to each module in ``const.task_modules``
+    first, then ``const.stim_dirs`` (a list of roots) if it is defined, otherwise
+    the single ``const.stim_dir``. The package's bundled ``stimuli`` folder is
+    always appended as the final fallback (deduplicated), so built-in tasks
+    still resolve.
 
     Args:
         const: the experiment constants module/object.
     Returns:
         list[Path]: roots to search, in priority order (local first, package last).
     """
-    roots = getattr(const, 'stim_dirs', None) or [const.stim_dir]
-    roots = [Path(r) for r in roots]
-    if _PACKAGE_STIM_DIR not in roots:
-        roots.append(_PACKAGE_STIM_DIR)
-    return roots
+    roots = [d / 'stimuli' for d in module_dirs(getattr(const, 'task_modules', None))]
+    roots += getattr(const, 'stim_dirs', None) or [getattr(const, 'stim_dir', _PACKAGE_STIM_DIR)]
+    roots.append(_PACKAGE_STIM_DIR)
+    return list(dict.fromkeys(Path(r).resolve() for r in roots))
 
 
 def find_stim(const, task_name, *parts, must_exist=True):

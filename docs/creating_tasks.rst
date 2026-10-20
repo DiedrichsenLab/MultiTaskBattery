@@ -100,6 +100,10 @@ The local table is merged with the shared one automatically when
 ``make_files.py`` passes ``exp_dir=const.exp_dir`` to ``tf.make_run_file``
 and ``tf.get_task_class`` (the example ``make_files.py`` already does this).
 
+A ``task_table.tsv`` next to any module in ``task_modules`` is read too
+(before the experiment's and the package's tables), so a task library shared
+by several experiments keeps one table instead of a copy in each experiment.
+
 3. Register your module in constants.py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Import your local module and add it to ``task_modules``:
@@ -127,9 +131,11 @@ task classes**. Both at runtime and during file generation, each stimulus is
 looked up as ``<root>/<task_name>/<file>`` across a search path of roots, in
 order, and the first existing file wins. The search path is:
 
-1. the root(s) in ``const.stim_dirs`` (a list) if you define it, otherwise the
+1. the ``stimuli`` folder next to each module in ``const.task_modules``
+   (for a module in your experiment folder, that is ``<exp_dir>/stimuli``); then
+2. the root(s) in ``const.stim_dirs`` (a list) if you define it, otherwise the
    single ``const.stim_dir``; then
-2. the package's own bundled ``stimuli`` folder, always appended as a final
+3. the package's own bundled ``stimuli`` folder, always appended as a final
    fallback.
 
 Because your own roots are searched first, the package fallback can only *add*
@@ -137,12 +143,11 @@ resolvable files — it never overrides yours. This lets a custom task keep its
 stimuli **inside your experiment folder** while the built-in tasks still
 resolve their stimuli from the package. So you have two options:
 
-- **Local (recommended for custom tasks):** add your experiment's stimulus
-  folder to the search path in ``constants.py`` and put files there::
-
-      stim_dirs = [exp_dir / "stimuli", stim_dir]   # local first, package fallback
-
-  then place your files in ``<exp_dir>/stimuli/<task_name>/``.
+- **Local (recommended for custom tasks):** place your files in a
+  ``stimuli/<task_name>/`` folder next to your task module, e.g.
+  ``<exp_dir>/stimuli/<task_name>/``. A task library outside the experiment
+  works the same way: its code, ``task_table.tsv`` and ``stimuli/`` sit side
+  by side, and listing the module in ``task_modules`` is all it takes.
 
 - **Shared library (when contributing a task):** place files under the
   package's ``stimuli/<task_name>/`` at the repository root.

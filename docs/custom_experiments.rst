@@ -31,15 +31,10 @@ Create a file called ``constants.py`` in the project folder. This file contains 
     package_dir = Path(os.path.dirname(os.path.dirname(os.path.realpath(mtb.__file__))))
     stim_dir   = package_dir / "stimuli"
 
-    # Optional: search several stimulus roots, local first. The package's own
-    # stimuli/ folder is always appended as a final fallback, so built-in tasks
-    # keep resolving. Use this to keep a custom task's stimuli in your
-    # experiment folder (see the "Implementing new tasks" page).
-    # stim_dirs = [exp_dir / "stimuli", stim_dir]
-
     # Optional: list of local Python modules that hold custom Task / TaskFile
     # classes. Uncomment and import your module if you want to add custom
-    # tasks without editing the shared MultiTaskBattery package. See
+    # tasks without editing the shared MultiTaskBattery package. A
+    # task_table.tsv and a stimuli/ folder next to the module are found too. See
     # the "Implementing new tasks" page for details and
     # experiments/example_custom_task for a working example.
     # import my_tasks
@@ -106,7 +101,10 @@ defaults are used.
      - List of imported Python modules that hold custom Task and TaskFile
        classes for this experiment. ``ut.get_task_class`` and
        ``ut.get_task_file_class`` search these modules first, then fall back
-       to the shared ``MultiTaskBattery`` package. See :doc:`creating_tasks`.
+       to the shared ``MultiTaskBattery`` package. A ``task_table.tsv`` and a
+       ``stimuli/`` folder next to a module are picked up too, so a task
+       library outside the experiment folder needs no further settings. See
+       :doc:`creating_tasks`.
    * - ``instruction_text_height``
      - ``1``
      - Height (in degrees of visual angle) of the instruction-screen text
@@ -117,11 +115,11 @@ defaults are used.
        wraps onto a new line.
    * - ``stim_dirs``
      - ``[stim_dir]``
-     - List of stimulus root directories, searched in order (local first). The
-       package's bundled ``stimuli`` folder is always appended as a final
-       fallback, so built-in tasks still resolve even when the first root is an
-       experiment-local folder. Use this to keep a custom task's stimuli in your
-       experiment folder. See :doc:`creating_tasks`.
+     - List of extra stimulus root directories, searched in order after the
+       ``stimuli/`` folders next to ``task_modules``. The package's bundled
+       ``stimuli`` folder is always appended as a final fallback. Only needed
+       for stimuli kept elsewhere (e.g. on another drive). See
+       :doc:`creating_tasks`.
 
 .. note::
 
@@ -202,7 +200,8 @@ Some tasks also have multiple **conditions** (e.g., ``reading`` has ``sentences`
 
         # Pass exp_dir so any local task_table.tsv (for custom tasks) is merged
         # with the framework's table.
-        T = tf.make_run_file(tasks, tfiles, exp_dir=const.exp_dir)
+        T = tf.make_run_file(tasks, tfiles, exp_dir=const.exp_dir,
+                             task_modules=getattr(const, 'task_modules', None))
         T.to_csv(const.run_dir / f'run_{r:02d}.tsv', sep='\t', index=False)
 
         # Generate a task file for each block
@@ -211,7 +210,8 @@ Some tasks also have multiple **conditions** (e.g., ``reading`` has ``sentences`
 
             # Resolve the TaskFile generator: a custom '<Class>File' in
             # const.task_modules if present, otherwise the built-in one.
-            cl = tf.get_task_class(task, exp_dir=const.exp_dir)
+            cl = tf.get_task_class(task, exp_dir=const.exp_dir,
+                                   task_modules=getattr(const, 'task_modules', None))
             myTask = ut.get_task_file_class(const, cl)(const)
 
             # Start from the block's task_dur, add its kwargs, and pass
