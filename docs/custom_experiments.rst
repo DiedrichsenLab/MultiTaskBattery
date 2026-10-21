@@ -97,6 +97,12 @@ defaults are used.
      - If ``True``, adds an ISO-format ``run_end_timestamp`` column to the run
        summary when each run completes (captured when the last task ends).
        Useful for post-processing that needs actual run-end wall-clock time.
+       With ``save_per_task``, only the last block's row has it.
+   * - ``record_task_end_timestamp``
+     - ``False``
+     - If ``True``, adds an ISO-format ``task_end_timestamp`` column to the run
+       summary: the wall-clock time each block ended. Useful for aligning
+       blocks with other recordings that log clock time.
    * - ``save_per_task``
      - ``False``
      - If ``True``, each block's data is saved as soon as the block ends,

@@ -186,6 +186,8 @@ class Experiment:
 
             # Add the end time of the task
             r_data['real_end_time'] = self.ttl_clock.get_time()
+            if getattr(self.const, 'record_task_end_timestamp', False):
+                r_data['task_end_timestamp'] = datetime.now().isoformat()
             if getattr(self.const, 'record_run_end_timestamp', False) and t_num == len(self.task_obj_list) - 1:
                 run_end_timestamp = datetime.now().isoformat()
                 r_data['run_end_timestamp'] = run_end_timestamp  # on the last row, so it is saved with save_per_task too
