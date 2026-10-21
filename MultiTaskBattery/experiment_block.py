@@ -199,7 +199,7 @@ class Experiment:
                 block_row = pd.DataFrame([r_data])
                 block_row.insert(0, 'run_num', self.run_number)
                 ut.append_data_to_file(self.run_data_file, block_row)
-            #self.screen.fixation_cross()
+            self.screen.fixation_cross()
 
             # If last task, wait until the endtime for the last task, which for imaging could be longer than the task duration
             # Note that endtime is not used for any task but the last one
