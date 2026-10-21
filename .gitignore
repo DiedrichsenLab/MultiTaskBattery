@@ -12,3 +12,7 @@ stimuli/.DS_Store
 
 CLAUDE.md
 experiments/test/
+
+# created by pip install
+build/
+*.egg-info/
