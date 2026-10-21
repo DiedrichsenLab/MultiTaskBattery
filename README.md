@@ -6,6 +6,9 @@
 
 A flexible Python toolbox for running multi-domain cognitive and motor tasks during fMRI sessions — all within a single scanning run. Built on [PsychoPy](https://www.psychopy.org/)
 
+[![Documentation](https://img.shields.io/badge/docs-readthedocs-blue)](https://multitaskbattery.readthedocs.io/)
+[![Interactive task map](https://img.shields.io/badge/explore-interactive%20task%20map-orange)](https://diedrichsenlab.github.io/MultiTaskBattery/mds/)
+
 
 This project runs multi-task batteries developed by the diedrichsenlab.
 #### Authors: Diedrichsenlab (Bassel Arafat, Caroline Nettekoven, Ince Husain, Ladan Shahshahani, Suzanne Witt, Maedbh King, Jorn Diedrichsen)
