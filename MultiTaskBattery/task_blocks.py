@@ -1252,6 +1252,15 @@ class RMET(Task):
         """
         trial_info_file = self.const.task_dir / self.name / self.task_file
         self.trial_info = pd.read_csv(trial_info_file, sep='\t')
+        # Preload every eye picture once and reuse it across trials (mirrors NBack.init_task).
+        # Building an ImageStim inside run_trial allocates a GL texture per trial, which
+        # accumulates over a block.
+        self.stim = []
+        for _, row in self.trial_info.iterrows():
+            picture_path = ut.find_stim(self.const, self.name, 'pictures', row['stim'])
+            picture = visual.ImageStim(self.window, str(picture_path), pos=(0, 0),
+                                       size=(None, row.get('stim_height', 6.0)))  # height in deg
+            self.stim.append(picture)
 
     def display_instructions(self):
         task_name = visual.TextStim(self.window, text=f'{self.descriptive_name.capitalize()}', height=self.const.instruction_text_height, color=[-1, -1, -1], bold=True, pos=(0, 3))
@@ -1275,16 +1284,10 @@ class RMET(Task):
         event.clearEvents()
 
         # --- Eyes ---
-        # Get the file name
-        picture_file_name = trial['stim']
-        # Construct the picture file path
-        picture_path = ut.find_stim(self.const, self.name, 'pictures', picture_file_name)
-        # Convert Pathself object to string for compatibility
-        picture_path_str = str(picture_path)
-        # Create an ImageStim object, explicitly centered so that the four answer
-        # options (placed symmetrically above and below) straddle the image.
-        picture = visual.ImageStim(self.window, str(picture_path_str), pos=(0, 0),
-                                   size=(None, trial.get('stim_height', 6.0)))  # height in deg
+        # Reuse the ImageStim preloaded in init_task. It is already centered, so the four
+        # answer options (placed symmetrically above and below) straddle the image, and
+        # already sized by the trial's stim_height.
+        picture = self.stim[trial['trial_num']]
 
 
 
