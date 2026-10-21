@@ -1198,7 +1198,10 @@ class OddBall(TaskFile):
         n_trials = int(np.floor(task_dur / (trial_dur + iti_dur)))
         trial_info = []
 
-        stimuli = ['black_K'] * 12 + ['black_O'] * 12 + ['red_K'] * 3 + ['red_O'] * 3
+        # 10% red K (targets), 10% red O, rest split between black K and black O
+        n_red = round(n_trials * 0.1)
+        n_black = n_trials - 2 * n_red
+        stimuli = ['black_K'] * (n_black - n_black // 2) + ['black_O'] * (n_black // 2) + ['red_K'] * n_red + ['red_O'] * n_red
 
         # shuffle stimuli
         random.shuffle(stimuli)
