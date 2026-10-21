@@ -1441,7 +1441,7 @@ class FauxPas(Task):
         self.window.flip()
 
     def run_trial(self, trial):
-        """ Runs a single trial of the Theory of Mind task """
+        """ Runs a single trial of the Faux Pas task """
 
         event.clearEvents()
 
