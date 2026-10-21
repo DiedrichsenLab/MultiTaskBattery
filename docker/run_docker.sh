@@ -1,4 +1,5 @@
 docker run \
+  -v "$PWD:/exp" -w /exp \
   --device=/dev/dri \
   --device=/dev/snd \
   -v "/run/user/$(id -u)/pulse:/run/user/$(id -u)/pulse" \
