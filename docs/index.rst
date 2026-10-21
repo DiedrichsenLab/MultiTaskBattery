@@ -28,7 +28,6 @@ Documentation
    custom_experiments.rst
    creating_tasks.rst
    task_descriptions.rst
-   Interactive task map <https://diedrichsenlab.github.io/MultiTaskBattery/mds/>
    MRI_instructions.rst
    eye_tracking.rst
    optimal_battery.rst
