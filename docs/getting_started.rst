@@ -104,6 +104,8 @@ Note that some tasks have trials of different **trial types**, which usually are
 
 The **Task file columns** table in each task's entry on the :ref:`task descriptions <task_descriptions>` page shows which (if any) of these columns a task uses, and what its values mean.
 
+.. _constants_py:
+
 constants.py
 ------------
 
@@ -182,7 +184,7 @@ The `example_minimal` experiment includes the following tasks:
 To run `example_minimal`, follow these steps:
 
 1. **Configure `constants.py`**:
-   Ensure the file `experiments/example_minimal/constants.py` is properly configured. Adjust settings such as screen resolution, response keys, and other parameters as needed to match your experiment's requirements.
+   Open `experiments/example_minimal/constants.py` and set it up for your machine: at least `screen` (resolution, and the measured `width` and `distance`) and `response_keys`. Each setting is explained in the :ref:`constants.py <constants_py>` section above; optional settings are listed in :doc:`custom_experiments`.
 
 2. **Generate run and task files**:
    Run `experiments/example_minimal/make_files.py` to generate the run and task files. This creates the `.tsv` files in `run_files/` and `task_files/` that define the task order and trial sequences. The example experiment comes with pre-generated files, but for a new experiment you must run this step first.
