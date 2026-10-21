@@ -8,12 +8,16 @@ on:
 jobs:
   smoke:
     runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false  # finish all versions even if one fails
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: ${{ matrix.python-version }}
 
       # virtual screen (xvfb), a silent sound card (pulseaudio null sink), and PsychoPy's system libs
       - name: System packages
