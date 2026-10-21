@@ -24,11 +24,8 @@ copyright = '2023-2026, Diedrichsenlab'
 author = 'Diedrichsenlab'
 
 # The full version, including alpha/beta/rc tags
-try:
-    from importlib.metadata import version
-    release = 'v' + version('MultiTaskBattery')
-except Exception:  # package not installed (e.g. stale docs build)
-    release = 'dev'
+import MultiTaskBattery
+release = 'v' + MultiTaskBattery.__version__
 
 
 # -- General configuration ---------------------------------------------------
