@@ -227,8 +227,9 @@ class Experiment:
             for task in self.task_obj_list:
                 task.save_data(self.subj_id, self.run_number)
 
-        # show the scoreboard
-        self.display_run_feedback(run_data)
+        # show the scoreboard (set show_scoreboard = False in constants.py to skip it)
+        if getattr(self.const, 'show_scoreboard', True):
+            self.display_run_feedback(run_data)
 
 
     def display_run_feedback(self, run_data):

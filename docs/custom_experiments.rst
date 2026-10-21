@@ -88,6 +88,10 @@ defaults are used.
        in progress is lost. Set to
        ``None`` to disable, or pick a key that does not clash with the
        response keys or ``ttl_key``.
+   * - ``show_scoreboard``
+     - ``True``
+     - If ``False``, the run-feedback scoreboard is not shown after a run;
+       the run ends and the next run-info dialog opens directly.
    * - ``scoreboard_text_height``
      - ``1.3``
      - Height (in degrees of visual angle) of the text on the run-feedback
