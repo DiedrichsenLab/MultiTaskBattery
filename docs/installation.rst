@@ -91,3 +91,7 @@ version.
 the screen, sound and the scanner keyboard, and runs a Python script in it::
 
     bash docker/run_docker.sh <script.py>
+
+It uses ``latest`` by default. To use a fixed release, set ``MTB_VERSION``::
+
+    MTB_VERSION=1.2.0 bash docker/run_docker.sh <script.py>
