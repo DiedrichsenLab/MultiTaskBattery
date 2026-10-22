@@ -3,6 +3,9 @@ Optimal Battery
 
 To construct a multi-task battery suitable for parcellating a specific brain structure (or ROI within a brain structure), we developed an algorithm that selects an optimal battery based on a large library of task activity patterns.
 
+.. note::
+   The task library includes conditions from earlier datasets that are not (yet) implemented in MTB (e.g. go/no-go, stroop, mental rotation), and its condition codes differ from MTB task names. To get a battery you can run directly in MTB, restrict the library to conditions that are implemented in MTB before searching.
+
 Load library
 --------------
 The task library is hosted on Zenodo (DOI: `10.5281/zenodo.18793343 <https://doi.org/10.5281/zenodo.18793343>`_). The ``fetch_task_library`` function downloads and caches it locally.
