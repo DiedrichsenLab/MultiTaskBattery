@@ -135,6 +135,11 @@
                 color:var(--muted-2);margin-bottom:4px;}
   .flat-prov .v{font-size:12.5px;color:var(--fg);line-height:1.35;}
   .flat-prov .v b{font-variant-numeric:tabular-nums;font-weight:600;}
+  /* task description (task_descriptions.json) */
+  .flat-desc{padding:13px 20px;border-bottom:1px solid var(--line);font-size:12.5px;line-height:1.55;color:var(--fg);}
+  .flat-desc b{display:block;font-weight:600;margin-bottom:3px;}
+  .flat-desc:empty{display:none;}
+  .flat-desc .cond{margin-top:7px;color:var(--accent);}
   .seg{display:flex;border:1px solid var(--line-2);border-radius:8px;overflow:hidden;}
   #flat .seg{margin:16px 20px 0;}
   .seg button{flex:1;background:var(--panel-2);color:var(--muted);border:0;padding:9px;font-size:12.5px;
@@ -221,6 +226,7 @@
         <div><div class="k">Dataset</div><div class="v" id="flatSource">—</div></div>
         <div><div class="k">Group average of</div><div class="v" id="flatSubj">—</div></div>
       </div>
+      <div class="flat-desc" id="flatDesc"></div>
       <div class="seg">
         <button data-v="cortex" class="on">Cortex</button>
         <button data-v="cerebellum">Cerebellum</button>
@@ -236,7 +242,7 @@ const PALETTE = ["#5b9dff","#ff6b6b","#3ddc84","#ffb454","#b07cff","#27d3e0","#f
   "#ff8c5a","#7c93ff","#4cd4a0","#e879f9","#38bdf8","#fbbf24","#94a3b8","#f472b6"];
 
 const DEFAULT_CAM = {eye:{x:1.4,y:1.4,z:1.1}};
-let DATA=null, HIGHLIGHT="";
+let DATA=null, HIGHLIGHT="", DESC={};
 let MODE="3d", AX=[0,1,2];          // which MDS components map to X, Y, Z
 const pcName = d => "PC"+(d+1);
 
@@ -275,6 +281,12 @@ function openFlat(code){
   const nsub=(i>=0 && DATA.n_subjects)?DATA.n_subjects[i]:null;
   document.getElementById("flatSource").textContent=src?sourceLabel(src):"—";
   document.getElementById("flatSubj").innerHTML=nsub!=null?`<b>${nsub}</b> subjects`:"—";
+  // description: a full_code entry (e.g. movie_romance) wins over its task_code entry
+  const desc=DESC[code]||(i>=0?DESC[DATA.task_code[i]]:null);
+  const box=document.getElementById("flatDesc");box.textContent="";
+  if(desc){const b=document.createElement("b");b.textContent=desc.name;box.append(b,desc.description);
+    const cond=desc.conditions&&i>=0?desc.conditions[DATA.cond_code[i]]:null;
+    if(cond){const c=document.createElement("div");c.className="cond";c.textContent=cond;box.append(c);}}
   setFlatView(FLAT_VIEW);
   const f=document.getElementById("flat");f.classList.add("open");f.setAttribute("aria-hidden","false");
 }
@@ -377,6 +389,9 @@ const REGIONS=[
 const pretty=k=>k.replace("DIENCEPHALON_VENTRAL","ventral dienceph.")
   .replace("WHOLE_BRAIN","whole brain")
   .replaceAll("_"," ").toLowerCase().replace("left","(L)").replace("right","(R)");
+
+// descriptions are optional: the viewer still works without the file
+fetch("task_descriptions.json").then(r=>r.json()).then(d=>{DESC=d;}).catch(()=>{});
 
 fetch("mds_data.json").then(r=>r.json()).then(d=>{
   DATA=d;
