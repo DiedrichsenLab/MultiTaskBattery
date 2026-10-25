@@ -359,27 +359,12 @@ class VerbGeneration(Task):
                                units='deg', height=1, bold=True)
 
     def display_instructions(self):
-        stims = []
-        stims.append(visual.TextStim(self.window, text=f"{self.descriptive_name} Task",
-                                     pos=(0.0, 6.0), height=self.const.instruction_text_height,
-                                     color=[-1, -1, -1], bold=True))
-        stims.append(visual.TextStim(self.window,
-                                     text="A label at the top of the screen tells you what to do for each word:",
-                                     pos=(0.0, 3.0), height=self.const.instruction_text_height,
-                                     color=[-1, -1, -1], wrapWidth=28))
-        # Two aligned rows: coloured label (right-anchored) + its description
-        rows = [('read', "silently read the word", 0.0),
-                ('generate', "silently think of a verb that goes with it", -2.5)]
-        for cond, desc, y in rows:
-            stims.append(visual.TextStim(self.window, text=self.cue_labels[cond], pos=(-1.0, y),
-                                         color=self.cue_colors[cond], units='deg', height=1,
-                                         bold=True, anchorHoriz='right'))
-            stims.append(visual.TextStim(self.window, text=desc, pos=(0.0, y),
-                                         color=[-1, -1, -1], units='deg',
-                                         height=self.const.instruction_text_height,
-                                         anchorHoriz='left'))
-        for stim in stims:
-            stim.draw()
+        str1 = "A label at the top of the screen tells you what to do for each word:"
+        str2 = f"{self.cue_labels['read']} - silently read the word"
+        str3 = f"{self.cue_labels['generate']} - silently think of a verb that goes with it"
+        self.instruction_text = f"{self.descriptive_name} Task\n\n {str1} \n {str2} \n {str3}"
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1], wrapWidth=self.const.instruction_wrap_width)
+        instr_visual.draw()
         self.window.flip()
 
     def show_stim(self, noun, condition, text_height=2):
@@ -471,7 +456,7 @@ class MotorLocalizer(Task):
     def run_trial(self, trial):
         """ Run a single row of the motor-localizer task. """
         # Condition label (body part) at the top of the screen, in black
-        cond_visual = visual.TextStim(self.window, text=str(trial['condition']), pos=(0.0, 6.0),
+        cond_visual = visual.TextStim(self.window, text=str(trial['condition']), pos=(0.0, trial.get('label_y', 6.0)),
                                       color=(-1, -1, -1), units='deg', height=trial.get('text_height', 1.5))
         cond_visual.draw()
 
@@ -532,7 +517,7 @@ class SpatialNavigation(Task):
                                     f"Imagine walking around your childhood home\n"
                                     f"Start in the {start_location} – end in the {end_location}\n"
                                     f"Focus on the fixation cross")
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1],  wrapWidth=20)
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1], wrapWidth=self.const.instruction_wrap_width)
         instr_visual.draw()
         self.window.flip()
 
@@ -578,7 +563,7 @@ class TheoryOfMind(Task):
         event.clearEvents()
 
         height = trial.get('text_height', 1.25)
-        wrapWidth=25
+        wrapWidth = trial.get('wrap_width', 25)
 
         # Display story
         story_clean = ' '.join(trial['story'].split('\n'))
@@ -594,7 +579,7 @@ class TheoryOfMind(Task):
         event.clearEvents()
 
         # Display question
-        question_stim = visual.TextStim(self.window, text=trial['question'], pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height=height, wrapWidth=25)
+        question_stim = visual.TextStim(self.window, text=trial['question'], pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height=height, wrapWidth=wrapWidth)
         question_stim.draw()
         self.window.flip()
 
@@ -1142,9 +1127,9 @@ class VisualSearch(Task):
         #counter initialized in order to read whether trial_type is true or not for each trial; used in generate_trial_stimuli
         self.trial_counter = 0
 
-        #width and height determined by trial and error: x extremity of window is 14; y extremity is 10
-        screen_width = 28
-        screen_height = 20
+        # Search area in deg (default 28 x 20: the x extremity of a large window is 14, y is 10, found by trial and error)
+        screen_width = self.trial_info['search_width'].iloc[0] if 'search_width' in self.trial_info.columns else 28
+        screen_height = self.trial_info['search_height'].iloc[0] if 'search_height' in self.trial_info.columns else 20
 
         #define number of rows + col to split screen into 24 apertures
         num_rows = 4
@@ -1273,7 +1258,7 @@ class RMET(Task):
         else:
             self.instruction_text += "\n\n Choose which AGE or FEELING best describes the person." # General instruction for both age and emotion
         self.instruction_text += f"\n\n\n{self.trial_info['key_one'].iloc[0]}. index \t{self.trial_info['key_two'].iloc[0]}. middle\t{self.trial_info['key_three'].iloc[0]}. ring\t{self.trial_info['key_four'].iloc[0]}. pinky"
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1], wrapWidth=20, pos=(0, 0))
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1], wrapWidth=self.const.instruction_wrap_width, pos=(0, 0))
         instr_visual.draw()
         self.window.flip()
 
@@ -1373,7 +1358,7 @@ class Movie(Task):
         task_name.draw()
 
         self.instruction_text = f"\n\n You will watch short clips from a movie. Please keep your head still and pay attention to the screen."
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1], wrapWidth=20, pos=(0, 0))
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1], wrapWidth=self.const.instruction_wrap_width, pos=(0, 0))
         instr_visual.draw()
         self.window.flip()
 
@@ -1436,7 +1421,7 @@ class FauxPas(Task):
         elif 'control' in self.task_file:
             self.instruction_text += "about the FACTS."
         self.instruction_text += f"\n\n{self.corr_key[0]}. Yes \t{self.corr_key[1]}. No\n"
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1], wrapWidth=20, pos=(0, 0))
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1], wrapWidth=self.const.instruction_wrap_width, pos=(0, 0))
         instr_visual.draw()
         self.window.flip()
 
@@ -1449,7 +1434,7 @@ class FauxPas(Task):
         # Display story
         story = trial['story']
         # story = '.\n'.join(story.split('. '))
-        story_stim = visual.TextStim(self.window, text=story, alignHoriz='center', wrapWidth=20, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height= height)
+        story_stim = visual.TextStim(self.window, text=story, alignHoriz='center', wrapWidth=trial.get('wrap_width', 20), pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height= height)
         story_stim.draw()
         self.window.flip()
 
@@ -1464,7 +1449,7 @@ class FauxPas(Task):
         # Display answers
         options = [option.strip(' ') for option in trial['options'].split(',')]
         question += f"\n\n\n{self.corr_key[0]}. {options[0]} \t\t\t{self.corr_key[1]}. {options[1]}"
-        question_stim = visual.TextStim(self.window, text=question, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height= height, wrapWidth=25)
+        question_stim = visual.TextStim(self.window, text=question, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height= height, wrapWidth=trial.get('wrap_width', 25))
         question_stim.draw()
         self.window.flip()
 
@@ -1511,7 +1496,7 @@ class Affective(Task):
             f"Press {key_unpleasant} if the image is UNPLEASANT.\n"
             f"Press {key_pleasant} if the image is PLEASANT."
         )
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1], wrapWidth=20)
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1], wrapWidth=self.const.instruction_wrap_width)
         instr_visual.draw()
         self.window.flip()
 
@@ -1554,7 +1539,7 @@ class SerialReactionTime(Task):
 
     def display_instructions(self): # overriding the display instruction from the parent class
         self.instruction_text = f"Press the buttons that match the green boxes"
-        instr_visual = visual.TextStim(self.window, text=self.instruction_text, color=[-1, -1, -1],pos=(0, 0.3))
+        instr_visual = visual.TextStim(self.window, text=self.instruction_text, height=self.const.instruction_text_height, color=[-1, -1, -1], wrapWidth=self.const.instruction_wrap_width, pos=(0, 0.3))
         instr_visual.draw()
         self.window.flip()
 

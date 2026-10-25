@@ -425,7 +425,8 @@ class MotorLocalizer(TaskFile):
                         trial_dur=1,
                         condition=['hand', 'foot', 'tongue'],
                         file_name=None,
-                        text_height=1.5):
+                        text_height=1.5,
+                        label_y=6):
         """
         Create a motor-localizer task file. The block is split into one equal
         segment per condition (segment_dur = task_dur / len(condition), e.g.
@@ -447,6 +448,7 @@ class MotorLocalizer(TaskFile):
             condition (str or list): Condition label(s), e.g. body parts; each gets an equal, randomly ordered share of the block.
             file_name (str): Name of the file to save the task data.
             text_height (float): Height of the task text in degrees of visual angle.
+            label_y (float): Height of the condition label above the centre, in degrees of visual angle.
 
         Returns:
             pd.DataFrame: Task information as a DataFrame.
@@ -464,6 +466,7 @@ class MotorLocalizer(TaskFile):
                 trial = {}
                 trial['trial_num'] = n
                 trial['text_height'] = text_height
+                trial['label_y'] = label_y
                 trial['condition'] = cond
                 trial['trial_type'] = 1 - (p % 2)        # 1 = circle present, 0 = circle absent
                 trial['trial_dur'] = trial_dur
@@ -609,6 +612,7 @@ class TheoryOfMind(TaskFile):
                         story_dur=10,
                         question_dur=4,
                         text_height=1.25,
+                        wrap_width=25,
                         file_name=None,
                         stim_file=None,
                         condition=None):
@@ -625,6 +629,7 @@ class TheoryOfMind(TaskFile):
             story_dur (float): Duration the story is displayed in seconds.
             question_dur (float): Duration the question is displayed in seconds.
             text_height (float): Height of the story/question text in degrees of visual angle.
+            wrap_width (float): Width the story/question text wraps at, in degrees of visual angle.
             file_name (str): Name of the file to save the task data.
             stim_file (str): Optional path to a custom stimulus CSV.
             condition (str): If set, only trials of this condition are included
@@ -678,6 +683,7 @@ class TheoryOfMind(TaskFile):
             trial['story_dur'] = story_dur
             trial['question_dur'] = question_dur
             trial['text_height'] = text_height
+            trial['wrap_width'] = wrap_width
             trial['display_trial_feedback'] = True
             trial['start_time'] = t
             trial['end_time'] = t + trial_dur + iti_dur
@@ -1431,6 +1437,8 @@ class VisualSearch(TaskFile):
                         trial_dur = 2,
                         iti_dur   = 0.5,
                         easy_prob=0.5,
+                        search_width=28,
+                        search_height=20,
                         file_name = None ):
         """
         Create a visual-search task file (find a canonically-oriented 'L').
@@ -1442,6 +1450,7 @@ class VisualSearch(TaskFile):
             trial_dur (float): Duration of each trial in seconds.
             iti_dur (float): Inter-trial interval duration in seconds.
             easy_prob (float): Probability of an easy trial (4 stimuli vs. 8).
+            search_width, search_height (float): Size of the area the items are spread over, in degrees of visual angle.
             file_name (str): Name of the file to save the task data.
 
         Returns:
@@ -1463,6 +1472,8 @@ class VisualSearch(TaskFile):
             trial['trial_type'] = random.choice([0,1])
             # Difficulty is the condition: the number of search items (set size).
             trial['condition'] = '4-items' if random.random() < easy_prob else '8-items'
+            trial['search_width'] = search_width
+            trial['search_height'] = search_height
             trial['start_time'] = t
             trial['end_time'] = t + trial_dur + iti_dur
             trial_info.append(trial)
@@ -1692,6 +1703,7 @@ class FauxPas(TaskFile):
                     story_dur=10,
                     question1_dur=4,
                     text_height=1.25,
+                    wrap_width=None,   # deg; None keeps the defaults (story 20, question 25)
                     file_name=None,
                     stim_file=None,
                     condition=None,
@@ -1765,6 +1777,8 @@ class FauxPas(TaskFile):
             trial['story_dur'] = story_dur
             trial['question_dur'] = question1_dur
             trial['text_height'] = text_height
+            if wrap_width is not None:
+                trial['wrap_width'] = wrap_width
             trial['display_trial_feedback'] = True
             trial['start_time'] = t
             trial['end_time'] = t + trial_dur + iti_dur
