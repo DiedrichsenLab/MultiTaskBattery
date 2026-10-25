@@ -1,5 +1,5 @@
 # Usage: bash docker/run_docker.sh <script.py>
-# Pin a release with: MTB_VERSION=1.2.0 bash docker/run_docker.sh <script.py>
+# Pin a release with: MTB_VERSION=1.2.1 bash docker/run_docker.sh <script.py>
 MTB_VERSION=${MTB_VERSION:-latest}
 
 # Only mount the X authority file if it is set (it is unset on some setups)
