@@ -1578,9 +1578,12 @@ class Affective(TaskFile):
                        file_name=None,
                        hand='right',
                        responses=[1,2],
-                       stim_width=18.4):
+                       stim_width=18.4,
+                       run_number=1):
         """
         Create an affective-picture task file (judge pleasant vs unpleasant).
+        Each run takes the next unused images of each valence, wrapping around
+        once all have been shown (64 per valence: 8 runs of 30 s without repeats).
 
         Args:
             task_dur (float): Total task duration in seconds.
@@ -1590,6 +1593,7 @@ class Affective(TaskFile):
             stim_width (float): Width of the pictures / clips in degrees of visual angle (height keeps the aspect ratio).
             hand (str): Hand used for response ('right' or 'left').
             responses (list): Response keys for [unpleasant, pleasant].
+            run_number (int): Run number, used to select which images to show.
 
         Returns:
             pd.DataFrame: Task information as a DataFrame.
@@ -1599,9 +1603,13 @@ class Affective(TaskFile):
         n_pleasant = n_trials // 2
         n_unpleasant = n_trials - n_pleasant
 
-        # Randomly sample numbers 1–26 (image name numbers)
-        pleasant_nums = random.sample(range(1, 27), n_pleasant)
-        unpleasant_nums = random.sample(range(1, 27), n_unpleasant)
+        # Next unused image numbers of each valence for this run (images are numbered from 1)
+        stim_dir = ut.find_stim_dir(self.const, self.name)
+        def pick(valence, n):
+            total = len(list(stim_dir.glob(f'{valence}*.jpg')))
+            return [((run_number - 1) * n + i) % total + 1 for i in range(n)]
+        pleasant_nums = pick('pleasant', n_pleasant)
+        unpleasant_nums = pick('unpleasant', n_unpleasant)
 
         # Create stim list
         stim = [{'imgName': f'pleasant{n}.jpg', 'trialType': 2} for n in pleasant_nums] + \

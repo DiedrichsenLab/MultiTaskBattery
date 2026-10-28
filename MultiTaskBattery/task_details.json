@@ -840,7 +840,7 @@
     },
     "affective": {
         "short_description": "Participants view a picture (scenes, animals, or foods) and choose whether it is pleasant or unpleasant.",
-        "detailed_description": "Participants view pictures drawn from the Open Affective Standardized Image Set (OASIS; 26 pleasant and 26 unpleasant images, listed with their ratings in stimuli/affective/oasis_images.tsv) — depicting scenes, animals, and foods — and indicate via a button press whether each image is pleasant or unpleasant. The task is designed to engage affective/emotional valence processing. After each response, the participant receives trial-specific feedback: a green check mark for a correct answer and a red cross for an incorrect one.",
+        "detailed_description": "Participants view pictures drawn from the Open Affective Standardized Image Set (OASIS; 64 pleasant and 64 unpleasant images, listed with their ratings in stimuli/affective/oasis_images.tsv) — depicting scenes, animals, and foods — and indicate via a button press whether each image is pleasant or unpleasant. The task is designed to engage affective/emotional valence processing. After each response, the participant receives trial-specific feedback: a green check mark for a correct answer and a red cross for an incorrect one.",
         "recorded_metrics": "Accuracy + RT",
         "reference": [
             "Kurdi, B., Lozano, S., & Banaji, M. R. (2017). Introducing the Open Affective Standardized Image Set (OASIS). Behavior Research Methods, 49(2), 457-470.",
