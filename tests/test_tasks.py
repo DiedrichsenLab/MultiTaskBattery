@@ -8,9 +8,9 @@ import MultiTaskBattery.utils as ut
 import MultiTaskBattery.experiment_block as exp_block
 
 # shortest block (s) each task can fill; tasks not listed run 6 s
-DUR = {'finger_rhythmic': 70, 'time_perception': 10, 'demand_grid': 10, 'rmet': 10,
+DUR = {'finger_rhythmic': 70, 'time_perception': 10, 'demand_grid': 10,
        'action_observation': 15, 'passage_listening': 15, 'semantic_prediction': 15,
-       'theory_of_mind': 15, 'faux_pas': 15,
+       'theory_of_mind': 15,
        'movie': 30, 'auditory_narrative': 30, 'spatial_navigation': 30}
 
 

@@ -82,7 +82,7 @@ Task files (``task_xx.tsv``) have one row per trial. The exact set of columns va
 - ``hand``: Which hand responds (``left``, ``right``, or ``bimanual``). Present whenever the task collects a manual response.
 
 *Response-key columns:*
-Tasks that collect a button press include one column per response option, named after what the option means. The exact names depend on the task's answer space — for example ``key_one`` … ``key_four`` (a generic four-choice task such as RMET), ``key_true`` / ``key_false`` (Theory of Mind), ``key_match`` / ``key_nomatch`` (n-back), or ``key_pleasant`` / ``key_unpleasant`` (Affective).
+Tasks that collect a button press include one column per response option, named after what the option means. The exact names depend on the task's answer space — for example ``key_one`` … ``key_four``, ``key_true`` / ``key_false`` (Theory of Mind), ``key_match`` / ``key_nomatch`` (n-back), or ``key_pleasant`` / ``key_unpleasant`` (Affective).
 
 *Condition / trial-type columns:*
 A task may also record a ``condition`` and/or a ``trial_type`` column. These two are easy to confuse, so they are explained in their own section just below.

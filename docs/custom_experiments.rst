@@ -143,7 +143,7 @@ defaults are used.
    Display parameters are **per-task** and written into the task TSV files via
    ``make_task_file()`` parameters — including the on-screen size of stimuli,
    all in degrees of visual angle: ``text_height`` for task text, ``stim_width``
-   for pictures and videos (``stim_height`` for RMET).  See the
+   for pictures and videos.  See the
    :ref:`task descriptions <task_descriptions>` page.  The only
    **experiment-wide** display settings that live in ``constants.py`` are
    ``instruction_text_height``, ``instruction_wrap_width`` and
