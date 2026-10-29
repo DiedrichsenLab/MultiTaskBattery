@@ -17,8 +17,7 @@ classifiers = [
     "Topic :: Scientific/Engineering",
 ]
 dependencies = [
-    # 2026.2.4 + MovieStim.unload fix (psychopy#7805); switch to psychopy==2026.2.5 once released
-    "psychopy @ https://github.com/psychopy/psychopy/archive/ab0a5e8.zip",
+    "psychopy==2026.2.5",
     "pandas",
     "numpy>=1.26.4",
     "scipy",
@@ -33,10 +32,6 @@ dependencies = [
     "numba",
     "nibabel",
     "psychopy-sounddevice",
-    # wxPython has no Linux wheels on PyPI, so a plain install would try to
-    # compile it from source and fail. install.py points pip at the prebuilt
-    # wheels for your distro (PIP_FIND_LINKS + PIP_ONLY_BINARY).
-    "wxPython; sys_platform == 'linux'",
 ]
 dynamic = ["version"]
 
