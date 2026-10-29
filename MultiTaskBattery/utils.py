@@ -4,6 +4,7 @@ from pathlib import Path
 import pandas as pd
 import MultiTaskBattery.task_blocks as tasks
 import MultiTaskBattery.task_file as task_files
+from MultiTaskBattery.fetch import CACHE_DIR
 
 # DEPRECATED: kept for backwards compatibility with external user scripts.
 # make_files.py no longer consults this list — instead it inspects each task's
@@ -120,7 +121,8 @@ def get_task_file_class(const, class_name):
 # as a final fallback. This lets a custom task keep its stimuli in the
 # experiment folder while built-in tasks still resolve from the package.
 # The package's stimuli live at <repo_root>/stimuli, i.e. one level up from this
-# module's package directory.
+# module's package directory. After those comes the stimulus cache that
+# `mtb fetch` downloads into (see fetch.py).
 _PACKAGE_STIM_DIR = Path(__file__).resolve().parents[1] / 'stimuli'
 
 
@@ -130,8 +132,8 @@ def stim_roots(const):
     Searches the ``stimuli`` folder next to each module in ``const.task_modules``
     first, then ``const.stim_dirs`` (a list of roots) if it is defined, otherwise
     the single ``const.stim_dir``. The package's bundled ``stimuli`` folder is
-    always appended as the final fallback (deduplicated), so built-in tasks
-    still resolve.
+    appended next, then the stimulus cache filled by ``mtb fetch``
+    (deduplicated), so built-in tasks still resolve.
 
     Args:
         const: the experiment constants module/object.
@@ -141,6 +143,7 @@ def stim_roots(const):
     roots = [d / 'stimuli' for d in module_dirs(getattr(const, 'task_modules', None))]
     roots += getattr(const, 'stim_dirs', None) or [getattr(const, 'stim_dir', _PACKAGE_STIM_DIR)]
     roots.append(_PACKAGE_STIM_DIR)
+    roots.append(CACHE_DIR)
     return list(dict.fromkeys(Path(r).resolve() for r in roots))
 
 
@@ -172,7 +175,7 @@ def find_stim(const, task_name, *parts, must_exist=True):
         sub = str(Path(*parts)) if parts else ''
         raise FileNotFoundError(
             f"Stimulus '{task_name}/{sub}' not found in any stimulus root: "
-            f"{[str(r) for r in roots]}")
+            f"{[str(r) for r in roots]}. If it is a built-in task, run `mtb fetch {task_name}`.")
     return roots[0].joinpath(task_name, *parts)
 
 
