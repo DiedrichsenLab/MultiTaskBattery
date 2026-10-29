@@ -4,17 +4,7 @@ Installation
 There are two ways to run MTB: install it with Python (any OS), or use the
 ready-made Docker container (Linux).
 
-Step 1: Clone the Repository
-----------------------------
-
-Using Git::
-
-    git clone https://github.com/diedrichsenlab/MultiTaskBattery.git
-    cd MultiTaskBattery
-
-Or use `GitHub Desktop <https://desktop.github.com/>`_.
-
-Step 2: Install Python (3.10 - 3.12)
+Step 1: Install Python (3.10 - 3.12)
 ------------------------------------
 
 MTB runs on **Python 3.10, 3.11 or 3.12** (PsychoPy does not support newer
@@ -43,7 +33,7 @@ Option B: Using system Python
 
 Ensure ``python --version`` reports 3.10, 3.11 or 3.12.
 
-Step 3: Create a Virtual Environment
+Step 2: Create a Virtual Environment
 ------------------------------------
 
 ::
@@ -51,7 +41,7 @@ Step 3: Create a Virtual Environment
     python -m venv mtb-env
     source mtb-env/bin/activate    # On Windows: mtb-env\Scripts\activate
 
-Step 4: Install MultiTaskBattery
+Step 3: Install MultiTaskBattery
 --------------------------------
 Make sure you upgrade pip first, then install the package (this also
 pulls in all dependencies).
@@ -59,12 +49,14 @@ pulls in all dependencies).
 ::
 
     pip install --upgrade pip
-    pip install -e .
+    pip install MultiTaskBattery
 
-The ``-e`` means Python uses your cloned folder directly, so after
-``git pull`` the new code is used right away, without installing again.
+For a study, install a fixed release (e.g. ``pip install MultiTaskBattery==1.3.0``),
+so every session and site runs exactly the same version. The example
+experiments are in the ``experiments/`` folder of the
+`repository <https://github.com/diedrichsenlab/MultiTaskBattery>`_.
 
-Step 5: Download the Stimuli
+Step 4: Download the Stimuli
 ----------------------------
 The task stimuli (images, audio, video and text) are not in the repository; they are
 hosted on `Zenodo <https://doi.org/10.5281/zenodo.23749588>`_, one zip per
@@ -88,10 +80,10 @@ is needed. You only need ``docker/run_docker.sh`` from the
 repository (clone it, or download that one file). Install `Docker <https://docs.docker.com/engine/install/>`_,
 then pull the container::
 
-    docker pull ghcr.io/diedrichsenlab/multitaskbattery:latest
+    docker pull ghcr.io/diedrichsenlab/multitaskbattery:1.3.0
 
-For a study, use a fixed release instead of ``latest`` (e.g.
-``multitaskbattery:1.2.1``), so every session and site runs exactly the same
+Use a fixed release like this (not ``latest``, which is the newest
+development version), so every session and site runs exactly the same
 version.
 
 ``docker/run_docker.sh`` in the repository starts the container with access to
@@ -99,12 +91,25 @@ the screen, sound and the scanner keyboard, and runs a Python script in it::
 
     bash docker/run_docker.sh <script.py>
 
-It uses ``latest`` by default. To use a fixed release, set ``MTB_VERSION``::
+It uses the release it came with (1.3.0) by default. To use another image,
+set ``MTB_VERSION``::
 
-    MTB_VERSION=1.2.1 bash docker/run_docker.sh <script.py>
+    MTB_VERSION=<version> bash docker/run_docker.sh <script.py>
 
 The stimuli are not in the container. ``run_docker.sh`` gives the container
 the same stimulus folder on your computer every time, so fetch them once,
 while online::
 
     bash docker/run_docker.sh mtb fetch reading movie
+
+For Developers
+--------------
+To change MTB itself or add a task, clone the repository and install it in
+editable mode instead of Step 3::
+
+    git clone https://github.com/diedrichsenlab/MultiTaskBattery.git
+    cd MultiTaskBattery
+    pip install -e .
+
+The ``-e`` means Python uses your cloned folder directly, so after
+``git pull`` the new code is used right away, without installing again.

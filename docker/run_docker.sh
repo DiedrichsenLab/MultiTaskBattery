@@ -1,7 +1,7 @@
 # Usage: bash docker/run_docker.sh <script.py>
-# Pin a release with: MTB_VERSION=1.2.1 bash docker/run_docker.sh <script.py>
+# Uses the MTB release below by default; pick another image with: MTB_VERSION=latest bash docker/run_docker.sh <script.py>
 # Fetch task stimuli once (online): bash docker/run_docker.sh mtb fetch <task> ...
-MTB_VERSION=${MTB_VERSION:-latest}
+MTB_VERSION=${MTB_VERSION:-1.3.0}   # update at each release
 
 # `run_docker.sh mtb ...` runs the mtb command; anything else runs python
 CMD=(/src/.venv/bin/python)
