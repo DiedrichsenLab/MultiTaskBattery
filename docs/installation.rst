@@ -56,6 +56,11 @@ so every session and site runs exactly the same version. The example
 experiments are in the ``experiments/`` folder of the
 `repository <https://github.com/diedrichsenlab/MultiTaskBattery>`_.
 
+On Linux (when not using the Docker container), also install these system
+libraries for graphics and sound; Windows and macOS already have them::
+
+    sudo apt install libglu1-mesa libportaudio2 libxcb-cursor0
+
 Step 4: Download the Stimuli
 ----------------------------
 The task stimuli (images, audio, video and text) are not in the repository; they are
