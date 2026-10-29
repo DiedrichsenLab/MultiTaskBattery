@@ -40,6 +40,9 @@ dependencies = [
 ]
 dynamic = ["version"]
 
+[project.scripts]
+mtb = "MultiTaskBattery.fetch:main"
+
 [project.urls]
 Homepage = "https://github.com/diedrichsenlab/MultiTaskBattery"
 Documentation = "https://multitaskbattery.readthedocs.io/"
