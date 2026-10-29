@@ -160,7 +160,7 @@ class TaskFile():
         self.const              = const
         self.exp_name           = const.exp_name
         self.task_dir           = const.task_dir
-        self.stim_dir           = const.stim_dir
+        self.stim_dir           = getattr(const, 'stim_dir', None)
         self.matching_stimuli   = True # whether the stimuli are matching between the control and active condition or not
         self.half_assigned      = False # whether the stimuli have assigne halves or not (for assigning different stimuli to different participants)
 

@@ -8,7 +8,6 @@
 
 from pathlib import Path
 import os
-import MultiTaskBattery as mtb
 import my_tasks  # local module: both Task and TaskFile classes for custom tasks
 
 #Necessary definitions for the experiment:
@@ -35,9 +34,6 @@ data_dir   = exp_dir / "data"
 task_modules = [my_tasks]
 
 default_run_filename = 'run_{}.tsv'
-
-package_dir = Path(os.path.dirname(os.path.dirname(os.path.realpath(mtb.__file__))))
-stim_dir   = package_dir / "stimuli"
 
 eye_tracker = False
 debug = False

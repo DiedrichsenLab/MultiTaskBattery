@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/assets/icon_MTB.png" alt="MTB Logo" width="200">
+  <img src="https://raw.githubusercontent.com/DiedrichsenLab/MultiTaskBattery/main/docs/assets/icon_MTB.png" alt="MTB Logo" width="200">
 </p>
 
 # Multi Task Battery (MTB)
