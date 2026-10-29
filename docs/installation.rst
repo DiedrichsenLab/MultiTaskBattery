@@ -59,25 +59,32 @@ pulls in all dependencies).
 ::
 
     pip install --upgrade pip
-    python install.py
+    pip install -e .
 
-``install.py`` runs ``pip install -e .``. On Linux it additionally detects your
-distribution and fetches a prebuilt wxPython wheel (wxPython has no Linux
-wheels on PyPI, so a plain pip install would fail trying to compile it).
-On Windows and macOS it is equivalent to ``pip install -e .``, which you can
-run directly.
+The ``-e`` means Python uses your cloned folder directly, so after
+``git pull`` the new code is used right away, without installing again.
 
-The ``-e`` (editable) install points Python at the cloned folder, so
-``import MultiTaskBattery`` works from anywhere and the bundled ``stimuli/``
-folder next to the code is found. Do not use a plain ``pip install .``: it
-copies only the code, not the stimuli. Pulling updates with ``git pull`` takes
-effect without reinstalling.
+Step 5: Download the Stimuli
+----------------------------
+The task stimuli (images, audio, video and text) are not in the repository; they are
+hosted on `Zenodo <https://doi.org/10.5281/zenodo.23749588>`_, one zip per
+task. Download them once, while online::
+
+    mtb fetch                       # stimuli of every task (about 1 GB)
+    mtb fetch reading movie         # only the tasks you use
+
+They are saved in your computer's cache folder (e.g.
+``~/.cache/MultiTaskBattery`` on Linux), where MTB finds them from any
+experiment folder. To keep them somewhere else, set the ``MTB_STIMULI``
+environment variable to that folder, both when fetching and when running. A
+task whose stimuli are missing stops with a message saying which
+``mtb fetch`` to run.
 
 Alternative: Docker (Linux)
 ---------------------------
 
-The container has Python, PsychoPy, MTB and its stimuli preinstalled, so no
-Python setup is needed. You only need ``docker/run_docker.sh`` from the
+The container has Python, PsychoPy and MTB preinstalled, so no Python setup
+is needed. You only need ``docker/run_docker.sh`` from the
 repository (clone it, or download that one file). Install `Docker <https://docs.docker.com/engine/install/>`_,
 then pull the container::
 
@@ -95,3 +102,9 @@ the screen, sound and the scanner keyboard, and runs a Python script in it::
 It uses ``latest`` by default. To use a fixed release, set ``MTB_VERSION``::
 
     MTB_VERSION=1.2.1 bash docker/run_docker.sh <script.py>
+
+The stimuli are not in the container. ``run_docker.sh`` gives the container
+the same stimulus folder on your computer every time, so fetch them once,
+while online::
+
+    bash docker/run_docker.sh mtb fetch reading movie

@@ -121,7 +121,7 @@ zero changes for new tasks.
 
 4. Add stimuli (if your task uses them)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Stimulus files (images, audio, video) live in a per-task subfolder
+Stimulus files (images, audio, video and text) live in a per-task subfolder
 ``<root>/<task_name>/`` (the ``<task_name>`` matches the ``name`` column in
 ``task_table.tsv``). If your task generates stimuli procedurally, skip this
 step.
@@ -135,13 +135,15 @@ order, and the first existing file wins. The search path is:
    (for a module in your experiment folder, that is ``<exp_dir>/stimuli``); then
 2. the root(s) in ``const.stim_dirs`` (a list) if you define it, otherwise the
    single ``const.stim_dir``; then
-3. the package's own bundled ``stimuli`` folder, always appended as a final
-   fallback.
+3. a ``stimuli`` folder at the root of the MultiTaskBattery repository, if
+   there is one (only used while adding a task to MTB, see below); then
+4. the stimulus cache that ``mtb fetch`` downloads into (see
+   :doc:`installation`), always appended as a final fallback.
 
-Because your own roots are searched first, the package fallback can only *add*
-resolvable files — it never overrides yours. This lets a custom task keep its
+Because your own roots are searched first, the fallbacks can only *add*
+resolvable files — they never override yours. This lets a custom task keep its
 stimuli **inside your experiment folder** while the built-in tasks still
-resolve their stimuli from the package. So you have two options:
+resolve their stimuli from the cache. So you have two options:
 
 - **Local (recommended for custom tasks):** place your files in a
   ``stimuli/<task_name>/`` folder next to your task module, e.g.
@@ -149,8 +151,11 @@ resolve their stimuli from the package. So you have two options:
   works the same way: its code, ``task_table.tsv`` and ``stimuli/`` sit side
   by side, and listing the module in ``task_modules`` is all it takes.
 
-- **Shared library (when contributing a task):** place files under the
-  package's ``stimuli/<task_name>/`` at the repository root.
+- **Shared library (when contributing a task):** while developing, place the
+  files in ``stimuli/<task_name>/`` at the repository root (this folder is
+  ignored by git, so it is not committed). When you open a pull request, zip
+  that folder as ``<task_name>.zip`` and share it with a download link in the
+  pull request.
 
 If your task reads stimuli, resolve them with the helpers
 ``ut.find_stim(const, task_name, *parts)`` (a single file — e.g.

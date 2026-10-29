@@ -6,15 +6,11 @@ Repository Structure
 The repository is organized into the following main folders:
 
 - **MultiTaskBattery**: Contains the core Python modules and classes needed to run tasks.
-- **stimuli**: Stores the stimuli used in experiments, organized into subfolders for each task (e.g., `n_back` for n-back tasks).
 - **experiments**: Stores example experiments that you can use as a starting point. Your own experiment should live in its own folder **outside** the repository (not inside ``experiments/``), so that updates to MultiTaskBattery never interfere with your work.
 
 ::
 
     |-MultiTaskBattery: Main Python modules and classes
-    |-stimuli: Stimuli used in the experiments
-    |  |-n_back: Stimuli for n_back tasks
-    |     |- ...
     |-experiments: Example experiments to use as a starting point
     |  |- example_minimal: Minimal experiment using only built-in tasks
     |  |   |-run.py: Main Python program
@@ -122,7 +118,7 @@ The `constants.py` file in the `experiments/example_minimal/` folder contains al
   - `task_dir`: Directory containing task files (`task_xx.tsv`).
   - `run_dir`: Directory containing run files (`run_xx.tsv`).
   - `data_dir`: Directory where data files are saved.
-  - `stim_dir`: Directory storing stimuli for tasks.
+  - `stim_dir` (optional): An extra directory with stimuli for tasks. Built-in tasks find their stimuli in the cache filled by `mtb fetch`.
 
 - **Default Run File**:
   The `default_run_filename` is the run-file name template (`run_{}.tsv`); the `{}` is auto-filled with the run number in the GUI (e.g. `run_01.tsv`, `run_02.tsv`, ...).

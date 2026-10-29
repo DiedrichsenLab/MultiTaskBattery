@@ -1,7 +1,7 @@
 Custom Experiments
 ========================
 
-To build a new experiment, create a new folder for it **outside** the repository (not inside ``experiments/``), so that updates to MultiTaskBattery never interfere with your work. The stimuli directory is resolved automatically from the package location, so your experiment will find the stimuli regardless of where it lives. Use ``experiments/example_minimal`` as a reference when you only need built-in tasks, and ``experiments/example_custom_task`` when you also want to define your own tasks locally.
+To build a new experiment, create a new folder for it **outside** the repository (not inside ``experiments/``), so that updates to MultiTaskBattery never interfere with your work. The stimuli are downloaded once with ``mtb fetch`` (see :doc:`installation`), so your experiment finds them regardless of where it lives. Use ``experiments/example_minimal`` as a reference when you only need built-in tasks, and ``experiments/example_custom_task`` when you also want to define your own tasks locally.
 
 Constants file
 --------------
@@ -26,10 +26,6 @@ Create a file called ``constants.py`` in the project folder. This file contains 
     task_dir = exp_dir / "task_files"  # contains target files for the task
     run_dir    = exp_dir / "run_files"     # contains run files for each session
     data_dir   = exp_dir / "data"          # This is where the result files are being saved
-
-    # This is were the stimuli for the different task are stored
-    package_dir = Path(os.path.dirname(os.path.dirname(os.path.realpath(mtb.__file__))))
-    stim_dir   = package_dir / "stimuli"
 
     # Optional: list of local Python modules that hold custom Task / TaskFile
     # classes. Uncomment and import your module if you want to add custom
@@ -133,8 +129,8 @@ defaults are used.
    * - ``stim_dirs``
      - ``[stim_dir]``
      - List of extra stimulus root directories, searched in order after the
-       ``stimuli/`` folders next to ``task_modules``. The package's bundled
-       ``stimuli`` folder is always appended as a final fallback. Only needed
+       ``stimuli/`` folders next to ``task_modules``. The stimulus cache filled
+       by ``mtb fetch`` is always appended as a final fallback. Only needed
        for stimuli kept elsewhere (e.g. on another drive). See
        :doc:`creating_tasks`.
 
