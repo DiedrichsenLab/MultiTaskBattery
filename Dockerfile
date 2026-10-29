@@ -45,14 +45,9 @@ RUN apt-get update \
 COPY ./ /src/mtb
 
 RUN . /src/.venv/bin/activate \
-    && uv pip install --find-links https://extras.wxpython.org/wxPython4/extras/linux/gtk3/ubuntu-24.04/ --only-binary wxPython --no-cache-dir wxPython
-
-RUN . /src/.venv/bin/activate \
-    && echo 'wxPython' >> /tmp/excludes.txt \
     && echo 'scipy==1.18' > /tmp/constraints.txt \
     && uv pip install --no-cache-dir /src/mtb \
-       --constraints /tmp/constraints.txt \
-       --excludes /tmp/excludes.txt
+       --constraints /tmp/constraints.txt
 
 FROM runtime-base AS runtime
 
