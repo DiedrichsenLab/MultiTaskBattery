@@ -37,6 +37,15 @@ jobs:
           python install.py
           pip install pytest
 
+      # task stimuli from Zenodo, kept between runs so they download only once
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/MultiTaskBattery
+          key: stimuli-${{ hashFiles('MultiTaskBattery/fetch.py') }}
+
+      - name: Fetch stimuli
+        run: mtb fetch
+
       - name: Run smoke tests
         # PsychoPy hides all speakers when GITHUB_WORKFLOW is set; unset it so the null sink is used
         run: env -u GITHUB_WORKFLOW xvfb-run -a -s "-screen 0 1024x768x24" python -m pytest tests -v

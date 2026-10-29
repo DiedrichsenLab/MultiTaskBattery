@@ -1,6 +1,15 @@
 # Usage: bash docker/run_docker.sh <script.py>
 # Pin a release with: MTB_VERSION=1.2.1 bash docker/run_docker.sh <script.py>
+# Fetch task stimuli once (online): bash docker/run_docker.sh mtb fetch <task> ...
 MTB_VERSION=${MTB_VERSION:-latest}
+
+# `run_docker.sh mtb ...` runs the mtb command; anything else runs python
+CMD=(/src/.venv/bin/python)
+if [ "$1" = "mtb" ]; then CMD=(/src/.venv/bin/mtb); shift; fi
+
+# Host folder for task stimuli (the same one a pip install uses), seen as /stimuli in the container
+STIM_DIR=${MTB_STIMULI:-$HOME/.cache/MultiTaskBattery/stimuli}
+mkdir -p "$STIM_DIR"
 
 # Only mount the X authority file if it is set (it is unset on some setups)
 XAUTH_ARGS=()
@@ -10,6 +19,7 @@ fi
 
 docker run \
   -v "$PWD:/exp" -w /exp \
+  -v "$STIM_DIR:/stimuli" -e MTB_STIMULI=/stimuli \
   --device=/dev/dri \
   --device=/dev/snd \
   -v "/run/user/$(id -u)/pulse:/run/user/$(id -u)/pulse" \
@@ -19,5 +29,5 @@ docker run \
   -e HOST_GID=$(id -g) \
   -e DISPLAY \
   -e PULSE_SERVER \
-  -it ghcr.io/diedrichsenlab/multitaskbattery:${MTB_VERSION} /src/.venv/bin/python \
+  -it ghcr.io/diedrichsenlab/multitaskbattery:${MTB_VERSION} "${CMD[@]}" \
   "$@"

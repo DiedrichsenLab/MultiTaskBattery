@@ -16,3 +16,6 @@ experiments/test/
 # created by pip install
 build/
 *.egg-info/
+
+# stimuli live on Zenodo (`mtb fetch`); a local stimuli/ folder is only for testing new tasks
+stimuli/
