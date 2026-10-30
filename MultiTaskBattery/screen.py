@@ -53,10 +53,8 @@ class Screen:
         screens = display.get_screens()
 
         if self.fullscr and len(screens) <= 1:
-            print("Warning: Fullscreen mode is enabled, but you have no external monitor connected.")
-            print("Change the constants to not use fullscreen mode or connect an external monitor.")
-            print("Quitting the experiment to avoid a frozen screen....")
-            exit(1)
+            print("Warning: Fullscreen mode is enabled with only one screen connected.")
+            print("The experiment will cover this screen; press Esc to quit it.")
 
 
     def start_screen(self, color='white', height=None, wrap_width=None):
