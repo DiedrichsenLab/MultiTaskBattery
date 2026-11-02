@@ -49,8 +49,11 @@ class Experiment:
                 pass
             event.globalKeys.add(key=quit_key, func=self.quit, name='quit')
 
+        # eye tracking is optional: set eye_tracker = True in constants.py to enable (default False)
+        self.eye_tracker = getattr(const, 'eye_tracker', False)
+
         # connect to the eyetracker already
-        if self.const.eye_tracker:
+        if self.eye_tracker:
             import pylink as pl
             self.pl = pl  # keep a handle so run() can call pylink (optional import, only when eye_tracker=True)
             # create an Eyelink class
@@ -153,7 +156,7 @@ class Experiment:
         run_end_timestamp = None
 
         # Start the eyetracker
-        if self.const.eye_tracker:
+        if self.eye_tracker:
             self.start_eyetracker()
 
         for t_num, task in enumerate(self.task_obj_list):
@@ -170,7 +173,7 @@ class Experiment:
             r_data['real_start_time'],r_data['start_ttl'],r_data['start_ttl_time'] = self.ttl_clock.wait_until(r_data.start_time)
 
             ## sending a message to the edf file specifying task name
-            if self.const.eye_tracker:
+            if self.eye_tracker:
                 self.pl.sendMessageToFile(f"task_name: {task.name} start_track: {self.pl.currentUsec()} real start time {r_data.real_start_time} TR count {self.ttl_clock.ttl_count}")
 
             # display the instruction text for the task. (instructions are task specific)
@@ -212,7 +215,7 @@ class Experiment:
                 self.ttl_clock.wait_until(r_data.end_time)
 
         # Stop the eyetracker
-        if self.const.eye_tracker:
+        if self.eye_tracker:
             self.stop_eyetracker()
             self.tk.receiveDataFile(self.tk_filename, self.tk_filename)
 

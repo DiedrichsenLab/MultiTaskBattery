@@ -124,7 +124,7 @@ The `constants.py` file in the `experiments/example_minimal/` folder contains al
   The `default_run_filename` is the run-file name template (`run_{}.tsv`); the `{}` is auto-filled with the run number in the GUI (e.g. `run_01.tsv`, `run_02.tsv`, ...).
 
 - **Eye-Tracking**:
-  The `eye_tracker` flag enables or disables eye tracking integration.
+  The `eye_tracker` flag enables or disables eye tracking integration (optional; defaults to False).
 
 - **Debug Mode**:
   Set `debug` to `True` to enable debugging features.

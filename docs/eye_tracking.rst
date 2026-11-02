@@ -4,7 +4,7 @@ Eye tracking
 .. warning::
    Eye tracking support is experimental and has not been tested with the current version of MTB. Please test it on your setup before using it in a study.
 
-Eye tracking is not required for a MTB experiment. If you do not want to use eyetracking, simply set the variable ``eye_tracker`` in your ``constants.py`` file to ``False``.
+Eye tracking is not required for a MTB experiment. It is off by default: you can leave ``eye_tracker`` out of your ``constants.py`` or set it to ``False``. To use eyetracking, set ``eye_tracker = True``.
 The MTB framework currently only work with EyeLink eyetrackers.
 
 EyeLink setup
