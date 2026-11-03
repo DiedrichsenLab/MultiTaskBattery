@@ -471,8 +471,9 @@ class MotorLocalizer(Task):
 
         self.window.flip()
 
-        # hold this row for its duration (no response, so no feedback)
-        self.ttl_clock.wait_until(self.ttl_clock.get_time() + trial['trial_dur'])
+        # hold this row until its scheduled end (no response, so no feedback); timing from the
+        # block start, so the flip's wait for the screen refresh does not add up over rows
+        self.ttl_clock.wait_until(self.start_time + trial['end_time'])
         return trial
 
 class AuditoryNarrative(Task):
