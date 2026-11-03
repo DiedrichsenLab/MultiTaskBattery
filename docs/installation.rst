@@ -51,7 +51,7 @@ pulls in all dependencies).
     pip install --upgrade pip
     pip install MultiTaskBattery
 
-For a study, install a fixed release (e.g. ``pip install MultiTaskBattery==1.3.1``),
+For a study, install a fixed release (e.g. ``pip install MultiTaskBattery==1.3.2``),
 so every session and site runs exactly the same version. The example
 experiments are in the ``experiments/`` folder of the
 `repository <https://github.com/diedrichsenlab/MultiTaskBattery>`_.
@@ -85,7 +85,7 @@ is needed. You only need ``docker/run_docker.sh`` from the
 repository (clone it, or download that one file). Install `Docker <https://docs.docker.com/engine/install/>`_,
 then pull the container::
 
-    docker pull ghcr.io/diedrichsenlab/multitaskbattery:1.3.1
+    docker pull ghcr.io/diedrichsenlab/multitaskbattery:1.3.2
 
 Use a fixed release like this (not ``latest``, which is the newest
 development version), so every session and site runs exactly the same
@@ -96,7 +96,7 @@ the screen, sound and the scanner keyboard, and runs a Python script in it::
 
     bash docker/run_docker.sh <script.py>
 
-It uses the release it came with (1.3.1) by default. To use another image,
+It uses the release it came with (1.3.2) by default. To use another image,
 set ``MTB_VERSION``::
 
     MTB_VERSION=<version> bash docker/run_docker.sh <script.py>
