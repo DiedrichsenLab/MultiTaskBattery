@@ -46,6 +46,10 @@ class Screen:
                              units = self.units,
                              color = self.color,
                              allowGUI = self.allowGUI, allowStencil=True)
+        # optional shift of the whole display (deg, [x, y]), for a projected image that sits off
+        # the participant's line of sight; [0, 0] (the default) leaves it centred
+        self.window.viewPos = const.get('center_shift', [0, 0])
+        self.window.flip()   # the shift applies from the next flip on
 
     def check_monitors(self):
 
