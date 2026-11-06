@@ -79,9 +79,9 @@ defaults are used.
      - ``'escape'``
      - Key that closes the window and quits the experiment at any point once
        the experiment window is open (instructions, waiting for the TTL,
-       trials, rest, scoreboard; not the run-info dialog). The run's data is
-       lost unless ``save_per_task`` is ``True``, in which case only the block
-       in progress is lost. Set to
+       trials, rest, scoreboard; not the run-info dialog). Only the block in
+       progress is lost (all of the run's data if ``save_per_task`` is
+       ``False``). The program exits with code 3. Set to
        ``None`` to disable, or pick a key that does not clash with the
        response keys or ``ttl_key``.
    * - ``show_scoreboard``
@@ -104,11 +104,12 @@ defaults are used.
        summary: the wall-clock time each block ended. Useful for aligning
        blocks with other recordings that log clock time.
    * - ``save_per_task``
-     - ``False``
-     - If ``True``, each block's data is saved as soon as the block ends,
-       instead of all at once at the end of the run, so finished blocks
-       survive a crash or quit. Saving takes a few milliseconds between
-       blocks, which can delay the next block's start slightly.
+     - ``True``
+     - Each block's data is saved as soon as the block ends, so finished
+       blocks survive a crash or quit. If ``False``, all data is saved at once
+       at the end of the run (and a stopped run saves nothing). Saving takes a
+       few milliseconds between blocks, which can delay the next block's start
+       slightly.
    * - ``task_modules``
      - ``[]``
      - List of imported Python modules that hold custom Task and TaskFile
@@ -144,6 +145,25 @@ defaults are used.
    **experiment-wide** display settings that live in ``constants.py`` are
    ``instruction_text_height``, ``instruction_wrap_width`` and
    ``scoreboard_text_height``.
+
+
+Output files
+------------
+Each subject's data goes to ``<data_dir>/<subj_id>/``:
+
+* ``<subj_id>.tsv``: one row per block (planned and real start and end times, the trigger
+  count, accuracy and reaction time), all runs appended.
+* ``<subj_id>_task-<code>.tsv``: one row per trial of that task (stimulus, response, correct,
+  reaction time), all runs appended.
+* ``<subj_id>_run-<NN>_attempt-<k>_manifest.json``: one per run, written when the run starts.
+  It records what the run ran under: the MultiTaskBattery, PsychoPy and Python versions, the
+  run file, the simple settings of ``constants.py``, the window size and refresh rate. Its
+  ``status`` is ``running`` until the run ends, then ``finished``, or ``stopped`` if the quit
+  key was pressed; a run that crashed stays ``running``.
+
+Every row of the ``.tsv`` files has the run number (``run_num``) and the ``attempt``: 1 for the
+first try at a run, 2 if the run was started again (for example after a quit), and so on.
+Earlier tries are kept, so filter on the attempt whose manifest says ``finished``.
 
 
 Generating run and task files
