@@ -64,9 +64,10 @@ class Experiment:
             self.tk = pl.EyeLink('100.1.1.1')
 
     def quit(self):
-        """Closes the window and quits the experiment (bound to const.quit_key)."""
+        """Closes the window and quits the experiment (bound to const.quit_key).
+        Exits with code 3, so a script that started the run can tell it was stopped."""
         self.screen.window.close()
-        core.quit()
+        sys.exit(3)
 
     def confirm_run_info(self):
         """
