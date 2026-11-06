@@ -76,10 +76,15 @@ class Experiment:
         sys.exit(3)
 
     def write_manifest(self, status):
-        """Writes <subj_id>_run-<NN>_manifest.json next to the subject's data: what the run ran
-        under (versions, the simple settings of constants.py, the display that opened) and its
-        status: 'running' at the start, then 'finished' or 'stopped' (a crash leaves 'running')."""
+        """Writes <subj_id>_run-<NN>_attempt-<k>_manifest.json next to the subject's data: what
+        the run ran under (versions, the simple settings of constants.py, the display that opened)
+        and its status: 'running' at the start, then 'finished' or 'stopped' (a crash leaves
+        'running'). The attempt k counts the tries at this run: 1, then 2 for a rerun, and so on;
+        it is also saved on every data row, so the tries stay apart."""
+        subj_dir = self.const.data_dir / self.subj_id
+        name = f"{self.subj_id}_run-{self.run_number:02d}_attempt-"
         if status == 'running':
+            self.attempt = len(list(subj_dir.glob(name + '*_manifest.json'))) + 1
             settings = {}
             for key in dir(self.const):
                 value = getattr(self.const, key)
@@ -94,6 +99,7 @@ class Experiment:
             self.manifest = {
                 'subject': self.subj_id,
                 'run_number': self.run_number,
+                'attempt': self.attempt,
                 'run_file': str(self.const.run_dir / self.run_filename),
                 'wait_ttl': self.wait_ttl,
                 'status': status,
@@ -109,7 +115,7 @@ class Experiment:
         else:
             self.manifest['status'] = status
             self.manifest['end_time'] = datetime.now().isoformat(timespec='seconds')
-        manifest_file = self.const.data_dir / self.subj_id / f"{self.subj_id}_run-{self.run_number:02d}_manifest.json"
+        manifest_file = subj_dir / f"{name}{self.attempt}_manifest.json"
         with open(manifest_file, 'w') as f:
             json.dump(self.manifest, f, indent=2)
 
@@ -195,6 +201,8 @@ class Experiment:
         """
         print(f"Running the experiment - run {self.run_number}")
         self.write_manifest('running')
+        for task in self.task_obj_list:
+            task.attempt = self.attempt     # saved on every trial row
         self.screen.fixation_cross()
         self.ttl_clock.reset()
         self.ttl_clock.wait_for_first_ttl(wait = self.wait_ttl)
@@ -249,6 +257,7 @@ class Experiment:
                 task.save_data(self.subj_id, self.run_number)
                 one_row = pd.DataFrame([r_data])
                 one_row.insert(0, 'run_num', self.run_number)
+                one_row.insert(1, 'attempt', self.attempt)
                 ut.append_data_to_file(self.run_data_file, one_row)
 
             self.screen.fixation_cross()
@@ -269,6 +278,7 @@ class Experiment:
         if not getattr(self.const, 'save_per_task', False):
             # save the run data to the run file
             run_data.insert(0,'run_num',[self.run_number]*len(run_data))
+            run_data.insert(1, 'attempt', self.attempt)
             if getattr(self.const, 'record_run_end_timestamp', False) and run_end_timestamp is not None:
                 run_data['run_end_timestamp'] = run_end_timestamp
             ut.append_data_to_file(self.run_data_file, run_data )

@@ -213,9 +213,11 @@ class Task:
 
         Args:
             subj_id (str): Subject id to determine name
-            run_num (int): Number of run - inserted as first column
+            run_num (int): Number of run - inserted as first column, with the attempt
+                at that run (self.attempt, set by the Experiment) as the second
         """
         self.trial_data.insert(0, 'run_num', [run_num]*len(self.trial_data))
+        self.trial_data.insert(1, 'attempt', getattr(self, 'attempt', 1))
         trial_data_file = self.const.data_dir / subj_id / f"{subj_id}_task-{self.code}.tsv"
         ut.append_data_to_file(trial_data_file, self.trial_data)
 
