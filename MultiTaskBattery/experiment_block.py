@@ -2,11 +2,14 @@
 # March 2021: First version: Ladan Shahshahani  - Maedbh King - Suzanne Witt,
 # Revised 2023: Bassel Arafat, Jorn Diedrichsen, Ince Husain
 
+import json
 import pandas as pd
 import sys
 import numpy as np
 from datetime import datetime
+import psychopy
 from psychopy import visual, gui, event, core
+import MultiTaskBattery
 import MultiTaskBattery.utils as ut
 import MultiTaskBattery.task_blocks as tasks
 from MultiTaskBattery.ttl_clock import TTLClock
@@ -67,7 +70,47 @@ class Experiment:
         """Closes the window and quits the experiment (bound to const.quit_key).
         Exits with code 3, so a script that started the run can tell it was stopped."""
         self.screen.window.close()
+        if getattr(self, 'manifest', None):
+            self.write_manifest('stopped')
         sys.exit(3)
+
+    def write_manifest(self, status):
+        """Writes <subj_id>_run-<NN>_manifest.json next to the subject's data: what the run ran
+        under (versions, the simple settings of constants.py, the display that opened) and its
+        status: 'running' at the start, then 'finished' or 'stopped' (a crash leaves 'running')."""
+        if status == 'running':
+            settings = {}
+            for key in dir(self.const):
+                value = getattr(self.const, key)
+                if key.startswith('_'):
+                    continue
+                try:
+                    json.dumps(value)    # keep only values a json file can hold (no folders, modules)
+                    settings[key] = value
+                except TypeError:
+                    pass
+            window = self.screen.window
+            self.manifest = {
+                'subject': self.subj_id,
+                'run_number': self.run_number,
+                'run_file': str(self.const.run_dir / self.run_filename),
+                'wait_ttl': self.wait_ttl,
+                'status': status,
+                'start_time': datetime.now().isoformat(timespec='seconds'),
+                'end_time': None,
+                'versions': {'MultiTaskBattery': MultiTaskBattery.__version__,
+                             'psychopy': psychopy.__version__,
+                             'python': sys.version.split()[0]},
+                'display': {'window_size': [int(s) for s in window.size],
+                            'refresh_rate_hz': round(1 / window.monitorFramePeriod, 2)},
+                'settings': settings,
+            }
+        else:
+            self.manifest['status'] = status
+            self.manifest['end_time'] = datetime.now().isoformat(timespec='seconds')
+        manifest_file = self.const.data_dir / self.subj_id / f"{self.subj_id}_run-{self.run_number:02d}_manifest.json"
+        with open(manifest_file, 'w') as f:
+            json.dump(self.manifest, f, indent=2)
 
     def confirm_run_info(self):
         """
@@ -150,6 +193,7 @@ class Experiment:
         run a run of the experiment
         """
         print(f"Running the experiment - run {self.run_number}")
+        self.write_manifest('running')
         self.screen.fixation_cross()
         self.ttl_clock.reset()
         self.ttl_clock.wait_for_first_ttl(wait = self.wait_ttl)
@@ -230,6 +274,8 @@ class Experiment:
 
             for task in self.task_obj_list:
                 task.save_data(self.subj_id, self.run_number)
+        self.write_manifest('finished')
+        self.manifest = None   # Esc from here on (score board, dialog) leaves this run 'finished'
 
         # show the scoreboard (set show_scoreboard = False in constants.py to skip it)
         if getattr(self.const, 'show_scoreboard', True):
