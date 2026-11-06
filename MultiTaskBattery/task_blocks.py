@@ -506,8 +506,8 @@ class AuditoryNarrative(Task):
 
         trial_dur = audio_stim.getDuration()
 
-        # wait for trial duration (fixation cross stays on screen during playback)
-        self.ttl_clock.wait_until(self.ttl_clock.get_time() + trial['trial_dur'])
+        # wait until the trial's planned end (fixation cross stays on screen during playback)
+        self.ttl_clock.wait_until(self.start_time + trial['start_time'] + trial['trial_dur'])
 
         return trial
 
@@ -535,8 +535,8 @@ class SpatialNavigation(Task):
         # fixation cross stays on screen while the participant imagines the route (no response)
         self.screen.fixation_cross()
 
-        # wait for trial duration
-        self.ttl_clock.wait_until(self.ttl_clock.get_time() + trial['trial_dur'])
+        # wait until the trial's planned end
+        self.ttl_clock.wait_until(self.start_time + trial['start_time'] + trial['trial_dur'])
 
         return trial
 
@@ -582,8 +582,9 @@ class TheoryOfMind(Task):
         story_stim.draw()
         self.window.flip()
 
-        # wait until story duration
-        self.ttl_clock.wait_until(self.ttl_clock.get_time() + trial['story_dur'])
+        # story until its planned end (timed from the trial's planned start, so delays do not add up)
+        story_end = self.start_time + trial['start_time'] + trial['story_dur']
+        self.ttl_clock.wait_until(story_end)
 
         # Flush any keys in buffer
         event.clearEvents()
@@ -593,8 +594,9 @@ class TheoryOfMind(Task):
         question_stim.draw()
         self.window.flip()
 
-        # collect responses 0: no response 1-4: key pressed
-        trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['question_dur'])
+        # collect responses 0: no response 1-4: key pressed (until the question's planned end; RT from its onset)
+        onset = self.ttl_clock.get_time()
+        trial['response'],trial['rt'] = self.wait_response(onset, story_end + trial['question_dur'] - onset)
         trial['correct'] = (trial['response'] == self.corr_key[trial['trial_type']])
 
         # display trial feedback
@@ -622,8 +624,8 @@ class PassageListening(Task):
         audio_stim = sound.Sound(str(audio_path))
         audio_stim.play()
 
-        # wait for trial duration (fixation cross stays on screen during playback)
-        self.ttl_clock.wait_until(self.ttl_clock.get_time() + trial['trial_dur'])
+        # wait until the trial's planned end (fixation cross stays on screen during playback)
+        self.ttl_clock.wait_until(self.start_time + trial['start_time'] + trial['trial_dur'])
 
         return trial
 
@@ -838,12 +840,13 @@ class Reading(Task):
         sentence = trial['stim']
         words = sentence.split()
 
-        #show words seqeuntially each for 450ms
-        for word in words:
+        #show words seqeuntially each for 450ms (each ends at its planned time, so delays do not add up)
+        t0 = self.start_time + trial['start_time']
+        for k, word in enumerate(words):
             word_stim = visual.TextStim(self.window, text=word, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height=trial.get('text_height', 2))
             word_stim.draw()
             self.window.flip()
-            self.ttl_clock.wait_until(self.ttl_clock.get_time() + 0.45)
+            self.ttl_clock.wait_until(t0 + (k + 1) * 0.45)
 
         event.clearEvents()
 
@@ -851,7 +854,8 @@ class Reading(Task):
         button_stim = visual.ImageStim(self.window, image=str(ut.find_stim(self.const, self.name, 'hand_press_transparent.png')), size=(trial.get('stim_width', 14.4), None))
         button_stim.draw()
         self.window.flip()
-        trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), 0.4)
+        onset = self.ttl_clock.get_time()
+        trial['response'],trial['rt'] = self.wait_response(onset, t0 + len(words) * 0.45 + 0.4 - onset)
 
         # show blank_transparent image
         blank_stim = visual.ImageStim(self.window, image=str(ut.find_stim(self.const, self.name, 'blank_transparent.png')), size=(trial.get('stim_width', 14.4), None))
@@ -1048,7 +1052,7 @@ class FlexionExtension(Task):
                                color=(-1, -1, -1), units='deg', height=trial.get('text_height', 1.5))
         stim.draw()
         self.window.flip()
-        self.ttl_clock.wait_until(self.ttl_clock.get_time() + trial['trial_dur'])
+        self.ttl_clock.wait_until(self.start_time + trial['start_time'] + trial['trial_dur'])
         return trial
 
 class SemanticPrediction(Task):
@@ -1091,18 +1095,20 @@ class SemanticPrediction(Task):
         sentence = trial['sentence']
         words = sentence.split('|')
 
-        #show words seqeuntially each for 800ms
-        for word in words:
+        #show words seqeuntially each for 800ms (each ends at its planned time, so delays do not add up)
+        t0 = self.start_time + trial['start_time']
+        for k, word in enumerate(words):
             word_stim = visual.TextStim(self.window, text=word, pos=(0.0, 0.0), color=(-1, -1, -1), units='deg', height=height_word)
             word_stim.draw()
             self.window.flip()
-            self.ttl_clock.wait_until(self.ttl_clock.get_time() + 0.8)
+            self.ttl_clock.wait_until(t0 + (k + 1) * 0.8)
 
         event.clearEvents()
 
         # Fixation cross
         self.screen.fixation_cross()
-        self.ttl_clock.wait_until(self.ttl_clock.get_time() + 0.5)
+        last_word_onset = t0 + len(words) * 0.8 + 0.5
+        self.ttl_clock.wait_until(last_word_onset)
         event.clearEvents()
 
         # Display last word
@@ -1112,8 +1118,9 @@ class SemanticPrediction(Task):
 
         event.clearEvents()
 
-        # collect responses 0: no response 1-4: key pressed
-        trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['sentence_dur'])
+        # collect responses 0: no response 1-4: key pressed (until the planned end; RT from the last word's onset)
+        onset = self.ttl_clock.get_time()
+        trial['response'],trial['rt'] = self.wait_response(onset, last_word_onset + trial['sentence_dur'] - onset)
         trial['correct'] = (trial['response'] == self.corr_key[trial['trial_type']])
 
         # display trial feedback
@@ -1450,7 +1457,7 @@ class FingerRhythmic(Task):
         txt = (f"New trial starts now") # this text shows when a new trials starts
         visual.TextStim(self.window, text=txt,height=self.const.instruction_text_height, color=[-1, -1, -1], wrapWidth=self.const.instruction_wrap_width).draw()
         self.window.flip()
-        self.ttl_clock.wait_until(self.ttl_clock.get_time() + 2)
+        self.ttl_clock.wait_until(self.start_time + trial['start_time'] + 2)
 
         self.screen.fixation_cross()
         event.clearEvents()
