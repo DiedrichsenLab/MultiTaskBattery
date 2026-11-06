@@ -8,7 +8,7 @@ import MultiTaskBattery.utils as ut
 import MultiTaskBattery.experiment_block as exp_block
 
 # shortest block (s) each task can fill; tasks not listed run 6 s
-DUR = {'finger_rhythmic': 70, 'time_perception': 10, 'demand_grid': 10,
+DUR = {'finger_rhythmic': 70, 'time_perception': 10, 'demand_grid': 18,
        'action_observation': 15, 'passage_listening': 15, 'semantic_prediction': 15,
        'theory_of_mind': 15,
        'movie': 30, 'auditory_narrative': 30, 'spatial_navigation': 30}
@@ -38,8 +38,11 @@ def test_task(name, const, screen):
     # task file
     task_file = ut.get_task_file_class(const, tf.get_task_class(name))(const)
     args = {'task_dur': dur, 'file_name': f'{name}.tsv'}
-    if 'run_number' in inspect.signature(task_file.make_task_file).parameters:
+    params = inspect.signature(task_file.make_task_file).parameters
+    if 'run_number' in params:
         args['run_number'] = 1
+    if 'iti_dur' in params:
+        args['iti_dur'] = 0   # no gap between trials, so a trial that runs long delays the next one
     task_file.make_task_file(**args)
 
     # one-block run
@@ -56,3 +59,11 @@ def test_task(name, const, screen):
     assert list((const.data_dir / name).glob(f'{name}_task-*.tsv')), 'no trial data saved'
     assert abs(block.real_start_time - block.start_time) < 0.1
     assert block.real_end_time < block.end_time + 0.5, 'block ran past its end'
+
+    # trials keep to their schedule: each trial starts as late as the first one, give or take
+    # 30 ms, so delays do not add up over the block
+    trials = pd.concat(pd.read_csv(f, sep='\t') for f in (const.data_dir / name).glob(f'{name}_task-*.tsv'))
+    if len(trials) > 1 and 'real_start_time' in trials:
+        lag = trials.real_start_time - trials.start_time
+        drift = lag.max() - lag.min()
+        assert drift < 0.03, f'trial starts drift by {drift:.3f} s over the block'
