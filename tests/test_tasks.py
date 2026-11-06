@@ -57,8 +57,9 @@ def test_task(name, const, screen):
     # data saved, block starts on time and does not run past its end
     block = pd.read_csv(const.data_dir / name / f'{name}.tsv', sep='\t').iloc[-1]
     assert list((const.data_dir / name).glob(f'{name}_task-*.tsv')), 'no trial data saved'
-    assert abs(block.real_start_time - block.start_time) < 0.1
-    assert block.real_end_time < block.end_time + 0.5, 'block ran past its end'
+    assert abs(block.real_block_start_time - block.start_time) < 0.1
+    assert block.real_task_end_time < block.end_time + 0.5, 'block ran past its end'
+    assert abs(block.real_task_start_time - (block.start_time + block.instruction_dur)) < 0.1, 'task did not start after its instructions'
 
     # trials keep to their schedule: each trial starts as late as the first one, give or take
     # 30 ms, so delays do not add up over the block

@@ -243,11 +243,11 @@ class Experiment:
             r_data = self.run_info.iloc[t_num].copy()
 
             # wait till it's time to start the task
-            r_data['real_start_time'],r_data['start_ttl'],r_data['start_ttl_time'] = self.ttl_clock.wait_until(r_data.start_time)
+            r_data['real_block_start_time'],r_data['start_ttl'],r_data['start_ttl_time'] = self.ttl_clock.wait_until(r_data.start_time)
 
             ## sending a message to the edf file specifying task name
             if self.eye_tracker:
-                self.pl.sendMessageToFile(f"task_name: {task.name} start_track: {self.pl.currentUsec()} real start time {r_data.real_start_time} TR count {self.ttl_clock.ttl_count}")
+                self.pl.sendMessageToFile(f"task_name: {task.name} start_track: {self.pl.currentUsec()} real start time {r_data.real_block_start_time} TR count {self.ttl_clock.ttl_count}")
 
             # display the instruction text for the task. (instructions are task specific)
             if r_data.instruction_dur > 0:
@@ -258,10 +258,11 @@ class Experiment:
 
             # Run the task (which saves its data to the target)
             task.start_time = self.ttl_clock.get_time()
+            r_data['real_task_start_time'] = task.start_time   # after the instructions; real_block_start_time is before them
             r_data['acc'],r_data['rt'] = task.run()
 
             # Add the end time of the task
-            r_data['real_end_time'] = self.ttl_clock.get_time()
+            r_data['real_task_end_time'] = self.ttl_clock.get_time()
             if getattr(self.const, 'record_task_end_timestamp', False):
                 r_data['task_end_timestamp'] = datetime.now().isoformat()
             # Run-level stamp: a single wall-clock time taken after the last task.

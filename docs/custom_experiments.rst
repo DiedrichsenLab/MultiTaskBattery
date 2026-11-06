@@ -152,7 +152,9 @@ Output files
 Each subject's data goes to ``<data_dir>/<subj_id>/``:
 
 * ``<subj_id>.tsv``: one row per block (planned and real start and end times, the trigger
-  count, accuracy and reaction time), all runs appended.
+  count, accuracy and reaction time), all runs appended. ``real_block_start_time`` is when the block
+  began (its instruction screen), ``real_task_start_time`` when the task began after the
+  instructions, and ``real_task_end_time`` when the task ended; all in seconds from the first trigger.
 * ``<subj_id>_task-<code>.tsv``: one row per trial of that task (stimulus, response, correct,
   reaction time), all runs appended.
 * ``<subj_id>_run-<NN>_attempt-<k>_manifest.json``: one per run, written when the run starts.
@@ -161,9 +163,15 @@ Each subject's data goes to ``<data_dir>/<subj_id>/``:
   ``status`` is ``running`` until the run ends, then ``finished``, or ``stopped`` if the quit
   key was pressed; a run that crashed stays ``running``.
 
-Every row of the ``.tsv`` files has the run number (``run_num``) and the ``attempt``: 1 for the
-first try at a run, 2 if the run was started again (for example after a quit), and so on.
-Earlier tries are kept, so filter on the attempt whose manifest says ``finished``.
+Every row of the ``.tsv`` files, and the manifest, has three numbers:
+
+* ``run_num``: which run file played (run 3 plays ``run_03.tsv``).
+* ``attempt``: 1 for the first try at a run, 2 if the run was started again (for example after
+  a quit), and so on. Earlier tries are kept, so filter on the attempt whose manifest says
+  ``finished``.
+* ``scan_num``: the how-many-th run of this subject that received a scanner trigger, so it
+  matches the scanner's own count of scans: run 3 repeated after run 8 is scan 9. Runs stopped
+  before the first trigger do not count, and it is empty when the run did not wait for a trigger.
 
 
 Generating run and task files

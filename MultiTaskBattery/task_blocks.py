@@ -313,8 +313,10 @@ class NBack(Task):
         self.stim[trial['trial_num']].draw()
         self.window.flip()
 
-        # collect responses 0: no response 1-4: key pressed
-        trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['trial_dur'])
+        # collect responses 0: no response 1-4: key pressed (until the trial's planned end; RT from the display onset)
+        onset = self.ttl_clock.get_time()
+        trial_end = self.start_time + trial['start_time'] + trial['trial_dur']
+        trial['response'],trial['rt'] = self.wait_response(onset, trial_end - onset)
         trial['correct'] = (trial['response'] == self.corr_key[trial['trial_type']])
 
         # display trial feedback
@@ -386,8 +388,8 @@ class VerbGeneration(Task):
 
         self.show_stim(trial['noun'], trial['condition'], trial.get('text_height', 2))
 
-        # wait for trial duration
-        self.ttl_clock.wait_until(self.ttl_clock.get_time() + trial['trial_dur'])
+        # wait until the trial's planned end (timed from its planned start, so delays do not add up)
+        self.ttl_clock.wait_until(self.start_time + trial['start_time'] + trial['trial_dur'])
 
         # ITI: blank the word but keep the cue on, so the context never disappears
         self.cue(trial['condition']).draw()
@@ -1389,8 +1391,8 @@ class SerialReactionTime(Task):
         trial_stim = int(trial['stim'])
         target_index = trial_stim - 1
 
-        # wait until absolute stimulus time
-        stim_onset = self.ttl_clock.get_time()
+        # the trial's planned start, so delays do not add up over the block
+        stim_onset = self.start_time + trial['start_time']
 
         # show stimulus
         for j, box in enumerate(self.boxes):
