@@ -94,6 +94,9 @@ class Task:
             t_data = self.run_trial(t_data)
             # Append the trial data
             self.trial_data.append(t_data)
+        # Hold the last trial's feedback until its end, as the next trial's start holds the others
+        if 'end_time' in self.trial_info:
+            self.ttl_clock.wait_until(self.start_time + self.trial_info['end_time'].iloc[-1])
         self.trial_data = pd.DataFrame(self.trial_data)
         # Calculate the feedback for the run
         acc = None
