@@ -68,8 +68,9 @@ class Experiment:
 
     def quit(self):
         """Closes the window and quits the experiment (bound to const.quit_key).
-        Exits with code 3, so a script that started the run can tell it was stopped."""
-        self.screen.window.close()
+        Exits with code 3, so a script that started the run can tell it was stopped.
+        The window closes as the program exits (closing it here, inside PsychoPy's key
+        check, makes PsychoPy fail while it goes through its open windows)."""
         if getattr(self, 'manifest', None):
             self.write_manifest('stopped')
         sys.exit(3)
