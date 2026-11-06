@@ -36,7 +36,7 @@ Create a file called ``constants.py`` in the project folder. This file contains 
     # import my_tasks
     # task_modules = [my_tasks]
 
-    # Use {} so the GUI auto-fills the run number (e.g. run_01.tsv, run_02.tsv, ...)
+    # {} is filled with the run number entered in the GUI (e.g. run_01.tsv, run_02.tsv, ...)
     default_run_filename = 'run_{}.tsv'
 
     # Is the Eye tracker being used?

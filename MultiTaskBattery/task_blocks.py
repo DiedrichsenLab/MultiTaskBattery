@@ -214,10 +214,12 @@ class Task:
         Args:
             subj_id (str): Subject id to determine name
             run_num (int): Number of run - inserted as first column, with the attempt
-                at that run (self.attempt, set by the Experiment) as the second
+                at that run (self.attempt, set by the Experiment) as the second and the
+                scanner's count of scans (self.scan_num) as the third
         """
         self.trial_data.insert(0, 'run_num', [run_num]*len(self.trial_data))
         self.trial_data.insert(1, 'attempt', getattr(self, 'attempt', 1))
+        self.trial_data.insert(2, 'scan_num', getattr(self, 'scan_num', None))
         trial_data_file = self.const.data_dir / subj_id / f"{subj_id}_task-{self.code}.tsv"
         ut.append_data_to_file(trial_data_file, self.trial_data)
 
@@ -420,8 +422,8 @@ class TongueMovement(Task):
 
         self.window.flip()
 
-        # wait for trial duration
-        self.ttl_clock.wait_until(self.ttl_clock.get_time() + trial['trial_dur'])
+        # wait until the trial's planned end (timed from its planned start, so delays do not add up)
+        self.ttl_clock.wait_until(self.start_time + trial['start_time'] + trial['trial_dur'])
 
         # return to a plain fixation cross (no response, so no feedback)
         self.screen.fixation_cross()
@@ -740,6 +742,7 @@ class DemandGrid(Task):
             num_steps = 3
 
         step_dur = trial['sequence_dur']/num_steps
+        t0 = self.start_time + trial['start_time']   # planned trial start: steps and answer window end on schedule
         self.square_size = trial.get('square_size', 1.5)
         self.answer_offset = trial.get('answer_offset', 5)
         self.grid = self.create_grid(grid_size=grid_size)
@@ -763,7 +766,7 @@ class DemandGrid(Task):
                     for rect in row:
                         rect.draw()
                 self.window.flip()
-                self.ttl_clock.wait_until(self.ttl_clock.get_time() + step_dur)
+                self.ttl_clock.wait_until(t0 + (i + 1) * step_dur)
 
                 for tuple in step_sequence:
                     x, y = tuple
@@ -785,7 +788,7 @@ class DemandGrid(Task):
                     for rect in row:
                         rect.draw()
                 self.window.flip()
-                self.ttl_clock.wait_until(self.ttl_clock.get_time() + step_dur)
+                self.ttl_clock.wait_until(t0 + (i // 2 + 1) * step_dur)
 
                 # Reset colors after the pair
                 for x, y in pair:
@@ -805,8 +808,10 @@ class DemandGrid(Task):
         modified_grid = self.create_grid(sequence=modified_sequence, position='left' if correct_side == 'right' else 'right', grid_size=grid_size)
         self.window.flip()
 
-        # collect responses 0: no response 1-4: key pressed
-        trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['question_dur'])
+        # collect responses 0: no response 1-4: key pressed (until the planned end of the answer window; RT from its onset)
+        onset = self.ttl_clock.get_time()
+        question_end = t0 + trial['sequence_dur'] + trial['question_dur']
+        trial['response'],trial['rt'] = self.wait_response(onset, question_end - onset)
         trial['correct'] = (trial['response'] == self.corr_key[trial['trial_type']])
 
         # Provide feedback if necessary
@@ -898,7 +903,8 @@ class OddBall(Task):
 
         word_stim.draw()
         self.window.flip()
-        self.ttl_clock.wait_until(self.ttl_clock.get_time() + trial['trial_dur'])
+        letter_end = self.start_time + trial['start_time'] + trial['trial_dur']   # planned, so delays do not add up
+        self.ttl_clock.wait_until(letter_end)
 
         # blank the letter to a fixation cross during the response window (no per-trial feedback)
         self.screen.fixation_cross()
@@ -907,7 +913,8 @@ class OddBall(Task):
         event.clearEvents()
 
         # collect responses 0: no response 1-4: key pressed
-        trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['iti_dur'])
+        now = self.ttl_clock.get_time()
+        trial['response'],trial['rt'] = self.wait_response(now, letter_end + trial['iti_dur'] - now)
 
         # method 2 for accuracy for oddball
         if trial['trial_type'] == 1:
@@ -1223,8 +1230,10 @@ class VisualSearch(Task):
 
         self.window.flip()
 
-        # collect responses
-        trial['response'],trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['trial_dur'])
+        # collect responses until the trial's planned end (RT from the display onset)
+        onset = self.ttl_clock.get_time()
+        trial_end = self.start_time + trial['start_time'] + trial['trial_dur']
+        trial['response'],trial['rt'] = self.wait_response(onset, trial_end - onset)
         trial['correct'] = (trial['response'] == self.corr_key[trial['trial_type']])
 
         self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])

@@ -80,10 +80,11 @@ class Experiment:
         the run ran under (versions, the simple settings of constants.py, the display that opened)
         and its status: 'running' at the start, then 'finished' or 'stopped' (a crash leaves
         'running'). The attempt k counts the tries at this run: 1, then 2 for a rerun, and so on;
-        it is also saved on every data row, so the tries stay apart."""
+        it is also saved on every data row, so the tries stay apart. The first call of a run
+        writes the file; later calls update it."""
         subj_dir = self.const.data_dir / self.subj_id
         name = f"{self.subj_id}_run-{self.run_number:02d}_attempt-"
-        if status == 'running':
+        if not getattr(self, 'manifest', None):
             self.attempt = len(list(subj_dir.glob(name + '*_manifest.json'))) + 1
             settings = {}
             for key in dir(self.const):
@@ -100,6 +101,7 @@ class Experiment:
                 'subject': self.subj_id,
                 'run_number': self.run_number,
                 'attempt': self.attempt,
+                'scan_num': None,
                 'run_file': str(self.const.run_dir / self.run_filename),
                 'wait_ttl': self.wait_ttl,
                 'status': status,
@@ -114,10 +116,21 @@ class Experiment:
             }
         else:
             self.manifest['status'] = status
-            self.manifest['end_time'] = datetime.now().isoformat(timespec='seconds')
+            if status != 'running':
+                self.manifest['end_time'] = datetime.now().isoformat(timespec='seconds')
         manifest_file = subj_dir / f"{name}{self.attempt}_manifest.json"
         with open(manifest_file, 'w') as f:
             json.dump(self.manifest, f, indent=2)
+
+    def count_scan(self):
+        """Called once the first scanner trigger has arrived: scan_num is 1 + the number of this
+        subject's earlier runs that got a trigger, so it matches the scanner's own count of scans
+        (run 5 repeated after run 8 is scan 9). Without a trigger (wait_ttl False) it stays None."""
+        subj_dir = self.const.data_dir / self.subj_id
+        earlier = [json.load(open(f)).get('scan_num') for f in subj_dir.glob(f"{self.subj_id}_run-*_manifest.json")]
+        self.scan_num = sum(s is not None for s in earlier) + 1
+        self.manifest['scan_num'] = self.scan_num
+        self.write_manifest('running')
 
     def confirm_run_info(self):
         """
@@ -140,7 +153,6 @@ class Experiment:
             inputDlg = gui.Dlg(title = f"{self.exp_name}")
             inputDlg.addField('Enter Subject id (str):',initial = self.subj_id)      # run number (int)
             inputDlg.addField('Enter Run Number (int):',initial = self.run_number+1)      # run number (int)
-            inputDlg.addField('Run File name (str):',initial = self.const.default_run_filename.format(f'{self.run_number + 1:02d}'))      # run number (int)
             inputDlg.addField('Wait for TTL pulse?', initial = True) # a checkbox for ttl pulse (set it true for scanning)
 
             inputDlg.show()
@@ -148,8 +160,10 @@ class Experiment:
             if inputDlg.OK:
                 self.subj_id        = str(inputDlg.data[0])
                 self.run_number     = int(inputDlg.data[1])
-                self.run_filename   = str(inputDlg.data[2])
-                self.wait_ttl       = bool(inputDlg.data[3])
+                # the run file always follows the run number (run 3 -> run_03.tsv); a repeated
+                # run is kept apart by its attempt number
+                self.run_filename   = self.const.default_run_filename.format(f'{self.run_number:02d}')
+                self.wait_ttl       = bool(inputDlg.data[2])
             else:
                 sys.exit()
 
@@ -206,6 +220,11 @@ class Experiment:
         self.screen.fixation_cross()
         self.ttl_clock.reset()
         self.ttl_clock.wait_for_first_ttl(wait = self.wait_ttl)
+        self.scan_num = None
+        if self.wait_ttl:
+            self.count_scan()
+        for task in self.task_obj_list:
+            task.scan_num = self.scan_num   # saved on every trial row
         run_data = []
         run_end_timestamp = None
 
@@ -258,6 +277,7 @@ class Experiment:
                 one_row = pd.DataFrame([r_data])
                 one_row.insert(0, 'run_num', self.run_number)
                 one_row.insert(1, 'attempt', self.attempt)
+                one_row.insert(2, 'scan_num', self.scan_num)
                 ut.append_data_to_file(self.run_data_file, one_row)
 
             self.screen.fixation_cross()
@@ -279,6 +299,7 @@ class Experiment:
             # save the run data to the run file
             run_data.insert(0,'run_num',[self.run_number]*len(run_data))
             run_data.insert(1, 'attempt', self.attempt)
+            run_data.insert(2, 'scan_num', self.scan_num)
             if getattr(self.const, 'record_run_end_timestamp', False) and run_end_timestamp is not None:
                 run_data['run_end_timestamp'] = run_end_timestamp
             ut.append_data_to_file(self.run_data_file, run_data )
