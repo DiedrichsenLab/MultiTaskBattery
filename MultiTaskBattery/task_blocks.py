@@ -1347,8 +1347,10 @@ class Affective(Task):
         self.stim[trial['trial_num']].draw()
         self.window.flip()
 
-        # Wait for response
-        trial['response'], trial['rt'] = self.wait_response(self.ttl_clock.get_time(), trial['trial_dur'])
+        # Wait for response until the trial's planned end (from the block start, so the flip's
+        # wait for the screen refresh does not add up over trials); RT from the image onset
+        onset = self.ttl_clock.get_time()
+        trial['response'], trial['rt'] = self.wait_response(onset, self.start_time + trial['start_time'] + trial['trial_dur'] - onset)
 
         # Determine correct response
         correct_key = trial['key_pleasant'] if trial['trial_type'] == 2 else trial['key_unpleasant']
