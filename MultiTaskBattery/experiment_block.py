@@ -73,7 +73,38 @@ class Experiment:
         check, makes PsychoPy fail while it goes through its open windows)."""
         if getattr(self, 'manifest', None):
             self.write_manifest('stopped')
+            self.write_events()   # the blocks finished before Esc
         sys.exit(3)
+
+    def write_events(self):
+        """Writes a BIDS events file for this scan into <subj>/events/, named by scan_num
+        (sub-<subj>_task-<exp_name>_run-<scan_num>_events.tsv), so it can be copied into a BIDS
+        folder as it is. One row for each instruction period ('instruction') and one for each
+        task period (trial_type = task name, plus the condition when the block has one).
+        Onsets are seconds since the first scanner trigger. Only for runs that waited for the
+        trigger; turn off with write_events = False in constants.py."""
+        if not getattr(self.const, 'write_events', True) or getattr(self, 'scan_num', None) is None:
+            return
+        if not self.run_data_file.exists():
+            return
+        blocks = pd.read_csv(self.run_data_file, sep='\t')
+        blocks = blocks[(blocks.run_num == self.run_number) & (blocks.attempt == self.attempt)]
+        rows = []
+        for task, (_, b) in zip(self.task_obj_list, blocks.iterrows()):
+            if b.real_task_start_time > b.real_block_start_time:
+                rows.append([b.real_block_start_time, b.real_task_start_time - b.real_block_start_time, 'instruction'])
+            trial_type = b.task_name
+            conds = task.trial_info['condition'].unique() if 'condition' in task.trial_info else []
+            if len(conds) == 1:
+                trial_type += f'_{conds[0]}'
+            rows.append([b.real_task_start_time, b.real_task_end_time - b.real_task_start_time, trial_type])
+        events = pd.DataFrame(rows, columns=['onset', 'duration', 'trial_type']).round(3)
+        sub = ''.join(c for c in str(self.subj_id).removeprefix('sub-') if c.isalnum())
+        task_label = ''.join(c for c in str(self.exp_name) if c.isalnum())
+        events_dir = self.const.data_dir / self.subj_id / 'events'
+        events_dir.mkdir(exist_ok=True)
+        events.to_csv(events_dir / f'sub-{sub}_task-{task_label}_run-{self.scan_num:02d}_events.tsv',
+                      sep='\t', index=False)
 
     def write_manifest(self, status):
         """Writes <subj_id>_run-<NN>_attempt-<k>_manifest.json next to the subject's data: what
@@ -308,6 +339,7 @@ class Experiment:
             for task in self.task_obj_list:
                 task.save_data(self.subj_id, self.run_number)
         self.write_manifest('finished')
+        self.write_events()
         self.manifest = None   # Esc from here on (score board, dialog) leaves this run 'finished'
 
         # show the scoreboard (set show_scoreboard = False in constants.py to skip it)

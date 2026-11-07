@@ -30,6 +30,9 @@ eye_tracker = False                                     # do you want to do  eye
 # Running in debug mode?
 debug = False                                           # set to True for debugging
 
+# write a BIDS events.tsv for each scan into data/<subj>/events/
+write_events = True
+
 # Screen settings for subject display
 screen = {}
 screen['size'] = [1100, 800]        # screen resolution

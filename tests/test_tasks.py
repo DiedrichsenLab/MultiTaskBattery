@@ -61,6 +61,13 @@ def test_task(name, const, screen):
     assert block.real_task_end_time < block.end_time + 0.5, 'block ran past its end'
     assert abs(block.real_task_start_time - (block.start_time + block.instruction_dur)) < 0.1, 'task did not start after its instructions'
 
+    # events file: written as if the run had waited for the trigger (scan 1)
+    e.scan_num = 1
+    e.write_events()
+    events = pd.read_csv(next((const.data_dir / name / 'events').glob('*_run-01_events.tsv')), sep='\t')
+    assert list(events.trial_type) == ['instruction', events.trial_type.iloc[1]] and events.trial_type.iloc[1].startswith(name)
+    assert abs(events.onset.iloc[1] - block.real_task_start_time) < 0.001
+
     # trials keep to their schedule: each trial starts as late as the first one, give or take
     # 30 ms, so delays do not add up over the block
     trials = pd.concat(pd.read_csv(f, sep='\t') for f in (const.data_dir / name).glob(f'{name}_task-*.tsv'))

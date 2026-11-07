@@ -110,6 +110,10 @@ defaults are used.
        at the end of the run (and a stopped run saves nothing). Saving takes a
        few milliseconds between blocks, which can delay the next block's start
        slightly.
+   * - ``write_events``
+     - ``True``
+     - Writes a BIDS ``events.tsv`` for each scan into ``<subj_id>/events/``
+       (see Output files). Set to ``False`` to skip it.
    * - ``task_modules``
      - ``[]``
      - List of imported Python modules that hold custom Task and TaskFile
@@ -162,6 +166,12 @@ Each subject's data goes to ``<data_dir>/<subj_id>/``:
   run file, the simple settings of ``constants.py``, the window size and refresh rate. Its
   ``status`` is ``running`` until the run ends, then ``finished``, or ``stopped`` if the quit
   key was pressed; a run that crashed stays ``running``.
+* ``events/sub-<subj>_task-<exp_name>_run-<NN>_events.tsv``: one per scan, ready to copy into a
+  BIDS folder; ``<NN>`` is the ``scan_num``. One row per instruction period (``trial_type``
+  ``instruction``) and per task period (``trial_type`` is the task name, plus the condition when
+  all of the block's trials share one), with ``onset`` and ``duration`` in seconds from the first
+  trigger. Written at the end of the run, or at a quit with the blocks finished so far. Only for
+  runs that waited for the trigger; turn it off with ``write_events = False``.
 
 Every row of the ``.tsv`` files, and the manifest, has three numbers:
 
