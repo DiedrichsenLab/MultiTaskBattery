@@ -464,10 +464,12 @@ class MotorLocalizer(Task):
 
     def run_trial(self, trial):
         """ Run a single row of the motor-localizer task. """
-        # Condition label (body part) at the top of the screen, in black
-        cond_visual = visual.TextStim(self.window, text=str(trial['condition']), pos=(0.0, trial.get('label_y', 6.0)),
-                                      color=(-1, -1, -1), units='deg', height=trial.get('text_height', 1.5))
-        cond_visual.draw()
+        # Condition label (body part) at the top of the screen, in black (unless show_label is
+        # False; older task files have no show_label column and show it)
+        if trial.get('show_label', True):
+            cond_visual = visual.TextStim(self.window, text=str(trial['condition']), pos=(0.0, trial.get('label_y', 6.0)),
+                                          color=(-1, -1, -1), units='deg', height=trial.get('text_height', 1.5))
+            cond_visual.draw()
 
         # Central fixation cross (drawn without flipping yet)
         self.screen.fixation_cross(flip=False)

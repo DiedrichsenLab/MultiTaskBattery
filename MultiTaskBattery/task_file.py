@@ -426,7 +426,8 @@ class MotorLocalizer(TaskFile):
                         condition=['hand', 'foot', 'tongue'],
                         file_name=None,
                         text_height=1.5,
-                        label_y=6):
+                        label_y=6,
+                        show_label=True):
         """
         Create a motor-localizer task file. The block is split into one equal
         segment per condition (segment_dur = task_dur / len(condition), e.g.
@@ -449,6 +450,8 @@ class MotorLocalizer(TaskFile):
             file_name (str): Name of the file to save the task data.
             text_height (float): Height of the task text in degrees of visual angle.
             label_y (float): Height of the condition label above the centre, in degrees of visual angle.
+            show_label (bool): Show the condition label during the block. Turn it off only when
+                the block has one condition that the instructions already name.
 
         Returns:
             pd.DataFrame: Task information as a DataFrame.
@@ -467,6 +470,7 @@ class MotorLocalizer(TaskFile):
                 trial['trial_num'] = n
                 trial['text_height'] = text_height
                 trial['label_y'] = label_y
+                trial['show_label'] = show_label
                 trial['condition'] = cond
                 trial['trial_type'] = 1 - (p % 2)        # 1 = circle present, 0 = circle absent
                 trial['trial_dur'] = trial_dur

@@ -1034,6 +1034,14 @@
                 "type": "float",
                 "description": "Height of the task text (degrees of visual angle)."
             },
+            "label_y": {
+                "type": "float",
+                "description": "Height of the condition label above the centre (degrees of visual angle)."
+            },
+            "show_label": {
+                "type": "bool",
+                "description": "Whether the condition label is shown during the block (default True). Turn it off only when the block has one condition that the instructions already name."
+            },
             "start_time": {
                 "type": "float",
                 "description": "Row onset, relative to the block start (in seconds)."
