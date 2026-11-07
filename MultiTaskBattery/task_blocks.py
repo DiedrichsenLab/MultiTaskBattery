@@ -819,7 +819,10 @@ class DemandGrid(Task):
         trial['correct'] = (trial['response'] == self.corr_key[trial['trial_type']])
 
         # Provide feedback if necessary
-        self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
+        # feedback only if a key was pressed; on a miss the screen is left as it is until the next
+        # trial draws over it, so nothing flashes at the trial's end
+        if trial['response'] != 0:
+            self.display_trial_feedback(trial['display_trial_feedback'], trial['correct'])
 
         return trial
 
