@@ -71,6 +71,15 @@ defaults are used.
      - ``None``
      - If set to a key name (e.g. ``'space'``), only that key will dismiss
        the run-feedback scoreboard screen. If ``None``, any key continues.
+   * - ``gamepad_buttons``
+     - ``None``
+     - Game controller buttons that answer as the response keys, one per entry
+       of ``response_keys`` in the same order: ``['X', 'Y', 'A', 'B']`` makes X
+       count as the first response key, Y the second, and so on. Use button
+       names for a pad SDL knows (Xbox, PlayStation, 8BitDo) or raw button
+       numbers (``[0, 1, 2, 3]``) for one it does not (a Current Designs 932 in
+       joystick mode). The keyboard keeps working; the trigger, quit key and
+       ``continue_key`` stay on the keyboard. If ``None``, no pad is used.
    * - ``ttl_key``
      - ``'t'``
      - Key the scanner trigger (TTL) arrives as, or a list of keys that all

@@ -11,6 +11,7 @@ import psychopy
 from psychopy import visual, gui, event, core
 import MultiTaskBattery
 import MultiTaskBattery.utils as ut
+import MultiTaskBattery.gamepad as gamepad
 import MultiTaskBattery.task_blocks as tasks
 from MultiTaskBattery.ttl_clock import TTLClock
 from MultiTaskBattery.screen import Screen
@@ -42,6 +43,9 @@ class Experiment:
         # open screen and display fixation cross
         ### set the resolution of the subject screen here:
         self.screen = screen if screen is not None else Screen(const.screen)
+
+        # game controller: set gamepad_buttons in constants.py to answer with a pad (see gamepad.py)
+        gamepad.setup(const)
 
         # quit key: works at any point of the experiment (checked on every flip / key read); set quit_key = None in constants.py to disable
         quit_key = getattr(const, 'quit_key', 'escape')

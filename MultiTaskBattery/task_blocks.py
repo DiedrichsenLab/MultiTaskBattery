@@ -13,6 +13,7 @@ from psychopy import visual, sound, core, event
 from psychopy.tools.monitorunittools import deg2pix
 from pyglet.window import key
 import MultiTaskBattery.utils as ut
+import MultiTaskBattery.gamepad as gamepad
 from ast import literal_eval
 from copy import deepcopy
 from moviepy.audio.io.AudioFileClip import AudioFileClip
@@ -182,7 +183,7 @@ class Task:
                                 show_last_seconds=show_last_seconds,
                                 y_pos=6)
                 self.window.flip()
-            keys=event.getKeys(keyList= self.const.response_keys, timeStamped=self.ttl_clock.clock)
+            keys=gamepad.get_keys(keyList= self.const.response_keys, timeStamped=self.ttl_clock.clock)
             if len(keys)>0:
                 response_made = True
                 key_char = keys[0][0]
@@ -992,7 +993,7 @@ class FingerSequence(Task):
         while self.ttl_clock.get_time() - sequence_start_time < trial['trial_dur'] and num_presses < num_items:
             self.ttl_clock.update()
 
-            keys = event.getKeys(keyList=self.const.response_keys, timeStamped=self.ttl_clock.clock)
+            keys = gamepad.get_keys(keyList=self.const.response_keys, timeStamped=self.ttl_clock.clock)
             if keys:
                 key_char, key_press_time = keys[0]
                 key = self.const.response_keys.index(key_char) + 1
@@ -1426,7 +1427,7 @@ class SerialReactionTime(Task):
         # collect responses until absolute end_time
         responses = []
         while self.ttl_clock.get_time() < (stim_onset + trial['trial_dur'] + trial['iti_dur']):
-            keys = event.getKeys(
+            keys = gamepad.get_keys(
                 keyList=self.const.response_keys,
                 timeStamped=self.ttl_clock.clock
             )
@@ -1495,7 +1496,7 @@ class FingerRhythmic(Task):
                     beep_time = clk.getTime()
                     beep_times.append(beep_time)
                     break
-                res = event.waitKeys(maxWait=deadline - now,
+                res = gamepad.wait_keys(maxWait=deadline - now,
                                      keyList=self.const.response_keys,
                                      timeStamped=clk)
                 if res:
@@ -1508,7 +1509,7 @@ class FingerRhythmic(Task):
             now = clk.getTime()
             if now >= end_abs:
                 break
-            res = event.waitKeys(maxWait=end_abs - now,
+            res = gamepad.wait_keys(maxWait=end_abs - now,
                                  keyList=self.const.response_keys,
                                  timeStamped=clk)
             if res:

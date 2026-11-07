@@ -31,6 +31,7 @@ dependencies = [
     "numba",
     "nibabel",
     "psychopy-sounddevice",
+    "pygame",
 ]
 dynamic = ["version"]
 

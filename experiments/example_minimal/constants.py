@@ -12,6 +12,9 @@ exp_name = 'example_minimal' # name of the experiment
 #COMMENT THIS FOR SCANNING
 response_keys    = ['a', 's', 'd', 'f']
 
+# game controller: buttons that answer as response_keys 1-4 (names for an Xbox-type pad, numbers otherwise)
+#gamepad_buttons  = ['X', 'Y', 'A', 'B']
+
 #not used
 response_fingers = ['Pinky', 'Ring','Middle', 'Index']
 
