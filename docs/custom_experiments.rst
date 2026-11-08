@@ -120,9 +120,9 @@ defaults are used.
        few milliseconds between blocks, which can delay the next block's start
        slightly.
    * - ``write_events``
-     - ``True``
-     - Writes a BIDS ``events.tsv`` for each scan into ``<subj_id>/events/``
-       (see Output files). Set to ``False`` to skip it.
+     - ``False``
+     - If ``True``, writes a BIDS ``events.tsv`` for each scan into
+       ``<subj_id>/events/`` (see Output files).
    * - ``task_modules``
      - ``[]``
      - List of imported Python modules that hold custom Task and TaskFile
@@ -180,7 +180,7 @@ Each subject's data goes to ``<data_dir>/<subj_id>/``:
   ``instruction``) and per task period (``trial_type`` is the task name, plus the condition when
   all of the block's trials share one), with ``onset`` and ``duration`` in seconds from the first
   trigger. Written at the end of the run, or at a quit with the blocks finished so far. Only for
-  runs that waited for the trigger; turn it off with ``write_events = False``.
+  runs that waited for the trigger, and only with ``write_events = True``.
 
 Every row of the ``.tsv`` files, and the manifest, has three numbers:
 
