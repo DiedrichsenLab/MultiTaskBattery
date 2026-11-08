@@ -82,8 +82,8 @@ class Experiment:
         folder as it is. One row for each instruction period ('instruction') and one for each
         task period (trial_type = task name, plus the condition when the block has one).
         Onsets are seconds since the first scanner trigger. Only for runs that waited for the
-        trigger; turn off with write_events = False in constants.py."""
-        if not getattr(self.const, 'write_events', True) or getattr(self, 'scan_num', None) is None:
+        trigger; turn on with write_events = True in constants.py (off by default)."""
+        if not getattr(self.const, 'write_events', False) or getattr(self, 'scan_num', None) is None:
             return
         if not self.run_data_file.exists():
             return

@@ -20,7 +20,7 @@ def const(tmp_path_factory):
     return types.SimpleNamespace(
         exp_name='smoke', exp_dir=d, task_dir=d / 'task_files', run_dir=d / 'run_files',
         data_dir=d / 'data', stim_dir=ut._PACKAGE_STIM_DIR, default_run_filename='run_01.tsv',
-        response_keys=['a', 's', 'd', 'f'], eye_tracker=False, debug=True, show_scoreboard=False,
+        response_keys=['a', 's', 'd', 'f'], eye_tracker=False, debug=True, show_scoreboard=False, write_events=True,
         screen={'size': [800, 600], 'fullscr': False, 'number': 0, 'width': 53, 'distance': 57})
 
 
