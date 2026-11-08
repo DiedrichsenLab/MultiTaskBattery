@@ -174,37 +174,28 @@ class Experiment:
 
         Args:
         """
-        if not self.const.debug:
-            # Step 1: Create a temporary small window for user feedback
-            self.screen.start_screen(height=getattr(self.const, 'instruction_text_height', None),
-                                     wrap_width=getattr(self.const, 'instruction_wrap_width', None))
+        # Step 1: Create a temporary small window for user feedback
+        self.screen.start_screen(height=getattr(self.const, 'instruction_text_height', None),
+                                 wrap_width=getattr(self.const, 'instruction_wrap_width', None))
 
-            # a dialog box pops up so you can enter info
-            #Set up input box
-            inputDlg = gui.Dlg(title = f"{self.exp_name}")
-            inputDlg.addField('Enter Subject id (str):',initial = self.subj_id)      # run number (int)
-            inputDlg.addField('Enter Run Number (int):',initial = self.run_number+1)      # run number (int)
-            inputDlg.addField('Wait for TTL pulse?', initial = True) # a checkbox for ttl pulse (set it true for scanning)
+        # a dialog box pops up so you can enter info
+        #Set up input box
+        inputDlg = gui.Dlg(title = f"{self.exp_name}")
+        inputDlg.addField('Enter Subject id (str):',initial = self.subj_id)      # run number (int)
+        inputDlg.addField('Enter Run Number (int):',initial = self.run_number+1)      # run number (int)
+        inputDlg.addField('Wait for TTL pulse?', initial = True) # a checkbox for ttl pulse (set it true for scanning)
 
-            inputDlg.show()
+        inputDlg.show()
 
-            if inputDlg.OK:
-                self.subj_id        = str(inputDlg.data[0])
-                self.run_number     = int(inputDlg.data[1])
-                # the run file always follows the run number (run 3 -> run_03.tsv); a repeated
-                # run is kept apart by its attempt number
-                self.run_filename   = self.const.default_run_filename.format(f'{self.run_number:02d}')
-                self.wait_ttl       = bool(inputDlg.data[2])
-            else:
-                sys.exit()
-
+        if inputDlg.OK:
+            self.subj_id        = str(inputDlg.data[0])
+            self.run_number     = int(inputDlg.data[1])
+            # the run file always follows the run number (run 3 -> run_03.tsv); a repeated
+            # run is kept apart by its attempt number
+            self.run_filename   = self.const.default_run_filename.format(f'{self.run_number:02d}')
+            self.wait_ttl       = bool(inputDlg.data[2])
         else:
-            print("running in debug mode")
-            # pass on the values for your debugging with the following keywords
-            self.subj_id = 'test00'
-            self.run_number = self.run_number+1
-            self.run_filename = 'run_01.tsv'
-            self.wait_ttl = True
+            sys.exit()
 
     def init_run(self):
         """initializing the run:

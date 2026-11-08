@@ -42,9 +42,6 @@ Create a file called ``constants.py`` in the project folder. This file contains 
     # Is the Eye tracker being used?
     eye_tracker = False
 
-    # Running in debug mode?
-    debug = False # set to True for debugging
-
     # Screen settings for subject display
     screen = {}
     screen['size'] = [1100, 800]        # screen resolution

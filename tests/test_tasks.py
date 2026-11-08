@@ -20,7 +20,7 @@ def const(tmp_path_factory):
     return types.SimpleNamespace(
         exp_name='smoke', exp_dir=d, task_dir=d / 'task_files', run_dir=d / 'run_files',
         data_dir=d / 'data', stim_dir=ut._PACKAGE_STIM_DIR, default_run_filename='run_01.tsv',
-        response_keys=['a', 's', 'd', 'f'], eye_tracker=False, debug=True, show_scoreboard=False, write_events=True,
+        response_keys=['a', 's', 'd', 'f'], eye_tracker=False, show_scoreboard=False, write_events=True,
         screen={'size': [800, 600], 'fullscr': False, 'number': 0, 'width': 53, 'distance': 57})
 
 
@@ -49,8 +49,7 @@ def test_task(name, const, screen):
     tf.make_run_file([name], [f'{name}.tsv'], instruction_dur=1, task_dur=dur,
                      shuffle=False).to_csv(const.run_dir / 'run_01.tsv', sep='\t', index=False)
     e = exp_block.Experiment(const, subj_id=name, screen=screen)
-    e.confirm_run_info()
-    e.subj_id, e.wait_ttl = name, False
+    e.run_number, e.run_filename, e.wait_ttl = 1, 'run_01.tsv', False   # what the run dialog sets
     e.init_run()
     e.run()
 

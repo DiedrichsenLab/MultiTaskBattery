@@ -126,9 +126,6 @@ The `constants.py` file in the `experiments/example_minimal/` folder contains al
 - **Eye-Tracking**:
   The `eye_tracker` flag enables or disables eye tracking integration (optional; defaults to False).
 
-- **Debug Mode**:
-  Set `debug` to `True` to enable debugging features.
-
 - **Screen Settings**:
   The `screen` dictionary allows customization of the screen resolution (`screen['size']`), full-screen mode (`screen['fullscr']`), and display selection (`screen['number']`). `screen['width']` (physical width of the screen image in cm) and `screen['distance']` (eye-to-screen distance in cm) are required: stimuli are drawn in degrees of visual angle, so measure both for each setup. The experiment will not start without them. Optionally, `screen['center_shift']` (degrees, `[x, y]`, default `[0, 0]`) shifts the whole display, for a projected image that sits off the participant's line of sight.
 

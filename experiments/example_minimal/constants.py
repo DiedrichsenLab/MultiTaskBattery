@@ -27,8 +27,6 @@ default_run_filename = 'run_{}.tsv'
 # Is the Eye tracker being used?
 eye_tracker = False                                     # do you want to do  eyetracking?
 
-# Running in debug mode?
-debug = False                                           # set to True for debugging
 
 # write a BIDS events.tsv for each scan into data/<subj>/events/
 write_events = True
