@@ -76,9 +76,10 @@ defaults are used.
      - Game controller buttons that answer as the response keys, one per entry
        of ``response_keys`` in the same order: ``['X', 'Y', 'A', 'B']`` makes X
        count as the first response key, Y the second, and so on. Use button
-       names for a pad SDL knows (Xbox, PlayStation, 8BitDo) or raw button
-       numbers (``[0, 1, 2, 3]``) for one it does not (a Current Designs 932 in
-       joystick mode). The keyboard keeps working; the trigger, quit key and
+       names for a pad SDL knows (Xbox, PlayStation, 8BitDo) or a Current
+       Designs GMPD3 (932 in joystick mode), whose face buttons take the names of
+       the same places on an Xbox pad. For any other pad, give raw button numbers
+       (``[0, 1, 2, 3]``). The keyboard keeps working; the trigger, quit key and
        ``continue_key`` stay on the keyboard. If ``None``, no pad is used.
    * - ``ttl_key``
      - ``'t'``
