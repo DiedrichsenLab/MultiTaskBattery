@@ -3,12 +3,13 @@
 # Revised 2023: Bassel Arafat, Jorn Diedrichsen, Ince Husain
 
 import json
+import os
 import pandas as pd
 import sys
 import numpy as np
 from datetime import datetime
 import psychopy
-from psychopy import visual, gui, event, core
+from psychopy import visual, gui, event, core, logging
 import MultiTaskBattery
 import MultiTaskBattery.utils as ut
 import MultiTaskBattery.task_blocks as tasks
@@ -70,11 +71,16 @@ class Experiment:
         """Closes the window and quits the experiment (bound to const.quit_key).
         Exits with code 3, so a script that started the run can tell it was stopped.
         The window closes as the program exits (closing it here, inside PsychoPy's key
-        check, makes PsychoPy fail while it goes through its open windows)."""
+        check, makes PsychoPy fail while it goes through its open windows).
+        os._exit, not sys.exit: on Windows the key arrives in a callback of the window,
+        which swallows a SystemExit, so sys.exit there does not stop the run."""
         if getattr(self, 'manifest', None):
             self.write_manifest('stopped')
             self.write_events()   # the blocks finished before Esc
-        sys.exit(3)
+        logging.flush()
+        sys.stdout.flush()
+        sys.stderr.flush()
+        os._exit(3)
 
     def write_events(self):
         """Writes a BIDS events file for this scan into <subj>/events/, named by scan_num
