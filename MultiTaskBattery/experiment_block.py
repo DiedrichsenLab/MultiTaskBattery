@@ -3,12 +3,13 @@
 # Revised 2023: Bassel Arafat, Jorn Diedrichsen, Ince Husain
 
 import json
+import os
 import pandas as pd
 import sys
 import numpy as np
 from datetime import datetime
 import psychopy
-from psychopy import visual, gui, event, core
+from psychopy import visual, gui, event, core, logging
 import MultiTaskBattery
 import MultiTaskBattery.utils as ut
 import MultiTaskBattery.gamepad as gamepad
@@ -74,11 +75,16 @@ class Experiment:
         """Closes the window and quits the experiment (bound to const.quit_key).
         Exits with code 3, so a script that started the run can tell it was stopped.
         The window closes as the program exits (closing it here, inside PsychoPy's key
-        check, makes PsychoPy fail while it goes through its open windows)."""
+        check, makes PsychoPy fail while it goes through its open windows).
+        os._exit, not sys.exit: on Windows the key arrives in a callback of the window,
+        which swallows a SystemExit, so sys.exit there does not stop the run."""
         if getattr(self, 'manifest', None):
             self.write_manifest('stopped')
             self.write_events()   # the blocks finished before Esc
-        sys.exit(3)
+        logging.flush()
+        sys.stdout.flush()
+        sys.stderr.flush()
+        os._exit(3)
 
     def write_events(self):
         """Writes a BIDS events file for this scan into <subj>/events/, named by scan_num
@@ -178,37 +184,28 @@ class Experiment:
 
         Args:
         """
-        if not self.const.debug:
-            # Step 1: Create a temporary small window for user feedback
-            self.screen.start_screen(height=getattr(self.const, 'instruction_text_height', None),
-                                     wrap_width=getattr(self.const, 'instruction_wrap_width', None))
+        # Step 1: Create a temporary small window for user feedback
+        self.screen.start_screen(height=getattr(self.const, 'instruction_text_height', None),
+                                 wrap_width=getattr(self.const, 'instruction_wrap_width', None))
 
-            # a dialog box pops up so you can enter info
-            #Set up input box
-            inputDlg = gui.Dlg(title = f"{self.exp_name}")
-            inputDlg.addField('Enter Subject id (str):',initial = self.subj_id)      # run number (int)
-            inputDlg.addField('Enter Run Number (int):',initial = self.run_number+1)      # run number (int)
-            inputDlg.addField('Wait for TTL pulse?', initial = True) # a checkbox for ttl pulse (set it true for scanning)
+        # a dialog box pops up so you can enter info
+        #Set up input box
+        inputDlg = gui.Dlg(title = f"{self.exp_name}")
+        inputDlg.addField('Enter Subject id (str):',initial = self.subj_id)      # run number (int)
+        inputDlg.addField('Enter Run Number (int):',initial = self.run_number+1)      # run number (int)
+        inputDlg.addField('Wait for TTL pulse?', initial = True) # a checkbox for ttl pulse (set it true for scanning)
 
-            inputDlg.show()
+        inputDlg.show()
 
-            if inputDlg.OK:
-                self.subj_id        = str(inputDlg.data[0])
-                self.run_number     = int(inputDlg.data[1])
-                # the run file always follows the run number (run 3 -> run_03.tsv); a repeated
-                # run is kept apart by its attempt number
-                self.run_filename   = self.const.default_run_filename.format(f'{self.run_number:02d}')
-                self.wait_ttl       = bool(inputDlg.data[2])
-            else:
-                sys.exit()
-
+        if inputDlg.OK:
+            self.subj_id        = str(inputDlg.data[0])
+            self.run_number     = int(inputDlg.data[1])
+            # the run file always follows the run number (run 3 -> run_03.tsv); a repeated
+            # run is kept apart by its attempt number
+            self.run_filename   = self.const.default_run_filename.format(f'{self.run_number:02d}')
+            self.wait_ttl       = bool(inputDlg.data[2])
         else:
-            print("running in debug mode")
-            # pass on the values for your debugging with the following keywords
-            self.subj_id = 'test00'
-            self.run_number = self.run_number+1
-            self.run_filename = 'run_01.tsv'
-            self.wait_ttl = True
+            sys.exit()
 
     def init_run(self):
         """initializing the run:

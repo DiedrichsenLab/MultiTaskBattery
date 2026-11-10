@@ -6,4 +6,4 @@ import os
 # PsychoPy imports pygame when it is installed (MTB needs it for gamepads): hide its banner
 os.environ.setdefault('PYGAME_HIDE_SUPPORT_PROMPT', '1')
 
-__version__ = "1.4.0"
+__version__ = "1.4.3"

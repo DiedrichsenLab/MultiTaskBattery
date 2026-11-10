@@ -39,7 +39,6 @@ task_modules = [my_tasks]
 default_run_filename = 'run_{}.tsv'
 
 eye_tracker = False
-debug = False
 
 # write a BIDS events.tsv for each scan into data/<subj>/events/
 write_events = True
