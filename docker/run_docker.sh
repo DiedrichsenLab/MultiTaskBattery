@@ -17,6 +17,13 @@ if [ -n "${XAUTHORITY}" ]; then
   XAUTH_ARGS=(-v "${XAUTHORITY}:${XAUTHORITY}" -e XAUTHORITY)
 fi
 
+# game controllers (gamepad_buttons in constants.py): the input devices, and udev so SDL finds them
+INPUT_ARGS=()
+if [ -d /dev/input ]; then
+  INPUT_ARGS=(--device=/dev/input)
+  if [ -d /run/udev ]; then INPUT_ARGS+=(-v /run/udev:/run/udev:ro); fi
+fi
+
 docker run \
   -v "$PWD:/exp" -w /exp \
   -v "$STIM_DIR:/stimuli" -e MTB_STIMULI=/stimuli \
@@ -25,6 +32,7 @@ docker run \
   -v "/run/user/$(id -u)/pulse:/run/user/$(id -u)/pulse" \
   -v /tmp/.X11-unix:/tmp/.X11-unix \
   "${XAUTH_ARGS[@]}" \
+  "${INPUT_ARGS[@]}" \
   -e HOST_UID=$(id -u) \
   -e HOST_GID=$(id -g) \
   -e DISPLAY \
