@@ -343,7 +343,12 @@ class Rest(Task):
     def run_trial(self,trial):
         # get current time (self.t0)
         self.screen.fixation_cross()
+        send_event = getattr(self.const, 'send_event', None)
+        if send_event:
+            send_event('block_start_rest', self.ttl_clock.get_time(), task=self.name)
         self.ttl_clock.wait_until(self.start_time + trial['trial_dur'])
+        if send_event:
+            send_event('block_end', self.ttl_clock.get_time(), task=self.name)
         return trial
 
 class VerbGeneration(Task):
