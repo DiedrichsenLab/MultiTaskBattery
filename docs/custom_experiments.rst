@@ -126,6 +126,11 @@ defaults are used.
      - ``False``
      - If ``True``, writes a BIDS ``events.tsv`` for each scan into
        ``<subj_id>/events/`` (see Output files).
+   * - ``send_event``
+     - ``None``
+     - A function the rest task calls when its fixation cross appears and when
+       it ends, as ``send_event(name, time, task='rest')`` with ``name``
+       ``'block_start_rest'`` or ``'block_end'``, e.g. to send MEG triggers.
    * - ``task_modules``
      - ``[]``
      - List of imported Python modules that hold custom Task and TaskFile
